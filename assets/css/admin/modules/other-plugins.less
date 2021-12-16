@@ -1,0 +1,65 @@
+.burst-other-plugins {
+  .rsp-logo {
+    img {
+      height: 34px;
+    }
+  }
+
+  .burst-plugin {
+    display: flex !important; //we need important here, because the grid switch overrides it on element level
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--rsp-text-color-light);
+    width: 100%;
+    font-size: var(--rsp-fs-300);
+    line-height: 2.3;
+
+    &.burst-rsssl {
+      a:hover {
+        color: var(--rsp-yellow);
+      }
+    }
+
+    &.burst-cmplz {
+      a:hover {
+        color: var(--rsp-blue);
+      }
+    }
+
+    &.burst-burst {
+      a:hover {
+        color: var(--rsp-green);
+      }
+    }
+
+
+    .plugin-status {
+      margin-left: auto;
+    }
+
+    .plugin-color, .plugin-text, .plugin-status {
+      display: flex;
+      align-items: center;
+    }
+
+    .plugin-text {
+      color: var(--rsp-text-color-light);
+
+      a {
+        font-size: var(--rsp-fs-300);
+        text-decoration: none;
+        color: var(--rsp-text-color-light);
+        transition: color 0.3s ease;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .burst-bullet {
+      margin: 7px 9px;
+    }
+  }
+}

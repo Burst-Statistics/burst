@@ -1,0 +1,116 @@
+.burst-grid .burst-grid-datatable {
+  font-size: var(--rsp-fs-300);
+  .burst-grid-content{
+    padding: 0;
+    padding-top: 0;
+  }
+
+  label, label input, label select, .dataTables_info, .dataTables_paginate {
+    font-size: var(--rsp-fs-200);
+  }
+
+  .dataTables_wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .dataTables_info, .dataTables_paginate, .dataTables_length, .dataTables_filter{
+    color: var(--rsp-text-color-light);
+  }
+  .dataTables_length{
+    margin-right: auto;
+  }
+
+  table {
+    font-size: var(--rsp-fs-300);
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    table-layout: fixed;
+    justify-content: normal;
+
+    .text-align-right {
+      text-align: right;
+    }
+
+    thead tr {
+      background: transparent;
+    }
+
+    tr {
+      height: 40px;
+      background-color: #EBF8FE;
+    }
+
+    tr:nth-child(even) {
+      background-color: transparent;
+    }
+
+    th, td {
+      padding: var(--rsp-spacing-xxs) var(--rsp-spacing-l);
+      text-align: left;
+    }
+
+    th {
+      &:focus {
+        outline: none;
+      }
+
+      cursor: pointer;
+      background-repeat: no-repeat;
+      background-position: right;
+
+      &.sorting_asc {
+        background-image: url(../images/sort_asc.png);
+      }
+
+      &.sorting_desc {
+        background-image: url(../images/sort_desc.png);
+      }
+    }
+
+    tbody {
+      color: var(--rsp-text-color);
+    }
+  }
+
+  .dataTables_info {
+    width: auto;
+  }
+
+  .dataTables_paginate {;
+    cursor: pointer;
+
+    .paginate_button {
+      color: black;
+      padding: 0.5em 1em;
+      box-sizing: border-box;
+      border: var(--rsp-border);;
+
+      &.next, &.previous {
+        padding: 0.5em 1.8em;
+        color: var(--rsp-brand-primary);
+      }
+
+      &.disabled {
+        color: var(--rsp-grey-300);;
+        cursor: not-allowed;
+      }
+
+      &.current {
+        color: var(--rsp-text-color-white);
+        background-color: var(--rsp-brand-primary);
+        border: 0;
+      }
+    }
+  }
+
+  #burst-recent-table_previous {
+    //padding: 0.5em 1.8em;
+    //color: @color-error;
+  }
+}

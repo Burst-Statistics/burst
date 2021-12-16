@@ -1,0 +1,54 @@
+<?php defined( 'ABSPATH' ) or die();?>
+<?php
+/**
+ * file is loaded with ajax, where experiment id is posted.
+ */
+
+$date_start = strtotime('today');
+$date_end = strtotime('tomorrow');
+
+$time_total = BURST::$statistics->get_single_statistic('time_total', $date_start, $date_end);
+$visitors_total = BURST::$statistics->get_single_statistic('visitors', $date_start, $date_end);
+$pageviews_total = BURST::$statistics->get_single_statistic('pageviews', $date_start, $date_end);
+$visitors_now = BURST::$statistics->get_real_time_visitors();
+
+$lines = array(
+    //$pageviews_total['val'] . ' ' . __('are new visitors', 'burst'),
+    $visitors_total['val'] . ' ' . __('visitors', 'burst'),
+    $pageviews_total['val'] . ' ' . __('pageviews', 'burst'),
+    burst_format_milliseconds_to_readable_time($time_total['val']) . ' ' . __('interactive time', 'burst'),
+);
+$html = '';
+foreach ($lines as $line){ $html .= '<p>' . $line . '</p>'; }
+
+$args = array(
+    'title' => __('Today', 'burst'),
+    'tooltip' => __('Tooltip text', 'burst'),
+    'subtitles' => $html,
+    'number' => $visitors_now,
+    'number_subtitle' => __('online right now', 'burst'),
+);
+echo burst_get_template('blocks/big-number.php', $args );
+
+
+$results = BURST::$statistics->get_single_statistic('referrer', $date_start, $date_end);
+$args = array(
+    'title' => __('Top referrer', 'burst'),
+    'tooltip' => __('Tooltip text', 'burst'),
+    'subtitle' => $results['val'],
+    'uplift' => '',
+    'uplift_status' => '',
+    'number' => '',
+);
+echo burst_get_template('blocks/explanation-and-stats.php', $args );
+
+$results = BURST::$statistics->get_single_statistic('page_url', $date_start, $date_end);
+$args = array(
+    'title' => __('Most visited page', 'burst'),
+    'tooltip' => __('Tooltip text', 'burst'),
+    'subtitle' => $results['val'],
+    'uplift' => '',
+    'uplift_status' => '',
+    'number' => '',
+);
+echo burst_get_template('blocks/explanation-and-stats.php', $args );

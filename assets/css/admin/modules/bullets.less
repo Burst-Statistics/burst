@@ -1,0 +1,64 @@
+.burst{
+  // burst bullets
+  .burst-bullet {
+    height: 17px;
+    width: 17px;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
+
+    &.large {
+      height: 20px;
+      width: 20px;
+    }
+
+    &.medium {
+      height: 13px;
+      width: 13px;
+    }
+
+    &.small {
+      height: 11px;
+      width: 11px;
+    }
+  }
+
+  .rsp-yellow {
+    background-color: var(--rsp-yellow);
+  }
+
+  .rsp-blue {
+    background-color: var(--rsp-blue);
+  }
+
+  .rsp-pink {
+    background-color: var(--rsp-pink);
+  }
+
+  .rsp-red {
+    background-color: var(--rsp-red);
+  }
+
+  .rsp-green {
+    background-color: var(--rsp-green);
+  }
+
+  .rsp-blue-yellow {
+    background: var(--rsp-blue);
+    background: linear-gradient(77deg, rgba(41, 182, 246, 1) 0%, rgba(41, 182, 246, 1) 30%, rgba(244, 191, 62, 1) 70%, rgba(244, 191, 62, 1) 100%);
+    animation: gradient 2s ease infinite;
+    background-size: 200% 200%;
+  }
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
