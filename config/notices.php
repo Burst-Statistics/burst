@@ -8,7 +8,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 
 		function __construct( $args = array() ) {
 			if ( isset( self::$_this ) ) {
-				wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.',
+				wp_die( sprintf( '%s is a singleton class and you cannot create a second instance.',
 					get_class( $this ) ) );
 			}
 			add_action( 'wp_ajax_burst_dismiss_notice', array( $this, 'dismiss_notice' ) );
@@ -33,12 +33,12 @@ if ( ! class_exists( "burst_notices" ) ) {
 			if ( !isset($_POST['id']) ) {
 				$error = true;
 			}
+
 			if ( !$error ) {
-                error_log('dismiss_notice no error');
-				$notice_id = sanitize_title($_POST['id']);
+				$warning_id = sanitize_title($_POST['id']);
 				$dismissed_warnings = get_option( 'burst_dismissed_warnings', array() );
-				if ( !in_array($notice_id, $dismissed_warnings) ) {
-					$dismissed_warnings[] = $notice_id;
+				if ( !in_array($warning_id, $dismissed_warnings) ) {
+					$dismissed_warnings[] = $warning_id;
 				}
 				update_option('burst_dismissed_warnings', $dismissed_warnings );
 			}
@@ -46,6 +46,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 			$out = array(
 				'success' => ! $error,
 			);
+
 			die( json_encode( $out ) );
 		}
 
@@ -53,9 +54,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 			$notices = apply_filters( 'burst_notices', array(
 					'not_reached_sample_size' => array(
 						'warning_condition' => 'burst_experiment_not_reached_sample_size',
-//        				'success_conditions'  => array(
-//        					'document->all_required_pages_created',
-//        				),
+						//				'success_conditions'  => array(
+						//					'document->all_required_pages_created',
+						//				),
+
 						'open'     => __( 'An experiment has run one month, but has not reached the minimal sample size yet.', 'burst' ),
 						'plus_one' => true,
 					),
@@ -77,7 +79,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 			//re-check if there are no warnings, or if the transient has expired
 			if ( ! $active_notices ) {
 
-				$notice_type_defaults = array(
+				$warning_type_defaults = array(
 					'plus_one'           => false,
 					'warning_condition'  => '_true_',
 					'success_conditions' => array(),
@@ -86,28 +88,28 @@ if ( ! class_exists( "burst_notices" ) ) {
 					'dismissable'        => true,
 				);
 
-				foreach ( $notices as $id => $notice_type ) {
-					$notices[ $id ] = wp_parse_args( $notice_type, $notice_type_defaults );
+				foreach ( $notices as $id => $warning_type ) {
+					$notices[ $id ] = wp_parse_args( $warning_type, $warning_type_defaults );
 				}
 
 				$dismissed_warnings = get_option( 'burst_dismissed_warnings', array() );
-				foreach ( $notices as $id => $notice ) {
+				foreach ( $notices as $id => $warning ) {
 					if ( in_array( $id, $dismissed_warnings ) ) {
 						continue;
 					}
 
-					$show_warning = $this->validate_function( $notice['warning_condition'] );
+					$show_warning = $this->validate_function( $warning['warning_condition'] );
 					if ( ! $show_warning ) {
 						continue;
 					}
 
-					$relation = $notice['relation'];
+					$relation = $warning['relation'];
 					if ( $relation === 'AND' ) {
 						$success = true;
 					} else {
 						$success = false;
 					}
-					foreach ( $notice['success_conditions'] as $func ) {
+					foreach ( $warning['success_conditions'] as $func ) {
 						$condition = $this->validate_function( $func );
 						if ( $relation === 'AND' ) {
 							$success = $success && $condition;
@@ -117,21 +119,21 @@ if ( ! class_exists( "burst_notices" ) ) {
 					}
 
 					if ( ! $success ) {
-						if ( isset( $notice['open'] ) ) {
-							$notice['message']    = $notice['open'];
-							$notice['status']     = 'open';
-							$active_notices[ $id ] = $notice;
-						} else if ( isset( $notice['urgent'] ) ) {
-							$notice['message']    = $notice['urgent'];
-							$notice['status']     = 'urgent';
-							$active_notices[ $id ] = $notice;
+						if ( isset( $warning['open'] ) ) {
+							$warning['message']    = $warning['open'];
+							$warning['status']     = 'open';
+							$active_notices[ $id ] = $warning;
+						} else if ( isset( $warning['urgent'] ) ) {
+							$warning['message']    = $warning['urgent'];
+							$warning['status']     = 'urgent';
+							$active_notices[ $id ] = $warning;
 						}
 					} else {
-						if ( isset( $notice['completed'] ) ) {
-							$notice['message']    = $notice['completed'];
-							$notice['status']     = 'completed';
-							$notice['plus_one']   = false;
-							$active_notices[ $id ] = $notice;
+						if ( isset( $warning['completed'] ) ) {
+							$warning['message']    = $warning['completed'];
+							$warning['status']     = 'completed';
+							$warning['plus_one']   = false;
+							$active_notices[ $id ] = $warning;
 						}
 					}
 				}
@@ -144,8 +146,8 @@ if ( ! class_exists( "burst_notices" ) ) {
 			//filter by status
 			if ( $args['status'] !== 'all' ) {
 				$filter_statuses = is_array( $args['status'] ) ? $args['status'] : array( $args['status'] );
-				foreach ( $active_notices as $id => $notice ) {
-					if ( ! in_array( $notice['status'], $filter_statuses ) ) {
+				foreach ( $active_notices as $id => $warning ) {
+					if ( ! in_array( $warning['status'], $filter_statuses ) ) {
 						unset( $active_notices[ $id ] );
 					}
 				}
@@ -153,13 +155,13 @@ if ( ! class_exists( "burst_notices" ) ) {
 
 			//filter by plus ones
 			if ( $args['plus_ones'] ) {
-				foreach ( $active_notices as $id => $notice ) {
+				foreach ( $active_notices as $id => $warning ) {
 					//prevent notices on upgrade to 5.0
-					if ( ! isset( $notice['plus_one'] ) ) {
+					if ( ! isset( $warning['plus_one'] ) ) {
 						continue;
 					}
 
-					if ( ! $notice['plus_one'] ) {
+					if ( ! $warning['plus_one'] ) {
 						unset( $active_notices[ $id ] );
 					}
 				}

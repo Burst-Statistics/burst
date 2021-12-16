@@ -1,4 +1,4 @@
-<div class="burst-plugin burst-{class}">
+<div class="burst-upsell burst-{class}">
     <div class="plugin-color">
         {title}
     </div>

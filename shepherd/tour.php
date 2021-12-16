@@ -9,7 +9,7 @@ class burst_tour {
 
 	function __construct() {
 		if ( isset( self::$_this ) ) {
-			wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.', get_class( $this ) ) );
+			wp_die( sprintf( '%s is a singleton class and you cannot create a second instance.', get_class( $this ) ) );
 		}
 
 		self::$_this = $this;

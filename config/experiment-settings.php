@@ -158,9 +158,9 @@ $this->fields = $this->fields + array(
 //        'type'               => 'radio',
 //        'default'            => 384,
 //        'options' => array(
-//            '384'  => burst_sprintf(__( "%s visits", 'burst' ), 384),
-//            '1000'  => burst_sprintf(__( "%s visits", 'burst' ), 100),
-//            '5000'  => burst_sprintf(__( "%s visits", 'burst' ), 5000),
+//            '384'  => sprintf(__( "%s visits", 'burst' ), 384),
+//            '1000'  => sprintf(__( "%s visits", 'burst' ), 100),
+//            '5000'  => sprintf(__( "%s visits", 'burst' ), 5000),
 //            '-1'  => __( "Custom number of visits", 'burst' ),
 //        ),
 //        'label'       => __( "Timeline", 'burst' ),

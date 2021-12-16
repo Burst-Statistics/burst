@@ -13,7 +13,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
-				wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.',
+				wp_die( sprintf( '%s is a singleton class and you cannot create a second instance.',
 					get_class( $this ) ) );
 			}
 
@@ -168,6 +168,10 @@ if ( ! class_exists( "burst_field" ) ) {
 				case 'number':
 				case 'weightslider':
 				    return intval( $value );
+				case 'css':
+				case 'javascript':
+					return  $value ;
+				case 'editor':
 				case 'textarea':
 					return wp_kses_post( $value );
 			}
@@ -313,7 +317,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo esc_html($args['label']) ?></label>
+				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input <?php if ( $args['required'] ) {
 				echo 'required';
@@ -321,7 +325,6 @@ if ( ! class_exists( "burst_field" ) ) {
 				class="validation <?php if ( $args['required'] ) {
 					echo 'is-required';
 				} ?>"
-                <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
 				placeholder="<?php echo esc_html( $args['placeholder'] ) ?>"
 				type="text"
 				value="<?php echo esc_html( $value ) ?>"
@@ -344,7 +347,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input <?php if ( $args['required'] ) {
 				echo 'required';
@@ -352,7 +355,6 @@ if ( ! class_exists( "burst_field" ) ) {
 				class="validation <?php if ( $args['required'] ) {
 					echo 'is-required';
 				} ?>"
-                <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
 				placeholder="<?php echo esc_html( $args['placeholder'] ) ?>"
 				type="text"
 				pattern="^(http(s)?(:\/\/))?(www\.)?[#a-zA-Z0-9-_\.\/\:]+"
@@ -376,7 +378,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?= esc_html($args['label']) ?></label>
+				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input <?php if ( $args['required'] ) {
 				echo 'required';
@@ -384,7 +386,6 @@ if ( ! class_exists( "burst_field" ) ) {
 				class="validation <?php if ( $args['required'] ) {
 					echo 'is-required';
 				} ?>"
-                <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
 				placeholder="<?php echo esc_html( $args['placeholder'] ) ?>"
 				type="email"
 				value="<?php echo esc_html( $value ) ?>"
@@ -407,7 +408,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input autocomplete="tel" <?php if ( $args['required'] ) {
 				echo 'required';
@@ -415,7 +416,6 @@ if ( ! class_exists( "burst_field" ) ) {
 			       class="validation <?php if ( $args['required'] ) {
 				       echo 'is-required';
 			       } ?>"
-                   <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
 			       placeholder="<?php echo esc_html( $args['placeholder'] ) ?>"
 			       type="text"
 			       value="<?php echo esc_html( $value ) ?>"
@@ -438,7 +438,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input <?php if ( $args['required'] ) {
 				echo 'required';
@@ -446,7 +446,6 @@ if ( ! class_exists( "burst_field" ) ) {
 				class="validation <?php if ( $args['required'] ) {
 					echo 'is-required';
 				} ?>"
-                <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
 				placeholder="<?php echo esc_html( $args['placeholder'] ) ?>"
 				type="number"
 				value="<?php echo esc_html( $value ) ?>"
@@ -473,12 +472,10 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 
-			<label
-                <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
-                    class="<?php if ( $args['disabled'] ) {
+			<label class="<?php if ( $args['disabled'] ) {
 				echo 'burst-disabled';
 			} ?>"
-			       for="<?php echo esc_html( $fieldname ) ?>-label"><?php echo $args['label'] ?></label>
+			       for="<?php echo esc_html( $fieldname ) ?>-label"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 
 			<?php do_action( 'burst_after_label', $args ); ?>
 
@@ -531,7 +528,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			<?php do_action( 'burst_before_label', $args ); ?>
 
 			<label
-				for="<?php echo esc_html( $fieldname ) ?>"><?php echo $args['label'] ?></label>
+				for="<?php echo esc_html( $fieldname ) ?>"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<?php if ( ! empty( $args['options'] ) ) { ?>
@@ -560,9 +557,7 @@ if ( ! class_exists( "burst_field" ) ) {
 							       size="40" type="checkbox"
 							       value="1" <?php echo ( (string) ( $sel_key
 							                                         == (string) $option_key ) )
-								? "checked" : ""; ?>
-                                   <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
-                            >
+								? "checked" : "" ?> >
 							<label>
 								<?php echo esc_html( $option_label ) ?>
 							</label>
@@ -593,7 +588,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 
-			<label class="label"><?php echo $args['label'] ?></label>
+			<label class="label"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<div class="burst-validate-radio">
@@ -617,9 +612,7 @@ if ( ! class_exists( "burst_field" ) ) {
 							value="<?php echo esc_html( $option_value ); ?>" <?php if ( $value
 							                                                            == $option_value
 						)
-							echo "checked" ?>
-                            <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
-                        >
+							echo "checked" ?>>
 						
 							<?php echo esc_html( $option_label ); ?>
 						</label>
@@ -797,7 +790,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo esc_html( $args['label'] ) ?></label>
+				for="<?php echo $args['fieldname'] ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<textarea name="<?php echo esc_html( $fieldname ) ?>"
                       <?php if ( $args['required'] ) {
@@ -806,7 +799,6 @@ if ( ! class_exists( "burst_field" ) ) {
                         class="validation <?php if ( $args['required'] ) {
 	                        echo 'is-required';
                         } ?>"
-                      <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
                       placeholder="<?php echo esc_html( $args['placeholder'] ) ?>"><?php echo esc_html( $value ) ?></textarea>
 			<?php do_action( 'burst_after_field', $args ); ?>
 			<?php
@@ -834,7 +826,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>" <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>><?php echo esc_html( $args['label'] ) ?></label>
+				for="<?php echo $args['fieldname'] ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<?php
 			$settings = array(
@@ -845,6 +837,114 @@ if ( ! class_exists( "burst_field" ) ) {
 			);
 			wp_editor( $value, $fieldname, $settings ); ?>
 			<?php do_action( 'burst_after_field', $args ); ?>
+			<?php
+		}
+
+		public
+		function javascript(
+			$args
+		) {
+			$fieldname = 'burst_' . $args['fieldname'];
+			$value     = $this->get_value( $args['fieldname'],
+				$args['default'] );
+			if ( ! $this->show_field( $args ) ) {
+				return;
+			}
+			?>
+
+			<?php do_action( 'burst_before_label', $args ); ?>
+			<label
+				for="<?php echo $args['fieldname'] ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
+			<?php do_action( 'burst_after_label', $args ); ?>
+			<div id="<?php echo esc_html( $fieldname ) ?>editor"
+			     style="height: 200px; width: 100%"><?php echo $value ?></div>
+			<?php do_action( 'burst_after_field', $args ); ?>
+			<script>
+				var <?php echo esc_html( $fieldname )?> =
+				ace.edit("<?php echo esc_html( $fieldname )?>editor");
+				<?php echo esc_html( $fieldname )?>.setTheme("ace/theme/monokai");
+				<?php echo esc_html( $fieldname )?>.session.setMode("ace/mode/javascript");
+				jQuery(document).ready(function ($) {
+					var textarea = $('textarea[name="<?php echo esc_html( $fieldname )?>"]');
+					<?php echo esc_html( $fieldname )?>.
+					getSession().on("change", function () {
+						textarea.val(<?php echo esc_html( $fieldname )?>.getSession().getValue()
+					)
+					});
+				});
+			</script>
+			<textarea style="display:none"
+			          name="<?php echo esc_html( $fieldname ) ?>"><?php echo $value ?></textarea>
+			<?php
+		}
+
+		public
+		function css(
+			$args
+		) {
+			$fieldname = 'burst_' . $args['fieldname'];
+
+			$value = $this->get_value( $args['fieldname'], $args['default'] );
+			if ( ! $this->show_field( $args ) ) {
+				return;
+			}
+			?>
+
+			<?php do_action( 'burst_before_label', $args ); ?>
+			<label
+				for="<?php echo $args['fieldname'] ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
+			<?php do_action( 'burst_after_label', $args ); ?>
+			<div id="<?php echo esc_html( $fieldname ) ?>editor"
+			     style="height: 200px; width: 100%"><?php echo $value ?></div>
+			<?php do_action( 'burst_after_field', $args ); ?>
+			<script>
+				var <?php echo esc_html( $fieldname )?> =
+				ace.edit("<?php echo esc_html( $fieldname )?>editor");
+				<?php echo esc_html( $fieldname )?>.setTheme("ace/theme/monokai");
+				<?php echo esc_html( $fieldname )?>.session.setMode("ace/mode/css");
+				jQuery(document).ready(function ($) {
+					var textarea = $('textarea[name="<?php echo esc_html( $fieldname )?>"]');
+					<?php echo esc_html( $fieldname )?>.
+					getSession().on("change", function () {
+						textarea.val(<?php echo esc_html( $fieldname )?>.getSession().getValue()
+					)
+					});
+				});
+			</script>
+			<textarea style="display:none"
+			          name="<?php echo esc_html( $fieldname ) ?>"><?php echo $value ?></textarea>
+			<?php
+		}
+
+
+		public
+		function colorpicker(
+			$args
+		) {
+			$fieldname = 'burst_' . $args['fieldname'];
+
+			$value = $this->get_value( $args['fieldname'], $args['default'] );
+			if ( ! $this->show_field( $args ) ) {
+				return;
+			}
+
+
+			?>
+			<?php do_action( 'burst_before_label', $args ); ?>
+			<label
+				for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
+			<?php do_action( 'burst_after_label', $args ); ?>
+			<input type="hidden" name="<?php echo esc_html( $fieldname ) ?>"
+			       id="<?php echo esc_html( $fieldname ) ?>"
+			       value="<?php echo esc_html( $value ) ?>"
+			       class="burst-color-picker-hidden">
+			<input type="text" name="color_picker_container"
+			       data-hidden-input='<?php echo esc_html( $fieldname ) ?>'
+			       value="<?php echo esc_html( $value ) ?>"
+			       class="burst-color-picker"
+			       data-default-color="<?php echo esc_html( $args['default'] ) ?>">
+			<?php do_action( 'burst_after_field', $args ); ?>
+
 			<?php
 		}
 
@@ -862,7 +962,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
             <?php do_action( 'burst_before_label', $args ); ?>
             <label
-                    for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+                    for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
             <?php do_action( 'burst_after_label', $args ); ?>
             <input <?php if ( $args['required'] ) {
                 echo 'required';
@@ -871,7 +971,6 @@ if ( ! class_exists( "burst_field" ) ) {
                     type="text"
                     value="<?php echo esc_html( $args['copy_text'] ) ?>"
                     name="<?php echo esc_html( $fieldname ) ?>"
-                    <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
                     disabled>
 
             <span class="copy-container">
@@ -1048,12 +1147,11 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?></label>
+				for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<select <?php if ( $args['required'] ) {
 				echo 'required';
-			} ?> name="<?php echo esc_html( $fieldname ) ?>"
-                 <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>>
+			} ?> name="<?php echo esc_html( $fieldname ) ?>">
 				<option value=""><?php _e( "Choose an option",
 						'burst' ) ?></option>
 				<?php foreach (
@@ -1087,14 +1185,13 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?>
+				for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?>
 			</label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 
 			<select class="burst-select2-page-field form-control" <?php if ( $args['required'] ) {
 				echo 'required';
-			} ?> name="<?php echo esc_html( $fieldname ) ?>"
-                    <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>>
+			} ?> name="<?php echo esc_html( $fieldname ) ?>">
 				<?php if ($value) {
 					$post = get_post($value);
 					if($post){ ?>
@@ -1132,7 +1229,7 @@ if ( ! class_exists( "burst_field" ) ) {
             ?>
             <?php do_action( 'burst_before_label', $args ); ?>
             <label
-                    for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?>
+                    for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?>
             </label>
             <?php do_action( 'burst_after_label', $args ); ?>
 
@@ -1140,8 +1237,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
             <select class="burst-select2-page-field form-control" <?php if ( $args['required'] ) {
                 echo 'required';
-            } ?> name="<?php echo esc_html( $fieldname ) ?>"
-                    <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>>
+            } ?> name="<?php echo esc_html( $fieldname ) ?>">
                 <?php if ($value) {
                     $post = get_post($value);
                     if($post){ ?>
@@ -1179,7 +1275,7 @@ if ( ! class_exists( "burst_field" ) ) {
             ?>
             <?php do_action( 'burst_before_label', $args ); ?>
             <label
-                    for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?>
+                    for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?>
             </label>
             <?php do_action( 'burst_after_label', $args ); ?>
 
@@ -1187,8 +1283,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
             <select class="burst-select2-page-field form-control" <?php if ( $args['required'] ) {
                 echo 'required';
-            } ?> name="<?php echo esc_html( $fieldname ) ?>"
-                <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?> >
+            } ?> name="<?php echo esc_html( $fieldname ) ?>">
                 <?php if ($value) {
                     $post = get_post($value);
                     if($post){ ?>
@@ -1244,7 +1339,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
             <?php do_action( 'burst_before_label', $args ); ?>
             <label
-                    for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+                    for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
             <?php do_action( 'burst_after_label', $args ); ?>
             <input <?php if ( $args['required'] ) {
                 echo 'required';
@@ -1257,9 +1352,7 @@ if ( ! class_exists( "burst_field" ) ) {
                     value="<?php echo $date_value; ?>"
                     min="<?php echo $today->format('Y-m-d'); ?>"
                     max="<?php echo $year->format('Y-m-d'); ?>"
-                    name="<?php echo esc_html( $fieldname ) ?>"
-                    <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
-            >
+                    name="<?php echo esc_html( $fieldname ) ?>">
             <?php do_action( 'burst_after_field', $args ); ?>
             <?php
         }
@@ -1468,6 +1561,52 @@ if ( ! class_exists( "burst_field" ) ) {
 			<div class="burst-comment"><?php echo $args['comment'] ?></div>
 			<?php
 		}
+
+		/**
+		 *
+		 * returns the button with which a user can open the help modal
+		 *
+		 * @param array $args
+		 *
+		 * @return string
+		 */
+
+		public
+		function get_help_tip_btn(
+			$args
+		) {
+			$output = '';
+			if ( isset( $args['tooltip'] ) ) {
+				$output
+					= '<span data-text="'. wp_kses_post( $args['tooltip'] ) .'" class="burst-tooltip left"><img width="15px" src="'. trailingslashit(burst_url) .'assets/icons/question-circle-solid.svg"></span>';
+			}
+
+			return $output;
+		}
+
+		/**
+		 * returns the modal help window
+		 *
+		 * @param array $args
+		 *
+		 * @return string
+		 */
+
+		public
+		function get_help_tip(
+			$args
+		) {
+			$output = '';
+			if ( isset( $args['help'] ) ) {
+				$output
+					= '<div><div class="burst-help-modal "><span><i class="fa fa-times"></i></span>'
+					  . wp_kses_post( $args['help'] ) . '</div></div>';
+			}
+
+
+			return $output;
+		}
+
 
 		/*
          * Check if all required fields are answered

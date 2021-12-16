@@ -16,7 +16,7 @@ if ( ! class_exists( "burst_config" ) ) {
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
-				wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.',
+				wp_die( sprintf( '%s is a singleton class and you cannot create a second instance.',
 					get_class( $this ) ) );
 			}
 
@@ -30,7 +30,7 @@ if ( ! class_exists( "burst_config" ) ) {
 			);
 
 			$this->premium_experimenting
-				= burst_sprintf( __( "If you want to run a/b testing to track which banner gets the highest acceptance ratio, %sget premium%s.",
+				= sprintf( __( "If you want to run a/b testing to track which banner gets the highest acceptance ratio, %sget premium%s.",
 					'burst' ),
 					'<a href="https://burst.io" target="_blank">', '</a>' )
 				  . "&nbsp;";

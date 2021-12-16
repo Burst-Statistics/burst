@@ -7,11 +7,6 @@ function burst_register_rest_routes(){
         'callback' => 'burst_track_hit',
         'permission_callback' => '__return_true',
     ));
-    register_rest_route('burst/v1', 'time', array(
-        'methods' => 'POST',
-        'callback' => 'burst_update_time_on_page',
-        'permission_callback' => '__return_true',
-    ));
 }
 
 /**
@@ -22,106 +17,83 @@ function burst_register_rest_routes(){
 
 function burst_track_hit(WP_REST_Request $request){
 	$data = $request->get_json_params();
-	$burst_uid = burst_get_uid();
+
+	//check if this user has a cookie 
+	$burst_uid = isset( $_COOKIE['burst_uid']) ? $_COOKIE['burst_uid'] : false;
+	if ( !$burst_uid ) {
+		// if user is logged in get burst meta user id
+		if (is_user_logged_in()) {
+			$burst_uid = get_user_meta(get_current_user_id(), 'burst_cookie_uid');
+			//if no user meta is found, add new unique ID
+			if (!isset($burst_uid)) {
+				//generate random string
+				$burst_uid = burst_random_str();
+				update_user_meta(get_current_user_id(), 'burst_cookie_uid', $burst_uid);
+			}
+		} else {
+			$burst_uid = burst_random_str();
+		}
+	}
+
+	//make sure it's set.
+	if (!isset( $_COOKIE['burst_uid'])) {
+		burst_setcookie('burst_uid', $burst_uid, BURST::$experimenting->cookie_expiration_days);
+	}
+
+	$default_data = array(
+		'test_version' => false,
+		'experiment_id' => false,
+		'conversion' => false,
+		'url' => '',
+	);
+	$data = wp_parse_args($data, $default_data);
+	$url = sanitize_text_field($data['url']);
+	$experiment_id = intval($data['experiment_id']);
+
 	$time = time();
+	$time_minus_threshold = strtotime("-30 minutes");
 
-    $referrer_url = trim( parse_url( $data['referrer_url'], PHP_URL_HOST ), 'www.' );
-    $ref_spam_list = file(burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    if (array_search($referrer_url, $ref_spam_list)){
-        $referrer_url = 'spammer';
-    } else {
-        $referrer_url = esc_url_raw($data['referrer_url']);
-    }
-
-    $user_agent_data = burst_get_user_agent_data($data['user_agent']);
-    $scroll_percentage = round( intval( $data['scroll_percentage']), 2);
+	global $wpdb;
 	$update_array = array(
-		'page_url'            		=> sanitize_text_field( $data['url'] ),
-        'entire_page_url'           => esc_url_raw( $data['entire_url'] ),
-		'page_id'                   =>  intval($data['page_id']),
+		'page_url'            		=> sanitize_text_field( $url ),
 		'time'               		=> $time,
 		'uid'               		=> sanitize_title($burst_uid),
-        'referrer'                  => $referrer_url,
-        'anon_ip'                   => filter_var( $data['anon_ip'], FILTER_VALIDATE_IP),
-        'user_agent'                => sanitize_text_field( $data['user_agent'] ),
-        'browser'                   => $user_agent_data['browser'],
-        'browser_version'           => $user_agent_data['version'],
-        'platform'                  => $user_agent_data['platform'],
-        'device'                    => $user_agent_data['device'],
-        'device_resolution'         => sanitize_title($data['device_resolution']),
-        'scroll_percentage'         => intval($data['scroll_percentage']),
-        'time_on_page'              => intval($data['time_on_page']),
+		'test_version'				=> burst_sanitize_test_version($data['test_version']),
+		'experiment_id'				=> $experiment_id,
 	);
 
-    //get session id from burst statistic where uid and time < 30 minutes ago
-    $time_minus_threshold = strtotime("-30 minutes");
-    global $wpdb;
-    $prepare = $wpdb->prepare( "select `session_id`, `page_url` from {$wpdb->prefix}burst_statistics where uid = %s AND time> %s limit 1", $update_array['uid'], $time_minus_threshold );
-    $existing_session = $wpdb->get_row($prepare);
-    $update_array['session_id'] = isset($existing_session) ? $existing_session->session_id : false;
+	// Only update conversion when it is true. Otherwise conversions will be deleted when the page has been revisited.
+	if ($data['conversion'] == true){
+		error_log('conversion');
+		$update_array['conversion'] = intval($data['conversion']);
+	} else {
+		error_log('no conversion');
+	}
+	error_log('burst_track_hit');
+	//check if the current users' uid/experiment id combination is already in the database.
+	$prepare = $wpdb->prepare( "select `time` from {$wpdb->prefix}burst_statistics where experiment_id = %s and uid = %s order by time desc limit 1", $experiment_id, sanitize_title($burst_uid));
+	$last_visit_time = $wpdb->get_var($prepare);
+	// check if the last entry is smaller than the time_minus_threshold so that multiple visits will result in multiple entries and not just one. 
+	if ($last_visit_time > 0 && $last_visit_time > $time_minus_threshold) {
+		error_log('already in db in the last 30 minutes, so we update');
+		$wpdb->update(
+			$wpdb->prefix . 'burst_statistics',
+			$update_array,
+			array('time' => $last_visit_time)
+		);
+	} else {
+		error_log('new entry');
+		$wpdb->insert(
+			$wpdb->prefix . 'burst_statistics',
+			$update_array
+		);
+	}
 
-    //if session id exists update it otherwise create a new session and get id
-    $session_array = array(
-        'goal_id' => false,
-    );
-    if ( intval($update_array['session_id']) ) {
-        $wpdb->update(
-            $wpdb->prefix . 'burst_sessions',
-            $session_array,
-            array('ID' => $update_array['session_id']),
-        );
-    } else {
-         $wpdb->insert(
-            $wpdb->prefix . 'burst_sessions',
-            $session_array
-        );
-        $update_array['session_id'] = $wpdb->insert_id;
-    }
+	//check if we can stop this experiment.
+	 $experiment = new BURST_EXPERIMENT($experiment_id);
+	 if ( $time > $experiment->date_end ) {
+	 	$experiment->stop();
+	 }
 
-    $prepare = $wpdb->prepare( "select `time`, `ID` from {$wpdb->prefix}burst_statistics where uid = %s AND time> %s limit 1", sanitize_title($burst_uid), strtotime("-1 second") );
-    $existing_hit = $wpdb->get_row($prepare);
 
-	if ( !$existing_hit ) {
-        $wpdb->insert(
-            $wpdb->prefix . 'burst_statistics',
-            $update_array
-        );
-        $insert_id = $wpdb->insert_id;
-    }
-
-	do_action('burst_track_hit', $data, $burst_uid, $time );
-
-    return new WP_REST_Response(
-        array(
-            'insert_id' => $insert_id,
-        ));
 }
-
-
-/**
- * Add a new page visit to the database
- * @param WP_REST_Request $request
- */
-
-function burst_update_time_on_page(WP_REST_Request $request)
-{
-    $data = $request->get_json_params();
-    if ($data['ID'] == 'undefined') return;
-    $id = (int) $data['ID'];
-    $scroll_percentage = round( intval( $data['scroll_percentage']), 2);
-    $update_array = array(
-        'time_on_page' => (int) $data['time_on_page'],
-        'scroll_percentage' => $scroll_percentage,
-    );
-    $where = array(
-        'ID' => $id,
-    );
-    global $wpdb;
-    $wpdb->update(
-        $wpdb->prefix . 'burst_statistics',
-        $update_array,
-        $where
-    );
-}
-
-

@@ -1,88 +1,65 @@
-:root {
-        // Break points
-        @rsp-break-xs: 400px;
-        @rsp-break-s: 576px;
-        @rsp-break-m: 768px;
-        @rsp-break-l: 992px;
-        @rsp-break-xl: 1200px;
-        @rsp-break-xxl: 1400px;
+@grid-margin:10px;
 
-        // Margins, Paddings and Border Radius
-        --rsp-spacing-xxs: 5px;
-        --rsp-spacing-xs: 10px;
-        --rsp-spacing-s: 15px;
-        --rsp-spacing-m: 20px;
-        --rsp-spacing-l: 30px;
-        --rsp-spacing-xl: 40px;
+// Break points
+@break-xs: 400px;
+@break-s: 600px;
+@break-m: 768px;
+@break-l: 992px;
+@break-xl: 1382px;
 
-        // Grid settings
-        --rsp-grid-margin: var(--rsp-spacing-xs);
-        --rsp-grid-gap: var(--rsp-spacing-m);
+// Margins, Paddings and Border Radius
+@small-margin: 10px;
+@default-margin: 15px;
+@small-padding: 10px;
+@default-padding: 20px;
+@big-margin: 30px;
 
-        // Borders and stuff
-        --rsp-border-radius: 12px;
-        --rsp-border: 1px solid var(--rsp-border-color);
-        --rsp-box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-        --rsp-border-color: #dfdfdf;
+// Grid settings
+@red-gap: 15px;
+@green-gap: 20px;
+@intro-gap: 20px 20px 0 20px;
 
-        // RSP Brand Colors
-        --rsp-black: #333;
-        --rsp-white: #fff;
-        --rsp-yellow: #f4bf3e;
-        --rsp-blue: #29b6f6;
-        --rsp-dark-blue: #5A6FA5;
-        --rsp-green: #2e8a37;
-        --rsp-red: #D7263D;
-        --rsp-pink: #E35899;
-        --rsp-orange: #f39c12;
+@border-radius: 3px;
+@border: 1px solid @border-color;
+@box-shadow:  1px 1px 1px rgba(0,0,0,0.10),
+              2px 2px 2px rgba(0,0,0,0.05),
+              0 6px 6px rgba(0,0,0,0.02),
+              0 8px 8px rgba(0,0,0,0.02);
 
-        --rsp-yellow-faded: fade(#f4bf3e, 10%);
-        --rsp-blue-faded: fade(#29b6f6, 10%);
-        --rsp-dark-blue-faded: fade(#29b6f6, 10%);
-        --rsp-green-faded: fade(#2e8a37, 10%);
-        --rsp-red-faded: fade(#D7263D, 10%);
-        --rsp-pink-faded: fade(#E35899, 10%);
-        --rsp-orange-faded: fade(#f39c12, 10%);
 
-        --rsp-background-block-color: var(--rsp-white);
-        --rsp-background-color: #f0f0f1; //#f0f0f1 is the default wordpress bg color
+// RSP Brand Colors
+@rsp-black: #333;
+@rsp-yellow: #f4bf3e;
+@rsp-blue: #29b6f6;
+@rsp-green: #61CE70;
+@rsp-red: #D7263D;
+@rsp-pink: #E35899;
+@rsp-orange: #f39c12;
 
-        //Input colors
-        --rsp-input-background-color: #fff;
-        --rsp-input-text-color: var(--rsp-text-color);
-        --rsp-input-border-color: #8c8f94;
+// Colors
+@brand-primary: @rsp-green;
+@brand-secondary: @rsp-yellow;
 
-        --rsp-text-color: rgba(26, 26, 26, 0.9);
-        --rsp-text-color-invert: rgba(255, 255, 255, 0.9);
-        --rsp-text-color-white: rgba(255, 255, 255, 0.9);
-        --rsp-text-color-light: rgba(69, 69, 82, 0.9);
+//Input colors
+@input-background-color: #F1F1F1;
+@input-border-color: #8c8f94;
 
-        --rsp-grey-200: #fafafa;
-        --rsp-grey-300: #ededed;
-        --rsp-grey-400: #c6c6c6;
-        --rsp-grey-500: #737373;
-        --rsp-grey-600: #696969;
+@text-color: rgba(26, 26, 26, 0.9);
+@light-text-color: rgba(66, 66, 66, 0.9);
+@border-color: #dadada;
 
-        // Notification colors
-        --rsp-color-success: var(--rsp-green);
-        --rsp-color-error: var(--rsp-red);
-        --rsp-color-warning: var(--rsp-orange);
-        --rsp-color-open: var(--rsp-yellow);
+@grey-lighter: #fafafa;
+@grey-light: #ededed;
+@grey: #c6c6c6;
+@grey-dark: #737373;
+@grey-darker: #696969;
 
-        // Font sizes
-        --rsp-fs-100: 0.6125rem;
-        --rsp-fs-200: 0.625rem;
-        --rsp-fs-300: 0.8125rem;
-        --rsp-fs-400: 0.875rem;
-        --rsp-fs-500: 1rem;
-        --rsp-fs-600: 1.125rem;
-        --rsp-fs-700: 1.25rem;
-        --rsp-fs-800: 1.5rem;
-        --rsp-fs-900: 2.5rem;
-}
+// Notification colors
+@color-success: @rsp-green;
+@color-error: @rsp-red;
+@color-warning: @rsp-orange;
+@color-open: @rsp-blue;
 
-.burst-block {
-        background: var(--rsp-background-block-color);
-        box-shadow: var(--rsp-box-shadow);
-        border-radius: var(--rsp-border-radius);
-}
+// Font sizes
+@default-font-size: 1.4rem;
+@default-line-height: 2.1rem;

@@ -2,31 +2,31 @@
 
 $items = array(
     1 => array(
-        'content' => "Writing Content for Google",
+        'content' => __("Writing Content for Google", "burst"),
         'link'    => 'https://wpburst.com/writing-content-for-google/',
     ),
     2 => array(
-        'content' => "WP Search Insights Beginner's Guide",
+        'content' => __("WP Search Insights Beginner's Guide", "burst"),
         'link' => 'https://wpburst.com/burst-beginners-guide/',
     ),
     3 => array(
-        'content' => "Using CSV/Excel Exports",
+        'content' => __("Using CSV/Excel Exports", "burst"),
         'link' => 'https://wpburst.com/using-csv-excel-exports/',
     ),
     4 => array(
-        'content' => "Improving your Search Result Page",
+        'content' => __("Improving your Search Result Page", "burst"),
         'link' => 'https://wpburst.com/improving-your-search-result-page/',
     ),
     5 => array(
-        'content' => "The Search Filter",
+        'content' => __("The Search Filter", "burst"),
         'link' => 'https://wpburst.com/the-search-filter/',
     ),
     6 => array(
-        'content' => "Positioning your search form",
+        'content' => __("Positioning your search form", "burst"),
         'link' => 'https://wpburst.com/about-search-forms/',
     ),
 );
-$container = '<div class="burst-tips-tricks-element"><a href="{link}" target="_blank" title="{content}"><div class="burst-bullet medium"></div><div class="burst-tips-tricks-content">{content}</div></a></div>';
+$container = '<div class="burst-tips-tricks-element"><a href="{link}" target="_blank"><div class="burst-bullet medium"></div><div class="burst-tips-tricks-content">{content}</div></a></div>';
 $output = '<div class="burst-tips-tricks-container">';
 
 foreach ($items as $item) {
