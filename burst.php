@@ -63,7 +63,6 @@ if ( ! class_exists( 'BURST' ) ) {
         public static $sessions;
         public static $goals;
 		public static $admin;
-        public static $admin_pro;
         public static $wizard;
 		public static $review;
 		public static $field;
@@ -76,7 +75,6 @@ if ( ! class_exists( 'BURST' ) ) {
 			self::includes();
 			self::hooks();
 			self::$anonymize_IP = new burst_ip_anonymizer();
-			self::$experimenting  = new burst_experimenting();
 			self::$statistics  = new burst_statistics();
             self::$sessions  = new burst_sessions();
             self::$goals  = new burst_goals();
@@ -85,7 +83,6 @@ if ( ! class_exists( 'BURST' ) ) {
 			if ( is_admin() ) {
 				self::$review    = new burst_review();
 				self::$admin     = new burst_admin();
-				self::$admin_pro = new burst_admin_pro();
 				self::$wizard    = new burst_wizard();
 				self::$field     = new burst_field();
 				self::$tour      = new burst_tour();
@@ -153,8 +150,6 @@ if ( ! class_exists( 'BURST' ) ) {
 			require_once( burst_path . '/rest-api/rest-api.php' );
 			require_once( burst_path . '/config/class-config.php');
 			require_once( burst_path . '/cron/cron.php');
-
-            require_once( burst_path . '/pro/includes.php' );
 		}
 
 		private function hooks() {
