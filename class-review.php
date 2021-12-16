@@ -7,7 +7,7 @@ if ( ! class_exists( "burst_review" ) ) {
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
-				wp_die( sprintf( '%s is a singleton class and you cannot create a second instance.',
+				wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.',
 					get_class( $this ) ) );
 			}
 			self::$_this = $this;
@@ -102,16 +102,16 @@ if ( ! class_exists( "burst_review" ) ) {
                             <?php if ($completed_experiment_count==1){ ?>
                                 <?php _e( 'Hi, you have already completed one experiment, awewome!','burst') ?>&nbsp;
                             <?php } else if ($completed_experiment_count>1) { ?>
-                                <?php printf(__( 'Hi, you have already completed %s experiments, awewome!','burst'),$completed_experiment_count) ?>&nbsp;
+                                <?php burst_printf(__( 'Hi, you have already completed %s experiments, awewome!','burst'),$completed_experiment_count) ?>&nbsp;
                             <?php } else if ($active_experiment_count==1) { ?>
                                 <?php _e( 'Hi, you have already one experiment running, awewome!','burst') ?>&nbsp;
                             <?php } else if ($active_experiment_count>1) { ?>
-                                <?php printf(__( 'Hi, you have already %s active experiments running, awewome!','burst'), $active_experiment_count) ?>&nbsp;
+                                <?php burst_printf(__( 'Hi, you have already %s active experiments running, awewome!','burst'), $active_experiment_count) ?>&nbsp;
                             <?php } else { ?>
                                 <?php _e( 'Hi, you have been using Burst for a month now, awewome!','burst') ?>&nbsp;
                             <?php } ?>
                         	</b>
-                            <?php printf( __('If you have any questions or feedback, leave us a %smessage%s.', 'burst' ), '<a href="https://wpburst.com/contact" target="_blank">', '</a>' );?>
+                            <?php burst_printf( __('If you have any questions or feedback, leave us a %smessage%s.', 'burst' ), '<a href="https://wpburst.com/contact" target="_blank">', '</a>' );?>
                         </p>
                         <p>
                             <?php _e('If you have a moment, please consider leaving a review on WordPress.org to spread the word. We greatly appreciate it!'); ?>

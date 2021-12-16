@@ -7,9 +7,11 @@ if ( ! class_exists( "burst_admin" ) ) {
 		public $success_message = "";
 		public $grid_items;
 		public $default_grid_item;
+        public $rows_batch = 200;
+
 		function __construct() {
 			if ( isset( self::$_this ) ) {
-				wp_die( sprintf( '%s is a singleton class and you cannot create a second instance.',
+				wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.',
 					get_class( $this ) ) );
 			}
 
@@ -25,7 +27,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 			add_action( 'admin_menu', array( $this, 'register_admin_page' ), 20 );
-            add_filter( 'submenu_file', array( $this, 'burst_wp_admin_submenu_filter' ), 20 );
 
 			$plugin = burst_plugin;
 			add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
@@ -34,15 +35,15 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_action( 'admin_init', array( $this, 'check_upgrade' ), 10, 2 );
 
 			add_action( 'admin_init', array($this, 'init_grid') );
-//			add_action( 'edit_form_top', array( $this, 'add_experiment_info_below_title' ));
 			add_action( 'admin_init', array($this, 'hide_wordpress_and_other_plugin_notices') );
 
 			add_action( 'wp_ajax_burst_load_status_info', array( $this, 'ajax_load_status_info') );
+            add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
+            //add_action( 'admin_bar_menu', array($this, 'add_admin_bar_item'), 500 );
 
 			// deactivating
 			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
 			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
-			add_action( 'admin_bar_menu', array($this, 'add_admin_bar_item'), 500 );
 		}
 
 		static function this() {
@@ -51,7 +52,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
         /**
          * Add admin bar for displaying if a test is running on the page
-         *
+         * @todo change or move to pro
          */
         public function add_admin_bar_item ( WP_Admin_Bar $admin_bar ) {
             if ( ! burst_user_can_manage() ) {
@@ -63,7 +64,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             $icon = '<span class="burst-bullet '. $color .'"></span>';
             $title =  burst_plugin_name;
             if ( $count > 0 ) {
-                $title .= ' | ' . sprintf( __( '%s active experiments', 'burst' ), $count );
+                $title .= ' | ' . burst_sprintf( __( '%s active experiments', 'burst' ), $count );
             }
 
             wp_register_style( 'burst-admin-bar',
@@ -153,6 +154,12 @@ if ( ! class_exists( "burst_admin" ) ) {
 			 	return;
 			 }
 
+            //Datatables
+            wp_register_script('burst-datatables',
+                trailingslashit(burst_url)
+                . 'assets/datatables/datatables.min.js', array("jquery"), burst_version);
+            wp_enqueue_script('burst-datatables');
+
 			//datapicker
 			wp_enqueue_style( 'burst-datepicker' , trailingslashit(burst_url) . 'assets/datepicker/datepicker.css', "", burst_version);
 			wp_enqueue_script('burst-moment', trailingslashit(burst_url) . 'assets/datepicker/moment.js', array("jquery"), burst_version);
@@ -163,22 +170,31 @@ if ( ! class_exists( "burst_admin" ) ) {
 			wp_enqueue_style( 'select2' );
 			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
 
-			//chartjs
-            if (isset($_GET['page']) && $_GET['page'] === 'burst' ) {
-	            wp_register_style( 'chartjs', burst_url . 'assets/chartjs/Chart.min.css', false, burst_version );
-	            wp_enqueue_style( 'chartjs' );
-	            wp_enqueue_script( 'chartjs', burst_url . "assets/chartjs/Chart.min.js", array(), burst_version, true );
-            }
-
 			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
 			wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
 			wp_enqueue_style( 'burst-admin' );
 			wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
+            wp_enqueue_script( 'burst-tooltips', burst_url . "assets/js/tooltips$minified.js", false, burst_version, false );
 
 			if (isset($_GET['page']) && $_GET['page'] ==='burst') {
-				wp_enqueue_script( 'burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array( 'burst-admin' ), burst_version, false );
+                wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version, false);
 			}
+
+            if (isset($_GET['page']) && $_GET['page'] ==='burst-statistics') {
+                wp_register_style( 'chartjs', burst_url . 'assets/chartjs/Chart.min.css', false, burst_version );
+                wp_enqueue_style( 'chartjs' );
+                wp_enqueue_script( 'chartjs', burst_url . "assets/chartjs/Chart.min.js", array(), burst_version, true );
+
+                wp_enqueue_script('burst-dashboard', burst_url . "assets/js/statistics$minified.js", array('burst-admin'), burst_version, false);
+
+                //Datatables plugin to hide pagination when it isn't needed
+                wp_register_script('burst-datatables-pagination',
+                    trailingslashit(burst_url)
+                    . 'assets/datatables/dataTables.conditionalPaging.js', array("jquery"), burst_version);
+                wp_enqueue_script('burst-datatables-pagination');
+            }
+
 
 			wp_localize_script(
 				'burst-admin',
@@ -285,10 +301,10 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			$warnings      = BURST::$notices->get_notices( array('plus_ones'=>true) );
 			$warning_count = count( $warnings );
-			$warning_title = esc_attr( sprintf( '%d plugin warnings', $warning_count ) );
+			$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
 			$warning_count = count( $warnings );
-			$warning_title = esc_attr( sprintf( '%d plugin warnings', $warning_count ) );
-			$menu_label    = sprintf( __( 'Burst %s', 'burst' ),
+			$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
+			$menu_label    = burst_plugin_name . burst_sprintf( __( ' %s', 'burst' ),
 				"<span class='update-plugins count-$warning_count' title='$warning_title'><span class='update-count'>"
 				. number_format_i18n( $warning_count ) . "</span></span>" );
 
@@ -312,76 +328,18 @@ if ( ! class_exists( "burst_admin" ) ) {
 				array( $this, 'dashboard' )
 			);
 
-			add_submenu_page(
-				'burst',
-				__( 'Experiments', 'burst' ),
-				__( 'Experiments', 'burst' ),
-				'manage_options',
-				'burst-experiments',
-				array( $this, 'experiments_overview' )
-			);
             add_submenu_page(
                 'burst',
-                __( 'New experiment', 'burst' ),
-                __( 'New experiment', 'burst' ),
+                __( 'Statistics', 'burst' ),
+                __( 'Statistics', 'burst' ),
                 'manage_options',
-                'burst-experiment',
-                array( $this, 'experiment_edit' )
+                'burst-statistics',
+                array( $this, 'statistics' )
             );
-
-			add_submenu_page(
-				'burst',
-				__( 'Settings' ),
-				__( 'Settings' ),
-				'manage_options',
-				"burst-settings",
-				array( $this, 'settings' )
-			);
 
 			do_action( 'burst_admin_menu' );
 
-			// if ( defined( 'burst_free' ) && burst_free ) {
-			// 	global $submenu;
-			// 	$class                  = 'burst-submenu';
-			// 	$highest_index = count($submenu['burst']);
-			// 	$submenu['burst'][] = array(
-			// 			__( 'Upgrade to premium', 'burst' ),
-			// 			'manage_options',
-			// 			'https://wpburst.com/pricing'
-			// 	);
-			// 	if ( isset( $submenu['burst'][$highest_index] ) ) {
-			// 		if (! isset ($submenu['burst'][$highest_index][4])) $submenu['burst'][$highest_index][4] = '';
-			// 		$submenu['burst'][$highest_index][4] .= ' ' . $class;
-			// 	}
-			// }
-
 		}
-
-        /**
-         * This filter removes the 'New experiment' submenu page from the submenu and highlights the experiment page
-         * @param $submenu_file
-         * @return mixed|string
-         */
-        function burst_wp_admin_submenu_filter( $submenu_file ) {
-
-            global $plugin_page;
-
-            $hidden_submenus = array(
-                'burst-experiment' => true,
-            );
-
-            // Select another submenu item to highlight
-            if ( $plugin_page && isset( $hidden_submenus[ $plugin_page ] ) ) {
-                $submenu_file = 'burst-experiments';
-            }
-
-            // Hide the submenu.
-            foreach ( $hidden_submenus as $submenu => $unused ) {
-                remove_submenu_page( 'burst', $submenu );
-            }
-
-            return $submenu_file;
-        }
 
         public function get_metric_dropdown(){
             //@todo add filter so we can add metrics with integrations
@@ -403,79 +361,133 @@ if ( ! class_exists( "burst_admin" ) ) {
             return $html;
         }
 
+        public function get_daterange_dropdown()
+        {
+            //@todo Setup a default timerange and fix timezone issue
+            $endOfDay   = strtotime("today") - 1;
+            $date_start = strtotime('-8 days');
+            $date_end = $endOfDay;
+
+            ob_start();
+            ?>
+            <div class="burst-date-container burst-date-range">
+                <i class="dashicons dashicons-calendar-alt"></i>&nbsp;
+                <span></span>
+                <i class="dashicons dashicons-arrow-down-alt2"></i>
+            </div>
+            <input type="hidden" name="burst_date_start" value="<?php echo $date_start ?>">
+            <input type="hidden" name="burst_date_end" value="<?php echo $date_end ?>">
+            <?php
+            $html = ob_get_clean();
+
+            return $html;
+        }
+
+
 		/**
 		 * Initialize the grid
 		 */
 
-		public function init_grid(){
-		    if (!burst_user_can_manage()) return;
+		public function init_grid()
+        {
+            if (!burst_user_can_manage()) return;
 
-		    if (!isset($_GET['page']) || $_GET['page'] !== 'burst') return;
+            if (!isset($_GET['page']) || substr($_GET['page'], 0, 5) !== 'burst') return;
 
-		    $this->tabs = apply_filters('burst_tabs', array(
-		            'dashboard' => array(
-		                    'title'=> __( "General", "burst" ),
+            //@todo move to pro experiment blocks
+            $metric_control = $this->get_metric_dropdown();
+
+
+            $grid_items = apply_filters('burst_grid_items', array(
+                'dashboard' => array(
+                    1 => array(
+                        'title' => __("Your tasks", "burst"),
+                        'class' => 'burst-overview column-2 row-2',
+                        'type' => 'progress',
+                        'controls' => '',
+                        'page' => 'dashboard',
                     ),
-		            'settings' => array(
-			            'title'=> __( "Settings", "burst" ),
-			            'capability' => 'manage_options',
-		            ),
+                    2 => array(
+                        'title' => __("Today", "burst"),
+                        'class' => 'row-2 border-to-border',
+                        'type' => 'real-time',
+                        'ajax_load' => true,
+                        'page' => 'dashboard',
+                    ),
+                    3 => array(
+                        'title' => __("Settings", "burst"),
+                        'class' => 'row-2 border-to-border',
+                        'type' => 'settings',
+                        'page' => 'dashboard',
+                    ),
+                    4 => array(
+                        'title' => __("Tips & Tricks", "burst"),
+                        'type' => 'tipstricks',
+                        'class' => 'column-2',
+                        'page' => 'dashboard',
+                    ),
+                    5 => array(
+                        'title' => __("Other Plugins", "burst"),
+                        'class' => 'column-2 no-border no-background ',
+                        'type' => 'other-plugins',
+                        'footer' => ' ',
+                        'controls' => '<div class="rsp-logo"><a href="https://really-simple-plugins.com/"><img src="' . trailingslashit(burst_url) . 'assets/images/really-simple-plugins.svg" alt="Really Simple Plugins" /></a></div>',
+                        'page' => 'dashboard',
+                    ),
+                ),
+                'statistics' => array(
+                    1 => array(
+                        'title' => __("Insights", "burst"),
+                        'class' => 'statistics column-2',
+                        'type' => 'insights-chart',
+                        'controls' => '',
+                        'page' => 'statistics',
+                    ),
+                    2 => array(
+                        'title' => __("Compare", "burst"),
+                        'body' => '<div class="burst-skeleton"></div>',
+                        'footer' => 'henkje',
+                        'class' => 'burst-load-ajax',
+                        //'body' => '<div class="burst-skeleton"></div>',
+                        'type' => 'compare',
+                        'controls' => __('vs previous period', 'burst'),
+                        'page' => 'statistics',
+
+                    ),
+                    3 => array(
+                        'title' => __("Devices", "burst"),
+                        'body' => '<div class="burst-skeleton"></div>',
+                        'class' => 'burst-load-ajax',
+                        'type' => 'devices',
+                        'controls' => '',
+                        'page' => 'statistics',
+                    ),
+                    4 => array(
+                        'title' => __("Most visited", "burst"),
+                        'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table"></table></div>',
+                        'class' => 'burst-grid-datatable column-2 burst-load-ajax-datatable',
+                        'type' => 'page_url',
+                        'controls' => '',
+                        'page' => 'statistics',
+                    ),
+                    5 => array(
+                        'title' => __("Top referrers", "burst"),
+                        'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table"></table></div>',
+                        'class' => 'burst-grid-datatable column-2 burst-load-ajax-datatable',
+                        'type' => 'referrer',
+                        'controls' => '',
+                        'page' => 'statistics',
+                    ),
+                ),
             ));
-		    $metric_control = $this->get_metric_dropdown();
-            $date_control =
-            '<div class="burst-date-container burst-date-range">
-                <i class="dashicons dashicons-calendar-alt"></i>&nbsp;
-                <span></span>
-                <i class="dashicons dashicons-arrow-down-alt2"></i>
-            </div>';
 
-            $grid_items = apply_filters( 'burst_grid_items', array(
-                1 => array(
-                    'title' => __("Your experiment", "burst"),
-                    'class' => 'table-overview',
-                    'type' => 'statistics',
-                    'controls' => $metric_control . $date_control,
-                    'can_hide' => true,
-                    'page' => 'dashboard',
-                ),
-                2 => array(
-                    'title' => __("Objective", "burst"),
-                    'body' => '<div class="burst-skeleton"></div>',
-                    'class' => 'small burst-load-ajax',
-                    'type' => 'objective',
-                    'can_hide' => true,
-                    'ajax_load' => true,
-                    'page' => 'dashboard',
-                ),
-                3 => array(
-                    'title' => __("Setup", "burst"),
-                    'body' => '<div class="burst-skeleton"></div>',
-                    'class' => 'small burst-load-ajax',
-                    'type' => 'experiment-setup',
-                    'can_hide' => true,
-                    'ajax_load' => true,
-                    'page' => 'dashboard',
-                ),
-                4 => array(
-                    'title' => __("Tips & Tricks", "burst"),
-                    'type' => 'tipstricks',
-                    'class' => 'half-height burst-tips-tricks',
-                    'can_hide' => true,
-                    'page' => 'dashboard',
 
-                ),
-                5 => array(
-                    'title' => __("Other Plugins", "burst"),
-                    'class' => 'half-height no-border no-background upsell-grid-container upsell',
-                    'type' => 'other-plugins',
-                    'can_hide' => false,
-                    'controls' => '<div class="rsp-logo"><a href="https://really-simple-plugins.com/"><img src="'. trailingslashit(burst_url) .'assets/images/really-simple-plugins.svg" alt="Really Simple Plugins" /></a></div>',
-                    'page' => 'dashboard',
-                ),
 
-            ));
-            foreach ( $grid_items as $key => $grid_item ) {
-	            $grid_items[ $key ] = wp_parse_args($grid_item, $this->default_grid_item );
+            foreach ( $grid_items as $key => $grid_dashboard ) {
+                foreach ($grid_dashboard as $grid_key => $grid_block) {
+                    $grid_dashboard[$grid_key] = wp_parse_args($grid_block, $this->default_grid_item);
+                }
+                $grid_items[$key] = $grid_dashboard;
             }
             $this->grid_items = $grid_items;
         }
@@ -485,7 +497,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 		 */
 		public function dashboard() {
 
-			$grid_items = $this->grid_items;
+			$grid_items = $this->grid_items['dashboard'];
 			//give each item the key as index
 			array_walk($grid_items, function(&$a, $b) { $a['index'] = $b; });
 
@@ -496,123 +508,32 @@ if ( ! class_exists( "burst_admin" ) ) {
 			$args = array(
 				'page' => 'dashboard',
 				'content' => burst_grid_container($grid_html),
-			);
-			echo burst_get_template('admin_wrap.php', $args );
-		}
-
-
-
-		/**
-		 * Experiments table overview
-		 */
-		function experiments_overview() {
-			if ( ! burst_user_can_manage() ) {
-				return;
-			}
-
-			ob_start();
-
-            include( dirname( __FILE__ ) . '/experiments/class-experiment-table.php' );
-
-            $experiments_table = new burst_experiment_Table();
-
-            $experiments_table->prepare_items();
-
-            ?>
-
-            <div class="wrap experiment">
-                <h1><?php _e( "Your experiments", 'burst' ) ?>
-                    <?php do_action( 'burst_after_experiment_title' ); ?>
-                     <a href="<?php echo admin_url('admin.php?page=burst-experiment&action=new'); ?>"
-                       class="page-title-action"><?php _e('New experiment', 'burst') ?></a>
-                </h1>
-
-                <form id="burst-experiment-filter" method="get"
-                      action="">
-
-                    <?php
-                    $experiments_table->views();
-                    $experiments_table->search_box( __( 'Search', 'burst' ),
-                        's' );
-                    $experiments_table->display();
-                    ?>
-                    <input type="hidden" name="page" value="burst-experiments"/>
-                </form>
-            </div>
-            <?php
-
-			$html = ob_get_clean();
-			
-			$args = array(
-				'page' => 'experiments_settings',
-				'content' => $html,
+                'controls' => '',
 			);
 			echo burst_get_template('admin_wrap.php', $args );
 		}
 
         /**
-         * Experiment edit page/wizard
+         * Dashboard page
          */
-        function experiment_edit() {
-            if ( ! burst_user_can_manage() ) {
-                return;
+        public function statistics() {
+
+            $grid_items = $this->grid_items['statistics'];
+
+            //give each item the key as index
+            array_walk($grid_items, function(&$a, $b) { $a['index'] = $b; });
+
+            $grid_html = '';
+            foreach ($grid_items as $index => $grid_item) {
+                $grid_html .= burst_grid_element($grid_item);
             }
-
-            $id = false;
-            if ( isset( $_POST['experiment_id'] ) ) {
-                $id = intval( $_POST['experiment_id'] );
-            }
-            if ( !isset( $id ) ) {
-                $id = isset( $_GET['experiment_id'] ) ? intval( $_GET['experiment_id'] ) : false;
-            }
-            $title = isset( $id ) ?  __( 'Create experiment', 'burst' ) : __( 'Edit experiment', 'burst' );
-
-            ob_start();
-
-            BURST::$wizard->wizard( 'experiment' , $title );
-
-            $html = ob_get_clean();
-
-            echo $html;
+            $args = array(
+                'page' => 'statistics',
+                'content' => burst_grid_container($grid_html),
+                'controls' => $this->get_daterange_dropdown(),
+            );
+            echo burst_get_template('admin_wrap.php', $args );
         }
-
-
-        /**
-		 * General settings page
-		 *
-		 */
-		public function settings() {
-			ob_start();
-			?>
-
-			<form class="burst-grid-container" action="" method="post" enctype="multipart/form-data">
-				<div class="burst-grid-header">
-					<h3 class="burst-grid-title"><?php _e( "Settings" ) ?></h3>
-				</div>
-				<div class="burst-grid-content">
-					<?php
-					BURST::$field->get_fields( 'settings', 'general' );
-					?>
-				</div>
-				<div class="burst-grid-footer">
-					<?php
-					BURST::$field->save_button();
-					?>
-				</div>
-			</form>
-
-			<?php
-
-			$html = ob_get_clean();
-			
-			$args = array(
-				'page' => 'general-settings',
-				'content' => burst_grid_container($html),
-			);
-			echo burst_get_template('admin_wrap.php', $args );
-		}
-
-
 
 		/**
 		 * Get the html output for a help tip
@@ -707,6 +628,112 @@ if ( ! class_exists( "burst_admin" ) ) {
 			echo json_encode( $return );
 			die;
 		}
+
+        public function ajax_get_datatable()
+        {
+            $error = false;
+            $total = 0;
+            $html  = __("No data found", "burst");
+            if (!burst_user_can_manage()) {
+                $error = true;
+            }
+
+            if (!isset($_GET['start'])){
+                $error = true;
+            }
+
+            if (!isset($_GET['end'])){
+                $error = true;
+            }
+
+            if (!isset($_GET['type'])){
+                $error = true;
+            }
+
+            $page = isset($_GET['page']) ? intval($_GET['page']) : false;
+
+            if (!$error){
+                $start = intval($_GET['start']);
+                $end = intval($_GET['end']);
+                $type = sanitize_title($_GET['type']);
+
+                //$total = $this->get_results_count($type, $start, $end);
+                $total = 2;
+                $html = $this->datatable_html( $start, $end, $page, $type);
+            }
+
+            $data = array(
+                'success' => !$error,
+                'html' => $html,
+                'total_rows' => $total,
+                'batch' => $this->rows_batch,
+            );
+
+            $response = json_encode($data);
+            header("Content-Type: application/json");
+            echo $response;
+            exit;
+        }
+
+        /**
+         * Generate the recent searches table in dashboard
+         * @param int $start
+         * @param int $end
+         * @param int $page
+         *
+         * @return string|array
+         * @since 1.0
+         */
+
+        public function datatable_html($start, $end, $page, $type)
+        {
+            // Start generating rows
+            $args = array(
+                'offset' => $this->rows_batch * ($page-1),
+                'number' =>$this->rows_batch,
+                'date_from' => $start,
+                'date_to' => $end,
+                'result_count' => true,
+	            'group_by' => $type,
+            );
+            $hits = BURST::$statistics->get_hits_single($args);
+            if ( $page > 1 ) {
+                $output = array();
+                foreach ($hits as $hit) {
+                    $data = $hit->{$type};
+                    $output[] = '
+                    <tr>
+                        <td data-label="Page" class="burst-term"
+                            data-term_id="'.$hit->id.'">'.$data.'</td>
+                        <td>'.$hit->result_count.'</td>
+                        <td data-label="When">'. burst_localize_date( $hit->time ).'</td>
+                        <td data-label="When-unix">'.$hit->time.'</td>
+                    </tr>';
+                }
+                return $output;
+            } else {
+                $output = '<table id="burst-table" class="burst-table" width="100%"><thead>
+                    <tr class="burst-thead-th">
+                        <th scope="col">'.__( "Page", "burst" ).'</th>
+                        <th class="text-align-right" scope="col">'.__( "Pageviews", "burst" ).'</th>
+                    </tr>
+                    </thead>
+                    <tbody>';
+
+                foreach ( $hits as $hit ) {
+	                $data = $hit->{$type};
+	                $output .=
+                        '<tr>
+                            <td data-label="Page" class="burst-term">'.$data.'</td>
+                            <td data-label="Pageviews" class="text-align-right">'.$hit->hit_count.'</td>
+                        </tr>';
+                }
+                $output .= '</tbody>
+                </table>';
+
+                return $output;
+            }
+        }
 
 	    /**
 	     *
@@ -900,7 +927,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 		    $options = array(
 			    'burst_activation_time',
-			    'burst_abdb_version',
+			    'burst_db_version',
                 'burst-current-version',
                 'burst_options_settings',
                 'burst_review_notice_shown',

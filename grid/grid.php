@@ -61,6 +61,7 @@ function burst_grid_element($grid_item){
 		'{type}',
 		'{footer}',
 
+
 	), array(
 		$grid_item['class'],
 		$grid_item['title'],
@@ -69,7 +70,6 @@ function burst_grid_element($grid_item){
 		$grid_item['index'],
 		$grid_item['type'],
 		$footer,
-
 	), $contents );
 
 
@@ -88,17 +88,13 @@ function burst_load_grid_block(){
 		$error = true;
 	}
 
-	if ( !isset($_GET['experiment_id'])) {
-		$error = true;
-	}
-
 	if ( !isset($_GET['type'])) {
 		$error = true;
 	}
 
 	if ( !$error ) {
 		$type = sanitize_title($_GET['type']);
-		$html = burst_get_template('dashboard/'.$type.'.php');
+		$html = burst_get_template('statistics/'.$type.'.php');
 	}
 
 	$return  = array(

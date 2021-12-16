@@ -15,26 +15,17 @@ if ( ! class_exists( "burst_wizard" ) ) {
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
-				wp_die( sprintf( '%s is a singleton class and you cannot create a second instance.',
+				wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.',
 					get_class( $this ) ) );
 			}
 
 			self::$_this = $this;
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-
-			//callback from settings
 			add_action( 'burst_wizard_last_step', array( $this, 'wizard_last_step_callback' ), 10, 1 );
-
-			//link action to custom hook
-			add_action( 'burst_wizard_experiment', array( $this, 'wizard_after_step' ), 10, 1 );
-
-			//process custom hooks
 			add_action( 'admin_init', array( $this, 'process_custom_hooks' ) );
 			add_action( 'burst_before_save_wizard_option', array( $this, 'before_save_wizard_option' ), 10, 4 );
 			add_action( 'burst_after_save_wizard_option', array( $this, 'after_save_wizard_option' ), 10, 4 );
 			add_action( 'burst_after_saved_all_fields', array( $this, 'after_saved_all_fields' ), 10, 1 );
-
-			//dataleaks:
 			add_action( 'burst_is_wizard_completed', array( $this, 'is_wizard_completed_callback' ) );
 		}
 
@@ -50,7 +41,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
 			} else {
 				$link = '<a href="' . admin_url( 'admin.php?page=burst-wizard' )
 				        . '">';
-				burst_notice( sprintf( __( "The wizard isn't completed yet. If you have answered all required questions, you just need to click 'finish' to complete it. In the wizard some general data is entered which is needed for this document. %sPlease complete the wizard first%s.",
+				burst_notice( burst_sprintf( __( "The wizard isn't completed yet. If you have answered all required questions, you just need to click 'finish' to complete it. In the wizard some general data is entered which is needed for this document. %sPlease complete the wizard first%s.",
 					'burst' ), $link, "</a>" ), 'warning' );
 			}
 		}
@@ -108,7 +99,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
                         $args = array(
                             'title' => __('Start your experiment', 'burst'),
                             'experiment_title' => $experiment->title,
-                            'goal' => $experiment->goal,
+                            'goal' => $experiment->goal_id,
                             'significance' => $experiment->significance,
 
                             'control_title' => get_the_title($experiment->control_id),
@@ -121,7 +112,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
                         );
 
                         $experiment_settings = array(
-                            __('Goal', 'burst') => $experiment->goal,
+                            __('Goal', 'burst') => $experiment->goal_id,
                             __('Significance', 'burst') => $experiment->significance,
                         );
                         break;
@@ -129,7 +120,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
                         $args = array(
                             'title' => __('Your experiment is active', 'burst'),
                             'experiment_title' => $experiment->title,
-                            'goal' => $experiment->goal,
+                            'goal' => $experiment->goal_id,
                             'significance' => $experiment->significance,
 
                             'control_title' => get_the_title($experiment->control_id),
@@ -142,7 +133,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
                         );
 
                         $experiment_settings = array(
-                            __('Goal', 'burst') => $experiment->goal,
+                            __('Goal', 'burst') => $experiment->goal_id,
                             __('Significance', 'burst') => $experiment->significance,
                         );
 
@@ -162,7 +153,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
                         );
 
                         $experiment_settings = array(
-                            __('Goal', 'burst') => $experiment->goal,
+                            __('Goal', 'burst') => $experiment->goal_id,
                             __('Significance', 'burst') => $experiment->significance,
                             __('Started on', 'burst') => burst_display_date($experiment->date_started),
                             __('Ended on', 'burst') => burst_display_date($experiment->date_end),
@@ -179,41 +170,6 @@ if ( ! class_exists( "burst_wizard" ) ) {
                 $args['experiment_settings'] = $html;
                 echo burst_get_template('wizard/conclusion.php', $args);
 			}
-		}
-
-
-		/**
-		 * Process completion of setup
-		 *
-		 * */
-
-		public function wizard_after_step() {
-			if ( ! burst_user_can_manage() ) {
-				return;
-			}
-
-			//clear document cache
-
-			//if the plugins page is reviewed, we can reset the privacy statement suggestions from WordPress.
-//			if ( burst_wp_privacy_version()
-//			     && ( $this->step( 'wizard' ) == STEP_MENU )
-//			     && burst_get_value( 'privacy-statement' ) === 'generated'
-//			) {
-//				$policy_page_id = (int) get_option( 'wp_page_for_privacy_policy' );
-//				WP_Privacy_Policy_Content::_policy_page_updated( $policy_page_id );
-//				//check again, to update the cache.
-//				WP_Privacy_Policy_Content::text_change_check();
-//			}
-
-			//BURST::$admin->reset_burst_plugin_has_new_features();
-
-			//when clicking to the last page, or clicking finish, run the finish sequence.
-//			if ( isset( $_POST['burst-finish'] )
-//			     || ( isset( $_POST["step"] ) && $_POST['step'] == STEP_START
-//			          && isset( $_POST['burst-next'] ) )
-//			) {
-//				$this->set_wizard_completed_once();
-//			}
 		}
 
 		/**
@@ -391,27 +347,23 @@ if ( ! class_exists( "burst_wizard" ) ) {
                 $lock_time = apply_filters("burst_wizard_lock_time",
                         2 * MINUTE_IN_SECONDS) / 60;
 
-                burst_notice(sprintf(__("The wizard is currently being edited by %s",
+                burst_notice(burst_sprintf(__("The wizard is currently being edited by %s",
                         'burst'), $user->user_nicename) . '<br>'
-                    . sprintf(__("If this user stops editing, the lock will expire after %s minutes.",
+                    . burst_sprintf(__("If this user stops editing, the lock will expire after %s minutes.",
                         'burst'), $lock_time), 'warning');
 
                 return;
             }
             //lock the wizard for other users.
             $this->lock_wizard();
-
             $this->initialize($page);
-
             $section = $this->section();
             $step = $this->step();
-
 
             if ($this->section_is_empty($page, $step, $section)
                 || (isset($_POST['burst-next'])
                     && !BURST::$field->has_errors())
             ) {
-                error_log('no errors');
                 if (BURST::$config->has_sections($page, $step)
                     && ($section < $this->last_section)
                 ) {
@@ -426,8 +378,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
                     $section);
                 //if the last section is also empty, it will return false, so we need to skip the step too.
                 if (!$section) {
-                    $step = $this->get_next_not_empty_step($page,
-                        $step + 1);
+                    $step = $this->get_next_not_empty_step($page, $step + 1);
                     $section = 1;
                 }
             }
@@ -443,8 +394,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
                 }
 
                 $step = $this->get_previous_not_empty_step($page, $step);
-                $section = $this->get_previous_not_empty_section($page, $step,
-                    $section);
+                $section = $this->get_previous_not_empty_section($page, $step, $section);
             }
 
             $menu = $this->wizard_menu( $page, $wizard_title, $step, $section );
@@ -623,10 +573,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
 		 * @param $hook
 		 */
 		public function enqueue_assets( $hook ) {
-
 			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-
-
 			if ( isset($_GET['page']) && $_GET['page'] !== 'burst-experiment' ) {
 			    return;
             }
@@ -719,8 +666,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
 		public function post_id() {
 			$post_id = false;
 			if ( isset( $_GET['post_id'] ) || isset( $_POST['post_id'] ) ) {
-				$post_id = ( isset( $_GET['post_id'] ) )
-					? intval( $_GET['post_id'] ) : intval( $_POST['post_id'] );
+				$post_id = isset( $_GET['post_id'] ) ? intval( $_GET['post_id'] ) : intval( $_POST['post_id'] );
 			}
 
 			return $post_id;
@@ -736,8 +682,7 @@ if ( ! class_exists( "burst_wizard" ) ) {
         public function experiment_id() {
             $post_id = false;
             if ( isset( $_GET['experiment_id'] ) || isset( $_POST['experiment_id'] ) ) {
-                $post_id = ( isset( $_GET['experiment_id'] ) )
-                    ? intval( $_GET['experiment_id'] ) : intval( $_POST['experiment_id'] );
+                $post_id = isset( $_GET['experiment_id'] ) ? intval( $_GET['experiment_id'] ) : intval( $_POST['experiment_id'] );
             }
 
             return $post_id;
@@ -749,14 +694,11 @@ if ( ! class_exists( "burst_wizard" ) ) {
 		 */
 		public function wizard_type() {
 			$wizard_type = 'wizard';
-			if ( isset( $_POST['wizard_type'] )
-			     || isset( $_POST['wizard_type'] )
-			) {
-				$wizard_type = isset( $_POST['wizard_type'] )
-					? $_POST['wizard_type'] : $_GET['wizard_type'];
+			if ( isset( $_POST['wizard_type'] ) || isset( $_POST['wizard_type'] ) ) {
+				$wizard_type = isset( $_POST['wizard_type'] ) ? sanitize_title($_POST['wizard_type']) : sanitize_title($_GET['wizard_type']);
 			} else {
 				if ( isset( $_GET['page'] ) ) {
-					$wizard_type = str_replace( 'burst-', '', $_GET['page'] );
+					$wizard_type = str_replace( 'burst-', '', sanitize_title($_GET['page']) );
 				}
 			}
 

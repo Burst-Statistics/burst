@@ -1,4 +1,7 @@
 <?php
+
+use donatj\UserAgent\UserAgentParser;
+
 defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
 
 if ( ! function_exists( 'burst_user_can_manage' ) ) {
@@ -91,7 +94,7 @@ if ( !function_exists( 'burst_setcookie') ) {
 	}
 }
 
-if ( !function_exists( 'burst_sanitize_experiment_status' )) {
+if ( ! function_exists( 'burst_sanitize_experiment_status' ) ) {
 	/**
 	 * Sanitize the status
 	 * @param string $status
@@ -113,7 +116,7 @@ if ( !function_exists( 'burst_sanitize_experiment_status' )) {
 	}
 }
 
-if ( !function_exists('burst_experiment_not_reached_sample_size')) {
+if ( ! function_exists('burst_experiment_not_reached_sample_size') ) {
 	/**
 	 * Check if any of the active expirements is running 30 days, and has not reached the sample size yet.
 	 *
@@ -135,7 +138,7 @@ if ( !function_exists('burst_experiment_not_reached_sample_size')) {
 	}
 }
 
-if (!function_exists('burst_read_more')) {
+if ( ! function_exists('burst_read_more' ) ) {
 	/**
 	 * Create a generic read more text with link for help texts.
 	 *
@@ -146,7 +149,7 @@ if (!function_exists('burst_read_more')) {
 	 */
 	function burst_read_more( $url, $add_space = true ) {
 		$html
-			= sprintf( __( "For more information on this subject, please read this %sarticle%s",
+			= burst_sprintf( __( "For more information on this subject, please read this %sarticle%s",
 			'burst' ), '<a target="_blank" href="' . $url . '">',
 			'</a>' );
 		if ( $add_space ) {
@@ -155,6 +158,37 @@ if (!function_exists('burst_read_more')) {
 
 		return $html;
 	}
+}
+if ( ! function_exists('burst_get_uid' ) ) {
+    /**
+     * Get burst uid and set a cookie if necessary
+     * @return string
+     */
+    function burst_get_uid()
+    {
+        //check if this user has a cookie
+        $burst_uid = isset($_COOKIE['burst_uid']) ? $_COOKIE['burst_uid'] : false;
+        if (!$burst_uid) {
+            // if user is logged in get burst meta user id
+            if (is_user_logged_in()) {
+                $burst_uid = get_user_meta(get_current_user_id(), 'burst_cookie_uid');
+                //if no user meta is found, add new unique ID
+                if (!isset($burst_uid)) {
+                    //generate random string
+                    $burst_uid = burst_random_str();
+                    update_user_meta(get_current_user_id(), 'burst_cookie_uid', $burst_uid);
+                }
+            } else {
+                $burst_uid = burst_random_str();
+            }
+        }
+
+        //make sure it's set.
+        if (!isset($_COOKIE['burst_uid'])) {
+            burst_setcookie('burst_uid', $burst_uid, BURST::$experimenting->cookie_expiration_days);
+        }
+        return $burst_uid;
+    }
 }
 
 if ( ! function_exists( 'burst_get_template' ) ) {
@@ -275,26 +309,29 @@ function burst_get_posts_ajax_callback(){
  	if (!burst_user_can_manage()) return;
 
 	$return = array();
- 	$query_settings = array();
- 	foreach ( $_GET['query_settings'] as $key => $value ) {
-	    $key = sanitize_text_field($key);
-	    $value = sanitize_text_field($value);
-	    $query_settings[$key] = $value;
+    if ( !isset( $_GET['query_settings'] ) ) {
+        return $return;
     }
 
- 	$default_args = array(
-		's'=> sanitize_text_field( $_GET['q'] ),
-		'post_type'=> sanitize_text_field( $query_settings['post_type']),
-		'posts_per_page' => 10,
-        'update_post_term_cache' => false, // quicker query
-        'update_post_meta_cache' => false, // quicker query
-        'no_found_rows' => true, // quicker
-        'orderby'        => 'post_modified', // Sorts by the date modified.
-        'order'          => 'DESC',
-    );
+ 	$query_settings = array();
+ 	foreach ( $_GET['query_settings'] as $key => $value ) {
+	    $key                    = sanitize_text_field( $key );
+	    $value                  = sanitize_text_field( $value );
+	    $query_settings[ $key ] = $value;
+    }
+	$search = isset( $_GET['q'] ) ? sanitize_text_field( $_GET['q'] ) : false;
+	$default_args = array(
+		's'                      => $search,
+		'post_type'              => sanitize_text_field( $query_settings['post_type'] ),
+		'posts_per_page'         => 10,
+		'update_post_term_cache' => false, // quicker query
+		'update_post_meta_cache' => false, // quicker query
+		'no_found_rows'          => true, // quicker
+		'orderby'                => 'post_modified', // Sorts by the date modified.
+		'order'                  => 'DESC',
+	);
 
 	$args = array_merge($default_args, $query_settings);
-
 	$search_results = new WP_Query( $args );
 	if( $search_results->have_posts() ) :
 		while( $search_results->have_posts() ) : $search_results->the_post();	
@@ -332,6 +369,21 @@ if ( ! function_exists( 'burst_display_date' ) ) {
 		$display_date = date_i18n(get_option( 'date_format' ), $date);
 		return $display_date;
 	}
+}
+
+if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
+    function burst_format_milliseconds_to_readable_time( $milliseconds, $format = '%02u:%02u:%02u ' )
+    {
+        $seconds = floor($milliseconds / 1000);
+        $minutes = floor($seconds / 60);
+        $hours = floor($minutes / 60);
+        $milliseconds = $milliseconds % 1000;
+        $seconds = $seconds % 60;
+        $minutes = $minutes % 60;
+
+        $time = sprintf($format, $hours, $minutes, $seconds, $milliseconds);
+        return rtrim($time, '0');
+    }
 }
 
 /**
@@ -581,7 +633,7 @@ if ( ! function_exists( 'burst_get_report_url' ) ) {
 	 * @return string Url to the dashboard
 	 */
 	function burst_get_report_url($experiment_id) {
-		return admin_url('admin.php?page=burst&experiment_id='. $experiment_id .'');
+		return admin_url('admin.php?page=burst-experiments&experiment_id='. $experiment_id .'');
 	}
 }
 
@@ -950,3 +1002,128 @@ if ( ! function_exists( 'burst_update_option' ) ) {
         }
     }
 }
+if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
+    function burst_get_anon_ip_address()
+    {
+        if ( !empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif ( !empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        $anon_ip = BURST::$anonymize_IP->anonymizeIp($ip);
+        return $anon_ip;
+    }
+}
+
+if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
+    function burst_get_user_agent_data($user_agent){
+        $ua = \donatj\UserAgent\parse_user_agent($user_agent);
+
+        switch ($ua['platform']) {
+            case 'Macintosh':case 'Chrome OS':
+            case 'Linux':
+            case 'Windows':
+            $ua['device'] = 'desktop';
+                break;
+            case 'Android':
+            case 'BlackBerry':
+            case 'iPhone':
+            case 'Windows Phone':
+            case 'Sailfish':
+            case 'Symbian':
+            case 'Tizen':
+            $ua['device'] = 'mobile';
+                break;
+            case 'iPad':
+                $ua['device'] = 'tablet';
+                break;
+            case 'PlayStation 3':
+            case 'PlayStation 4':
+            case 'PlayStation 5':
+            case 'PlayStation Vita':
+            case 'Xbox':
+            case 'Xbox One':
+            case 'New Nintendo 3DS':
+            case 'Nintendo 3DS':
+            case 'Nintendo DS':
+            case 'Nintendo Switch':
+            case 'Nintendo Wii':
+            case 'Nintendo WiiU':
+                $ua['device'] = 'console';
+                break;
+            case 'iPod':
+            case 'Kindle':
+            case 'Kindle Fire':
+            case 'NetBSD':
+            case 'OpenBSD':
+            case 'PlayBook':
+            case 'FreeBSD':
+            default:
+                $ua['device'] = 'other';
+                break;
+        }
+        return $ua;
+    }
+}
+
+if ( ! function_exists( 'burst_sprintf' ) ) {
+    /**
+     * @param string $format
+     * @param mixed $values
+     * @return string
+     *
+     * We use this custom sprintf for outputting translatable strings. This function only works with %s
+     * This function wraps the sprintf and will prevent fatal errors.
+     */
+    function burst_sprintf(){
+        $args = func_get_args();
+        $count = substr_count($args[0], '%s');
+        $count_percentage = substr_count($args[0], '%');
+        $args_count = count($args) - 1;
+
+        if ($count_percentage === $count){
+            if ($args_count === $count){
+                $string = call_user_func_array('sprintf', $args);
+                return $string;
+            }
+        }
+        return $args[0] .  ' (Translation error)';
+    }
+}
+
+if ( ! function_exists( 'burst_printf' ) ) {
+    /**
+     * @param string $format
+     * @param mixed $values
+     * @echo string
+     */
+    function burst_printf(){
+        $args = func_get_args();
+        $count = substr_count($args[0], '%s');
+        $args_count = count($args) - 1;
+
+        if ($args_count === $count){
+            $string = call_user_func_array('sprintf', $args);
+            echo $string;
+        } else {
+            echo $args[0] .  ' (Translation error)';
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

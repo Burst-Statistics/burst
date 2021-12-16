@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) or die();
 
 use Elementor\Plugin;
-
+// @todo Move to pro
 /**
  * If page is built with Elementor, get the Elementor content 
  * @param  string $content [description]
