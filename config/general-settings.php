@@ -14,16 +14,16 @@ function burst_add_general_settings($fields){
 				'burst' ),
 			'table'   => true,
 		),
-		'use_url_parameter' => array(
-            'source'   => 'settings',
-			'step'     => 'general',
-			'type'    => 'checkbox',
-			'label'   => __( "Use URL Parameter to enable caching", 'burst' ),
-			'default' => false,
-			'tooltip'    => __( 'Enabling this option will add a non-identifieable string (a questionmark + 11 random characters) to the URL of an experiment. If you use a caching plugin, we recommend you to enable this option.',
-				'burst' ),
-			'table'   => true,
-		),
+//		'use_url_parameter' => array(
+//            'source'   => 'settings',
+//			'step'     => 'general',
+//			'type'    => 'checkbox',
+//			'label'   => __( "Use URL Parameter to enable caching", 'burst' ),
+//			'default' => false,
+//			'tooltip'    => __( 'Enabling this option will add a non-identifieable string (a questionmark + 11 random characters) to the URL of an experiment. If you use a caching plugin, we recommend you to enable this option.',
+//				'burst' ),
+//			'table'   => true,
+//		),
 	);
 	return $fields;
 }
