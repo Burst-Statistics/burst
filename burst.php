@@ -3,7 +3,7 @@
  * Plugin Name: Burst | A/B Split Testing
  * Plugin URI: https://www.wordpress.org/plugins/burst
  * Description: A/B testing tool
- * Version: 1.0.10
+ * Version: 1.0.11
  * Text Domain: burst
  * Domain Path: /languages
  * Author: Really Simple Plugins
@@ -103,7 +103,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			define( 'burst_plugin', plugin_basename( __FILE__ ) );
 			define( 'burst_plugin_name', 'Burst Statistics' );
 			$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
-			define( 'burst_version', '1.0.10' . $debug );
+			define( 'burst_version', '1.0.11' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
 			define( 'burst_premium_plugin', 1 );
