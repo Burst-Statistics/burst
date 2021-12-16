@@ -13,8 +13,8 @@ if ( ! class_exists( "burst_review" ) ) {
 			self::$_this = $this;
 
 			//uncomment for testing
-			//update_option('burst_review_notice_shown', false);
-			//update_option( 'burst_activation_time', strtotime( "-2 month" ) );
+//			update_option('burst_review_notice_shown', false);
+//			update_option( 'burst_activation_time', strtotime( "-2 month" ) );
 			
 			//show review notice, only to free users
 			if ( ! defined( "burst_premium" ) && ! is_multisite() ) {
@@ -49,15 +49,6 @@ if ( ! class_exists( "burst_review" ) ) {
 		public function show_leave_review_notice() {
 			if (isset( $_GET['burst_dismiss_review'] ) ) return;
 
-			$completed_experiment_count = 0;
-			$active_experiment_count = 0;
-			$completed_experiments = burst_get_experiments(array('status' => 'completed'));
-			$active_experiments = burst_get_experiments(array('status' => 'active'));
-
-			if ($completed_experiments && is_array($completed_experiments)) $completed_experiment_count = count($completed_experiments );
-			if ($active_experiments && is_array($active_experiments)) $active_experiment_count = count($active_experiments );
-
-
 			/**
 			 * Prevent notice from being shown on Gutenberg page, as it strips off the class we need for the ajax callback.
 			 *
@@ -68,6 +59,9 @@ if ( ! class_exists( "burst_review" ) ) {
 			}
 			?>
 			<style>
+                .burst.wrap .notice.burst-review {
+                    margin: var(--rsp-spacing-l, 30px);
+                }
 				.burst-container {
 					display: flex;
 					padding: 12px;
@@ -90,7 +84,7 @@ if ( ! class_exists( "burst_review" ) ) {
 			</style>
 			<div id="message"
 			     class="updated fade notice is-dismissible burst-review really-simple-plugins"
-			     style="border-left:4px solid #61CE70">
+			     style="border-left:4px solid var(--rsp-green, #2e8a37)">
 				<div class="burst-container">
 					<div class="burst-review-image"><img width="80px"
 					                                     src="<?php echo burst_url ?>/assets/images/burst-logo.svg"
@@ -99,17 +93,7 @@ if ( ! class_exists( "burst_review" ) ) {
 					<div style="margin-left:30px">
                         <p>
                         	<b>
-                            <?php if ($completed_experiment_count==1){ ?>
-                                <?php _e( 'Hi, you have already completed one experiment, awewome!','burst') ?>&nbsp;
-                            <?php } else if ($completed_experiment_count>1) { ?>
-                                <?php burst_printf(__( 'Hi, you have already completed %s experiments, awewome!','burst'),$completed_experiment_count) ?>&nbsp;
-                            <?php } else if ($active_experiment_count==1) { ?>
-                                <?php _e( 'Hi, you have already one experiment running, awewome!','burst') ?>&nbsp;
-                            <?php } else if ($active_experiment_count>1) { ?>
-                                <?php burst_printf(__( 'Hi, you have already %s active experiments running, awewome!','burst'), $active_experiment_count) ?>&nbsp;
-                            <?php } else { ?>
                                 <?php _e( 'Hi, you have been using Burst for a month now, awewome!','burst') ?>&nbsp;
-                            <?php } ?>
                         	</b>
                             <?php burst_printf( __('If you have any questions or feedback, leave us a %smessage%s.', 'burst' ), '<a href="https://wpburst.com/contact" target="_blank">', '</a>' );?>
                         </p>

@@ -11,8 +11,6 @@ if ( ! class_exists( "burst_config" ) ) {
 		public $pages;
 		public $warning_types;
 		public $yes_no;
-		public $premium_experimenting;
-
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
@@ -29,22 +27,9 @@ if ( ! class_exists( "burst_config" ) ) {
 				'no'  => __( 'No', 'burst' ),
 			);
 
-			$this->premium_experimenting
-				= burst_sprintf( __( "If you want to run a/b testing to track which banner gets the highest acceptance ratio, %sget premium%s.",
-					'burst' ),
-					'<a href="https://burst.io" target="_blank">', '</a>' )
-				  . "&nbsp;";
-
-
 			/* config files */
             require_once( burst_path . '/config/general-settings.php' );
-			require_once( burst_path . '/config/experiment-settings.php' );
-            require_once( burst_path . '/config/experiment-steps.php' );
 
-
-			if ( file_exists( burst_path . '/pro/config/' ) ) {
-				// require_once( burst_path . '/pro/config/steps.php' );
-			}
 			/**
 			 * The integrations are loaded with priority 10
 			 * Because we want to initialize after that, we use 15 here

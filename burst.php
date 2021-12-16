@@ -58,7 +58,6 @@ if ( ! class_exists( 'BURST' ) ) {
 	class BURST {
 		public static $instance;
         public static $anonymize_IP;
-		public static $experimenting;
 		public static $statistics;
         public static $sessions;
         public static $goals;
