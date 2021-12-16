@@ -82,7 +82,6 @@ if ( ! class_exists( 'BURST' ) ) {
 			if ( is_admin() ) {
 				self::$review    = new burst_review();
 				self::$admin     = new burst_admin();
-				self::$wizard    = new burst_wizard();
 				self::$field     = new burst_field();
 				self::$tour      = new burst_tour();
 				self::$notices   = new burst_notices();
@@ -133,7 +132,6 @@ if ( ! class_exists( 'BURST' ) ) {
                 require_once( burst_path . '/assets/icons.php');
 				require_once( burst_path . '/class-admin.php' );
 				require_once( burst_path . '/class-field.php');
-                require_once( burst_path . '/class-wizard.php');
 				require_once( burst_path . '/grid/grid.php' );
 				require_once( burst_path . '/class-review.php' );
 				require_once( burst_path . '/shepherd/tour.php' );

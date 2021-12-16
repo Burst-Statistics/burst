@@ -36,8 +36,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			add_action( 'admin_init', array($this, 'init_grid') );
 			add_action( 'admin_init', array($this, 'hide_wordpress_and_other_plugin_notices') );
-
-			add_action( 'wp_ajax_burst_load_status_info', array( $this, 'ajax_load_status_info') );
             add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
 
 			// deactivating
@@ -129,9 +127,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'burst',
 				array(
 					'ajaxurl' => admin_url( 'admin-ajax.php' ),
-					'experiment_time_ranges' => array(
-
-                    ),
 					'strings' => array(
 						'Today'        => __( 'Today', 'burst' ),
 						'Yesterday'    => __( 'Yesterday', 'burst' ),
@@ -322,8 +317,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
             if (!isset($_GET['page']) || substr($_GET['page'], 0, 5) !== 'burst') return;
 
-            //@todo move to pro experiment blocks
-            $metric_control = $this->get_metric_dropdown();
+            //$metric_control = $this->get_metric_dropdown();
 
 
             $grid_items = apply_filters('burst_grid_items', array(
@@ -522,40 +516,6 @@ if ( ! class_exists( "burst_admin" ) ) {
         	}
 
         }
-
-        /**
-		 * Function for getting statistics for display with Chart JS
-		 * @return json                     Returns a JSON that is compatible with Chart JS
-		 *
-		 */
-		public function ajax_load_status_info(){
-			$error = false;
-			if ( ! burst_user_can_manage() ) {
-				$error = true;
-			}
-
-			if ( !isset($_GET['experiment_id'])) {
-				$error = true;
-			}
-
-			if ( !$error ) {
-				$experiment_id = intval( $_GET['experiment_id'] );
-			}
-
-			if ( !$error ) {
-				$experiment = new BURST_EXPERIMENT($experiment_id);
-				$data['status'] = burst_display_experiment_status(false, $experiment->status, true);
-				$data['date_end'] = burst_display_date($experiment->date_end);
-				$data['date_end_text'] = __('Experiment completed on', 'burst' ) .' '. burst_display_date ($experiment->date_end);
-			}
-
-			$return  = array(
-				'success' => !$error,
-				'data'    => $data,
-			);
-			echo json_encode( $return );
-			die;
-		}
 
         public function ajax_get_datatable()
         {
@@ -847,39 +807,37 @@ if ( ! class_exists( "burst_admin" ) ) {
 	        return $current;
 	    }
 
-		/**
-		 * Clear plugin data
-		 */
-	    public function delete_all_burst_data(){
-		    if (!current_user_can('activate_plugins')) return;
+        /**
+         * Clear plugin data
+         */
+        public function delete_all_burst_data(){
+            if (!current_user_can('activate_plugins')) return;
 
-		    $options = array(
-			    'burst_activation_time',
-			    'burst_db_version',
+            $options = array(
+                'burst_activation_time',
+                'burst_db_version',
                 'burst-current-version',
                 'burst_options_settings',
                 'burst_review_notice_shown',
                 'burst_activation_time',
                 'burst_stats_db_version',
-		    );
+            );
 
-		    foreach ($options as $option_name) {
-			    delete_option($option_name);
-			    delete_site_option($option_name);
-		    }
+            foreach ($options as $option_name) {
+                delete_option($option_name);
+                delete_site_option($option_name);
+            }
 
-		    global $wpdb;
-		    $table_names = array(
-			    $wpdb->prefix . 'burst_experiments',
-			    $wpdb->prefix . 'burst_statistics',
-		    );
+            global $wpdb;
+            $table_names = array(
+                $wpdb->prefix . 'burst_sessions',
+                $wpdb->prefix . 'burst_statistics',
+            );
 
-		    foreach($table_names as $table_name){
-			    $sql = "DROP TABLE IF EXISTS $table_name";
-			    $wpdb->query($sql);
-		    }
-		    // Delete post meta like burst_experiment_id? 
-	    }
-
+            foreach($table_names as $table_name){
+                $sql = "DROP TABLE IF EXISTS $table_name";
+                $wpdb->query($sql);
+            }
+        }
 	}
 } //class closure

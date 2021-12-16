@@ -21,66 +21,6 @@ if ( ! function_exists( 'burst_user_can_manage' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_get_experiments' ) ) {
-
-	/**
-	 * Get array of experiment objects
-	 *
-	 * @param array $args
-	 *
-	 * @return array
-	 */
-
-	function burst_get_experiments( $args = array() ) {
-		$defaults = array(
-			'order'  => 'DESC',
-			'orderby' => 'date_modified',
-		);
-		$args = wp_parse_args( $args, $defaults );
-		$sql  = '';
-
-		$orderby = sanitize_title($args['orderby']);
-
-		$order = strtoupper($args['order']) === 'DESC' ? 'DESC' : 'ASC';
-		global $wpdb;
-
-		// array with multiple post statuses
-		if ( isset( $args['status'] ) && is_array($args['status']) ) {
-			foreach ($args['status'] as $status) {
-				$status = burst_sanitize_experiment_status($status);
-				$statuses[] = "'".$status."'";
-			}
-			$statuses = implode (", ", $statuses);
-			$sql .= "AND status IN ($statuses)";
-
-		// one post staus as a string		
-		} else if ( isset( $args['status'] ) ) {
-			$status = burst_sanitize_experiment_status($args['status']);
-			$sql .= " AND status = '$status'";
-		} 
-
-		$sql .= " ORDER BY $orderby $order";
-
-		return  $wpdb->get_results( "select * from {$wpdb->prefix}burst_experiments where 1=1 $sql" );
-	}
-}
-
-if ( !function_exists('burst_get_default_experiment_id')){
-	/**
-	 * Get the default experiment id
-	 * @return bool|int
-	 */
-	function burst_get_default_experiment_id(){
-		$experiments = burst_get_experiments();
-		if ( $experiments && is_array($experiments) ) {
-			$experiments = reset($experiments);
-			return $experiments->ID;
-		} else {
-			return false;
-		}
-	}
-}
-
 if ( !function_exists( 'burst_setcookie') ) {
 	function burst_setcookie( $key, $value, $expiration_days ){
 		$options = array (
@@ -91,50 +31,6 @@ if ( !function_exists( 'burst_setcookie') ) {
 		);
 
 		setcookie($key, $value, $options );
-	}
-}
-
-if ( ! function_exists( 'burst_sanitize_experiment_status' ) ) {
-	/**
-	 * Sanitize the status
-	 * @param string $status
-	 *
-	 * @return string
-	 */
-	function burst_sanitize_experiment_status($status) {
-		$statuses = array(
-			'draft',
-			'active',
-			'completed',
-			'archived',
-		);
-		if ( in_array( $status, $statuses )) {
-			return $status;
-		} else {
-			return 'draft';
-		}
-	}
-}
-
-if ( ! function_exists('burst_experiment_not_reached_sample_size') ) {
-	/**
-	 * Check if any of the active expirements is running 30 days, and has not reached the sample size yet.
-	 *
-	 * @return bool
-	 */
-	function burst_experiment_not_reached_sample_size(){
-		$experiments = burst_get_experiments( array(
-			'status' => 'active',
-		));
-		foreach ( $experiments as $experiment ) {
-			$experiment = new BURST_EXPERIMENT($experiment->ID);
-			$one_month_ago = strtotime('-30 days');
-			if ($one_month_ago > $experiment->date_started && !$experiment->has_reached_minimum_sample_size() ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }
 
@@ -185,7 +81,7 @@ if ( ! function_exists('burst_get_uid' ) ) {
 
         //make sure it's set.
         if (!isset($_COOKIE['burst_uid'])) {
-            burst_setcookie('burst_uid', $burst_uid, BURST::$experimenting->cookie_expiration_days);
+            burst_setcookie('burst_uid', $burst_uid, 30);
         }
         return $burst_uid;
     }
@@ -246,60 +142,6 @@ if ( ! function_exists( 'burst_array_filter_multidimensional' ) ) {
 		return $new;
 	}
 }
-
-if ( !function_exists('burst_generate_test_data')){
-	/**
-	 * Function to be used only for testing purposes.
-	 * It will fill the database with random data.
-	 * - create an experiment.
-	 * - Get that experiment's id
-	 * - prefill the experiment id below.
-	 */
-	function burst_generate_test_data(){
-		global $wpdb;
-
-
-		$experiment_id = 10;
-
-		for ( $i=30;$i>=0;$i--){
-			$daytime = strtotime("-$i days");
-			//generate random nr of hits between 4 and 100
-			$hitcount = rand(0,100);
-			for ( $hits=0;$hits<$hitcount;$hits++){
-				//divide day in seconds, equally divided by hits numer
-				$between_hits = round(DAY_IN_SECONDS / ($hitcount+1), 0);
-				$time = $daytime + ($hits * $between_hits);
-
-				$test_versions = array(
-					'control',
-					'variant',
-				);
-				$test_version_id = rand(0,1);
-				$conversion = rand(0,6);
-				$conversion = ($conversion==4);
-				$burst_uid = 'test_uid_'.time();
-				$test_version = $test_versions[$test_version_id];
-				$url = site_url();
-
-				$update_array = array(
-					'page_url'            		=> $url,
-					'time'               		=> $time,
-					'uid'               		=> $burst_uid,
-					'test_version'				=> $test_version,
-					'experiment_id'				=> $experiment_id,
-					'conversion'				=> $conversion,
-				);
-				$wpdb->insert(
-					$wpdb->prefix . 'burst_statistics',
-					$update_array
-				);
-			}
-		}
-
-
-	}
-}
-//burst_generate_test_data();
 
 /**
  * Callback to ajax load the posts dropdown in the metabox
@@ -419,72 +261,6 @@ if ( ! function_exists( 'burst_random_str' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_post_has_experiment' ) ) {
-
-	/**
-	 * Check if post has experiment attached
-	 * @param int|bool $post_id
-	 *
-	 * @return bool
-	 */
-	
-	function burst_post_has_experiment($post_id = false){
-		if (!$post_id) {
-			$post_id = burst_get_current_post_id();			
-		}
-		if (!$post_id) return false;
-
-		$experiment_id = get_post_meta($post_id, 'burst_experiment_id');
-		return intval($experiment_id) ? true : false;
-	}
-
-}
-
-if ( ! function_exists( 'burst_get_experiment_id_for_post' ) ) {
-
-	/**
-	 * Check if post has experiment attached
-	 * @param int|bool $post_id
-	 *
-	 * @return bool
-	 */
-	
-
-	function burst_get_experiment_id_for_post( $post_id = false ){
-		if (!$post_id) {
-			$post_id = burst_get_current_post_id();			
-		}
-
-		if (!$post_id) return false;
-
-		return get_post_meta($post_id, 'burst_experiment_id', true);
-	}
-
-}
-
-if ( !function_exists( 'burst_sanitize_test_version' )) {
-	/**
-	 * Sanitize the test version
-	 *
-	 * @param string $str
-	 *
-	 * @return string
-	 */
-
-	function burst_sanitize_test_version( $str ) {
-		$test_versions = array(
-			'variant',
-			'control'
-		);
-
-		if ( in_array( $str, $test_versions ) ) {
-			return $str;
-		} else {
-			return 'control';
-		}
-	}
-}
-
 if ( ! function_exists( 'burst_get_current_post_type' ) ) {
 
 	/**
@@ -525,115 +301,6 @@ if ( ! function_exists( 'burst_get_current_post_id' ) ) {
 		}
 
 		return $post_id;
-	}
-}
-
-if ( !function_exists( 'burst_get_current_url') ) {
-	/**
-	 * Function to get the current URL used in the load_experiment_content function
-	 * @return string The current URL
-	 */
-	function burst_get_current_url() {
-		return parse_url( get_permalink(), PHP_URL_PATH );
-	}
-
-}
-
-if ( ! function_exists( 'burst_get_all_post_statuses' ) ) {
-
-	/**
-	 * Get the current post type
-	 * @param $post_id
-	 *
-	 * @return array
-	 */
-	
-	function burst_get_all_post_statuses($exceptions = array()){
-		$post_statuses = get_post_stati();
-		
-		$filtered_post_statuses = array();
-		foreach ($post_statuses as $post_status => $value) {
-			if (!in_array($post_status, $exceptions)) {
-				$filtered_post_statuses[] = $post_status;
-			}
-		}
-		$filtered_post_statuses[] = 'experiment';
-		
-		return $filtered_post_statuses;
-	}
-
-}
-if ( ! function_exists( 'burst_display_experiment_status' ) ) {
-
-	function burst_display_experiment_status($experiment_id = false, $experiment_status = false, $get_array = false) {
-	    if (intval($experiment_id)){
-	        $experiment = new BURST_EXPERIMENT($experiment_id);
-            $experiment_status = $experiment->status;
-        }
-		switch( $experiment_status ) {
-				case 'archived':
-					$status_text = __( 'Archived', 'burst' );
-					$class = 'grey';
-					break;
-				case 'active':
-					$class = 'rsp-blue-yellow';
-					$status_text = __( 'Active', 'burst' );
-					break;
-				case 'completed':
-					$status_text = __( 'Completed', 'burst' );
-					$class = 'rsp-green';
-					break;
-				case 'loading':
-					$status_text = __( 'Loading...', 'burst' );
-					$class = 'grey loading initial-loading';
-					break;
-				case 'draft':
-				default:
-					$status_text = __( 'Draft', 'burst' );
-					$class = 'grey';
-					break;
-			}
-			$status = false;
-			if ($get_array) {
-				$status = array(
-					'class' => $class,
-					'title' => $status_text,
-				);
-			} else {
-				$status =  '<div class="burst-experiment-status"><span class="burst-bullet ' . $class . '"></span><span class="burst-experiment-status__text">' . $status_text . '</span></div>';
-			}
-			
-			return $status;
-	}
-}
-
-if ( ! function_exists( 'burst_display_experiment_version' ) ) {
-
-    function burst_display_experiment_version($version = 'control') {
-
-        ob_start(); ?>
-        <div class="burst-experiment-version <?php echo $version ?>">
-            <span class="burst-experiment-dot <?php echo $version ?>"></span>
-            <div class="burst-experiment-version__title">
-                <p><?php echo $version ?></p>
-            </div>
-        </div>
-
-        <?php
-        $html = ob_get_clean();
-        return $html;
-    }
-}
-
-
-if ( ! function_exists( 'burst_get_report_url' ) ) {
-	/**
-	 * Get the URL that leads to the dashboard and show data for the experiment ID
-	 * @param  int $experiment_id
-	 * @return string Url to the dashboard
-	 */
-	function burst_get_report_url($experiment_id) {
-		return admin_url('admin.php?page=burst-experiments&experiment_id='. $experiment_id .'');
 	}
 }
 
