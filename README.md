@@ -1,2 +1,2 @@
-# Burst | Split A/B Testing
-https://wpburst.com by Really Simple Plugins
+# Burst Statistics
+https://burststatistics.com by Really Simple Plugins
