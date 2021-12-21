@@ -17,12 +17,21 @@ $progress = 0;
 						'status' => 'completed',
 						'plus_one' => false,
 						'message'    => sprintf(
-                                            __( 'You have no new notices! Have a look at our %sdocumentation%s and see all the possibilities %s  has to offer.', 'burst' ),
-                                            '<a href="https://wpburst.com/docs/" target="_blank">',
+                                            __( 'You have no new notices! Have a look at our %sdocumentation%s and see all the possibilities %s has to offer.', 'burst' ),
+                                            '<a href="https://burststatistics.com/docs/" target="_blank">',
                                             '</a>',
                                             burst_plugin_name
                                         ),
 				);
+                $notices['leave_feedback'] = array(
+                    'status' => 'completed',
+                    'plus_one' => false,
+                    'message'    =>  burst_sprintf(
+                        __( 'If you have any suggestions to improve our plugin, feel free to  %s open a support thread%s.', 'burst' ),
+                        '<a href="https://wordpress.org/support/plugin/burst/" target="_blank">',
+                        '</a>'
+                    ),
+                );
 				?>
 			<?php }
 			$status_message = '';

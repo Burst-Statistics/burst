@@ -1,65 +1,77 @@
-.burst-other-plugins {
-  .rsp-logo {
-    img {
-      height: 34px;
-    }
+.burst {
+  .burst-other-plugins .rsp-logo img {
+	height: 34px;
   }
 
-  .burst-plugin {
-    display: flex !important; //we need important here, because the grid switch overrides it on element level
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--rsp-text-color-light);
-    width: 100%;
-    font-size: var(--rsp-fs-300);
-    line-height: 2.3;
+  .burst-other-plugins-container {
+	display: flex !important;
+	flex-direction: row;
+	flex-wrap: wrap;
+	margin-bottom: 10px;
+	font-size: var(--rsp-fs-300);
+	line-height: 1.7;
+	gap: var(--rsp-spacing-xxs);
 
-    &.burst-rsssl {
-      a:hover {
-        color: var(--rsp-yellow);
-      }
-    }
+	@media screen and (max-width: 992px) {
+	  flex-direction: row;
+	  overflow: hidden;
+	}
 
-    &.burst-cmplz {
-      a:hover {
-        color: var(--rsp-blue);
-      }
-    }
+	.burst-other-plugins-element {
+	  width: 100%;
+	  display: flex;
+	  align-content: space-between;
+	  justify-content: space-between;
+	  --rsp-other-plugins-color: var(---rsp-brand-primary);
 
-    &.burst-burst {
-      a:hover {
-        color: var(--rsp-green);
-      }
-    }
+	  &.burst-zip {
+		--rsp-other-plugins-color: var(--rsp-pink);
+	  }
 
+	  &.burst-burst {
+		--rsp-other-plugins-color: var(--rsp-green);
+	  }
 
-    .plugin-status {
-      margin-left: auto;
-    }
+	  &.burst-complianz, &.burst-complianztc {
+		--rsp-other-plugins-color: var(--rsp-blue);
+	  }
 
-    .plugin-color, .plugin-text, .plugin-status {
-      display: flex;
-      align-items: center;
-    }
+	  &.burst-rsssl {
+		--rsp-other-plugins-color: var(--rsp-yellow);
+	  }
 
-    .plugin-text {
-      color: var(--rsp-text-color-light);
+	  a {
+		color: var(--rsp-text-color-light);
+		transition: color 0.3s ease;
+		display: flex;
+		align-items: center;
+		min-width: 0; /* or some value */
+		text-decoration: none;
 
-      a {
-        font-size: var(--rsp-fs-300);
-        text-decoration: none;
-        color: var(--rsp-text-color-light);
-        transition: color 0.3s ease;
+		&:hover {
+		  color: var(--rsp-other-plugins-color);
+		  text-decoration: underline;
 
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
+		  .burst-bullet {
+			background-color: var(--rsp-other-plugins-color);
+		  }
 
-    .burst-bullet {
-      margin: 7px 9px;
-    }
+		  .burst-other-plugins-content {
+			text-decoration: underline;
+		  }
+		}
+	  }
+
+	  .burst-bullet {
+		transition: background-color 0.3s ease;
+		background-color: var(--rsp-other-plugins-color);
+	  }
+
+	  .burst-other-plugins-content {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	  }
+	}
   }
 }

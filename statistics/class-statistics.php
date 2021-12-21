@@ -7,8 +7,37 @@ if ( ! class_exists( "burst_statistics" ) ) {
             add_action( 'wp_ajax_burst_get_chart_statistics', array( $this, 'ajax_get_chart_statistics') );
             add_action( 'wp_ajax_burst_get_real_time_visitors', array( $this, 'ajax_get_real_time_visitors') );
             add_action( 'wp_ajax_burst_get_today_statistics_html', array( $this, 'ajax_get_today_statistics_html') );
-
+            add_action( 'wp_enqueue_scripts', array($this,'enqueue_assets'), 1);
 		}
+
+        /**
+         * Enqueue some assets
+         * @param $hook
+         */
+        public function enqueue_assets( $hook ) {
+            $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
+
+            global $post;
+            //set some defaults
+            $localize_args = array(
+                'url'                       => get_rest_url() . 'burst/v1/',
+                'goal'                      => 'visit',
+                'goal_identifier'           => '',
+                'page_id'                   => isset($post->ID) ? $post->ID : 0,
+                'cookie_retention_days'     => 30,
+                'anon_ip'                   => burst_get_anon_ip_address(),
+            );
+
+            wp_enqueue_script( 'burst',
+                burst_url . "assets/js/burst$minified.js", array(),
+                burst_version, true );
+            wp_localize_script(
+                'burst',
+                'burst',
+                $localize_args
+            );
+        }
 
 		/**
 		 * Function for getting statistics for display with Chart JS

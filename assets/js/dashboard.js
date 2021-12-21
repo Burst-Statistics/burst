@@ -1,4 +1,3 @@
-console.log('dashbaord.js');
 jQuery(document).ready(function ($) {
     'use strict';
 
@@ -6,7 +5,6 @@ jQuery(document).ready(function ($) {
      * Dismiss dashboard notices
      */
     $(document).on('click', '.burst-dismiss-warning', function(){
-        console.log('click');
         var warning_id = $(this).data('warning_id');
         var btn = $(this);
         btn.prop('disabled', true);
@@ -31,7 +29,7 @@ jQuery(document).ready(function ($) {
         updateRealTimeVisits();
     }, 2000);
 
-    let realTimeNumber = $('.real-time').find('.block__big-number__right h1');
+    let realTimeNumber = $('.burst-real-time').find('.block__big-number__right h1');
     function updateRealTimeVisits(){
         $.ajax({
             type: "get",
@@ -52,7 +50,7 @@ jQuery(document).ready(function ($) {
         updateTodayStatistics();
     }, 10000);
 
-    let todayBlock = $('.real-time').find('.burst-grid-content');
+    let todayBlock = $('.burst-real-time').find('.burst-grid-content');
     function updateTodayStatistics(){
         $.ajax({
             type: "get",

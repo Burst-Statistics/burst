@@ -170,8 +170,6 @@ jQuery(document).ready(function ($) {
                             $.each( data, function( index, text ) { // do not forget that "index" is just auto incremented value
                                 options.push( { id: text[0], text: text[1]  } );
                             });
-                            console.log(options);
-
                         }
                         return {
                             results: options

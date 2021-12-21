@@ -229,6 +229,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 		 */
 
 		public function validate_function( $func ) {
+            $output = false;
 			$invert = false;
 			if ( strpos( $func, 'NOT ' ) !== false ) {
 				$func   = str_replace( 'NOT ', '', $func );

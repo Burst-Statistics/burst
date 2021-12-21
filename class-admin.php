@@ -101,7 +101,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 			wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
 			wp_enqueue_style( 'burst-admin' );
 			wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
-            wp_enqueue_script( 'burst-tooltips', burst_url . "assets/js/tooltips$minified.js", false, burst_version, false );
 
 			if (isset($_GET['page']) && $_GET['page'] ==='burst') {
                 wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version, false);
@@ -185,14 +184,14 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			$support_link = defined( 'burst_free' )
 				? "https://wordpress.org/support/plugin/burst"
-				: "https://wpburst.com/support";
+				: "https://burststatistics.com/support";
 			$faq_link     = '<a target="_blank" href="' . $support_link . '">'
 			                . __( 'Support', 'burst' ) . '</a>';
 			array_unshift( $links, $faq_link );
 
 			// if ( ! defined( 'burst_premium' ) ) {
 			// 	$upgrade_link
-			// 		= '<a style="color:#2DAAE1;font-weight:bold" target="_blank" href="https://wpburst.com/l/pricing">'
+			// 		= '<a style="color:#2DAAE1;font-weight:bold" target="_blank" href="https://burststatistics.com/l/pricing">'
 			// 		  . __( 'Upgrade to premium', 'burst' ) . '</a>';
 			// 	array_unshift( $links, $upgrade_link );
 			// }
@@ -323,7 +322,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             $grid_items = apply_filters('burst_grid_items', array(
                 'dashboard' => array(
                     1 => array(
-                        'title' => __("Your tasks", "burst"),
+                        'title' => __("Your notices", "burst"),
                         'class' => 'burst-overview column-2 row-2',
                         'type' => 'progress',
                         'controls' => '',
@@ -372,7 +371,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                         'class' => 'burst-load-ajax',
                         //'body' => '<div class="burst-skeleton"></div>',
                         'type' => 'compare',
-                        'controls' => __('vs previous period', 'burst'),
+                        'controls' => '',
                         'page' => 'statistics',
 
                     ),

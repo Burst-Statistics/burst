@@ -76,7 +76,7 @@
   z-index: 2;
 }
 .shepherd-element.shepherd-theme-arrows.shepherd-has-title .shepherd-content header {
-  background-color: var(--rsp-brand-primary);
+  background-color: var(--rsp-brand-primary, #2e8a37);
   display: inline-block;
   width: 100%;
   height: 45px;

@@ -96,6 +96,7 @@ if ( ! class_exists( 'BURST' ) ) {
             define('STEP_SELECT', 1);
             define('STEP_METRICS', 2);
             define('STEP_START', 3);
+            define( 'burst_free', true );
 			define( 'burst_url', plugin_dir_url( __FILE__ ) );
 			define( 'burst_path', plugin_dir_path( __FILE__ ) );
 			define( 'burst_plugin', plugin_basename( __FILE__ ) );
@@ -104,7 +105,6 @@ if ( ! class_exists( 'BURST' ) ) {
 			define( 'burst_version', '1.0.11' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
-			define( 'burst_premium_plugin', 1 );
 			define( 'burst_premium_url', 'https://wpburst.com/premium?src=burst-plugin' );
 		}
 

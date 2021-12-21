@@ -258,9 +258,6 @@ jQuery(document).ready(function ($) {
             let type = gridContainer.data('block_type');
             let date_start = parseInt($('input[name=burst_date_start]').val());
             let date_end = parseInt($('input[name=burst_date_end]').val());
-            console.log('burstLoadGridBlocks');
-            console.log({date_start});
-            console.log({date_end});
             $.ajax({
                 type: "get",
                 dataType: "json",
@@ -272,9 +269,7 @@ jQuery(document).ready(function ($) {
                     date_end: date_end,
                 },
                 success: function (response) {
-                    console.log({response});
                     if (response.success) {
-                        console.log({response});
                         gridContainer.find('.burst-grid-content').fadeOut(300, function() {
                             $(this).html(response.html).fadeIn(200);
                         })
@@ -318,7 +313,6 @@ jQuery(document).ready(function ($) {
                 });
             }
             burstLoadDataTable( $(this), $(this).data('id'), 1, 0);
-            console.log('loop');
         });
     };
 
@@ -386,7 +380,6 @@ jQuery(document).ready(function ($) {
         let unixStart = parseInt($('input[name=burst_date_start]').val())
         let unixEnd = parseInt($('input[name=burst_date_end]').val())
         let type = container.data('block_type');
-        console.log(type);
 
         $.ajax({
             type: "GET",
@@ -401,7 +394,6 @@ jQuery(document).ready(function ($) {
                 // token  : burst.token
             }),
             success: function (response) {
-                console.log(response);
                 //this only on first page of table
                 if (page===1){
                     let table = container.find('table');

@@ -61,13 +61,10 @@ if ( !burst_is_user_agent() ) {
 }
 
 if ( burst_is_experiment_page() ) {
-	//console.log("is experiment page");
 	if ( burst_is_user_agent() ) {
 		burst_show_content('control');
 	} else {
 		window.burst_test_version = burst_get_user_test_version();
-		console.log(window.burst_test_version);
-
 		burst_show_content(window.burst_test_version);
 	}
 } else {
@@ -76,14 +73,11 @@ if ( burst_is_experiment_page() ) {
 		burst_show_content('control');
 		//@todo send an error notice to the server, so we can notice the user or stop the experiment
 	}
-	//console.log("Not an experiment page");
 }
 
 if ( window.burst_goal_identifier !== undefined && window.burst_goal_identifier.length > 0 ) {
-	console.log('burst_goal_identifier !== undefined');
 	document.querySelectorAll( window.burst_goal_identifier ).forEach(item => {
 		item.addEventListener('click', event => {
-			console.log('click on');
 			let target = (event.currentTarget) ? event.currentTarget : event.srcElement;
 			let is_link = false;
 			if (target.tagName.toLowerCase() === "a" && target !== undefined) {
@@ -96,8 +90,6 @@ if ( window.burst_goal_identifier !== undefined && window.burst_goal_identifier.
 
 			// Do the async thing
 			burst_track_hit(true, function() {
-				console.log('burst_track_hit');
-
 				// go to the link
 				if (is_link) window.location = href;
 			});
@@ -110,9 +102,7 @@ if ( window.burst_goal_identifier !== undefined && window.burst_goal_identifier.
  * @param callback
  */
 function burst_track_hit(conversion, callback) {
-	console.log("burst");
 	if ( !burst_wp_has_consent() ) return;
-	console.log("has_consent");
 
 	let request = new XMLHttpRequest();
 	request.open('POST', burst.url+'hit'+token, true);
@@ -162,7 +152,6 @@ function burst_update_time_on_page(event){
 	if ( burst_last_time_update + 1000 > current_time_on_page) {
 		return;
 	}
-	console.log('burst_update_time_on_page');
 
 	burst_last_time_update = current_time_on_page;
 

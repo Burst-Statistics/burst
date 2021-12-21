@@ -44,49 +44,54 @@ class burst_tour {
 			$html  = '<div class="burst-tour-logo-text">' . $logo . '<span class="burst-tour-text">{content}</span></div>';
 			$steps = array(
 				array(
-					'title'  => __( 'Welcome to Burst', 'burst' ),
-					'text'   => __( "Get ready for A/B testing. Follow a quick tour or start configuring the plugin!", 'burst' ),
+					'title'  => burst_sprintf(__( 'Welcome to %s', 'burst' ), burst_plugin_name),
+					'text'   => burst_sprintf(__( "%s is now active.", 'burst'), burst_plugin_name ) . ' '.  __("Follow a quick tour and make sure everything works.", 'burst' ),
 					'link'   => admin_url( "plugins.php" ),
 					'attach' => '.burst-settings-link',
 					'position' => 'right',
 				),
 				array(
-					'title'  => __( 'Dashboard', 'burst' ),
-					'text'   => __( "This is your Dashboard. This will give you an overview of tasks, tools, and documentation.", 'burst' ),
+					'title'  => __( 'Your dashboard', 'burst' ),
+					'text'   => __( "This is your Dashboard. This will give you an overview of notices, real time data, and settings", 'burst' ),
 					'link'   => admin_url( "admin.php?page=burst" ),
-					'attach' => '.table-overview .burst-grid-title',
+					'attach' => '.burst-progress',
 					'position' => 'right',
 				),
-//				array(
-//					'title'  => __( "The Wizard", "burst" ),
-//					'text'   => __( "This is where you configure your website for your specific region. It includes everything you need to get started. We will come back to the Wizard soon.", 'burst' ),
-//					'link'   => add_query_arg( array( "page" => "burst-wizard", "step" => STEP_COOKIES ), admin_url( "admin.php" ) ),
-//					'attach' => '.use_cdb_api .burst-label',
-//					'position' => 'bottom',
-//				),
-//				array(
-//					'title'  => __( 'Cookie Banner', 'burst' ),
-//					'text'   => __( "Here you can configure and style your cookie banner if the Wizard is completed. An extra tab will be added with region-specific settings.", 'burst' ),
-//					'link'   => add_query_arg( array( 'page' => 'burst-cookiebanner', 'id'   => burst_get_default_banner_id() ), admin_url( "admin.php" ) ),
-//					'attach' => '#burst_COOKIEBANNER-general .burst-settings-title',
-//					'position' => 'bottom',
-//				),
-//
-//				array(
-//					'title'  => __( "Integrations", "burst" ),
-//					'text'   => __( "Based on your answers in the Wizard, we will automatically enable integrations with relevant services and plugins. In case you want to block extra scripts, you can add them to the Script Center.", 'burst' ),
-//					'link'   => add_query_arg(array("page" => 'burst-script-center'), admin_url( "admin.php" ) ),
-//					'attach' => '#integrations-services .burst-settings-title',
-//					'position' => 'right',
-//				),
-//
-//				array(
-//					'title'  => __( 'Settings', 'burst' ),
-//					'text'   => __( "Adding Document CSS, enabling safe mode, and other settings can be found here. You can also revisit the tour here.", 'burst' ),
-//					'link'   => add_query_arg(array("page" => 'burst-settings'), admin_url( "admin.php" ) ),
-//					'attach' => '#settings-general .burst-settings-title',
-//					'position' => 'right',
-//				),
+                array(
+                    'title'  => __( 'Real time data', 'burst' ),
+                    'text'   => __( "This block will show you real time visitors.", 'burst' ) . ' ' .  burst_sprintf(__( "To make sure %s is setup properly, try visiting this website on another device or open a private window.", 'burst' ), burst_plugin_name),
+                    'link'   => admin_url( "admin.php?page=burst" ),
+                    'attach' => '.burst-real-time',
+                    'position' => 'right',
+                ),
+                array(
+                    'title'  => __( 'Real time visitors', 'burst' ),
+                    'text'   => __( "Did you visit your website on another device? This number should change. If that is not the case, feel free to open a support thread.", 'burst' ),
+                    'link'   => admin_url( "admin.php?page=burst" ),
+                    'attach' => '.burst-real-time .block__big-number__right',
+                    'position' => 'right',
+                ),
+				array(
+					'title'  => __( "Your website statistics", "burst" ),
+					'text'   => __( "This page is probably quite empty at the moment. The data from your website will show up here in a few days. So be sure to come back soon.", 'burst' ),
+					'link'   => admin_url( "admin.php?page=burst-statistics" ),
+					'attach' => '.burst-insights-chart',
+					'position' => 'right',
+				),
+                array(
+                    'title'  => __( "Changing the period", "burst" ),
+                    'text'   => __( "Over here you can change the date range for the data being shown. Click on to different days or click twice on a single day to show the data for that period.", 'burst' ),
+                    'link'   => admin_url( "admin.php?page=burst-statistics" ),
+                    'attach' => '.burst-date-container',
+                    'position' => 'bottom',
+                ),
+                array(
+                    'title'  => __( 'Support', 'burst' ),
+                    'text'   => __( "If you encounter any problems or if you have any feature requests. Feel free to open a support thread. We will try our best to help you.", 'burst' ),
+                    'link'   => admin_url( "admin.php?page=burst-statistics" ),
+                    'attach' => '.burst-header-right .button',
+                    'position' => 'left',
+                ),
 			);
 
 

@@ -357,9 +357,12 @@
       cool checkbox sliders
   */
 }
-.burst input,
-.burst select {
+.burst input {
   background: var(--rsp-input-background-color);
+  color: var(--rsp-input-text-color);
+}
+.burst select {
+  background: var(--rsp-input-background-color) url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%206l5%205%205-5%202%201-7%207-7-7%202-1z%22%20fill%3D%22%23555%22%2F%3E%3C%2Fsvg%3E') no-repeat right 5px top 55%;
   color: var(--rsp-input-text-color);
 }
 .burst .field-group .burst-label {
@@ -902,61 +905,80 @@
   margin: 0 4px;
   font-size: var(--rsp-fs-100);
 }
-.burst-other-plugins .rsp-logo img {
+.burst .burst-other-plugins .rsp-logo img {
   height: 34px;
 }
-.burst-other-plugins .burst-plugin {
-  display: flex !important;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--rsp-text-color-light);
-  width: 100%;
-  font-size: var(--rsp-fs-300);
-  line-height: 2.3;
-}
-.burst-other-plugins .burst-plugin.burst-rsssl a:hover {
-  color: var(--rsp-yellow);
-}
-.burst-other-plugins .burst-plugin.burst-cmplz a:hover {
-  color: var(--rsp-blue);
-}
-.burst-other-plugins .burst-plugin.burst-burst a:hover {
-  color: var(--rsp-green);
-}
-.burst-other-plugins .burst-plugin .plugin-status {
-  margin-left: auto;
-}
-.burst-other-plugins .burst-plugin .plugin-color,
-.burst-other-plugins .burst-plugin .plugin-text,
-.burst-other-plugins .burst-plugin .plugin-status {
-  display: flex;
-  align-items: center;
-}
-.burst-other-plugins .burst-plugin .plugin-text {
-  color: var(--rsp-text-color-light);
-}
-.burst-other-plugins .burst-plugin .plugin-text a {
-  font-size: var(--rsp-fs-300);
-  text-decoration: none;
-  color: var(--rsp-text-color-light);
-  transition: color 0.3s ease;
-}
-.burst-other-plugins .burst-plugin .plugin-text a:hover {
-  text-decoration: underline;
-}
-.burst-other-plugins .burst-plugin .burst-bullet {
-  margin: 7px 9px;
-}
-.burst-tips-tricks-container {
-  --rsp-fs-tips-tricks: var(--rsp-fs-300);
+.burst .burst-other-plugins-container {
   display: flex !important;
   flex-direction: row;
   flex-wrap: wrap;
   margin-bottom: 10px;
-  font-size: var(--rsp-fs-tips-tricks);
+  font-size: var(--rsp-fs-300);
   line-height: 1.7;
-  gap: var(--rsp-spacing-xs);
+  gap: var(--rsp-spacing-xxs);
+}
+@media screen and (max-width: 992px) {
+  .burst .burst-other-plugins-container {
+    flex-direction: row;
+    overflow: hidden;
+  }
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element {
+  width: 100%;
+  display: flex;
+  align-content: space-between;
+  justify-content: space-between;
+  --rsp-other-plugins-color: var(---rsp-brand-primary);
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element.burst-zip {
+  --rsp-other-plugins-color: var(--rsp-pink);
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element.burst-burst {
+  --rsp-other-plugins-color: var(--rsp-green);
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element.burst-complianz,
+.burst .burst-other-plugins-container .burst-other-plugins-element.burst-complianztc {
+  --rsp-other-plugins-color: var(--rsp-blue);
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element.burst-rsssl {
+  --rsp-other-plugins-color: var(--rsp-yellow);
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element a {
+  color: var(--rsp-text-color-light);
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  /* or some value */
+  text-decoration: none;
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element a:hover {
+  color: var(--rsp-other-plugins-color);
+  text-decoration: underline;
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element a:hover .burst-bullet {
+  background-color: var(--rsp-other-plugins-color);
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element a:hover .burst-other-plugins-content {
+  text-decoration: underline;
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element .burst-bullet {
+  transition: background-color 0.3s ease;
+  background-color: var(--rsp-other-plugins-color);
+}
+.burst .burst-other-plugins-container .burst-other-plugins-element .burst-other-plugins-content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.burst-tips-tricks-container {
+  display: flex !important;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  font-size: var(--rsp-fs-300);
+  line-height: 1.7;
+  gap: var(--rsp-spacing-xxs);
 }
 @media screen and (max-width: 992px) {
   .burst-tips-tricks-container {
@@ -965,16 +987,16 @@
   }
 }
 .burst-tips-tricks-container .burst-tips-tricks-element {
-  width: calc(50% - var(--rsp-spacing-s) / 2);
+  width: calc(50% - var(--rsp-spacing-s));
 }
 .burst-tips-tricks-container .burst-tips-tricks-element a {
   color: var(--rsp-text-color-light);
   transition: color 0.3s ease;
   display: flex;
+  align-items: center;
   min-width: 0;
   /* or some value */
   text-decoration: none;
-  gap: var(--rsp-spacing-xs);
 }
 .burst-tips-tricks-container .burst-tips-tricks-element a:hover {
   color: var(--rsp-brand-primary);
@@ -989,7 +1011,6 @@
 .burst-tips-tricks-container .burst-tips-tricks-element .burst-bullet {
   transition: background-color 0.3s ease;
   background-color: var(--rsp-grey-300);
-  margin-top: calc(var(--rsp-fs-tips-tricks) - 8px);
 }
 .burst-tips-tricks-container .burst-tips-tricks-element .burst-tips-tricks-content {
   white-space: nowrap;

@@ -3,27 +3,27 @@
 $items = array(
     1 => array(
         'content' => "Writing Content for Google",
-        'link'    => 'https://wpburst.com/writing-content-for-google/',
+        'link'    => 'https://burststatistics.com/writing-content-for-google/',
     ),
     2 => array(
         'content' => "WP Search Insights Beginner's Guide",
-        'link' => 'https://wpburst.com/burst-beginners-guide/',
+        'link' => 'https://burststatistics.com/burst-beginners-guide/',
     ),
     3 => array(
         'content' => "Using CSV/Excel Exports",
-        'link' => 'https://wpburst.com/using-csv-excel-exports/',
+        'link' => 'https://burststatistics.com/using-csv-excel-exports/',
     ),
     4 => array(
         'content' => "Improving your Search Result Page",
-        'link' => 'https://wpburst.com/improving-your-search-result-page/',
+        'link' => 'https://burststatistics.com/improving-your-search-result-page/',
     ),
     5 => array(
         'content' => "The Search Filter",
-        'link' => 'https://wpburst.com/the-search-filter/',
+        'link' => 'https://burststatistics.com/the-search-filter/',
     ),
     6 => array(
         'content' => "Positioning your search form",
-        'link' => 'https://wpburst.com/about-search-forms/',
+        'link' => 'https://burststatistics.com/about-search-forms/',
     ),
 );
 $container = '<div class="burst-tips-tricks-element"><a href="{link}" target="_blank" title="{content}"><div class="burst-bullet medium"></div><div class="burst-tips-tricks-content">{content}</div></a></div>';

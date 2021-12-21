@@ -22,7 +22,7 @@
                 </div>
                 <div class="burst-header-right">
                     {controls}
-                    <a href="https://wpburst.com/support" class="button button-black" target="_blank"><?php _e("Support", "burst") ?></a>
+                    <a href="https://wordpress.org/support/plugin/burst/" class="button button-black" target="_blank"><?php _e("Support", "burst") ?></a>
                 </div>
             </div>
 		</div>

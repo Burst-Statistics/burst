@@ -1,57 +1,46 @@
-<?php
+<?php defined('ABSPATH') or die("you do not have access to this page!"); ?>
 
+<?php
 $plugins = array(
-    1 => array(
-        'title' => '<div class="rsp-yellow burst-bullet medium"></div>',
-        'content' => 'Really Simple SSL - '. __("Easily migrate your website to SSL", "complianz-gdpr"),
-        'link' => 'https://wordpress.org/plugins/really-simple-ssl/',
-        'class' => 'rsssl',
+
+    'RSSSL' => array(
         'constant_free' => 'rsssl_version',
         'constant_premium' => 'rsssl_pro_version',
-        'website' => 'https://ziprecipes.net/premium?src=burst-plugin',
+        'website' => 'https://really-simple-ssl.com/premium/?src=complianz-plugin',
         'search' => 'really-simple-ssl%20rogier%20lankhorst&tab=search',
-
-
+        'url' => 'https://wordpress.org/plugins/really-simple-ssl/',
+        'title' => 'Really Simple SSL - '. __("Easily migrate your website to SSL", "burst"),
     ),
-	2 => array(
-        'title' => '<div class="rsp-blue burst-bullet medium"></div>',
-		'content' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst"),
-		'link' => 'https://wordpress.org/plugins/complianz-gdpr/',
-		'class' => 'cmplz',
-		'constant_free' => 'cmplz_plugin',
-		'constant_premium' => 'cmplz_premium',
-		'website' => 'https://complianz.io/pricing?src=burst-plugin',
-		'search' => 'Complianz',
-	),
-    3 => array(
-        'title' => '<div class="rsp-green burst-bullet medium"></div>',
-        'content' => burst_plugin_name . ' - ' . __( 'Privacy Friendly Statistics' , 'burst' ),
-        'link' => 'https://wordpress.org/plugins/burst/',
-        'class' => 'burst',
+    'COMPLIANZ' => array(
+        'constant_free' => 'cmplz_plugin',
+        'constant_premium' => 'cmplz_premium',
+        'url' => 'https://wordpress.org/plugins/complianz-gdpr/',
+        'website' => 'https://complianz.io/pricing?src=burst-plugin',
+        'search' => 'complianz',
+        'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst"),
+    ),
+    'BURST' => array(
         'constant_free' => 'burst_plugin',
         'constant_premium' => 'burst_premium_plugin',
-        'website' => 'https://burst.com/premium?src=burst-plugin',
-        'search' => 'Burst',
+        'website' => 'https://burststatistics.com/premium/',
+        'search' => 'burst+really+simple+plugins',
+        'url' => 'https://wordpress.org/plugins/burst/',
+        'title' => burst_plugin_name . ' - ' . __( 'Privacy Friendly Statistics' , 'burst' ),
     ),
 );
-
-$element = burst_get_template('dashboard/other-plugins-row.php');
-$output = '<div class="burst-other-plugins-container">';
-foreach ($plugins as $plugin) {
-	$output .= str_replace(array(
-		'{title}',
-		'{link}',
-		'{content}',
-		'{status}',
-		'{class}',
-	), array(
-		$plugin['title'],
-		$plugin['link'],
-		$plugin['content'],
-		BURST::$admin->get_status_link($plugin),
-		$plugin['class'],
-		'',
-	), $element);
-}
-$output .= '</div>';
-echo $output;
+?>
+<div class="burst-other-plugins-container">
+    <?php foreach ($plugins as $id => $plugin) {
+        $prefix = strtolower($id);
+        ?>
+        <div class="burst-other-plugins-element burst-<?php echo $prefix?>">
+            <a href="<?php echo esc_url_raw($plugin['url'])?>" target="_blank" title="<?php echo esc_html($plugin['title'])?>">
+                <div class="burst-bullet medium"></div>
+                <div class="burst-other-plugins-content"><?php echo esc_html($plugin['title'])?></div>
+            </a>
+            <div class="burst-other-plugin-status">
+                <?php echo BURST::$admin->get_status_link($plugin)?>
+            </div>
+        </div>
+    <?php }?>
+</div>
