@@ -18,25 +18,40 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
 
-            global $post;
-            //set some defaults
-            $localize_args = array(
-                'url'                       => get_rest_url() . 'burst/v1/',
-                'goal'                      => 'visit',
-                'goal_identifier'           => '',
-                'page_id'                   => isset($post->ID) ? $post->ID : 0,
-                'cookie_retention_days'     => 30,
-                'anon_ip'                   => burst_get_anon_ip_address(),
-            );
+            if( !$this->exclude_from_tracking() ) {
+                global $post;
+                //set some defaults
+                $localize_args = array(
+                    'url'                       => get_rest_url() . 'burst/v1/',
+                    'goal'                      => 'visit',
+                    'goal_identifier'           => '',
+                    'page_id'                   => isset($post->ID) ? $post->ID : 0,
+                    'cookie_retention_days'     => 30,
+                    'anon_ip'                   => burst_get_anon_ip_address(),
+                );
 
-            wp_enqueue_script( 'burst',
-                burst_url . "assets/js/burst$minified.js", array(),
-                burst_version, true );
-            wp_localize_script(
-                'burst',
-                'burst',
-                $localize_args
-            );
+                wp_enqueue_script( 'burst',
+                    burst_url . "assets/js/burst$minified.js", array(),
+                    burst_version, true );
+                wp_localize_script(
+                    'burst',
+                    'burst',
+                    $localize_args
+                );
+            }
+        }
+
+        function exclude_from_tracking(){
+            if( is_user_logged_in() ){
+                $user = wp_get_current_user();
+                $excluded_roles = apply_filters('burst_roles_excluded_from_tracking', array( 'administrator' ));
+                if ( array_intersect( $excluded_roles, $user->roles ) ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
         }
 
 		/**

@@ -2,28 +2,28 @@
 
 $items = array(
     1 => array(
-        'content' => "Writing Content for Google",
-        'link'    => 'https://burststatistics.com/writing-content-for-google/',
+        'content' => "Hidden Features of the Insights Graph",
+        'link'    => 'https://burst-statistics.com/hidden-features-of-the-insights-graph/',
     ),
     2 => array(
-        'content' => "WP Search Insights Beginner's Guide",
-        'link' => 'https://burststatistics.com/burst-beginners-guide/',
+        'content' => "Can I leave a Feature Request?",
+        'link' => 'https://burst-statistics.com/can-i-leave-a-feature-request/',
     ),
     3 => array(
-        'content' => "Using CSV/Excel Exports",
-        'link' => 'https://burststatistics.com/using-csv-excel-exports/',
+        'content' => "Why is Burst Privacy-Friendly?",
+        'link' => 'https://burst-statistics.com/why-is-burst-privacy-friendly/',
     ),
     4 => array(
-        'content' => "Improving your Search Result Page",
-        'link' => 'https://burststatistics.com/improving-your-search-result-page/',
+        'content' => "How can I compare metrics?",
+        'link' => 'https://burst-statistics.com/how-can-i-compare-metrics/',
     ),
     5 => array(
-        'content' => "The Search Filter",
-        'link' => 'https://burststatistics.com/the-search-filter/',
+        'content' => "What are Referrers?",
+        'link' => 'https://burst-statistics.com/definition/what-are-referrers/',
     ),
     6 => array(
-        'content' => "Positioning your search form",
-        'link' => 'https://burststatistics.com/about-search-forms/',
+        'content' => "What is Bounce Rate?",
+        'link' => 'https://burst-statistics.com/definition/what-is-bounce-rate/',
     ),
 );
 $container = '<div class="burst-tips-tricks-element"><a href="{link}" target="_blank" title="{content}"><div class="burst-bullet medium"></div><div class="burst-tips-tricks-content">{content}</div></a></div>';

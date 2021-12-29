@@ -184,14 +184,14 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			$support_link = defined( 'burst_free' )
 				? "https://wordpress.org/support/plugin/burst"
-				: "https://burststatistics.com/support";
+				: "https://burst-statistics.com/support";
 			$faq_link     = '<a target="_blank" href="' . $support_link . '">'
 			                . __( 'Support', 'burst' ) . '</a>';
 			array_unshift( $links, $faq_link );
 
 			// if ( ! defined( 'burst_premium' ) ) {
 			// 	$upgrade_link
-			// 		= '<a style="color:#2DAAE1;font-weight:bold" target="_blank" href="https://burststatistics.com/l/pricing">'
+			// 		= '<a style="color:#2DAAE1;font-weight:bold" target="_blank" href="https://burst-statistics.com/l/pricing">'
 			// 		  . __( 'Upgrade to premium', 'burst' ) . '</a>';
 			// 	array_unshift( $links, $upgrade_link );
 			// }

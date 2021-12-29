@@ -94,7 +94,6 @@ class burst_tour {
                 ),
 			);
 
-
 			$steps = apply_filters( 'burst_shepherd_steps', $steps );
 			wp_localize_script( 'burst-shepherd-tour', 'burst_tour',
 				array(
@@ -109,7 +108,6 @@ class burst_tour {
 					'endTour'        => __( "End tour", "burst" ),
 					'steps'          => $steps,
 				) );
-
 		}
 	}
 

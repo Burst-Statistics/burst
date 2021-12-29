@@ -18,7 +18,7 @@ $progress = 0;
 						'plus_one' => false,
 						'message'    => sprintf(
                                             __( 'You have no new notices! Have a look at our %sdocumentation%s and see all the possibilities %s has to offer.', 'burst' ),
-                                            '<a href="https://burststatistics.com/docs/" target="_blank">',
+                                            '<a href="https://burst-statistics.com/docs/" target="_blank">',
                                             '</a>',
                                             burst_plugin_name
                                         ),

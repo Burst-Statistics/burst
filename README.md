@@ -1,2 +1,2 @@
 # Burst Statistics
-https://burststatistics.com by Really Simple Plugins
+https://burst-statistics.com by Really Simple Plugins
