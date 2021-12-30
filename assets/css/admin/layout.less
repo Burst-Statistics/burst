@@ -3,23 +3,44 @@
   .burst-header, .burst-content-area {
     max-width: calc(100% - var(--rsp-spacing-xl) * 4);
     margin: 0 auto;
+    @media(max-width: @rsp-break-xl){
+      max-width: calc(100% - var(--rsp-spacing-xl) * 1);
+    }
+    @media(max-width: @rsp-break-l){
+      max-width: calc(100% - var(--rsp-spacing-xl) * 2);
+    }
+    @media(max-width: @rsp-break-xs){
+      max-width: calc(100% - var(--rsp-spacing-xl) * 1);
+    }
   }
   .burst-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     height: 70px;
     box-sizing: border-box;
-    background-color: #fff;
+    background-color: var(--rsp-background-block-color);
+    @media( max-width: @rsp-break-l ){
+      height: auto;
+    }
 
     img {
       margin: auto 0;
       width: 74px;
+      margin: var(--rsp-spacing-m) 0;
     }
   }
 
   .burst-header-left {
     display: flex;
     font-size: var(--rsp-fs-400);
+    @media( max-width: @rsp-break-l ){
+      justify-content: center;
+      margin: var(--rsp-spacing-xs) 0;
+      order: 3;
+      width: 100%;
+      background-color: var(--rsp-background-block-color);
+    }
 
     .burst-header-menu {
       margin: auto 15px;
@@ -36,6 +57,9 @@
         box-sizing: border-box;
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
+        @media( max-width: @rsp-break-l ){
+          padding: 15px;
+        }
 
         &.active {
           border-bottom: 4px solid var(--rsp-brand-primary);
@@ -78,7 +102,7 @@
 
   .burst-grid {
     display: grid;
-    grid-template-columns: repeat(4, calc(25% - 15px) [col-start]); // We use calc because of the grid gap
+    grid-template-columns: repeat(4, calc(25% - var(--rsp-spacing-s)) [col-start]); // We use calc because of the grid gap
     grid-auto-rows: max-content;
     gap: var(--rsp-grid-gap);
     min-height: calc(100vh - 32px - 80px - 20px - var(--rsp-grid-gap)); //32px = wordpress bar, 80px = burst bar, 20px = margin-top, 20px is grid gap
@@ -91,6 +115,8 @@
     flex-direction: column;
     flex-basis: 100%;
     min-height: 100%;
+    grid-column: span 1;
+    grid-row: span 1;
     p{
       font-size: var(--rsp-fs-300);
     }
@@ -100,7 +126,6 @@
       border: none;
       box-shadow: none;
     }
-
     &.column-2 {
       grid-column: span 2;
     }
@@ -108,14 +133,20 @@
     &.row-2 {
       grid-row: span 2;
     }
-
-    @media screen and (max-width: 780px) {
-      grid-column: span 4 !important;
-    }
-    @media screen and (max-width: 1024px) {
-      &.column-2 {
-        grid-column: span 4 !important;
+    @media( max-width: @rsp-break-l ){
+      grid-column: span 2;
+      &.burst-insights-chart, &.burst-overview{
+        grid-column: span 4;
       }
+    }
+    @media( max-width: @rsp-break-m ){
+      grid-column: span 2;
+      &.column-2 {
+        grid-column: span 4;
+      }
+    }
+    @media( max-width: @rsp-break-s ) {
+      grid-column: span 4;
     }
   }
 

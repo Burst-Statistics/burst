@@ -33,17 +33,26 @@
     width: 100%;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: 10px;
-    margin: var(--rsp-spacing-s);
+    gap: var(--rsp-spacing-s);
+    margin: var(--rsp-spacing-m) 0;
+    @media( max-width: @rsp-break-xs ){
+      gap: var(--rsp-spacing-xs);
+    }
 
     &__status{
       min-width: 95px;
       text-align: center;
       border-radius: 15px;
-      padding: 2px 0;
+      padding: 4px 0;
       font-size: var(--rsp-fs-200);
       font-weight: 500;
-      margin-right: var(--rsp-spacing-s);
+
+      @media( max-width: @rsp-break-xs ){
+        min-width: 13px;
+        min-height: 13px;
+        font-size: 0;
+        margin-top: 3px;
+      }
 
       &.completed {
         background-color: var(--rsp-color-success);

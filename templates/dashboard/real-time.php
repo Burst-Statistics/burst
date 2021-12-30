@@ -16,13 +16,13 @@ $lines = array(
     //$pageviews_total['val'] . ' ' . __('are new visitors', 'burst'),
     $visitors_total['val'] . ' ' . __('visitors', 'burst'),
     $pageviews_total['val'] . ' ' . __('pageviews', 'burst'),
-    burst_format_milliseconds_to_readable_time($time_total['val']) . ' ' . __('interactive time', 'burst'),
+    burst_format_milliseconds_to_readable_time($time_total['val']) . ' ' . __('time', 'burst'),
 );
 $html = '';
 foreach ($lines as $line){ $html .= '<p>' . $line . '</p>'; }
 
 $args = array(
-    'title' => __('Today', 'burst'),
+    'title' => '',
     'tooltip' => __('Tooltip text', 'burst'),
     'subtitles' => $html,
     'number' => $visitors_now,

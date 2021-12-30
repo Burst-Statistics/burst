@@ -22,6 +22,7 @@
 	  display: flex;
 	  align-content: space-between;
 	  justify-content: space-between;
+	  gap: 10px;
 	  --rsp-other-plugins-color: var(---rsp-brand-primary);
 
 	  &.burst-zip {
@@ -45,7 +46,8 @@
 		transition: color 0.3s ease;
 		display: flex;
 		align-items: center;
-		min-width: 0; /* or some value */
+		min-width: 0;
+	    gap: var(--rsp-spacing-xs);
 		text-decoration: none;
 
 		&:hover {
