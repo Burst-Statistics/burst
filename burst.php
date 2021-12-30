@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name: Burst | A/B Split Testing
+ * Plugin Name: Burst Statistics
  * Plugin URI: https://www.wordpress.org/plugins/burst
- * Description: A/B testing tool
- * Version: 1.0.11
+ * Description: Privacy Friendly Statistics. One click setup and start collecting valuable data.
+ * Version: 0.9.0
  * Text Domain: burst
  * Domain Path: /languages
  * Author: Really Simple Plugins
- * Author URI: https://www.wpburst.com
+ * Author URI: https://www.burst-statistics.com
  */
 
 /*
