@@ -66,8 +66,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			}
             $experiment_id = 0;
 			$metrics = $_GET['metrics'];
-			error_log("### get chart stats");
-error_log(print_r($_GET, true));
 			$period = 'day';
 
 			if ( !$error ) {
@@ -107,7 +105,6 @@ error_log(print_r($_GET, true));
                         }
                         $previous_day = date('j', $unix_day);
                     }
-                    error_log($n);
                     $n++;
                     $n = $n == $skip ? 0 : $n;
 
