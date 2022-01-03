@@ -262,12 +262,18 @@
 }
 .burst .burst-header-right {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   margin-left: auto;
   gap: var(--rsp-spacing-s);
 }
 .burst .burst-header-right select {
   max-width: 60ch;
+}
+@media (max-width: 576px) {
+  .burst .burst-header-right .button {
+    display: none;
+  }
 }
 .burst .burst-content-area {
   margin-top: calc(var(--rsp-grid-margin) * 2);

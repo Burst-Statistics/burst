@@ -298,6 +298,25 @@ jQuery(document).ready(function ($) {
      * Hide columns based on screen size, and redraw
      */
     function burst_resize_datatables() {
+        $('.burst-grid-container').each(function () {
+            if ($(this).hasClass('burst-load-ajax-datatable')) {
+                var table = $(this).find('table').DataTable();
+                var column = table.column(2);
+                var win = $(window);
+                if (win.width() > wpsiScreensizeHideColumn) {
+                    if (!column.visible()) column.visible(true);
+                } else {
+                    column.visible(false);
+                }
+                table.columns.adjust().draw();
+            }
+        });
+    }
+
+    /**
+     * Hide columns based on screen size, and redraw
+     */
+    function burst_resize_datatables() {
         return true;
     }
 
@@ -407,6 +426,7 @@ jQuery(document).ready(function ($) {
                         container.find('.dataTables_paginate').remove();
 
                         burstInitSingleDataTable(table, id);
+
                         container.find('.dataTables_length').appendTo( container.find('.burst-grid-controls') );
                         container.find('.dataTables_filter').appendTo( container.find('.burst-grid-controls') );
                         container.find('.dataTables_info').appendTo( container.find('.burst-grid-footer') );
@@ -423,6 +443,7 @@ jQuery(document).ready(function ($) {
                             if (parseInt(key) >= (rowCount-1) ) {
                                 table.row.add(row).draw();
                                 table.page( lastSelectedPage ).draw( false )
+
                             } else {
                                 table.row.add(row);
                             }

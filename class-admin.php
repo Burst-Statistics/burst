@@ -285,8 +285,9 @@ if ( ! class_exists( "burst_admin" ) ) {
 
         public function get_daterange_dropdown()
         {
-            //@todo Setup a default timerange and fix timezone issue
-            $endOfDay   = strtotime("today") - 1;
+            // strtotime today gives us the starting seconds of today. So we substract 1 second to get the end of yesterday.
+            // the gmt offset provides the correct timezone.
+            $endOfDay   = strtotime("today") - 1 - ( 3600 * get_option('gmt_offset') );
             $date_start = strtotime('-8 days');
             $date_end = $endOfDay;
 

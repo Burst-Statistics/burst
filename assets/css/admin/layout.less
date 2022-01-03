@@ -75,12 +75,17 @@
 
   .burst-header-right {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     margin-left: auto;
     gap: var(--rsp-spacing-s);
-
     select {
       max-width: 60ch;
+    }
+    @media( max-width: @rsp-break-xs ) {
+      .button{
+        display: none;
+      }
     }
   }
 

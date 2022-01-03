@@ -82,8 +82,7 @@ error_log(print_r($_GET, true));
 				$end_date_days_ago = $this->nr_of_periods_ago($period, $date_end);
 
 				$data = array();
-                $n = 0;
-                if( $number % 2 == 0 ){
+                if( $nr_of_periods % 2 == 0 ){
                     $skip = round($nr_of_periods / 6);
                 } else{
                     $skip = round($nr_of_periods / 7);
