@@ -274,7 +274,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             echo '<div class="burst-metric-container">';
             echo '<select name="burst_selected_metric">';
                 foreach ($metrics as $metric_val => $metric){
-                    echo '<option value="' . $metric_val . '">'. $metric .'</option>';
+                    echo  esc_html('<option value="' . $metric_val . '">'. $metric .'</option>');
                 }
             echo '</select></div>';
 
@@ -298,8 +298,8 @@ if ( ! class_exists( "burst_admin" ) ) {
                 <span></span>
                 <i class="dashicons dashicons-arrow-down-alt2"></i>
             </div>
-            <input type="hidden" name="burst_date_start" value="<?php echo $date_start ?>">
-            <input type="hidden" name="burst_date_end" value="<?php echo $date_end ?>">
+            <input type="hidden" name="burst_date_start" value="<?php echo esc_attr($date_start) ?>">
+            <input type="hidden" name="burst_date_end" value="<?php echo esc_attr($date_end) ?>">
             <?php
             $html = ob_get_clean();
 
@@ -386,7 +386,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                     ),
                     4 => array(
                         'title' => __("Most visited", "burst"),
-                        'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table"></table></div>',
+                        'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table" width="100%"></table></div>',
                         'class' => 'burst-grid-datatable column-2 burst-load-ajax-datatable',
                         'type' => 'page_url',
                         'controls' => '',
@@ -394,7 +394,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                     ),
                     5 => array(
                         'title' => __("Top referrers", "burst"),
-                        'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table"></table></div>',
+                        'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table" width="100%"></table></div>',
                         'class' => 'burst-grid-datatable column-2 burst-load-ajax-datatable',
                         'type' => 'referrer',
                         'controls' => '',
@@ -466,7 +466,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 		public function get_help_tip( $str ) {
 			?>
 			<span class="burst-tooltip-right tooltip-right"
-			      data-burst-tooltip="<?php echo $str ?>">
+			      data-burst-tooltip="<?php echo esc_html( $str ); ?>">
               <span class="dashicons dashicons-editor-help"></span>
             </span>
 			<?php
@@ -588,7 +588,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             if ( $page > 1 ) {
                 $output = array();
                 foreach ($hits as $hit) {
-                    $data = $hit->{$type};
+                    $data = $hit->val_grouped;
                     $output[] = '
                     <tr>
                         <td data-label="Page" class="burst-term"
@@ -609,10 +609,10 @@ if ( ! class_exists( "burst_admin" ) ) {
                     <tbody>';
 
                 foreach ( $hits as $hit ) {
-	                $data = $hit->{$type};
+	                $data = $hit->val_grouped;
 	                $output .=
                         '<tr>
-                            <td data-label="Page" class="burst-term">'.$data.'</td>
+                            <td data-label="Page" title="'.$data.'" class="burst-term">'.$data.'</td>
                             <td data-label="Pageviews" class="text-align-right">'.$hit->hit_count.'</td>
                         </tr>';
                 }
@@ -760,7 +760,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 	                <div class="burst-deactivate-notice-footer">
 	                    <a class="button button-default" href="#" id="burst_close_tb_window"><?php _e("Cancel", "burst") ?></a>
 	                    <a class="button button-primary burst-button-deactivate" href="#"><?php _e("Deactivate", "burst") ?></a>
-	                    <a class="button button-burst-tertiary" href="<?php echo $deactivate_and_remove_all_data_url ?>"><?php _e("Deactivate and delete all data", "burst") ?></a>
+	                    <a class="button button-burst-tertiary" href="<?php echo esc_url($deactivate_and_remove_all_data_url); ?>"><?php _e("Deactivate and delete all data", "burst") ?></a>
 	                </div>
 	        </div>
 	        <?php

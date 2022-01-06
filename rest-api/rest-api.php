@@ -22,7 +22,11 @@ function burst_register_rest_routes(){
 
 function burst_track_hit(WP_REST_Request $request){
 	$data = $request->get_json_params();
-	$burst_uid = burst_get_uid();
+
+	$burst_info = burst_get_user_info();
+	$burst_uid = $burst_info['uid'];
+    $first_time_visit = $burst_info['first_time_visit'];
+
 	$time = time();
 
     $referrer_url = trim( parse_url( $data['referrer_url'], PHP_URL_HOST ), 'www.' );
@@ -36,12 +40,12 @@ function burst_track_hit(WP_REST_Request $request){
     $user_agent_data = burst_get_user_agent_data($data['user_agent']);
     $scroll_percentage = round( intval( $data['scroll_percentage']), 2);
 	$update_array = array(
-		'page_url'            		=> sanitize_text_field( $data['url'] ),
-        'entire_page_url'           => esc_url_raw( $data['entire_url'] ),
-		'page_id'                   =>  intval($data['page_id']),
+		'page_url'            		=> trailingslashit(sanitize_text_field( $data['url'] )),
+        'entire_page_url'           => trailingslashit(esc_url_raw( $data['entire_url'] )),
+		'page_id'                   => intval($data['page_id']),
 		'time'               		=> $time,
 		'uid'               		=> sanitize_title($burst_uid),
-        'referrer'                  => $referrer_url,
+        'referrer'                  => trailingslashit($referrer_url),
         'anon_ip'                   => filter_var( $data['anon_ip'], FILTER_VALIDATE_IP),
         'user_agent'                => sanitize_text_field( $data['user_agent'] ),
         'browser'                   => $user_agent_data['browser'],
@@ -49,8 +53,9 @@ function burst_track_hit(WP_REST_Request $request){
         'platform'                  => $user_agent_data['platform'],
         'device'                    => $user_agent_data['device'],
         'device_resolution'         => sanitize_title($data['device_resolution']),
-        'scroll_percentage'         => intval($data['scroll_percentage']),
+        'scroll_percentage'         => intval($scroll_percentage),
         'time_on_page'              => intval($data['time_on_page']),
+        'first_time_visit'          => intval($first_time_visit),
 	);
 
     //get session id from burst statistic where uid and time < 30 minutes ago

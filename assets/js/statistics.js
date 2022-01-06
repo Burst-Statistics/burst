@@ -143,7 +143,6 @@ jQuery(document).ready(function ($) {
 
     initDatePicker();
     function initDatePicker() {
-
         let todayStart = moment().endOf('day').subtract(1, 'days').add(1, 'minutes');
         let todayEnd = moment().endOf('day');
         let yesterdayStart = moment().endOf('day').subtract(2, 'days').add(1, 'minutes');
@@ -289,6 +288,7 @@ jQuery(document).ready(function ($) {
     let burstDefaultRowCount = 10;
     let burstDefaultPagingType = 'simple_numbers';
     let lastSelectedPage = 0;
+    $.fn.DataTable.ext.pager.numbers_length = 5;
 
     $(window).on('resize', function(){
         burst_resize_datatables();
@@ -301,23 +301,9 @@ jQuery(document).ready(function ($) {
         $('.burst-grid-container').each(function () {
             if ($(this).hasClass('burst-load-ajax-datatable')) {
                 var table = $(this).find('table').DataTable();
-                var column = table.column(2);
-                var win = $(window);
-                if (win.width() > wpsiScreensizeHideColumn) {
-                    if (!column.visible()) column.visible(true);
-                } else {
-                    column.visible(false);
-                }
                 table.columns.adjust().draw();
             }
         });
-    }
-
-    /**
-     * Hide columns based on screen size, and redraw
-     */
-    function burst_resize_datatables() {
-        return true;
     }
 
     /**
@@ -348,11 +334,9 @@ jQuery(document).ready(function ($) {
             "pageLength": pageLength,
             "pagingType": pagingType,
             "conditionalPaging": true,
-            // "stateSave": true, // Saves the state in browser
-            "columns": [
-                { "width": "75%" },
-                { "width": "25%" },
-            ],
+            "autoWidth": true,
+            "info": false,
+            "lengthChange": false,
             "language": {
                 "paginate": {
                     "previous": burstLocalizeString('Previous'),
@@ -420,16 +404,12 @@ jQuery(document).ready(function ($) {
                     container.find('.burst-skeleton').fadeOut(300, function() {
                         table.hide().html(response.html).fadeIn(200);
                         table.DataTable().destroy();
-                        container.find('.dataTables_length').remove();
                         container.find('.dataTables_filter').remove();
-                        container.find('.dataTables_info').remove();
                         container.find('.dataTables_paginate').remove();
 
                         burstInitSingleDataTable(table, id);
 
-                        container.find('.dataTables_length').appendTo( container.find('.burst-grid-controls') );
                         container.find('.dataTables_filter').appendTo( container.find('.burst-grid-controls') );
-                        container.find('.dataTables_info').appendTo( container.find('.burst-grid-footer') );
                         container.find('.dataTables_paginate').appendTo( container.find('.burst-grid-footer') );
                     });
 

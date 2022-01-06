@@ -55,15 +55,16 @@ if ( ! function_exists('burst_read_more' ) ) {
 		return $html;
 	}
 }
-if ( ! function_exists('burst_get_uid' ) ) {
+if ( ! function_exists('burst_get_user_info' ) ) {
     /**
-     * Get burst uid and set a cookie if necessary
-     * @return string
+     * Get burst uid and first time visit and set a cookie if necessary
+     * @return array
      */
-    function burst_get_uid()
+    function burst_get_user_info()
     {
+        $first_time_visit = false;
         //check if this user has a cookie
-        $burst_uid = isset($_COOKIE['burst_uid']) ? $_COOKIE['burst_uid'] : false;
+        $burst_uid = isset($_COOKIE['burst_uid']) ? sanitize_title($_COOKIE['burst_uid']) : false;
         if (!$burst_uid) {
             // if user is logged in get burst meta user id
             if (is_user_logged_in()) {
@@ -73,9 +74,12 @@ if ( ! function_exists('burst_get_uid' ) ) {
                     //generate random string
                     $burst_uid = burst_random_str();
                     update_user_meta(get_current_user_id(), 'burst_cookie_uid', $burst_uid);
+                    $first_time_visit = true;
                 }
             } else {
                 $burst_uid = burst_random_str();
+                // add first_time_visit data
+                $first_time_visit = true;
             }
         }
 
@@ -83,7 +87,10 @@ if ( ! function_exists('burst_get_uid' ) ) {
         if (!isset($_COOKIE['burst_uid'])) {
             burst_setcookie('burst_uid', $burst_uid, 30);
         }
-        return $burst_uid;
+        return array(
+                'uid' => $burst_uid,
+                'first_time_visit' => $first_time_visit,
+        );
     }
 }
 
@@ -141,6 +148,34 @@ if ( ! function_exists( 'burst_array_filter_multidimensional' ) ) {
 
 		return $new;
 	}
+}
+
+/**
+ *
+ * Check if we are currently in preview mode from one of the known page builders
+ *
+ * @return bool
+ *
+ */
+if ( ! function_exists( 'burst_is_pagebuilder_preview' ) ) {
+    function burst_is_pagebuilder_preview() {
+        $preview = false;
+        global $wp_customize;
+        if ( isset( $wp_customize ) || isset( $_GET['fb-edit'] )
+            || isset( $_GET['et_pb_preview'] )
+            || isset( $_GET['et_fb'] )
+            || isset( $_GET['elementor-preview'] )
+            || isset( $_GET['vc_action'] )
+            || isset( $_GET['vcv-action'] )
+            || isset( $_GET['fl_builder'] )
+            || isset( $_GET['tve'] )
+            || isset( $_GET['ct_builder'] )
+        ) {
+            $preview = true;
+        }
+
+        return apply_filters( 'burst_is_preview', $preview );
+    }
 }
 
 /**
@@ -419,7 +454,7 @@ if ( ! function_exists( 'burst_intro' ) ) {
         }
         $html = "<div class='burst-panel burst-notification burst-intro'>{$msg}</div>";
 
-        echo $html;
+        echo esc_html($html);
 
     }
 }
@@ -441,9 +476,9 @@ if ( ! function_exists( 'burst_notice' ) ) {
         $html = "<div class='burst-panel-wrap'><div class='burst-panel burst-notification burst-{$type}'><div>{$msg}</div></div></div>";
 
         if ( $echo ) {
-            echo $html;
+            echo esc_html($html);
         } else {
-            return $html;
+            return esc_html($html);
         }
     }
 }
@@ -464,17 +499,17 @@ if ( ! function_exists( 'burst_conclusion' ) ) {
 
         ob_start();
 
-        echo '<div id="burst-conclusion"><h3>' . $title . '</h3><ul class="burst-conclusion__list">';
+        echo esc_html('<div id="burst-conclusion"><h3>' . $title . '</h3><ul class="burst-conclusion__list">');
         foreach($conclusions as $conclusion) {
             $icon = $animate ? 'icon-loading' : 'icon-' . $conclusion['report_status'];
             $displayOpac = $animate ? 'style="opacity: 0"' : '';
             $display = $animate ? 'style="display: none"' : '';
-            echo '<li ' . $displayOpac . 'class="burst-conclusion__check '  .$icon . '" data-status="' . $conclusion['report_status'] . '">';
-            if ($animate) echo '<p class="burst-conclusion__check--check-text">' . $conclusion['check_text'] . '</p>';
-            echo '<p ' . $display . ' class="burst-conclusion__check--report-text">' . $conclusion['report_text'] . '</p>';
+            echo esc_html('<li ' . $displayOpac . 'class="burst-conclusion__check '  .$icon . '" data-status="' . $conclusion['report_status'] . '">');
+            if ($animate) echo esc_html('<p class="burst-conclusion__check--check-text">' . $conclusion['check_text'] . '</p>');
+            echo esc_html('<p ' . $display . ' class="burst-conclusion__check--report-text">' . $conclusion['report_text'] . '</p>');
             echo '</li>';
         }
-        echo '</ul></div>';
+        echo'</ul></div>';
         if ($animate) {
             ?>
             <script>
@@ -517,9 +552,9 @@ if ( ! function_exists( 'burst_conclusion' ) ) {
         $html = ob_get_clean();
 
         if ( $echo ) {
-            echo $html;
+            echo esc_html($html);
         } else {
-            return $html;
+            return esc_html($html);
         }
     }
 }
@@ -555,7 +590,7 @@ if ( ! function_exists( 'burst_sidebar_notice' ) ) {
             $burst_hidden = burst_field::this()->condition_applies( $args ) ? "" : "burst-hidden";;
         }
 
-        echo "<div class='burst-help-modal burst-notice burst-{$type} {$burst_hidden} {$condition_check}' {$condition_question} {$condition_answer}>{$msg}</div>";
+        echo esc_html("<div class='burst-help-modal burst-notice burst-{$type} {$burst_hidden} {$condition_check}' {$condition_question} {$condition_answer}>{$msg}</div>");
     }
 }
 
@@ -624,32 +659,6 @@ if ( ! function_exists( 'burst_panel' ) ) {
         } else {
             return $output;
         }
-
-    }
-}
-
-if ( ! function_exists( 'burst_list_item' ) ) {
-
-    function burst_list_item( $title, $link, $btn, $selected ) {
-        if ( $title == '' ) {
-            return;
-        }
-        $selected = $selected ? "selected" : '';
-        ?>
-
-        <div class="burst-panel burst-link-panel <?php echo $selected ?>">
-            <div class="burst-panel-title">
-                <a class="burst-panel-link" href="<?php echo $link ?>">
-                <span class="burst-panel-toggle">
-                    <i class="fa fa-edit"></i>
-                    <span class="burst-title"><?php echo $title ?></span>
-                 </span>
-                </a>
-
-                <?php echo $btn ?>
-            </div>
-        </div>
-        <?php
 
     }
 }

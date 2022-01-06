@@ -238,8 +238,8 @@ if ( ! class_exists( "burst_field" ) ) {
                     $burst_hidden )
                 . '" ';
 
-            echo $condition_question;
-            echo $condition_answer;
+            echo esc_html( $condition_question );
+            echo esc_html( $condition_answer );
 
             echo '><div class="burst-label">';
 			
@@ -313,7 +313,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo esc_html($args['label']) ?></label>
+				for="<?php echo esc_attr( $args['fieldname'] ) ?>"><?php echo esc_html($args['label']) ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input <?php if ( $args['required'] ) {
 				echo 'required';
@@ -344,7 +344,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+				for="<?php echo esc_attr($args['fieldname']); ?>"><?php echo esc_html($args['label']) ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input <?php if ( $args['required'] ) {
 				echo 'required';
@@ -376,7 +376,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?= esc_html($args['label']) ?></label>
+				for="<?php echo esc_attr($args['fieldname']); ?>"><?php  esc_html($args['label']) ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input <?php if ( $args['required'] ) {
 				echo 'required';
@@ -407,7 +407,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+				for="<?php echo esc_attr($args['fieldname']) ?>"><?php echo esc_html($args['label']) ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input autocomplete="tel" <?php if ( $args['required'] ) {
 				echo 'required';
@@ -1098,7 +1098,7 @@ if ( ! class_exists( "burst_field" ) ) {
 				<?php if ($value) {
 					$post = get_post($value);
 					if($post){ ?>
-						<option value="<?=$value?>">
+						<option value="<?php $value?>">
 						<?php echo $post->post_title ?></option>
 				
 					<?php }
@@ -1145,7 +1145,7 @@ if ( ! class_exists( "burst_field" ) ) {
                 <?php if ($value) {
                     $post = get_post($value);
                     if($post){ ?>
-                        <option value="<?=$value?>">
+                        <option value="<?php $value?>">
                             <?php echo $post->post_title ?></option>
 
                     <?php }
@@ -1192,7 +1192,7 @@ if ( ! class_exists( "burst_field" ) ) {
                 <?php if ($value) {
                     $post = get_post($value);
                     if($post){ ?>
-                        <option value="<?=$value?>">
+                        <option value="<?php $value?>">
                             <?php echo $post->post_title ?></option>
 
                     <?php }

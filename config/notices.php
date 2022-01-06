@@ -215,7 +215,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 				'dismiss'        => $dismiss,
 			);
 			$template = burst_get_template( 'dashboard/notice.php', $args );
-			echo $template;
+			echo esc_html($template);
 		}
 
 

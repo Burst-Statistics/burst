@@ -47,8 +47,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 $excluded_roles = apply_filters('burst_roles_excluded_from_tracking', array( 'administrator' ));
                 if ( array_intersect( $excluded_roles, $user->roles ) ) {
                     return true;
-                } else {
-                    return false;
+                }
+                if ( is_preview() || burst_is_pagebuilder_preview() ) {
+                    return true;
                 }
             }
             return false;
@@ -357,7 +358,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		}
 
         /**
-         * Get popular pages
+         * This is used for datatables
          * @param array $args
          *
          * @return array|int pages
@@ -428,16 +429,24 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 $where .=" AND time < $to ";
             }
 
+            if ($group_by === 'referrer'){
+                $remove = array("http://www.", "https://www.", "http://", "https://");
+                $site_url = str_replace( $remove, "", site_url());
+                $where .="AND $group_by NOT LIKE '%$site_url%'";
+                $select = "COUNT($group_by) AS hit_count,
+                trim( 'www.' from trim( trailing '/' from substring($group_by, locate('://', $group_by) + 3))) as val_grouped"; //Strip http:// and https://
+                //substring_index(substring($group_by, locate('://', $group_by) + 3), '.', -2) as $group_by"; //Strip only subdomains and https
+                //substring_index(substring_index(substring($group_by, locate('://', $group_by) + 3), '/', 1), '.', -2) as $group_by"; STRIP FULL URL
+            } else {
+                $select = "COUNT($group_by) AS hit_count,
+                trim( trailing '/' from $group_by) as val_grouped";
+            }
+
             $search_sql ="SELECT 
-                            COUNT($group_by) AS hit_count,
-                                if(
-                                    SUBSTRING($group_by, -1, 1)='/',
-                                    SUBSTRING($group_by, 1, LENGTH($group_by)-1),
-                                     $group_by
-                                ) as $group_by 
+                            $select
                             FROM $table_name 
                             WHERE 1=1 $where AND $group_by IS NOT NULL AND $group_by <> ''
-                            GROUP BY $group_by 
+                            GROUP BY val_grouped 
                             ORDER BY $order_by $order $limit ";
 
             if ($args['count']) {
@@ -446,7 +455,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             } else {
                 $searches =$wpdb->get_results( $search_sql );
             }
-
+            error_log(print_r($searches, true));
             return $searches;
         }
 
@@ -456,6 +465,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
          * @param int $date_start
          * @param int $date_end
          * @return array
+         * @todo strip this function from useless stuff. For example comparing.
          */
         public function get_single_statistic($statistic = 'pageviews' , $date_start = 0, $date_end = 0){
             global $wpdb;
@@ -532,7 +542,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     break;
                 case 'referrer':
                     $sql = $wpdb->prepare("SELECT 
-                                referrer as val,
+                                substring(referrer, locate('://', referrer) + 3) as val,
                                 COUNT(referrer) AS referrer_count
                             FROM $table_name
                             WHERE time>%s AND time<%s AND referrer IS NOT NULL AND referrer <> ''
@@ -653,6 +663,97 @@ if ( ! class_exists( "burst_statistics" ) ) {
         }
 
         /**
+         * @param $date_start
+         * @param $date_end
+         *
+         * @return int[][]
+         */
+        public function get_compare_statistics($date_start = 0, $date_end = 0){
+            $date_start = intval($date_start);
+            $date_end = intval($date_end);
+            $time_diff = $date_end - $date_start;
+            $date_start_diff = $date_start - $time_diff;
+            $date_end_diff = $date_end - $time_diff;
+
+            global $wpdb;
+            $wpdb->show_errors( true );
+            $table_name = $wpdb->prefix . 'burst_statistics';
+
+            // current stats
+            $sql = "SELECT  COUNT( ID ) as pageviews,
+                            COUNT( DISTINCT( session_id ) ) AS sessions,
+                            COUNT( DISTINCT( uid ) ) AS visitors,
+                            AVG( time_on_page ) AS time_on_page,
+                            COUNT( DISTINCT( CASE WHEN time_on_page < 5000 THEN session_id END ) ) as bounces,
+                            SUM( first_time_visit ) as new_visitors
+                    FROM $table_name
+                    WHERE time > $date_start AND time < $date_end";
+            $current_stats = $wpdb->get_row( $sql, ARRAY_A );
+
+            // previous stats
+            $sql = "SELECT  COUNT( ID ) as pageviews_prev,
+                            COUNT( DISTINCT( session_id ) ) AS sessions_prev,
+                            COUNT( DISTINCT( uid ) ) AS visitors_prev,
+                            COUNT( DISTINCT( CASE WHEN time_on_page < 5000 THEN session_id END ) ) as bounces_prev
+                    FROM $table_name
+                    WHERE time > $date_start_diff AND time < $date_end_diff";
+            $previous_stats = $wpdb->get_row( $sql, ARRAY_A );
+            $sql_results = array_merge($current_stats, $previous_stats);
+
+            error_log('sql compare results');
+            error_log(print_r($sql_bounces_results, true));
+            // text for the compare block
+
+            $results = array(
+                'pageviews' => array(
+                    'title' => __('Pageviews', 'burst'),
+                    'subtitle' => burst_sprintf(__('Avg. of %s pageviews per session', 'burst'),
+                                    round( $sql_results['pageviews'] / $sql_results['sessions'], 1)
+                                ),
+                    'tooltip' => '',
+                    'number' => $sql_results['pageviews'],
+                    'uplift_status' => $this->calculate_uplift_status($sql_results['pageviews_prev'], $sql_results['pageviews']),
+                    'uplift' => $this->format_uplift($sql_results['pageviews_prev'], $sql_results['pageviews']),
+                ),
+                'sessions' => array(
+                    'title' => __('Sessions', 'burst'),
+                    'subtitle' => burst_sprintf(__('Avg. time %s per session', 'burst'),
+                        burst_format_milliseconds_to_readable_time($this->calculate_time_per_session($sql_results['pageviews'], $sql_results['sessions'], $sql_results['time_on_page']))
+                    ),
+                    'tooltip' => '',
+                    'number' => $sql_results['sessions'],
+                    'uplift_status' => $this->calculate_uplift_status($sql_results['sessions_prev'], $sql_results['sessions']),
+                    'uplift' => $this->format_uplift($sql_results['sessions_prev'], $sql_results['sessions']),
+                ),
+                'visitors' => array(
+                    'title' => __('Unique visitors', 'burst'),
+                    'subtitle' => burst_sprintf(__('%s are new visitors', 'burst'),
+                        round($sql_results['new_visitors'] / $sql_results['visitors']  * 100, 1) . '%'
+                    ),
+                    'tooltip' => '',
+                    'number' => $sql_results['visitors'],
+                    'uplift_status' => $this->calculate_uplift_status($sql_results['visitors_prev'], $sql_results['visitors']),
+                    'uplift' => $this->format_uplift($sql_results['visitors_prev'], $sql_results['visitors']),
+                ),
+//                'time_on_page' => array(
+//                    'title' => __('Avg. time on page', 'burst'),
+//                    'tooltip' => '',
+//                    'number' => burst_format_milliseconds_to_readable_time($sql_results['time_on_page']),
+//                ),
+                'bounces' => array(
+                    'title' => __('Bounce percentage', 'burst'),
+                    'subtitle' => '',
+                    'tooltip' => '',
+                    'number' => $sql_results['bounces'],
+                    'uplift_status' => $this->calculate_uplift_status($sql_results['bounces_prev'], $sql_results['bounces']),
+                    'uplift' => $this->format_uplift($sql_results['bounces_prev'], $sql_results['bounces']),
+                ),
+            );
+
+            return $results;
+        }
+
+        /**
          * get_real_time_visitors
          * @param int $date_start
          * @param int $date_end
@@ -706,6 +807,54 @@ if ( ! class_exists( "burst_statistics" ) ) {
             die;
         }
 
+        /**
+         * Function to calculate uplift
+         * @param $original_value
+         * @param $new_value
+         * @return int
+         */
+        public function calculate_uplift($original_value, $new_value){
+            $increase = $original_value - $new_value;
+            return round($increase / $new_value * 100, 1);
+        }
+
+        /**
+         * Function to format uplift
+         * @param $original_value
+         * @param $new_value
+         * @return string
+         */
+        public function format_uplift($original_value, $new_value){
+            $uplift = $this->calculate_uplift($new_value, $original_value);
+            $formatted = $uplift > 0 ? '+' . $uplift . '%' : $uplift . '%';
+            return $formatted;
+        }
+
+
+        /**
+         * Function to calculate uplift status
+         * @param $original_value
+         * @param $new_value
+         * @return string
+         */
+        public function calculate_uplift_status($original_value, $new_value){
+            $uplift = $this->calculate_uplift($new_value, $original_value);
+            $status = $uplift > 0 ? 'positive' : 'negative';
+            return $status;
+        }
+
+        /**
+         * Function to calculate time per session
+         * @param $original_value
+         * @param $new_value
+         * @return string
+         */
+        public function calculate_time_per_session($pageviews, $sessions, $time_per_page){
+            $pageviews_per_session = $pageviews / $sessions;
+            $time_per_session = $pageviews_per_session * $time_per_page;
+            return $time_per_session;
+        }
+
 	}
 
 }
@@ -741,6 +890,7 @@ function burst_install_statistics_table() {
             `user_agent` varchar(255),
             `scroll_percentage` int(11),
             `session_id` int(11),
+            `first_time_visit` int(11),
               PRIMARY KEY  (ID)
             ) $charset_collate;";
 		dbDelta( $sql );

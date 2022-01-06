@@ -44,6 +44,7 @@ document.addEventListener('scroll', function(e) {
 		ticking = true;
 	}
 });
+// every 30 seconds update the time on page.
 function start_heartbeat_interval(){
 	heartbeat_interval = window.setInterval(function(){
 		burst_update_time_on_page();
@@ -52,8 +53,6 @@ function start_heartbeat_interval(){
 function stop_heartbeat_interval(){
 	clearInterval(heartbeat_interval);
 }
-
-
 
 if ( !burst_is_user_agent() ) {
 	conversion = window.burst_is_goal_page !== undefined;
