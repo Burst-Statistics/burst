@@ -35,7 +35,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_action( 'admin_init', array( $this, 'check_upgrade' ), 10, 2 );
 
 			add_action( 'admin_init', array($this, 'init_grid') );
-			add_action( 'admin_init', array($this, 'hide_wordpress_and_other_plugin_notices') );
             add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
 
 			// deactivating
@@ -498,23 +497,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 		        $status = "<a href=$link>$text</a>";
 	        }
 	        return $status;
-        }
-
-        /**
-         * Hides all notices from other plugins and themes on Burst pages
-         * 
-         */
-        public function hide_wordpress_and_other_plugin_notices(){
-        	if ( isset( $_GET['page'] ) && strpos($_GET['page'], 'burst') === 0 ) {
-				if(! current_user_can('update_core')){ return; }
-				add_filter('pre_option_update_core','__return_null');
-				add_filter('pre_site_transient_update_core','__return_null');
-				add_filter('pre_site_transient_update_plugins','__return_null');
-				add_filter('pre_site_transient_update_themes','__return_null');
-				add_filter('all_admin_notices','__return_null');
-				add_filter('admin_notices','__return_null');
-        	}
-
         }
 
         public function ajax_get_datatable()

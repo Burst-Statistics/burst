@@ -93,9 +93,9 @@ if ( ! class_exists( 'BURST' ) ) {
 		 */
 
 		private function setup_constants() {
-            define('STEP_SELECT', 1);
-            define('STEP_METRICS', 2);
-            define('STEP_START', 3);
+            define('BURST_STEP_SELECT', 1);
+            define('BURST_STEP_METRICS', 2);
+            define('BURST_STEP_START', 3);
             define( 'burst_free', true );
 			define( 'burst_url', plugin_dir_url( __FILE__ ) );
 			define( 'burst_path', plugin_dir_path( __FILE__ ) );
@@ -138,11 +138,9 @@ if ( ! class_exists( 'BURST' ) ) {
 			}
             require_once( burst_path . '/helpers/anonymize-ip.php' );
             require_once( burst_path . '/helpers/php-user-agent/UserAgentParser.php' );
-
 			require_once( burst_path . '/statistics/class-statistics.php' );
             require_once( burst_path . '/sessions/class-sessions.php' );
             require_once( burst_path . '/goals/class-goals.php' );
-
 			require_once( burst_path . '/rest-api/rest-api.php' );
 			require_once( burst_path . '/config/class-config.php');
 			require_once( burst_path . '/cron/cron.php');
