@@ -8,89 +8,55 @@ jQuery(document).ready(function ($) {
      */
 
     function burstInitChartJS(date_start, date_end) {
-        let useExperimentDate = typeof date_start === 'undefined';
         date_start = typeof date_start !== 'undefined' ? date_start : parseInt($('input[name=burst_date_start]').val());
         date_end = typeof date_end !== 'undefined' ? date_end : parseInt($('input[name=burst_date_end]').val());
-
-        let XscaleLabelDisplay = true;
-        let YscaleLabelDisplay = true;
+        let style = getComputedStyle(document.body);
+        let pageviews_color = style.getPropertyValue('--rsp-blue');
+        let visitors_color = style.getPropertyValue('--rsp-yellow');
         let titleDisplay = false;
         let legend = true;
-        window.config = {
+
+        let insightsConfig = {
             type: 'line',
+            beginAtZero: true,
             data: {
-                labels: ['...', '...', '...', '...', '...', '...', '...'],
                 datasets: [{
-                    label: 'Loading...',
-                    backgroundColor: 'rgb(41, 182, 246)',
-                    borderColor: 'rgb(41, 182, 246)',
-                    data: [
-                        0, 0, 0, 0, 0, 0, 0,
-                    ],
-                    fill: false,
+                    label: 'Pageviews',
+                    borderColor: pageviews_color,
+                    backgroundColor: pageviews_color,
+                }, {
+                    label: 'Visitors',
+                    borderColor: visitors_color,
+                    backgroundColor: visitors_color,
+
                 }]
             },
             options: {
-                legend: {
-                    display: legend,
-                },
                 responsive: true,
                 maintainAspectRatio: false,
-                title: {
-                    display: titleDisplay,
-                    text: 'Select'
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: true,
-                    enabled: true,
-                    position: 'nearest',
-                    // callbacks: {
-                    //     label: function(tooltipItems, data) {
-                    //         let append = '';
-                    //         if (metric == 'conversion_percentages'){
-                    //             append = '%';
-                    //         }
-                    //         let index = tooltipItems.datasetIndex;
-                    //
-                    //         return data['datasets'][index]['label'] + ': ' + tooltipItems.yLabel + append;
-                    //     }
-                    // }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: true
-                },
+                cubicInterpolationMode: 'monotone',
                 scales: {
-                    xAxes: [{
-                        display: XscaleLabelDisplay,
-                        offset: true,
-                        scaleLabel: {
-                            display: false,
-                        }
-                    }],
-                    yAxes: [{
-                        display: YscaleLabelDisplay,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Loading...'
-                        },
+                    y: {
                         ticks: {
                             beginAtZero: true,
-                            min: 0,
-                            max: 10,
-                            stepSize: 5
+                            stepSize: 1,
+                            maxTicksLimit: 6,
                         }
-                    }],
+                    },
+                    x: {
+                        ticks: {
+                            maxTicksLimit: 8,
+                        }
+                    }
                 }
             }
         };
 
         let ctx = document.getElementsByClassName('burst-chartjs-stats');
-        if ( window.conversionGraph != undefined ) {
-            window.conversionGraph.destroy();
+        if ( window.insightsGraph != undefined ) {
+            window.insightsGraph.destroy();
         }
-        window.conversionGraph = new Chart(ctx, window.config);
+        window.insightsGraph = new Chart(ctx, insightsConfig);
 
         let metrics = JSON.parse($('input[name=burst_chartjs_metrics]').val());
         $.ajax({
@@ -106,31 +72,28 @@ jQuery(document).ready(function ($) {
             success: function (response) {
 
                 if (response.success == true) {
-                    // if (useExperimentDate) {
-                    //     $('input[name=burst_date_start]').val(response.data.date_start);
-                    //     $('input[name=burst_date_end]').val(response.data.date_end);
-                    //     burstUpdateDate(moment.unix(response.data.date_start), moment.unix(response.data.date_end));
-                    // }
-
 
                     let i = 0;
+                    console.log(response.data);
+                    console.log(insightsConfig);
                     response.data.datasets.forEach(function (dataset) {
-                        if (window.config.data.datasets.hasOwnProperty(i)) {
-                            window.config.data.datasets[i] = dataset;
+                        if (insightsConfig.data.datasets.hasOwnProperty(i)) {
+                            insightsConfig.data.datasets[i] = dataset;
                         } else {
                             let newDataset = dataset;
-                            window.config.data.datasets.push(newDataset);
+                            insightsConfig.data.datasets.push(newDataset);
                         }
 
                         i++;
                     });
 
-                    window.config.data.labels = response.data.labels;
-                    window.config.data.dates = response.data.dates;
-                    window.config.options.title.text = response.title;
-                    window.config.options.scales.yAxes[0].ticks.max = parseInt(response.data.max);
-                    window.config.options.scales.yAxes[0].scaleLabel.labelString = response.options.scales.yAxes[0].scaleLabel;
-                    window.conversionGraph.update();
+                    insightsConfig.data.labels = response.data.labels;
+                    insightsConfig.data.dates = response.data.dates;
+                    // insightsConfig.options.title.text = response.title;
+                    // insightsConfig.options.scales.yAxes[0].ticks.max = parseInt(response.data.max);
+                    // insightsConfig.options.scales.yAxes[0].scaleLabel.labelString = response.options.scales.yAxes[0].scaleLabel;
+                    console.log(insightsConfig);
+                    window.insightsGraph.update();
                 } else {
                     alert("Your data could not be loaded")
                 }

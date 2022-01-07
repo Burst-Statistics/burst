@@ -33,7 +33,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 			//multisite
 			add_filter( "network_admin_plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
 			add_action( 'admin_init', array( $this, 'check_upgrade' ), 10, 2 );
-
 			add_action( 'admin_init', array($this, 'init_grid') );
             add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
 
@@ -106,9 +105,8 @@ if ( ! class_exists( "burst_admin" ) ) {
 			}
 
             if (isset($_GET['page']) && $_GET['page'] ==='burst-statistics') {
-                wp_register_style( 'chartjs', burst_url . 'assets/chartjs/Chart.min.css', false, burst_version );
                 wp_enqueue_style( 'chartjs' );
-                wp_enqueue_script( 'chartjs', burst_url . "assets/chartjs/Chart.min.js", array(), burst_version, true );
+                wp_enqueue_script( 'chartjs', burst_url . "assets/chartjs/chart.min.js", array(), burst_version, true );
 
                 wp_enqueue_script('burst-dashboard', burst_url . "assets/js/statistics$minified.js", array('burst-admin'), burst_version, false);
 

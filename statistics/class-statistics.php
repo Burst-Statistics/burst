@@ -81,13 +81,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$end_date_days_ago = $this->nr_of_periods_ago($period, $date_end);
 
 				$data = array();
-                if( $nr_of_periods % 2 == 0 ){
-                    $skip = round($nr_of_periods / 6);
-                } else{
-                    $skip = round($nr_of_periods / 7);
-                }
-
-
 
 				for ($i = $nr_of_periods-1; $i >= 0; $i--) {
 					$days = $i + $end_date_days_ago;
@@ -95,22 +88,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					$date = date( get_option( 'date_format' ), $unix_day);
 					$data['dates'][] = $date;
 
-                    $date = '';
                     $unix_day = strtotime("-$days days");
-                    if ($n == 0){
-                        // add month for first day of the month and first day of dataset
-                        if ($i == $nr_of_periods - 1 || $previous_day > date('j', $unix_day)) {
-                            $date = date('M j', $unix_day);
-                        } else {
-                            $date = date('j', $unix_day);
-                        }
-                        $previous_day = date('j', $unix_day);
-                    }
+
+                    $date = date('M j', $unix_day);
+
                     $n++;
                     $n = $n == $skip ? 0 : $n;
 
                     $data['labels'][] = $date;
                 }
+				error_log(print_r($data, true));
 
 				//generate a dataset for each category
 				$i=0;
