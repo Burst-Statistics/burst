@@ -39,6 +39,6 @@ foreach ($items as $item) {
     ), $container);
 }
  $output .= '</div>';
-echo $output;
+echo wp_kses_post($output);
 
 

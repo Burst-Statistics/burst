@@ -1,1 +1,0 @@
-<!--<a class="button button-primary" href="--><?php //echo burst_premium_url ?><!--" >--><?php //_e("View Pro", "burst") ?><!--</a>-->

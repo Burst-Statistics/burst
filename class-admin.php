@@ -271,7 +271,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             echo '<div class="burst-metric-container">';
             echo '<select name="burst_selected_metric">';
                 foreach ($metrics as $metric_val => $metric){
-                    echo  esc_html('<option value="' . $metric_val . '">'. $metric .'</option>');
+                    echo  esc_html('<option value="' . esc_html($metric_val) . '">'. esc_html($metric) .'</option>');
                 }
             echo '</select></div>';
 
@@ -453,21 +453,6 @@ if ( ! class_exists( "burst_admin" ) ) {
             );
             echo burst_get_template('admin_wrap.php', $args );
         }
-
-		/**
-		 * Get the html output for a help tip
-		 *
-		 * @param $str
-		 */
-
-		public function get_help_tip( $str ) {
-			?>
-			<span class="burst-tooltip-right tooltip-right"
-			      data-burst-tooltip="<?php echo esc_html( $str ); ?>">
-              <span class="dashicons dashicons-editor-help"></span>
-            </span>
-			<?php
-		}
 
 	    /**
          * Get status link for plugin, depending on installed, or premium availability

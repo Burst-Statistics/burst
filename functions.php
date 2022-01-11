@@ -178,50 +178,6 @@ if ( ! function_exists( 'burst_is_pagebuilder_preview' ) ) {
     }
 }
 
-/**
- * Callback to ajax load the posts dropdown in the metabox
- *
- */
-function burst_get_posts_ajax_callback(){
- 	if (!burst_user_can_manage()) return;
-
-	$return = array();
-    if ( !isset( $_GET['query_settings'] ) ) {
-        return $return;
-    }
-
- 	$query_settings = array();
- 	foreach ( $_GET['query_settings'] as $key => $value ) {
-	    $key                    = sanitize_text_field( $key );
-	    $value                  = sanitize_text_field( $value );
-	    $query_settings[ $key ] = $value;
-    }
-	$search = isset( $_GET['q'] ) ? sanitize_text_field( $_GET['q'] ) : false;
-	$default_args = array(
-		's'                      => $search,
-		'post_type'              => sanitize_text_field( $query_settings['post_type'] ),
-		'posts_per_page'         => 10,
-		'update_post_term_cache' => false, // quicker query
-		'update_post_meta_cache' => false, // quicker query
-		'no_found_rows'          => true, // quicker
-		'orderby'                => 'post_modified', // Sorts by the date modified.
-		'order'                  => 'DESC',
-	);
-
-	$args = array_merge($default_args, $query_settings);
-	$search_results = new WP_Query( $args );
-	if( $search_results->have_posts() ) :
-		while( $search_results->have_posts() ) : $search_results->the_post();	
-			// shorten the title a little
-			$title = ( mb_strlen( $search_results->post->post_title ) > 50 ) ? mb_substr( $search_results->post->post_title, 0, 49 ) . '...' : $search_results->post->post_title;
-			$return[] = array( $search_results->post->ID, $title ); // array( Post ID, Post Title )
-		endwhile;
-	endif;
-	echo json_encode( $return );
-	die;
-}
-add_action( 'wp_ajax_burst_get_posts', 'burst_get_posts_ajax_callback' ); // wp_ajax_{action}
-
 if ( ! function_exists( 'burst_localize_date' ) ) {
 
 	function burst_localize_date( $date ) {
@@ -613,11 +569,11 @@ if ( !function_exists('burst_admin_notice')) {
              style="border-left:4px solid #333">
             <div class="burst-admin-notice-container">
                 <div class="burst-logo"><img width=80px"
-                                             src="<?php echo burst_url ?>assets/images/icon-logo.svg"
+                                             src="<?php echo esc_url(burst_url) ?>assets/images/icon-logo.svg"
                                              alt="logo">
                 </div>
                 <div style="margin-left:30px">
-                    <?php echo $msg ?>
+                    <?php echo wp_kses_post($msg) ?>
                 </div>
             </div>
         </div>
@@ -643,11 +599,8 @@ if ( ! function_exists( 'burst_panel' ) ) {
                     '. burst_icon('arrow-right', 'success') .'
                     <span class="burst-title">' . $title . '</span>
                  </span>
-
                 <span>' . $validate . '</span>
-
                 <span>' . $custom_btn . '</span>
-
             </div>
             <div class="burst-panel-content" ' . $open_class . '>
                 ' . $html . '
@@ -655,7 +608,7 @@ if ( ! function_exists( 'burst_panel' ) ) {
         </div>';
 
         if ( $echo ) {
-            echo $output;
+            echo wp_kses_post($output);
         } else {
             return $output;
         }
@@ -782,9 +735,9 @@ if ( ! function_exists( 'burst_printf' ) ) {
 
         if ($args_count === $count){
             $string = call_user_func_array('sprintf', $args);
-            echo $string;
+            echo wp_kses_post($string);
         } else {
-            echo $args[0] .  ' (Translation error)';
+            echo wp_kses_post($args[0]) .  ' (Translation error)';
         }
     }
 }

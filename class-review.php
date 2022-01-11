@@ -87,7 +87,7 @@ if ( ! class_exists( "burst_review" ) ) {
 			     style="border-left:4px solid var(--rsp-green, #2e8a37)">
 				<div class="burst-container">
 					<div class="burst-review-image"><img width="80px"
-					                                     src="<?php echo burst_url ?>/assets/images/burst-logo.svg"
+					                                     src="<?php echo esc_url_raw(burst_url) ?>/assets/images/burst-logo.svg"
 					                                     alt="review-logo">
 					</div>
 					<div style="margin-left:30px">
@@ -154,7 +154,7 @@ if ( ! class_exists( "burst_review" ) ) {
 						var data = {
 							'action': 'dismiss_review_notice',
 							'type': type,
-							'token': '<?php echo $ajax_nonce; ?>'
+							'token': '<?php echo esc_attr($ajax_nonce); ?>'
 						};
 						$.post(ajaxurl, data, function (response) {
 						});

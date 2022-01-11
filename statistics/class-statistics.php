@@ -66,10 +66,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$error = true;
 			}
             $experiment_id = 0;
-			$metrics = $_GET['metrics'];
 			$period = 'day';
 
+			if (!isset($_GET['metrics'])) {
+				$error = true;
+			}
+
 			if ( !$error ) {
+				$metrics = array_map('sanitize_title', $_GET['metrics'] );
 				$date_start = intval( $_GET['date_start'] );
 				$date_end = intval( $_GET['date_end'] );
 				$date_start = empty($date_start) ? false : $date_start;
@@ -87,17 +91,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					$unix_day = strtotime("-$days days");
 					$date = date( get_option( 'date_format' ), $unix_day);
 					$data['dates'][] = $date;
-
                     $unix_day = strtotime("-$days days");
-
                     $date = date('M j', $unix_day);
-
                     $n++;
-                    $n = $n == $skip ? 0 : $n;
-
                     $data['labels'][] = $date;
                 }
-				error_log(print_r($data, true));
 
 				//generate a dataset for each category
 				$i=0;

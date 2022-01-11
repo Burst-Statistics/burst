@@ -438,7 +438,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+				for="<?php echo esc_attr($args['fieldname']) ?>"><?php echo esc_html($args['label']) ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<input <?php if ( $args['required'] ) {
 				echo 'required';
@@ -478,13 +478,13 @@ if ( ! class_exists( "burst_field" ) ) {
                     class="<?php if ( $args['disabled'] ) {
 				echo 'burst-disabled';
 			} ?>"
-			       for="<?php echo esc_html( $fieldname ) ?>-label"><?php echo $args['label'] ?></label>
+			       for="<?php echo esc_html( $fieldname ) ?>-label"><?php echo esc_html($args['label']) ?></label>
 
 			<?php do_action( 'burst_after_label', $args ); ?>
 
 			<label class="burst-switch">
 				<input name="<?php echo esc_html( $fieldname ) ?>" type="hidden"
-				       value="<?php echo $placeholder_value ?>"/>
+				       value="<?php echo esc_attr($placeholder_value)?>"/>
 
 				<input name="<?php echo esc_html( $fieldname ) ?>" size="40"
 				       type="checkbox"
@@ -531,7 +531,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			<?php do_action( 'burst_before_label', $args ); ?>
 
 			<label
-				for="<?php echo esc_html( $fieldname ) ?>"><?php echo $args['label'] ?></label>
+				for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html($args['label']) ?></label>
 
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<?php if ( ! empty( $args['options'] ) ) { ?>
@@ -551,12 +551,12 @@ if ( ! class_exists( "burst_field" ) ) {
 						?>
 						<div>
 							<input
-								name="<?php echo esc_html( $fieldname ) ?>[<?php echo $option_key ?>]"
+								name="<?php echo esc_html( $fieldname ) ?>[<?php echo esc_htl($option_key)?>]"
 								type="hidden" value=""/>
 							<input class="<?php if ( $args['required'] ) {
 								echo 'is-required';
 							} ?>"
-							       name="<?php echo esc_html( $fieldname ) ?>[<?php echo $option_key ?>]"
+							       name="<?php echo esc_html( $fieldname ) ?>[<?php echo esc_html($option_key) ?>]"
 							       size="40" type="checkbox"
 							       value="1" <?php echo ( (string) ( $sel_key
 							                                         == (string) $option_key ) )
@@ -593,7 +593,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 
-			<label class="label"><?php echo $args['label'] ?></label>
+			<label class="label"><?php echo esc_html($args['label']) ?></label>
 
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<div class="burst-validate-radio">
@@ -797,7 +797,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>"><?php echo esc_html( $args['label'] ) ?></label>
+				for="<?php echo esc_attr($args['fieldname']) ?>"><?php echo esc_html( $args['label'] ) ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<textarea name="<?php echo esc_html( $fieldname ) ?>"
                       <?php if ( $args['required'] ) {
@@ -834,7 +834,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo $args['fieldname'] ?>" <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>><?php echo esc_html( $args['label'] ) ?></label>
+				for="<?php echo esc_attr($args['fieldname']) ?>" <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>><?php echo esc_html( $args['label'] ) ?></label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<?php
 			$settings = array(
@@ -862,7 +862,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
             <?php do_action( 'burst_before_label', $args ); ?>
             <label
-                    for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+                    for="<?php echo esc_attr($args['fieldname']) ?>"><?php echo esc_html($args['label']) ?></label>
             <?php do_action( 'burst_after_label', $args ); ?>
             <input <?php if ( $args['required'] ) {
                 echo 'required';
@@ -877,7 +877,7 @@ if ( ! class_exists( "burst_field" ) ) {
             <span class="copy-container">
                 <button type="button"
                         class="button button-medium burst-copy-button"
-                        data-clipboard-text="<?php echo $args['copy_text']; ?>">
+                        data-clipboard-text="<?php echo esc_attr($args['copy_text']); ?>">
                     <?php _e('Copy', 'burst') ?>
                 </button>
                 <span class="success hidden" aria-hidden="true"><?php _e( 'Copied!' ); ?></span>
@@ -1082,7 +1082,7 @@ if ( ! class_exists( "burst_field" ) ) {
 				return;
 			}
 			$query_settings = json_encode($args['query_settings']);
-			echo '<script> var '. $fieldname .'_query_settings = '. $query_settings .';</script>';
+			echo '<script> var '. esc_attr($fieldname) .'_query_settings = '. esc_attr($query_settings) .';</script>';
 
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
@@ -1098,8 +1098,8 @@ if ( ! class_exists( "burst_field" ) ) {
 				<?php if ($value) {
 					$post = get_post($value);
 					if($post){ ?>
-						<option value="<?php $value?>">
-						<?php echo $post->post_title ?></option>
+						<option value="<?php esc_attr($value)?>">
+						<?php echo esc_html($post->post_title) ?></option>
 				
 					<?php }
 
@@ -1127,7 +1127,7 @@ if ( ! class_exists( "burst_field" ) ) {
                 return;
             }
             $query_settings = json_encode($args['query_settings']);
-            echo '<script> var '. $fieldname .'_query_settings = '. $query_settings .';</script>';
+            echo '<script> var '. esc_attr($fieldname) .'_query_settings = '. esc_attr($query_settings) .';</script>';
 
             ?>
             <?php do_action( 'burst_before_label', $args ); ?>
@@ -1146,7 +1146,7 @@ if ( ! class_exists( "burst_field" ) ) {
                     $post = get_post($value);
                     if($post){ ?>
                         <option value="<?php $value?>">
-                            <?php echo $post->post_title ?></option>
+                            <?php echo esc_html($post->post_title) ?></option>
 
                     <?php }
 
@@ -1174,7 +1174,7 @@ if ( ! class_exists( "burst_field" ) ) {
                 return;
             }
             $query_settings = json_encode($args['query_settings']);
-            echo '<script> var '. $fieldname .'_query_settings = '. $query_settings .';</script>';
+            echo '<script> var '. esc_attr($fieldname) .'_query_settings = '. esc_attr($query_settings) .';</script>';
 
             ?>
             <?php do_action( 'burst_before_label', $args ); ?>
@@ -1192,8 +1192,8 @@ if ( ! class_exists( "burst_field" ) ) {
                 <?php if ($value) {
                     $post = get_post($value);
                     if($post){ ?>
-                        <option value="<?php $value?>">
-                            <?php echo $post->post_title ?></option>
+                        <option value="<?php echo esc_attr($value) ?>">
+                            <?php echo esc_html($post->post_title) ?></option>
 
                     <?php }
 
@@ -1244,7 +1244,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
             <?php do_action( 'burst_before_label', $args ); ?>
             <label
-                    for="<?php echo $args['fieldname'] ?>"><?php echo $args['label'] ?></label>
+                    for="<?php echo esc_attr($args['fieldname']) ?>"><?php echo esc_html($args['label']) ?></label>
             <?php do_action( 'burst_after_label', $args ); ?>
             <input <?php if ( $args['required'] ) {
                 echo 'required';
@@ -1254,9 +1254,9 @@ if ( ! class_exists( "burst_field" ) ) {
                     } ?>"
                     placeholder="<?php echo esc_html( $args['placeholder'] ) ?>"
                     type="date"
-                    value="<?php echo $date_value; ?>"
-                    min="<?php echo $today->format('Y-m-d'); ?>"
-                    max="<?php echo $year->format('Y-m-d'); ?>"
+                    value="<?php echo esc_attr($date_value); ?>"
+                    min="<?php echo esc_attr($today->format('Y-m-d')); ?>"
+                    max="<?php echo esc_attr($year->format('Y-m-d')); ?>"
                     name="<?php echo esc_html( $fieldname ) ?>"
                     <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>
             >
@@ -1277,7 +1277,12 @@ if ( ! class_exists( "burst_field" ) ) {
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label
-				for="<?php echo esc_html( $fieldname ) ?>"><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
+				for="<?php echo esc_html( $fieldname ) ?>">
+                <?php echo esc_html( $args['label'] ) ?>
+                <?php if ( isset($args['tooltip']) ) {
+                echo burst_icon('help', 'normal', $args['tooltip']);
+                } ?>
+            </label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 
 			<?php do_action( 'burst_after_field', $args ); ?>
@@ -1304,21 +1309,25 @@ if ( ! class_exists( "burst_field" ) ) {
 
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
-			<label><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
+			<label><?php echo esc_html( $args['label'] ) ?>
+                <?php if ( isset($args['tooltip']) ) {
+                    echo burst_icon('help', 'normal', $args['tooltip']);
+                } ?>
+            </label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<?php if ( $args['post_get'] === 'get' ) { ?>
 				<a <?php if ( $args['disabled'] )
-					echo "disabled" ?>href="<?php echo $args['disabled']
+					echo "disabled" ?>href="<?php echo esc_attr($args['disabled'])
 					? "#"
 					: admin_url( 'admin.php?page=burst-settings&action='
 					             . $args['action'] ) ?>"
 				   class="button"><?php echo esc_html( $args['label'] ) ?></a>
 			<?php } else { ?>
 				<input <?php if ( $args['warn'] )
-					echo 'onclick="return confirm(\'' . $args['warn']
+					echo 'onclick="return confirm(\'' . esc_attr($args['warn'])
 					     . '\');"' ?> <?php if ( $args['disabled'] )
 					echo "disabled" ?> class="button" type="submit"
-				                       name="<?php echo $args['action'] ?>"
+				                       name="<?php echo esc_attr($args['action'])?>"
 				                       value="<?php echo esc_html( $args['label'] ) ?>">
 			<?php } ?>
 
@@ -1359,7 +1368,11 @@ if ( ! class_exists( "burst_field" ) ) {
 			}
 			?>
 			<?php do_action( 'burst_before_label', $args ); ?>
-			<label><?php echo esc_html( $args['label'] ) ?><?php echo $this->get_help_tip_btn( $args ); ?></label>
+			<label><?php echo esc_html( $args['label'] ) ?>
+                <?php if ( isset($args['tooltip']) ) {
+                    echo burst_icon('help', 'normal', $args['tooltip']);
+                } ?>
+            </label>
 			<?php do_action( 'burst_after_label', $args ); ?>
 			<div class="weightslider">
 				<input  type="range" 
@@ -1412,7 +1425,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 				if ( isset( $_GET['post'] ) ) {
 					$post_id = intval( $_GET['post'] );
-					$id = burst_get_experiment_id_for_post($post_id);
+//					$id = burst_get_experiment_id_for_post($post_id);
 				}  else if ( isset( $_GET['experiment_id'] ) ) {
 					$id = intval( $_GET['experiment_id'] );
 				} else if ( isset( $_POST['experiment_id'] ) ) {
@@ -1465,7 +1478,7 @@ if ( ! class_exists( "burst_field" ) ) {
 				return;
 			}
 			?>
-			<div class="burst-comment"><?php echo $args['comment'] ?></div>
+			<div class="burst-comment"><?php echo esc_html($args['comment']) ?></div>
 			<?php
 		}
 

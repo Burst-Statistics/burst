@@ -10,12 +10,12 @@
     </div>
 </div>
 
-<div class="cmplz-other-plugins-element cmplz-<?php echo $prefix?>">
+<div class="cmplz-other-plugins-element cmplz-<?php echo esc_attr($prefix)?>">
     <a href="<?php echo esc_url_raw($plugin['url'])?>" target="_blank" title="<?php echo esc_html($plugin['title'])?>">
         <div class="cmplz-bullet medium"></div>
         <div class="cmplz-other-plugins-content"><?php echo esc_html($plugin['title'])?></div>
     </a>
     <div class="cmplz-other-plugin-status">
-        <?php echo COMPLIANZ::$admin->get_status_link($plugin)?>
+        <?php echo BURST::$admin->get_status_link($plugin)?>
     </div>
 </div>

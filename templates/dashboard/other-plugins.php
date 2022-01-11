@@ -33,13 +33,13 @@ $plugins = array(
     <?php foreach ($plugins as $id => $plugin) {
         $prefix = strtolower($id);
         ?>
-        <div class="burst-other-plugins-element burst-<?php echo $prefix?>">
+        <div class="burst-other-plugins-element burst-<?php echo esc_attr($prefix)?>">
             <a href="<?php echo esc_url_raw($plugin['url'])?>" target="_blank" title="<?php echo esc_html($plugin['title'])?>">
                 <div class="burst-bullet medium"></div>
                 <div class="burst-other-plugins-content"><?php echo esc_html($plugin['title'])?></div>
             </a>
             <div class="burst-other-plugin-status">
-                <?php echo BURST::$admin->get_status_link($plugin)?>
+                <?php echo wp_kses_post(BURST::$admin->get_status_link($plugin))?>
             </div>
         </div>
     <?php }?>

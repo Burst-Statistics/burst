@@ -740,8 +740,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding-top: var(--rsp-spacing-s);
-  padding-bottom: var(--rsp-spacing-s);
+  align-items: center;
+  margin: var(--rsp-spacing-l) auto;
   gap: var(--rsp-spacing-xs);
 }
 .burst-grid .block__explanation-and-stats__right {
