@@ -522,9 +522,8 @@ if ( ! class_exists( "burst_admin" ) ) {
                 'batch' => $this->rows_batch,
             );
 
-            $response = json_encode($data);
             header("Content-Type: application/json");
-            echo $response;
+            echo wp_json_encode($data);
             exit;
         }
 

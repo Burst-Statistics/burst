@@ -476,7 +476,6 @@ if ( ! function_exists( 'burst_conclusion' ) ) {
                 var timeSmall = 0;
 
                 jQuery(".burst-conclusion__check").each(function(){
-                    console.log(this);
                     jQuery(firstText).css('opacity', 1);
                     var that = this;
                     time += getRandomInt(5, 10) * 100;;
@@ -493,7 +492,6 @@ if ( ! function_exists( 'burst_conclusion' ) ) {
                         timeSmall = getRandomInt(5, 10) * 100;
                     }, time);
 
-                    console.log(Math.floor(time));
                 });
 
                 function getRandomInt(min, max) {

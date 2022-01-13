@@ -56,24 +56,62 @@ if ( ! class_exists( "burst_statistics" ) ) {
         }
 
 		/**
+		 * @param string $metric
+		 *
+		 * Compare provided a metric with our defined list, return default count if not existing
+		 */
+
+		public function sanitize_metric($metric){
+			$defaults = $this->get_metrics();
+
+			if (isset($defaults[$metric])) {
+				return 'count';
+			}
+
+			return $metric;
+		}
+		/**
+		 * @param array $metrics
+		 *
+		 * Compare provided a metric with our defined list, remove if not exists
+		 */
+		public function sanitize_metrics($metrics){
+			$defaults = $this->get_metrics();
+			foreach ( $metrics as $metric => $value ) {
+				if ( !isset($defaults[$value]) ) {
+					unset($metrics[$metric]);
+				}
+			}
+			return $metrics;
+		}
+
+		public function get_metrics(){
+			return apply_filters("burst_metrics", array(
+				'visitors' => __('Unique visitors', 'burst'),
+				'pageviews' => __('Pageviews', 'burst'),
+			) );
+		}
+
+		/**
 		 * Function for getting statistics for display with Chart JS
 		 * @return json                     Returns a JSON that is compatible with Chart JS
 		 *
 		 */
 		public function ajax_get_chart_statistics(){
+			$options = array();
 			$error = false;
+			$experiment_id = 0;
+			$period = 'day';
+
 			if ( ! burst_user_can_manage() ) {
 				$error = true;
 			}
-            $experiment_id = 0;
-			$period = 'day';
 
-			if (!isset($_GET['metrics'])) {
+			if ( !isset($_GET['metrics']) || !isset($_GET['date_start']) || !isset($_GET['date_end']) ) {
 				$error = true;
 			}
-
 			if ( !$error ) {
-				$metrics = array_map('sanitize_title', $_GET['metrics'] );
+                $metrics = $this->sanitize_metrics( $_GET['metrics'] );
 				$date_start = intval( $_GET['date_start'] );
 				$date_end = intval( $_GET['date_end'] );
 				$date_start = empty($date_start) ? false : $date_start;
@@ -83,9 +121,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				//for each day, counting back from "now" to the first day, get the date.
 				$nr_of_periods = $this->get_nr_of_periods($period, $date_start , $date_end);
 				$end_date_days_ago = $this->nr_of_periods_ago($period, $date_end);
-
 				$data = array();
-
 				for ($i = $nr_of_periods-1; $i >= 0; $i--) {
 					$days = $i + $end_date_days_ago;
 					$unix_day = strtotime("-$days days");
@@ -129,11 +165,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				if (isset($data['datasets'][1]['data']) && count($data['datasets'][1]['data'])>0){
 					//get highest hit count for max value
 					$max2 = max(array_map('max', array_column( $data['datasets'], 'data' )));
-					$max = $max2>$max ? $max2 : $max;
+					$max = max( $max2, $max );
                     $max++;
 				}
 
-				$data['max'] = $max > 5 ? $max : 5;
+				$data['max'] = max( $max, 5 );
 			} else {
 				$data['datasets'][] = array(
 					'data' => array(0),
@@ -148,29 +184,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			if (!$error) {
 				$data['date_start'] = $date_start;
 				$data['date_end'] = $date_end;
-                //@todo add filter so we can add metrics nicenames with integrations
-                $metrics = array(
-                    'visitors' => __('Unique visitors', 'burst'),
-                    'pageviews' => __('Pageviews', 'burst'),
-                    'conversion_percentages' => __('Conversion percentages', 'burst'),
-                    'conversions' => __('Conversions', 'burst'),
-                );
-
-                $options = array();
                 if ( count($metrics) === 1 ){
-                    $options['scales']['yAxes'][0]['scaleLabel'] = isset($metrics[$_GET['metric']]) ? $metrics[$_GET['metric']] : __('Count', 'burst');
+                    $options['scales']['yAxes'][0]['scaleLabel'] = $metrics[$metric];
                 } else {
                     $options['scales']['yAxes'][0]['scaleLabel'] = __('Count', 'burst');
                 }
-
 			}
-
 
 			$return  = array(
 				'success' => !$error,
 				'data'    => $data,
 				'options' => $options,
-				//'title'    => __('Experiment', "burst"),
 			);
 			echo json_encode( $return );
 			die;
@@ -440,7 +464,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
             } else {
                 $searches =$wpdb->get_results( $search_sql );
             }
-            error_log(print_r($searches, true));
             return $searches;
         }
 
@@ -685,10 +708,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $previous_stats = $wpdb->get_row( $sql, ARRAY_A );
             $sql_results = array_merge($current_stats, $previous_stats);
 
-            error_log('sql compare results');
-            error_log(print_r($sql_bounces_results, true));
             // text for the compare block
-
             $results = array(
                 'pageviews' => array(
                     'title' => __('Pageviews', 'burst'),

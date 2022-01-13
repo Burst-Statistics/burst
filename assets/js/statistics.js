@@ -74,8 +74,6 @@ jQuery(document).ready(function ($) {
                 if (response.success == true) {
 
                     let i = 0;
-                    console.log(response.data);
-                    console.log(insightsConfig);
                     response.data.datasets.forEach(function (dataset) {
                         if (insightsConfig.data.datasets.hasOwnProperty(i)) {
                             insightsConfig.data.datasets[i] = dataset;
@@ -92,7 +90,6 @@ jQuery(document).ready(function ($) {
                     // insightsConfig.options.title.text = response.title;
                     // insightsConfig.options.scales.yAxes[0].ticks.max = parseInt(response.data.max);
                     // insightsConfig.options.scales.yAxes[0].scaleLabel.labelString = response.options.scales.yAxes[0].scaleLabel;
-                    console.log(insightsConfig);
                     window.insightsGraph.update();
                 } else {
                     alert("Your data could not be loaded")
