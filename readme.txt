@@ -1,4 +1,4 @@
-=== Burst | Statistics ===
+=== Burst Statistics ===
 Contributors: hdejong, RogierLankhorst, aahulsebos, leonwimmenhoeve
 Tags: statistics, analytics, privacy, 
 Requires at least: 5.4
