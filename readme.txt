@@ -4,7 +4,7 @@ Tags: statistics, privacy
 Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
-Tested up to: 5.8
+Tested up to: 5.9
 Stable tag: 1.0.0
 
 Self hosted privacy friendly statistics tool.
