@@ -1,16 +1,16 @@
 === Burst | Statistics ===
 Contributors: hdejong, RogierLankhorst, aahulsebos, leonwimmenhoeve
-Tags: statistics, privacy
+Tags: statistics, analytics, privacy, 
 Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
 Tested up to: 5.9
 Stable tag: 1.0.0
 
-Self hosted privacy friendly statistics tool.
+Self-hosted and privacy-friendly analytics tool.
 
 == Description ==
-Get detailed insights into your visitors and your visitor's behaviour with Burst Statistics, the privacy friendly statistics dashboard.
+Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.
 
 == Features ==
 * features
