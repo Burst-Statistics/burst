@@ -1,4 +1,4 @@
-![Burst Statistics](https://ps.w.org/burst-statistics/assets/banner-1544x500.png)
+![Burst Statistics](https://burst-statistics.com/wp-content/uploads/2022/01/banner-1544x500-1.png)
 
 **This is the Burst GitHub repository. Privacy-friendly Statistics for WordPress. We welcome everyone to work together creating the best, self-hosted privacy-friendly analytics tool available.**
 
