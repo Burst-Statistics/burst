@@ -40,7 +40,6 @@ We're on [GitHub](https://github.com/Really-Simple-Plugins) as well!
 
 [Contact](https://burst-statistics.com#contact) us if you have any questions, issues, or suggestions. Burst Statistics is developed by [Burst B.V.](https://burst-statistics.com). Leave your feature requests [here](https://burst-statistics.com/feature-requests/).
 
-
 == Installation ==
 * Go to “Plugins” in your WordPress Dashboard, and click “Add new”.
 * Click “Upload”, and select the downloaded .zip file.
@@ -52,8 +51,11 @@ We're on [GitHub](https://github.com/Really-Simple-Plugins) as well!
 Burst will maintain and a grow a knowledgebase about Burst Statistics and other products to assist, while using Burst Statistics [burst-statistics.com](https://burst-statistics.com)
 
 = Why is Burst Statistics Privacy-friendly? =
+Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone. 
 = Do you mind if I give feedback about the product? =
+No only don't we mind. We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
 = Is there a Pro version? =
+Not...yet.
 
 == Change log ==
 
