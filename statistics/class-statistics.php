@@ -676,13 +676,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
          *
          * @return int[][]
          */
-        public function get_compare_statistics($date_start = 0, $date_end = 0){
+        public function get_compare_statistics($date_start = 0, $date_end = 0, $date_range = 'Previous 7 days'){
             $date_start = intval($date_start);
             $date_end = intval($date_end);
             $time_diff = $date_end - $date_start;
             $date_start_diff = $date_start - $time_diff;
             $date_end_diff = $date_end - $time_diff;
 
+			error_log("NOT ACTVE ".$date_range);
             global $wpdb;
             $wpdb->show_errors( true );
             $table_name = $wpdb->prefix . 'burst_statistics';
