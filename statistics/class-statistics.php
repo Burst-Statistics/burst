@@ -64,11 +64,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		public function sanitize_metric($metric){
 			$defaults = $this->get_metrics();
 
-			if (isset($defaults[$metric])) {
-				return 'count';
+			if ( isset($defaults[$metric]) ) {
+				return $metric;
 			}
 
-			return $metric;
+			return 'visitors';
 		}
 		/**
 		 * @param array $metrics
@@ -107,15 +107,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$error = true;
 			}
 
-			if ( !isset($_GET['metrics']) || !isset($_GET['date_start']) || !isset($_GET['date_end']) ) {
+			if ( !isset($_GET['metrics']) || !isset($_GET['date_start']) || !isset($_GET['date_end']) || !isset($_GET['date_range']) ) {
 				$error = true;
 			}
 			if ( !$error ) {
                 $metrics = $this->sanitize_metrics( $_GET['metrics'] );
-				$date_start = intval( $_GET['date_start'] );
-				$date_end = intval( $_GET['date_end'] );
-				$date_start = empty($date_start) ? false : $date_start;
-				$date_end = empty($date_end) ? false : $date_end;
+				$date_range = burst_sanitize_date_range( $_GET['date_range'] );
+                $date_start = burst_offset_utc_time_to_gtm_offset( $_GET['date_start'] );
+                $date_end = burst_offset_utc_time_to_gtm_offset( $_GET['date_end'] );
 
 				if ( $date_end==0 ) $date_end = time()-24*HOUR_IN_SECONDS;
 				//for each day, counting back from "now" to the first day, get the date.
@@ -129,12 +128,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					$data['dates'][] = $date;
                     $unix_day = strtotime("-$days days");
                     $date = date('M j', $unix_day);
-                    $n++;
                     $data['labels'][] = $date;
                 }
 
 				//generate a dataset for each category
-				$i=0;
+                $i = 0;
 				foreach ($metrics as $metric ) {
 					$title = ucfirst($metric);
 					//get hits grouped per timeslot. default day
@@ -143,6 +141,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                         'date_start' => $date_start,
                         'date_end' => $date_end,
                         'experiment_id' => $experiment_id,
+                        'date_range' => $date_range,
                     );
 					$hits = $this->get_grouped_statistics_array( $args );
 					$data['datasets'][] = array(
@@ -156,21 +155,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				}
 			}
 
-			if ( isset($data['datasets']) ) {
-				$max = 5;
-				if (isset($data['datasets'][0]['data']) && count($data['datasets'][0]['data'])>0){
-					//get highest hit count for max value
-					$max = max(array_map('max', array_column( $data['datasets'], 'data' )));
-				}
-				if (isset($data['datasets'][1]['data']) && count($data['datasets'][1]['data'])>0){
-					//get highest hit count for max value
-					$max2 = max(array_map('max', array_column( $data['datasets'], 'data' )));
-					$max = max( $max2, $max );
-                    $max++;
-				}
-
-				$data['max'] = max( $max, 5 );
-			} else {
+			if ( !isset($data['datasets']) ) {
 				$data['datasets'][] = array(
 					'data' => array(0),
 					'backgroundColor' => $this->get_graph_color(0, 'background'),
@@ -178,17 +163,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'label' => __("No data for this selection", "burst"),
 					'fill' => 'false',
 				);
-				$data['max'] = 5;
 			}
 
 			if (!$error) {
 				$data['date_start'] = $date_start;
 				$data['date_end'] = $date_end;
-                if ( count($metrics) === 1 ){
-                    $options['scales']['yAxes'][0]['scaleLabel'] = $metrics[$metric];
-                } else {
-                    $options['scales']['yAxes'][0]['scaleLabel'] = __('Count', 'burst');
-                }
 			}
 
 			$return  = array(
@@ -205,48 +184,54 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 * @param string $test_version
 		 * @param int $start
 		 * @param int $end
+		 * @param bool $clear_cache
 		 *
 		 * @return array
 		 */
 
-		public function get_grouped_statistics_array( $args = array() ) {
-
-			if (!isset($args['metric'])) {
-				return array();
-			}
-
-			global $wpdb;
+		public function get_grouped_statistics_array( $args = array(), $clear_cache =false ) {
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'burst_statistics';
+            $statistics_without_bounces = $this->get_sql_query_to_exclude_bounces($table_name);
 			$default_args = array(
                 'metric' => 'visitors', //conversion_percentages, visits, conversions
                 'date_start' => 0,
                 'date_end' => 0,
                 'experiment_id' => '',
+                'date_range' => 'previous-7-days',
             );
             $args = wp_parse_args( $args, $default_args );
+			$metric = $this->sanitize_metric($args['metric']);
             $start = intval($args['date_start']);
             $end = intval($args['date_end']);
+            $date_range = burst_sanitize_date_range($args['date_range']);
 
-            switch ($args['metric']) {
+            switch ($metric) {
                 case 'pageviews':
                     $sql = $wpdb->prepare("SELECT 
-                        COUNT(*) as hit_count,
+                        COUNT( ID ) as hit_count,
                         CONCAT(YEAR(from_unixtime(time)),'-',DAYOFYEAR(from_unixtime(time)) ) as period
-                        FROM {$wpdb->prefix}burst_statistics 
+                        FROM ($statistics_without_bounces) as without_bounces
                         WHERE time>%s AND time<%s 
                         GROUP BY CONCAT(YEAR(from_unixtime(time)),'-',DAYOFYEAR(from_unixtime(time)) ) order by period asc", $start, $end);
                     break;
                 case 'visitors':
+	            default:
                     $sql = $wpdb->prepare("SELECT 
                         COUNT(DISTINCT(uid)) as hit_count,
                         CONCAT(YEAR(from_unixtime(time)),'-',DAYOFYEAR(from_unixtime(time)) ) as period
-                        FROM {$wpdb->prefix}burst_statistics 
+                        FROM ($statistics_without_bounces) as without_bounces
                         WHERE time>%s AND time<%s 
                         GROUP BY CONCAT(YEAR(from_unixtime(time)),'-',DAYOFYEAR(from_unixtime(time)) ) order by period asc", $start, $end);
                     break;
             }
 
+			$results = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_'.$metric.'_'.$date_range, 'burst');
+			if ( !$results ) {
+				$results = $wpdb->get_results($sql);
+				if ($date_range!=='custom') wp_cache_set('cmplz_'.$metric.'_'.$date_range, $results, 'burst', DAY_IN_SECONDS);
+			}
 
-            $results = $wpdb->get_results($sql);
 			$nr_of_periods = $this->get_nr_of_periods('DAY', $start, $end );
 			$end_date_days_ago = $this->nr_of_periods_ago('DAY', $end );
 			$data = array();
@@ -369,65 +354,40 @@ if ( ! class_exists( "burst_statistics" ) ) {
         /**
          * This is used for datatables
          * @param array $args
+         * @param bool $clear_cache
          *
          * @return array|int pages
          */
 
-        public function get_hits_single($args=array()){
+        public function get_hits_single($args=array(), $clear_cache=false){
             $defaults = array(
-                'number' => -1,
                 'order' => 'DESC',
                 'order_by' => 'hit_count',
                 'group_by' => 'referrer',
-                'page_url'=> false,
-                'compare' => ">",
-                'range' => false,
-                'result_count' => false,
+                'date_range' => 'previous-7-days',
                 'offset' => false,
-                'count' => false,
                 'date_from' => false,
                 'date_to' => false,
+	            'page' => 1,
             );
+
             $args = wp_parse_args( $args, $defaults);
-            if ($args['range'] && $args['range']!=='all'){
-                switch ($args['range']){
-                    case 'day':
-                        $range = time() - DAY_IN_SECONDS;
-                        break;
-                    case 'week':
-                        $range = time() - WEEK_IN_SECONDS;
-                        break;
-                    case 'year':
-                        $range = time() - YEAR_IN_SECONDS;
-                        break;
-                    case 'month':
-                        $range = time() - MONTH_IN_SECONDS;
-                        break;
-                    default:
-                        $range = time() - MONTH_IN_SECONDS;
-                }
-                $args['date_from'] = $range;
-                $args['date_to'] = time();
-            }
+			$page = intval($args['page']);
+			$date_range = burst_sanitize_date_range($args['date_range']);
+	        $offset = BURST::$admin->rows_batch * ($page-1);
+	        $number = BURST::$admin->rows_batch;
 
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
-            $limit = '';
-            if ($args['number']!=-1){
-                $count = intval($args['number']);
-                $limit = "LIMIT $count";
-                if ($args['offset']){
-                    $limit .= ' OFFSET '.intval($args['offset']);
-                }
-            }
+            $statistics_without_bounces = $this->get_sql_query_to_exclude_bounces($table_name);
+            $count = intval($number);
+            $limit = "LIMIT $count";
+			$limit .= ' OFFSET '.intval($offset);
+
             $order = $args['order']=='ASC' ? 'ASC' : 'DESC';
             $order_by = sanitize_title($args['order_by']);
             $group_by = sanitize_title($args['group_by']);
             $where = '';
-            if ($args['page_url']){
-                $where .= $wpdb->prepare(' AND page_url = %s ', sanitize_text_field($args['page_url']));
-            }
-
             if ($args['date_from']){
                 $from = intval($args['date_from']);
                 $where .=" AND time > $from ";
@@ -453,17 +413,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
             $search_sql ="SELECT 
                             $select
-                            FROM $table_name 
+                            FROM ($statistics_without_bounces) as without_bounces
                             WHERE 1=1 $where AND $group_by IS NOT NULL AND $group_by <> ''
                             GROUP BY val_grouped 
                             ORDER BY $order_by $order $limit ";
 
-            if ($args['count']) {
-                $search_sql = str_replace(" * ", " count(*) as count ",  $search_sql);
-                $searches =$wpdb->get_var( $search_sql );
-            } else {
-                $searches =$wpdb->get_results( $search_sql );
+	        $searches = $clear_cache || $date_range === 'custom' ? false: wp_cache_get("cmplz_hits_single_{$group_by}_{$page}_{$date_range}", 'burst');
+            if ( !$searches ) {
+	            $searches =$wpdb->get_results( $search_sql );
+	            if ($date_range!=='custom') wp_cache_set("cmplz_hits_single_{$group_by}_{$page}_{$date_range}", $searches, 'burst', DAY_IN_SECONDS);
             }
+
             return $searches;
         }
 
@@ -478,6 +438,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
         public function get_single_statistic($statistic = 'pageviews' , $date_start = 0, $date_end = 0){
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
+            $statistics_without_bounces = $this->get_sql_query_to_exclude_bounces($table_name);
+            $table_name = "($statistics_without_bounces) as without_bounces";
             $response = [ 'val' => 0 ];
 	        $date_start = intval($date_start);
 			$date_end = intval($date_end);
@@ -614,110 +576,266 @@ if ( ! class_exists( "burst_statistics" ) ) {
         }
 
 		/**
-		 * @param $date_start
-		 * @param $date_end
-		 *
-		 * @return int[][]
+		 * @return void
 		 */
-        public function get_platform_and_device_statistics($date_start = 0, $date_end = 0){
-	        $date_start = intval($date_start);
-			$date_end = intval($date_end);
+
+		public function generate_cached_data(){
+			//check if it's night. If so, re-generate.
+			$date = date('j-n-Y', time() );
+			$timezone_offset = get_option( 'gmt_offset' );
+			$hour_now = time() + ( 60 * 60 * $timezone_offset );
+			$day_start = strtotime("today", time()) + HOUR_IN_SECONDS;
+			$max_time =  $day_start + (3*HOUR_IN_SECONDS);
+			$last_generated_date = get_option('burst_last_generated');
+			if ( !$last_generated_date || ( $hour_now>$day_start && $hour_now<$max_time) ) {
+				if ( $last_generated_date !== $date ) {
+					$date_ranges = burst_get_date_ranges();
+					foreach ( $date_ranges  as $date_range ) {
+						if ($date_range === 'custom' ) continue;
+						$time_stamp = $this->get_time_stamp_for_date_range($date_range);
+						$this->get_platform_and_device_statistics($time_stamp['start'], $time_stamp['end'], $date_range, true);
+						$this->get_compare_statistics( $time_stamp['start'], $time_stamp['end'], $date_range , true);
+						$metrics = $this->get_metrics();
+						foreach ( $metrics as $metric ) {
+							$args = array(
+								'metric' => $metric,
+								'date_start' => $time_stamp['start'],
+								'date_end' => $time_stamp['end'],
+								'date_range' => $date_range,
+							);
+							$this->get_grouped_statistics_array( $args, true );
+						}
+						for ($page = 1; $page <= 3; $page++) {
+							$args = array(
+								'date_from' => $time_stamp['start'],
+								'date_to' => $time_stamp['end'],
+								'group_by' => 'referer',
+								'date_range' => $date_range,//for caching purposes
+								'page' => $page, //for caching purposes
+							);
+							$this->get_hits_single($args, true);
+							$args = array(
+								'date_from' => $time_stamp['start'],
+								'date_to' => $time_stamp['end'],
+								'group_by' => 'page_url',
+								'date_range' => $date_range,//for caching purposes
+								'page' => $page, //for caching purposes
+							);
+							$this->get_hits_single($args, true);
+						}
+
+					}
+					update_option('burst_last_generated', $date);
+				}
+			}
+		}
+
+		public function get_time_stamp_for_date_range( $date_range ){
+			$end = strtotime("today", time());
+			switch ($date_range){
+				case 'yesterday':
+					$start = $end - DAY_IN_SECONDS;
+					break;
+				case 'previous-30-days':
+					$start = $end - 30*DAY_IN_SECONDS;
+					break;
+				case 'this-month':
+					$start = mktime(0, 0, 0, date("n"), 1);;
+					break;
+				case 'previous-month':
+					$current_month = date('n');
+					$previous_month = $current_month-1;
+					if ($current_month==1) $previous_month = 12;
+					$start = mktime(0, 0, 0, $previous_month, 1);
+					$end = mktime(23, 59, 59, $previous_month, date('t', $start));
+					break;
+				case 'previous-7-days':
+				default:
+					$start = $end - 7*DAY_IN_SECONDS;
+					break;
+			}
+
+			return ['start'=> $start, 'end'=> $end];
+		}
+
+		/**
+		 * @param int $date_start
+		 * @param int $date_end
+		 * @param string $date_range
+		 *
+		 * @return array
+		 */
+
+        public function get_platform_and_device_statistics($date_start = 0, $date_end = 0, $date_range = 'previous-7-days', $clear_cache = false ){
+	        $date_start = burst_offset_utc_time_to_gtm_offset($date_start);
+			$date_end = burst_offset_utc_time_to_gtm_offset($date_end);
             $result = array(
                 'desktop' => array(
                     'percentage' => 0,
                     'total' => 0,
+                    'platform' => '',
+                    'browser' => '',
                 ),
                 'tablet' => array(
                     'percentage' => 0,
                     'total' => 0,
+                    'platform' => '',
+                    'browser' => '',
                 ),
                 'mobile' => array(
                     'percentage' => 0,
                     'total' => 0,
+                    'platform' => '',
+                    'browser' => '',
                 ),
                 'other' => array(
                     'percentage' => 0,
                     'total' => 0,
-                ),
+                    'platform' => '',
+                    'browser' => '',
+	                ),
             );
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
-
-            $sql = $wpdb->prepare("SELECT 
+            $statistics_without_bounces = $this->get_sql_query_to_exclude_bounces($table_name);
+			$devices = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_devices_'.$date_range, 'burst');
+	        if ( !$devices ) {
+		        $sql = $wpdb->prepare("SELECT 
                         device as val,
                         COUNT(device) AS count
-                    FROM    $table_name
+                    FROM ($statistics_without_bounces) as without_bounces
                     WHERE   time>%s AND time<%s AND device IS NOT NULL AND device <> ''
                     GROUP BY device
                     ORDER BY count DESC
                     ", $date_start, $date_end );
-            $devices = $wpdb->get_results( $sql, ARRAY_A );
-            $total_count = 0;
-            $devices_count = array();
-            foreach ($devices as $device){
-                $total_count = $total_count + $device['count'];
-                $devices_count[$device['val']] = $device['count'];
-            }
-            foreach ($devices_count as $device => $count){
+		        $devices = $wpdb->get_results( $sql, ARRAY_A );
+		        wp_cache_set('cmplz_devices_'.$date_range, $devices, 'burst', DAY_IN_SECONDS);
+	        }
 
-                $percentage = round($count / $total_count * 100, 1);
-                $result[$device] = array(
-                    'percentage' => $percentage,
-                    'total' => $count,
-                );
-            }
+	        $total_count = 0;
+	        $devices_count = array();
+	        foreach ( $devices as $device ){
+		        $total_count = $total_count + $device['count'];
+		        $devices_count[$device['val']] = $device['count'];
+	        }
+	        foreach ($devices_count as $device => $count){
+		        $percentage = round($count / $total_count * 100, 1);
+		        $result[$device]['percentage'] = $percentage;
+		        $result[$device]['total'] = $count;
+	        }
 
+			foreach ($result as $device => $device_data ) {
+				$device_sql = " device='$device' ";
+				if ($device==='other') {
+					$device_sql = " device!='tablet' AND device !='mobile' AND device !='desktop' ";
+				}
+				$most_popular_browser = $clear_cache ||  $date_range === 'custom' ? false: wp_cache_get('cmplz_devices_browser_'.$device.'_'.$date_range, 'burst');
+				if ( !$most_popular_browser ) {
+					$sql = $wpdb->prepare("SELECT browser from (SELECT browser, COUNT(*) as count, device
+					FROM ($statistics_without_bounces) as without_bounces where (time>%s AND time<%s) OR device IS NOT NULL AND device <> '' AND browser is not null
+					GROUP BY browser, device ) as grouped_devices where $device_sql order by count desc limit 1
+                    ", $date_start, $date_end );
+					$most_popular_browser = $wpdb->get_var( $sql );
+					if (empty($most_popular_browser)) $most_popular_browser = ' - ';
+					if ($date_range!=='custom') wp_cache_set('cmplz_devices_browser_'.$device.'_'.$date_range, $most_popular_browser, 'burst', DAY_IN_SECONDS);
+				}
+				$result[$device]['browser'] = $most_popular_browser;
+				$most_popular_plaform = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_devices_platform_'.$device.'_'.$date_range, 'burst');
+				if ( !$most_popular_plaform ) {
+					$sql = $wpdb->prepare("SELECT platform from (SELECT platform, COUNT(*) as count, device
+					FROM ($statistics_without_bounces) as without_bounces where time>%s AND time<%s AND device IS NOT NULL AND device <> '' AND platform is not null
+					GROUP BY platform, device ) as grouped_devices where $device_sql order by count desc limit 1
+                    ", $date_start, $date_end );
+					$most_popular_plaform = $wpdb->get_var( $sql );
+					if (empty($most_popular_plaform)) $most_popular_plaform = ' - ';
+					if ($date_range!=='custom') wp_cache_set('cmplz_devices_platform_'.$device.'_'.$date_range, $most_popular_plaform, 'burst', DAY_IN_SECONDS);
+				}
+				$result[$device]['platform'] = $most_popular_plaform;
+			}
             return $result;
         }
 
         /**
-         * @param $date_start
-         * @param $date_end
+         * @param int $date_start
+         * @param int $date_end
+         * @param string $date_range
+         * @param bool $clear_cache
          *
-         * @return int[][]
+         * @return array
          */
-        public function get_compare_statistics($date_start = 0, $date_end = 0, $date_range = 'Previous 7 days'){
-            $date_start = intval($date_start);
-            $date_end = intval($date_end);
+
+        public function get_compare_statistics($date_start = 0, $date_end = 0, $date_range = 'previous-7-days', $clear_cache =false ){
+            $date_start = burst_offset_utc_time_to_gtm_offset($date_start);
+            $date_end = burst_offset_utc_time_to_gtm_offset($date_end);
             $time_diff = $date_end - $date_start;
             $date_start_diff = $date_start - $time_diff;
             $date_end_diff = $date_end - $time_diff;
 
-			error_log("NOT ACTVE ".$date_range);
             global $wpdb;
-            $wpdb->show_errors( true );
             $table_name = $wpdb->prefix . 'burst_statistics';
+            $statistics_without_bounces = $this->get_sql_query_to_exclude_bounces($table_name);
 
-            // current stats
-            $sql = "SELECT  COUNT( ID ) as pageviews,
+	        /**
+	         * current stats
+             * */
+	        $current_stats = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_current_stats_'.$date_range, 'burst');
+			if ( !$current_stats ) {
+				$sql           = "SELECT  COUNT( ID ) as pageviews,
                             COUNT( DISTINCT( session_id ) ) AS sessions,
                             COUNT( DISTINCT( uid ) ) AS visitors,
                             AVG( time_on_page ) AS time_on_page,
-                            COUNT( DISTINCT( CASE WHEN time_on_page < 5000 THEN session_id END ) ) as bounces,
                             SUM( first_time_visit ) as new_visitors
-                    FROM $table_name
+                    FROM ($statistics_without_bounces) as no_bounce
                     WHERE time > $date_start AND time < $date_end";
-            $current_stats = $wpdb->get_row( $sql, ARRAY_A );
+				$current_stats = $wpdb->get_row( $sql, ARRAY_A );
+				if ($date_range!=='custom') wp_cache_set('cmplz_current_stats_'.$date_range, $current_stats, 'burst', DAY_IN_SECONDS);
+			}
 
-            // previous stats
-            $sql = "SELECT  COUNT( ID ) as pageviews_prev,
+	        /**
+	         * previous stats
+	         * */
+
+	        $previous_stats = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_previous_stats_'.$date_range, 'burst');
+	        if ( !$previous_stats ) {
+		        $sql = "SELECT  COUNT( ID ) as pageviews_prev,
                             COUNT( DISTINCT( session_id ) ) AS sessions_prev,
-                            COUNT( DISTINCT( uid ) ) AS visitors_prev,
-                            COUNT( DISTINCT( CASE WHEN time_on_page < 5000 THEN session_id END ) ) as bounces_prev
-                    FROM $table_name
+                            COUNT( DISTINCT( uid ) ) AS visitors_prev
+                    FROM ($statistics_without_bounces) as no_bounce
                     WHERE time > $date_start_diff AND time < $date_end_diff";
-            $previous_stats = $wpdb->get_row( $sql, ARRAY_A );
+
+		        $previous_stats = $wpdb->get_row( $sql, ARRAY_A );
+		        if ($date_range!=='custom') wp_cache_set('cmplz_previous_stats_'.$date_range, $previous_stats, 'burst', DAY_IN_SECONDS);
+	        }
+
             $sql_results = array_merge($current_stats, $previous_stats);
+            $bounce_time =  apply_filters('burst_bounce_time', 5000);
+	        $bounce_count = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_bounce_count_'.$date_range, 'burst');
+	        if ( !$bounce_count ) {
+	            $sql = "SELECT COUNT(*) as bounces FROM ( SELECT session_id as bounces from $table_name WHERE time > $date_start AND time < $date_end AND time_on_page < $bounce_time GROUP BY session_id having COUNT(*) = 1) as bounces_table";
+	            $bounce_count = $wpdb->get_var( $sql );
+		        if ($date_range!=='custom') wp_cache_set('cmplz_bounce_count_'.$date_range, $bounce_count, 'burst', DAY_IN_SECONDS);
+	        }
+
+	        $bounce_count_prev = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_bounce_count_prev_'.$date_range, 'burst');
+	        if ( !$bounce_count_prev ) {
+	            $sql = "SELECT COUNT(*) as bounces FROM ( SELECT session_id as bounces from $table_name WHERE time > $date_start_diff AND time < $date_end_diff AND time_on_page < $bounce_time GROUP BY session_id having COUNT(*) = 1) as bounces_table";
+	            $bounce_count_prev = $wpdb->get_var( $sql );
+		        if ($date_range!=='custom') wp_cache_set('cmplz_bounce_count_prev_'.$date_range, $bounce_count_prev, 'burst', DAY_IN_SECONDS);
+	        }
+
+            $bounce_rate = $this->calculate_bounce_percentage($bounce_count, $sql_results['sessions']);
+            $bounce_rate_prev = $this->calculate_bounce_percentage($bounce_count_prev, $sql_results['sessions_prev']);
 
             // text for the compare block
             $results = array(
                 'pageviews' => array(
                     'title' => __('Pageviews', 'burst'),
                     'subtitle' => burst_sprintf(__('Avg. of %s pageviews per session', 'burst'),
-                                    round( $sql_results['pageviews'] / $sql_results['sessions'], 1)
-                                ),
+//                        $this->calculate_ratio( $sql_results['pageviews'], $sql_results['sessions'], 'ratio')
+                        burst_format_number( $sql_results['pageviews'] / $sql_results['sessions'], 1),
+                    ),
                     'tooltip' => '',
-                    'number' => $sql_results['pageviews'],
+                    'number' => burst_format_number($sql_results['pageviews']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['pageviews_prev'], $sql_results['pageviews']),
                     'uplift' => $this->format_uplift($sql_results['pageviews_prev'], $sql_results['pageviews']),
                 ),
@@ -727,17 +845,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
                         burst_format_milliseconds_to_readable_time($this->calculate_time_per_session($sql_results['pageviews'], $sql_results['sessions'], $sql_results['time_on_page']))
                     ),
                     'tooltip' => '',
-                    'number' => $sql_results['sessions'],
+                    'number' => burst_format_number($sql_results['sessions']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['sessions_prev'], $sql_results['sessions']),
                     'uplift' => $this->format_uplift($sql_results['sessions_prev'], $sql_results['sessions']),
                 ),
                 'visitors' => array(
                     'title' => __('Unique visitors', 'burst'),
                     'subtitle' => burst_sprintf(__('%s are new visitors', 'burst'),
-                        round($sql_results['new_visitors'] / $sql_results['visitors']  * 100, 1) . '%'
+	                    $this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ) . '%'
                     ),
                     'tooltip' => '',
-                    'number' => $sql_results['visitors'],
+                    'number' => burst_format_number($sql_results['visitors']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['visitors_prev'], $sql_results['visitors']),
                     'uplift' => $this->format_uplift($sql_results['visitors_prev'], $sql_results['visitors']),
                 ),
@@ -747,17 +865,37 @@ if ( ! class_exists( "burst_statistics" ) ) {
 //                    'number' => burst_format_milliseconds_to_readable_time($sql_results['time_on_page']),
 //                ),
                 'bounces' => array(
-                    'title' => __('Bounce percentage', 'burst'),
-                    'subtitle' => '',
+                    'title' => __('Bounce rate', 'burst'),
+                    'subtitle' => burst_sprintf( __('%s visitors bounced', 'burst'), burst_format_number($bounce_count)),
                     'tooltip' => '',
-                    'number' => $sql_results['bounces'],
-                    'uplift_status' => $this->calculate_uplift_status($sql_results['bounces_prev'], $sql_results['bounces']),
-                    'uplift' => $this->format_uplift($sql_results['bounces_prev'], $sql_results['bounces']),
+                    'number' => burst_format_number($bounce_rate, 1) . '%',
+                    'uplift_status' => $this->calculate_uplift_status($bounce_rate, $bounce_rate_prev),
+                    'uplift' => $this->calculate_percentage_uplift($bounce_rate, $bounce_rate_prev),
                 ),
             );
 
             return $results;
         }
+
+		/**
+		 * Helper function to get percentage, allow for zero division
+		 *
+		 * @param int $value
+		 * @param int $total
+		 * @param string $type
+		 *
+		 * @return float
+		 */
+
+		private function calculate_ratio($value, $total, $type='%'){
+			$value = intval($value);
+			$total = intval($total);
+			$multiply = 1;
+			if ( $type === '%' ) {
+				$multiply = 100;
+			}
+			return $total == 0 ? 0 : round( $value / $total * $multiply, 1);
+		}
 
         /**
          * get_real_time_visitors
@@ -773,7 +911,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
         public function get_real_time_visitors($date_start = 0, $date_end = 0){
             if ($date_start === 0) { $date_start = strtotime('3 minutes ago'); }
-            if ($date_end === 0) { $date_end = strtotime('now'); }
             $time = time();
 
             global $wpdb;
@@ -781,11 +918,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $sql = $wpdb->prepare(" SELECT COUNT(DISTINCT(uid)) as uid
                      FROM $table_name
                      WHERE time>%s 
-                       AND time<%s 
                        AND (time_on_page / 1000 + time + 30 + 3 > %s)
                     GROUP BY uid 
                     ORDER BY time desc
-                         ", $date_start, $date_end, $time);
+                         ", $date_start, $time);
 
             $query = $wpdb->get_results( $sql, ARRAY_A );
             return count($query);
@@ -814,14 +950,15 @@ if ( ! class_exists( "burst_statistics" ) ) {
         }
 
         /**
-         * Function to calculate uplift
-         * @param $original_value
-         * @param $new_value
-         * @return int
+         * Function to get the SQL query to exclude bounces from query's
+         *
+         * @return string
          */
-        public function calculate_uplift($original_value, $new_value){
-            $increase = $original_value - $new_value;
-            return round($increase / $new_value * 100, 1);
+        function get_sql_query_to_exclude_bounces($table_name) {
+            $time_bounce = apply_filters('burst_bounce_time', 0);
+            $bounce = "select session_id from $table_name where time_on_page < $time_bounce group by session_id having count(*) = 1";
+            $statistics_without_bounces = "SELECT * FROM $table_name WHERE session_id NOT IN ($bounce)";
+            return $statistics_without_bounces;
         }
 
         /**
@@ -831,11 +968,39 @@ if ( ! class_exists( "burst_statistics" ) ) {
          * @return string
          */
         public function format_uplift($original_value, $new_value){
-            $uplift = $this->calculate_uplift($new_value, $original_value);
+            $uplift = burst_format_number($this->calculate_uplift($new_value, $original_value));
+            if ($uplift === 0) {
+                return '';
+            }
             $formatted = $uplift > 0 ? '+' . $uplift . '%' : $uplift . '%';
             return $formatted;
         }
 
+        /**
+         * Function to calculate uplift
+         * @param $original_value
+         * @param $new_value
+         * @return int
+         */
+        public function calculate_uplift($original_value, $new_value){
+            $increase = $original_value - $new_value;
+
+            return $this->calculate_ratio($increase, $new_value);
+
+            //return intval(round($increase / $new_value * 100, 1));
+        }
+
+        /**
+         * Function to calculate uplift
+         * @param $original_value
+         * @param $new_value
+         * @return int
+         */
+
+        public function calculate_percentage_uplift($original_value, $new_value){
+            $increase = round($original_value - $new_value, 1);
+            return $increase > 0 ? '+' . $increase . '%' : $increase . '%';
+        }
 
         /**
          * Function to calculate uplift status
@@ -843,10 +1008,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
          * @param $new_value
          * @return string
          */
+
         public function calculate_uplift_status($original_value, $new_value){
             $uplift = $this->calculate_uplift($new_value, $original_value);
-            $status = $uplift > 0 ? 'positive' : 'negative';
-            return $status;
+            return $uplift > 0 ? 'positive' : 'negative';
         }
 
         /**
@@ -856,13 +1021,21 @@ if ( ! class_exists( "burst_statistics" ) ) {
          * @return string
          */
         public function calculate_time_per_session($pageviews, $sessions, $time_per_page){
-            $pageviews_per_session = $pageviews / $sessions;
+            $pageviews_per_session = $sessions==0 ? 0 : $pageviews / $sessions;
             $time_per_session = $pageviews_per_session * $time_per_page;
             return $time_per_session;
         }
 
+        /**
+         * Function to calculate bounce rate
+         * @param int $bounces
+         * @param int $sessions
+         * @return float
+         */
+        public function calculate_bounce_percentage($bounces, $sessions){
+            return $this->calculate_ratio($bounces, $sessions + $bounces);
+        }
 	}
-
 }
 
 /**
@@ -897,8 +1070,12 @@ function burst_install_statistics_table() {
             `scroll_percentage` int(11),
             `session_id` int(11),
             `first_time_visit` int(11),
-              PRIMARY KEY  (ID)
+              PRIMARY KEY  (ID),
+              KEY `time_index` (time)
             ) $charset_collate;";
+        /**
+         * We use b-tree index as it can be used for < or > operations, which is not possible for HASH
+         */
 		dbDelta( $sql );
 		update_option( 'burst_stats_db_version', burst_version );
 	}

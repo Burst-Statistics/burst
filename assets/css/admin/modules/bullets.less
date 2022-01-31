@@ -1,56 +1,36 @@
 .burst{
   // burst bullets
   .burst-bullet {
-    height: 17px;
-    width: 17px;
-    flex: 0 0 17px;
+    height: 13px;
+    width: 13px;
+    flex: 0 0 13px;
     border-radius: 50%;
     display: inline-block;
-
-    &.large {
-      height: 20px;
-      width: 20px;
-      flex: 0 0 20px;
+    &.rsp-yellow {
+      background-color: var(--rsp-yellow);
     }
 
-    &.medium {
-      height: 13px;
-      width: 13px;
-      flex: 0 0 13px;
+    &.rsp-blue {
+      background-color: var(--rsp-blue);
     }
 
-    &.small {
-      height: 11px;
-      width: 11px;
-      flex: 0 0 11px;
+    &.rsp-pink {
+      background-color: var(--rsp-pink);
     }
-  }
 
-  .rsp-yellow {
-    background-color: var(--rsp-yellow);
-  }
+    &.rsp-red {
+      background-color: var(--rsp-red);
+    }
 
-  .rsp-blue {
-    background-color: var(--rsp-blue);
-  }
-
-  .rsp-pink {
-    background-color: var(--rsp-pink);
-  }
-
-  .rsp-red {
-    background-color: var(--rsp-red);
-  }
-
-  .rsp-green {
-    background-color: var(--rsp-green);
-  }
-
-  .rsp-blue-yellow {
-    background: var(--rsp-blue);
-    background: linear-gradient(77deg, rgba(41, 182, 246, 1) 0%, rgba(41, 182, 246, 1) 30%, rgba(244, 191, 62, 1) 70%, rgba(244, 191, 62, 1) 100%);
-    animation: gradient 2s ease infinite;
-    background-size: 200% 200%;
+    &.rsp-green {
+      background-color: var(--rsp-green);
+    }
+    &.rsp-blue-yellow {
+      background: var(--rsp-blue);
+      background: linear-gradient(77deg, rgba(41, 182, 246, 1) 0%, rgba(41, 182, 246, 1) 30%, rgba(244, 191, 62, 1) 70%, rgba(244, 191, 62, 1) 100%);
+      animation: gradient 2s ease infinite;
+      background-size: 200% 200%;
+    }
   }
 
   @keyframes gradient {

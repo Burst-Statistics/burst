@@ -1,9 +1,7 @@
-window.burst_test_version = burst_get_user_test_version();
 let token = '?token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 let insert_id = 0;
-let interactive = false;
-let scroll_percentage = 0;
-let scroll_percentage_max = 0;
+//let scroll_percentage = 0;
+//let scroll_percentage_max = 0;
 let ticking = false;
 let heartbeat_interval;
 
@@ -33,17 +31,6 @@ TimeMe.callWhenUserLeaves( burst_update_time_on_page );
 TimeMe.callWhenUserLeaves( stop_heartbeat_interval );
 TimeMe.callWhenUserReturns( start_heartbeat_interval );
 
-
-document.addEventListener('scroll', function(e) {
-	scroll_percentage = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
-	if (!ticking) {
-		window.requestAnimationFrame(function() {
-			save_highest_scroll_percentage(scroll_percentage);
-			ticking = false;
-		});
-		ticking = true;
-	}
-});
 // every 30 seconds update the time on page.
 function start_heartbeat_interval(){
 	heartbeat_interval = window.setInterval(function(){
@@ -54,53 +41,15 @@ function stop_heartbeat_interval(){
 	clearInterval(heartbeat_interval);
 }
 
-if ( !burst_is_user_agent() ) {
-	conversion = window.burst_is_goal_page !== undefined;
-	burst_track_hit(conversion);
-}
 
-if ( burst_is_experiment_page() ) {
-	if ( burst_is_user_agent() ) {
-		burst_show_content('control');
-	} else {
-		window.burst_test_version = burst_get_user_test_version();
-		burst_show_content(window.burst_test_version);
-	}
-} else {
-	//fallback for when burst_experiment_id is undefined, but .burst_control does exist
-	if (document.querySelectorAll(".burst_control").length > 0) {
-		burst_show_content('control');
-		//@todo send an error notice to the server, so we can notice the user or stop the experiment
-	}
-}
-
-if ( window.burst_goal_identifier !== undefined && window.burst_goal_identifier.length > 0 ) {
-	document.querySelectorAll( window.burst_goal_identifier ).forEach(item => {
-		item.addEventListener('click', event => {
-			let target = (event.currentTarget) ? event.currentTarget : event.srcElement;
-			let is_link = false;
-			if (target.tagName.toLowerCase() === "a" && target !== undefined) {
-				is_link = true;
-				// Don't follow the link yet
-				event.preventDefault();
-				// Remember the link href
-				let href = event.srcElement.attributes.href.textContent;
-			}
-
-			// Do the async thing
-			burst_track_hit(true, function() {
-				// go to the link
-				if (is_link) window.location = href;
-			});
-		})
-	})
-}
+burst_track_hit();
 
 /**
  *
  * @param callback
  */
-function burst_track_hit(conversion, callback) {
+function burst_track_hit(callback) {
+	if ( burst_is_user_agent() ) return;
 	if ( !burst_wp_has_consent() ) return;
 
 	let request = new XMLHttpRequest();
@@ -111,17 +60,17 @@ function burst_track_hit(conversion, callback) {
 		'url': url,
 		'entire_url': entire_url,
 		'page_id': burst.page_id,
-		'test_version': window.burst_test_version,
-		'experiment_id': window.burst_experiment_id,
-		'conversion': conversion,
+		//'test_version': window.burst_test_version,
+		//'experiment_id': window.burst_experiment_id,
+		//'conversion': conversion,
 		'referrer_url': document.referrer,
-		'anon_ip': burst.anon_ip,
+		//'anon_ip': burst.anon_ip,
 		'user_agent': navigator.userAgent,
 		'device_resolution': window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio,
 		'time_on_page': TimeMe.getTimeOnCurrentPageInMilliseconds(),
-		'scroll_percentage': scroll_percentage_max,
+		//'scroll_percentage': scroll_percentage_max,
 	};
-
+	console.log(data);
 	request.setRequestHeader('Content-type', 'application/json')
 	request.send(JSON.stringify(data)) // Make sure to stringify
 	request.onreadystatechange = function() {
@@ -137,27 +86,21 @@ function burst_track_hit(conversion, callback) {
 	}
 }
 
-function save_highest_scroll_percentage(scroll_percentage) {
-	if (scroll_percentage > scroll_percentage_max) {
-		scroll_percentage_max = scroll_percentage;
-	}
-}
-
 let burst_last_time_update = false;
 function burst_update_time_on_page(event){
+	if ( burst_is_user_agent() ) return;
 	if ( !burst_wp_has_consent() ) return;
 
 	let current_time_on_page = TimeMe.getTimeOnCurrentPageInMilliseconds();
 	if ( burst_last_time_update + 1000 > current_time_on_page) {
 		return;
 	}
-
 	burst_last_time_update = current_time_on_page;
 
 	let data = {
 		'ID': insert_id,
 		'time_on_page': current_time_on_page,
-		'scroll_percentage': scroll_percentage_max,
+		//'scroll_percentage': scroll_percentage_max,
 	};
 
 	let request = new XMLHttpRequest();
@@ -171,12 +114,12 @@ function burst_update_time_on_page(event){
 }
 
 /**
- * wrapper to check consent for wp consent API. If consent API is not active, do nothing
+ * wrapper to check consent for CMPLZ. If consent API is not active, do nothing
  */
 
 function burst_wp_has_consent() {
-	if (typeof wp_has_consent == 'function') {
-		return wp_has_consent('statistics-anonymous');
+	if (typeof cmplz_has_consent == 'function') {
+		return cmplz_has_consent('statistics-anonymous');
 	}
 	return true;
 }
@@ -191,61 +134,6 @@ function burst_is_user_agent() {
 	let userAgent = navigator.userAgent;
 
 	return re.test(userAgent);
-}
-
-/**
- * Check if we're on an experiment page
- * @returns {boolean}
- */
-function burst_is_experiment_page(){
-	return window.burst_experiment_id !== undefined;
-}
-
-function burst_show_content( test_type ){
-	//by default, the control is 'visibility:none', which ensures the right amount of space is taken in the dom.
-	//the variant is display:none, so not visible at all.
-	const variants = document.querySelectorAll(".burst_variant");
-	const controls = document.querySelectorAll(".burst_control");
-	if ( test_type === 'control' ) {
-		for (const variant of variants) {
-			variant.style.display = 'none';
-		}
-		for (const control of controls) {
-			control.style.visibility = 'visible';
-			control.style.display = 'block';
-		}
-	} else {
-		for (const control of controls) {
-			control.style.display = 'none';
-		}
-		for (const variant of variants) {
-			variant.style.display = 'block';
-		}
-	}
-}
-
-/**
- * check if user has cookie: uid && test_version.
- * if no cookie, create a uid, and random choose control/variant.
- * set cookie
- */
-function burst_get_user_test_version(){
-	//get uid cookie
-	let v = burst_get_cookie('burst_v');
-	if ( v.length == 0 ) {
-		//determine test_version randomly
-		let rand = Math.floor(Math.random() * 2);
-		if ( rand === 1 ) {
-			window.burst_test_version = 'variant';
-		} else {
-			window.burst_test_version = 'control';
-		}
-		burst_set_cookie('burst_v', window.burst_test_version );
-
-	} else {
-		window.burst_test_version = burst_get_cookie('burst_v');
-	}
-	return window.burst_test_version;
 }
 
 /**

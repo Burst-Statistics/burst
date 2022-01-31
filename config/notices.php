@@ -34,7 +34,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 				$error = true;
 			}
 			if ( !$error ) {
-                error_log('dismiss_notice no error');
 				$notice_id = sanitize_title($_POST['id']);
 				$dismissed_warnings = get_option( 'burst_dismissed_warnings', array() );
 				if ( !in_array($notice_id, $dismissed_warnings) ) {
@@ -76,6 +75,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 			$active_notices = $cache ? get_transient( 'burst_warnings' ) : false;
 			//re-check if there are no warnings, or if the transient has expired
 			if ( ! $active_notices ) {
+				$active_notices = array();
 
 				$notice_type_defaults = array(
 					'plus_one'           => false,

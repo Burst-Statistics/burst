@@ -4,7 +4,7 @@
  * file is loaded with ajax, where experiment id is posted.
  */
 
-$date_start = strtotime('today');
+$date_start = burst_offset_utc_time_to_gtm_offset(strtotime('today'));
 $date_end = strtotime('tomorrow');
 
 $time_total = BURST::$statistics->get_single_statistic('time_total', $date_start, $date_end);
@@ -23,7 +23,7 @@ foreach ($lines as $line){ $html .= '<p>' . $line . '</p>'; }
 
 $args = array(
     'title' => '',
-    'tooltip' => __('Tooltip text', 'burst'),
+    'tooltip' => burst_icon('help', __("This shows the totals of today's visitors. This updates every 10 seconds.", 'burst')),
     'subtitles' => $html,
     'number' => $visitors_now,
     'number_subtitle' => __('online right now', 'burst'),
@@ -34,7 +34,7 @@ echo burst_get_template('blocks/big-number.php', $args );
 $results = BURST::$statistics->get_single_statistic('referrer', $date_start, $date_end);
 $args = array(
     'title' => __('Top referrer', 'burst'),
-    'tooltip' => __('Tooltip text', 'burst'),
+    'tooltip' => '',
     'subtitle' => $results['val'],
     'uplift' => '',
     'uplift_status' => '',
@@ -45,7 +45,7 @@ echo burst_get_template('blocks/explanation-and-stats.php', $args );
 $results = BURST::$statistics->get_single_statistic('page_url', $date_start, $date_end);
 $args = array(
     'title' => __('Most visited page', 'burst'),
-    'tooltip' => __('Tooltip text', 'burst'),
+    'tooltip' => '',
     'subtitle' => $results['val'],
     'uplift' => '',
     'uplift_status' => '',

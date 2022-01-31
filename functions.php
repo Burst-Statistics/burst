@@ -205,6 +205,13 @@ if ( ! function_exists( 'burst_display_date' ) ) {
 }
 
 if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
+    /**
+     * Format milliseconds to readable time
+     *
+     * @param $milliseconds
+     * @param string $format
+     * @return string
+     */
     function burst_format_milliseconds_to_readable_time( $milliseconds, $format = '%02u:%02u:%02u ' )
     {
         $seconds = floor($milliseconds / 1000);
@@ -216,6 +223,64 @@ if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
 
         $time = sprintf($format, $hours, $minutes, $seconds, $milliseconds);
         return rtrim($time, '0');
+    }
+}
+
+
+if ( ! function_exists( 'burst_offset_utc_time_to_gtm_offset' ) ) {
+    function burst_offset_utc_time_to_gtm_offset($utc_time)
+    {
+        $utc_time = intval($utc_time);
+        $gmt_offset_seconds = intval(get_option('gmt_offset') * HOUR_IN_SECONDS);
+
+        return $utc_time + $gmt_offset_seconds;
+    }
+}
+
+if ( ! function_exists( 'burst_format_number' ) ) {
+    /**
+     * Format number with correct decimal and thousands separator
+     *
+     * @param $n
+     * @param int $decimals
+     * @return int|string
+     */
+    function burst_format_number( $number, $precision = 2 ) {
+        $thousand_sep = burst_get_thousand_separator();
+        $decimal_sep = burst_get_decimal_separator();
+        if ( $number < 10000 ){
+            return 0 + number_format($number, $precision, $decimal_sep, $thousand_sep);
+        }
+        $divisors = array(
+            pow(1000, 0) => '', // 1000^0 == 1
+            pow(1000, 1) => 'K', // Thousand
+            pow(1000, 2) => 'M', // Million
+            pow(1000, 3) => 'B', // Billion
+        );
+
+        // Loop through each $divisor and find the
+        // lowest amount that matches
+        foreach ($divisors as $divisor => $shorthand) {
+            if (abs($number) < ($divisor * 1000)) {
+                // We found a match!
+                break;
+            }
+        }
+        // We found our match, or there were no matches.
+        // Either way, use the last defined value for $divisor.
+        return 0 + number_format($number / $divisor, 1, $decimal_sep, $thousand_sep) . $shorthand;
+    }
+}
+
+if ( ! function_exists( 'burst_get_thousand_separator' ) ) {
+    function burst_get_thousand_separator() {
+        return apply_filters('burst_change_thousand_separator', ' ');
+    }
+}
+
+if ( ! function_exists( 'burst_get_decimal_separator' ) ) {
+    function burst_get_decimal_separator() {
+        return apply_filters('burst_change_decimal_separator', '.');
     }
 }
 
@@ -717,6 +782,30 @@ if ( ! function_exists( 'burst_sprintf' ) ) {
             }
         }
         return $args[0] .  ' (Translation error)';
+    }
+}
+
+if ( !function_exists('burst_get_date_ranges')) {
+	function burst_get_date_ranges(){
+		return apply_filters('burst_date_ranges',array(
+			'yesterday',
+			'previous-7-days',
+			'previous-30-days',
+			'this-month' ,
+			'previous-month',
+			'custom'
+		));
+	}
+}
+
+if ( !function_exists('burst_sanitize_date_range')) {
+    function burst_sanitize_date_range($date_range){
+        $date_range = sanitize_title($date_range);
+	    $date_ranges = burst_get_date_ranges();
+        if ( in_array($date_range, $date_ranges) ){
+            return $date_range;
+        }
+        return 'previous-7-days';
     }
 }
 

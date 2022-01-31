@@ -3,6 +3,7 @@
  *
  * Default values for elements and resets.
  */
+
 .burst {
   font-size: var(--rsp-fs-300);
   line-height: 1.5;
@@ -10,11 +11,6 @@
   box-sizing: border-box;
   padding-bottom: 20px;
   margin: 0 0 0 -20px;
-
-  //wordpress inserts notices after the first h1 or h2. To prevent breaking layout we insert an empty h1 tag at the start of our page, where WP can insert the notice.
-  .burst-noticed-hook-element {
-    display: none !important;
-  }
 
   *, *:before, *:after {
     box-sizing: inherit;
@@ -64,7 +60,7 @@
 
   h5, .h5 {
     font-size: var(--rsp-fs-400);
-    font-weight: 400;
+    font-weight: 500;
   }
 
   h6, .h6 {
@@ -86,5 +82,17 @@
 
   a {
     font-size: 1em;
+  }
+
+  //wordpress inserts notices after the first h1 or h2. To prevent breaking layout we insert an empty h1 tag at the start of our page, where WP can insert the notice.
+  .burst-notice-hook-element {
+    display: none !important;
+  }
+
+  // Hide nags from other plugins
+  .error, .notice, .update-nag, .notice-info {
+    &:not(.really-simple-plugins) {
+      display: none !important;
+    }
   }
 }

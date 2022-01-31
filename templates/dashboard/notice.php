@@ -1,3 +1,4 @@
+<?php defined( 'ABSPATH' ) or die();?>
 <div class="burst-notice">
 	<div class="burst-status-container">
 		<span class="burst-status burst-{status}">{status-message}</span>

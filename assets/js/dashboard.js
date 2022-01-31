@@ -25,7 +25,7 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    var intervalId = window.setInterval(function(){
+    var intervalUpdateRealTime = window.setInterval(function(){
         updateRealTimeVisits();
     }, 2000);
 
@@ -46,7 +46,7 @@ jQuery(document).ready(function ($) {
         })
     }
 
-    var intervalId = window.setInterval(function(){
+    var intervalUpdateToday = window.setInterval(function(){
         updateTodayStatistics();
     }, 10000);
 

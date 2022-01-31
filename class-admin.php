@@ -7,7 +7,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 		public $success_message = "";
 		public $grid_items;
 		public $default_grid_item;
-        public $rows_batch = 200;
+        public $rows_batch = 1000;
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
@@ -77,46 +77,46 @@ if ( ! class_exists( "burst_admin" ) ) {
 			 ) {
 			 	return;
 			 }
+			 
 
-            //Datatables
-            wp_register_script('burst-datatables',
-                trailingslashit(burst_url)
-                . 'assets/datatables/datatables.min.js', array("jquery"), burst_version);
-            wp_enqueue_script('burst-datatables');
-
-			//datapicker
-			wp_enqueue_style( 'burst-datepicker' , trailingslashit(burst_url) . 'assets/datepicker/datepicker.css', "", burst_version);
-			wp_enqueue_script('burst-moment', trailingslashit(burst_url) . 'assets/datepicker/moment.js', array("jquery"), burst_version);
-			wp_enqueue_script('burst-datepicker', trailingslashit(burst_url) . 'assets/datepicker/datepicker.js', array("jquery", "burst-moment"), burst_version);
 
 			//select2
-			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
-			wp_enqueue_style( 'select2' );
-			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
+//			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
+//			wp_enqueue_style( 'select2' );
+//			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
 
 			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-			wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
-			wp_enqueue_style( 'burst-admin' );
-			wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
 
-			if (isset($_GET['page']) && $_GET['page'] ==='burst') {
-                wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version, false);
-			}
 
-            if (isset($_GET['page']) && $_GET['page'] ==='burst-statistics') {
-                wp_enqueue_style( 'chartjs' );
+            if (isset($_GET['burst-page']) && $_GET['burst-page'] ==='statistics') {
                 wp_enqueue_script( 'chartjs', burst_url . "assets/chartjs/chart.min.js", array(), burst_version, true );
 
-                wp_enqueue_script('burst-dashboard', burst_url . "assets/js/statistics$minified.js", array('burst-admin'), burst_version, false);
+                //datapicker
+                wp_enqueue_style( 'burst-datepicker' , trailingslashit(burst_url) . 'assets/datepicker/datepicker.css', "", burst_version);
+                wp_enqueue_script('burst-moment', trailingslashit(burst_url) . 'assets/datepicker/moment.js', array("jquery"), burst_version);
+                wp_enqueue_script('burst-datepicker', trailingslashit(burst_url) . 'assets/datepicker/datepicker.js', array("jquery", "burst-moment"), burst_version);
+
+                wp_enqueue_script('burst-statistics', burst_url . "assets/js/statistics$minified.js", array('burst-admin'), burst_version, false);
+
+                //Datatables
+                wp_register_script('burst-datatables',
+                    trailingslashit(burst_url)
+                    . 'assets/datatables/datatables.min.js', array("jquery"), burst_version);
+                wp_enqueue_script('burst-datatables');
 
                 //Datatables plugin to hide pagination when it isn't needed
                 wp_register_script('burst-datatables-pagination',
                     trailingslashit(burst_url)
                     . 'assets/datatables/dataTables.conditionalPaging.js', array("jquery"), burst_version);
                 wp_enqueue_script('burst-datatables-pagination');
-            }
+            } else if (isset($_GET['page']) && $_GET['page'] ==='burst') {
+                wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version, false);
+			}
 
+            wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
+            wp_enqueue_style( 'burst-admin' );
+            wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
 
 			wp_localize_script(
 				'burst-admin',
@@ -126,10 +126,10 @@ if ( ! class_exists( "burst_admin" ) ) {
 					'strings' => array(
 						'Today'        => __( 'Today', 'burst' ),
 						'Yesterday'    => __( 'Yesterday', 'burst' ),
-						'Last 7 days'  => __( 'Last 7 days', 'burst' ),
-						'Last 30 days' => __( 'Last 30 days', 'burst' ),
+						'Previous 7 days'  => __( 'Last 7 days', 'burst' ),
+						'Previous 30 days' => __( 'Last 30 days', 'burst' ),
 						'This Month'   => __( 'This Month', 'burst' ),
-						'Last Month'   => __( 'Last Month', 'burst' ),
+						'Previous Month'   => __( 'Last Month', 'burst' ),
 						'date_format'  => get_option( 'date_format' ),//_x( 'MM/DD/YYYY','Date format' 'burst' ),
 						'Apply'        => __( "Apply", "burst" ),
 						'Cancel'       => __( "Cancel", "burst" ),
@@ -221,43 +221,18 @@ if ( ! class_exists( "burst_admin" ) ) {
 			$warnings      = BURST::$notices->get_notices( array('plus_ones'=>true) );
 			$warning_count = count( $warnings );
 			$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
-			$warning_count = count( $warnings );
-			$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
-			$menu_label    = burst_plugin_name . burst_sprintf( __( ' %s', 'burst' ),
+			$menu_label    = __('Statistics', 'burst') . burst_sprintf( __( ' %s', 'burst' ),
 				"<span class='update-plugins count-$warning_count' title='$warning_title'><span class='update-count'>"
 				. number_format_i18n( $warning_count ) . "</span></span>" );
 
-			global $burst_admin_page;
-			$burst_admin_page = add_menu_page(
-				burst_plugin_name,
-				$menu_label,
-				'manage_options',
-				'burst',
-				array( $this, 'dashboard' ),
-				burst_url . 'assets/images/menu-icon.svg',
-				burst_main_menu_position
-			);
-
 			add_submenu_page(
-				'burst',
-				__( 'Dashboard', 'burst' ),
-				__( 'Dashboard', 'burst' ),
+				'index.php',
+				__( 'Burst Statistics', 'burst' ),
+                $menu_label,
 				'manage_options',
 				'burst',
-				array( $this, 'dashboard' )
+				array( $this, 'burst_pages' )
 			);
-
-            add_submenu_page(
-                'burst',
-                __( 'Statistics', 'burst' ),
-                __( 'Statistics', 'burst' ),
-                'manage_options',
-                'burst-statistics',
-                array( $this, 'statistics' )
-            );
-
-			do_action( 'burst_admin_menu' );
-
 		}
 
         public function get_metric_dropdown(){
@@ -282,12 +257,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 
         public function get_daterange_dropdown()
         {
-            // strtotime today gives us the starting seconds of today. So we substract 1 second to get the end of yesterday.
-            // the gmt offset provides the correct timezone.
-            $endOfDay   = strtotime("today") - 1 - ( 3600 * get_option('gmt_offset') );
-            $date_start = strtotime('-8 days');
-            $date_end = $endOfDay;
-
             ob_start();
             ?>
             <div class="burst-date-container burst-date-range">
@@ -295,8 +264,8 @@ if ( ! class_exists( "burst_admin" ) ) {
                 <span></span>
                 <i class="dashicons dashicons-arrow-down-alt2"></i>
             </div>
-            <input type="hidden" name="burst_date_start" value="<?php echo esc_attr($date_start) ?>">
-            <input type="hidden" name="burst_date_end" value="<?php echo esc_attr($date_end) ?>">
+            <input type="hidden" name="burst_date_start" value="0">
+            <input type="hidden" name="burst_date_end" value="0">
             <?php
             $html = ob_get_clean();
 
@@ -411,12 +380,17 @@ if ( ! class_exists( "burst_admin" ) ) {
             $this->grid_items = $grid_items;
         }
 
+
 		/**
 		 * Dashboard page
 		 */
-		public function dashboard() {
+		public function burst_pages() {
+            $burst_page = isset($_GET['burst-page']) ? $_GET['burst-page'] : false;
+		    $burst_page = $this->sanitize_burst_page($burst_page);
+			$grid_items = $this->grid_items[$burst_page];
+			$admin_pages = $this->get_burst_admin_pages();
+            $controls = $admin_pages[$burst_page]['controls'];
 
-			$grid_items = $this->grid_items['dashboard'];
 			//give each item the key as index
 			array_walk($grid_items, function(&$a, $b) { $a['index'] = $b; });
 
@@ -424,18 +398,19 @@ if ( ! class_exists( "burst_admin" ) ) {
 			foreach ($grid_items as $index => $grid_item) {
 			    $grid_html .= burst_grid_element($grid_item);
 			}
-			$args = array(
-				'page' => 'dashboard',
-				'content' => burst_grid_container($grid_html),
-                'controls' => '',
-			);
+
+            $args = array(
+                'page' => $burst_page,
+                'content' => burst_grid_container($grid_html),
+                'controls' => $controls,
+            );
 			echo burst_get_template('admin_wrap.php', $args );
 		}
 
         /**
          * Dashboard page
          */
-        public function statistics() {
+        public function burst_statistics() {
 
             $grid_items = $this->grid_items['statistics'];
 
@@ -452,6 +427,36 @@ if ( ! class_exists( "burst_admin" ) ) {
                 'controls' => $this->get_daterange_dropdown(),
             );
             echo burst_get_template('admin_wrap.php', $args );
+        }
+
+        public function sanitize_burst_page($page_unsanitized){
+            error_log($page_unsanitized);
+            $pages = $this->get_burst_admin_pages();
+            foreach ( $pages as $page => $value) {
+                if ($page_unsanitized === $page) {
+                    error_log($page);
+                    return $page;
+                }
+            }
+            error_log('return default');
+            return 'dashboard';
+        }
+
+        public function get_burst_admin_pages(){
+            return apply_filters('burst_admin_pages',
+                array(
+                    'dashboard' => array(
+                        'title' => __('Dashboard', 'burst'),
+                        'show_in_menu' => true,
+                        'controls' => '',
+                    ),
+                    'statistics' => array(
+                        'title' => __('Statistics', 'burst'),
+                        'show_in_menu' => true,
+                        'controls' => $this->get_daterange_dropdown(),
+                    ),
+                ),
+            );
         }
 
 	    /**
@@ -503,16 +508,19 @@ if ( ! class_exists( "burst_admin" ) ) {
                 $error = true;
             }
 
+	        if (!isset($_GET['date_range'])){
+		        $error = true;
+	        }
+
             $page = isset($_GET['page']) ? intval($_GET['page']) : false;
 
             if (!$error){
-                $start = intval($_GET['start']);
-                $end = intval($_GET['end']);
+                $start = burst_offset_utc_time_to_gtm_offset($_GET['start']);
+                $end = burst_offset_utc_time_to_gtm_offset($_GET['end']);
                 $type = sanitize_title($_GET['type']);
-
-                //$total = $this->get_results_count($type, $start, $end);
+                $date_range = burst_sanitize_date_range($_GET['date_range']);
                 $total = 2;
-                $html = $this->datatable_html( $start, $end, $page, $type);
+                $html = $this->datatable_html( $start, $end, $page, $type, $date_range);
             }
 
             $data = array(
@@ -537,16 +545,15 @@ if ( ! class_exists( "burst_admin" ) ) {
          * @since 1.0
          */
 
-        public function datatable_html($start, $end, $page, $type)
+        public function datatable_html($start, $end, $page, $type, $date_range)
         {
             // Start generating rows
             $args = array(
-                'offset' => $this->rows_batch * ($page-1),
-                'number' =>$this->rows_batch,
                 'date_from' => $start,
                 'date_to' => $end,
-                'result_count' => true,
 	            'group_by' => $type,
+                'date_range' => $date_range,//for caching purposes
+                'page' => $page, //for caching purposes
             );
             $hits = BURST::$statistics->get_hits_single($args);
             if ( $page > 1 ) {

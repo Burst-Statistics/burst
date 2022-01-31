@@ -215,9 +215,23 @@ jQuery(document).ready(function ($) {
 function burstLocalizeString(str) {
     var strings = burst.strings;
     for (var k in strings) {
+
         if (strings.hasOwnProperty(k)) {
             str = str.replaceAll(k, strings[k]);
         }
     }
     return str;
+}
+
+function burst_unLocalizeString(translation) {
+    var strings = burst.strings;
+    for (var k in strings) {
+
+        if (strings.hasOwnProperty(k)) {
+            if (strings[k]===translation) {
+                return k;
+            }
+        }
+    }
+    return translation;
 }

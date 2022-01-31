@@ -1,6 +1,9 @@
 jQuery(document).ready(function ($) {
     'use strict';
 
+    let date_range = 'Previous 7 days'; //default selected date range
+
+
     /**
      * Generate a ChartJS in the element canvas.
      * @param date_start
@@ -8,8 +11,8 @@ jQuery(document).ready(function ($) {
      */
 
     function burstInitChartJS(date_start, date_end) {
-        date_start = typeof date_start !== 'undefined' ? date_start : parseInt($('input[name=burst_date_start]').val());
-        date_end = typeof date_end !== 'undefined' ? date_end : parseInt($('input[name=burst_date_end]').val());
+        date_start = parseInt($('input[name=burst_date_start]').val());
+        date_end = parseInt($('input[name=burst_date_end]').val());
         let style = getComputedStyle(document.body);
         let pageviews_color = style.getPropertyValue('--rsp-blue');
         let visitors_color = style.getPropertyValue('--rsp-yellow');
@@ -68,6 +71,7 @@ jQuery(document).ready(function ($) {
                 date_start: date_start,
                 date_end: date_end,
                 metrics: metrics,
+                date_range: date_range,
             },
             success: function (response) {
 
@@ -103,43 +107,41 @@ jQuery(document).ready(function ($) {
 
     initDatePicker();
     function initDatePicker() {
-        let todayStart = moment().endOf('day').subtract(1, 'days').add(1, 'minutes');
-        let todayEnd = moment().endOf('day');
         let yesterdayStart = moment().endOf('day').subtract(2, 'days').add(1, 'minutes');
-
         let yesterdayEnd = moment().endOf('day').subtract(1, 'days');
-
-        // let strToday = burstLocalizeString('Today');
         let strYesterday = burstLocalizeString('Yesterday');
         let strLast7 = burstLocalizeString('Previous 7 days');
         let strLast30 = burstLocalizeString('Previous 30 days');
         let strLast90 = burstLocalizeString('Previous 90 days');
         let strPreviousMonth = burstLocalizeString('Previous Month') + ' (' +moment().subtract(1, 'month').format('MMMM') + ')';
-        //let strExperiment = burstLocalizeString('Experiment duration');
-
         let ranges = {}
-        // ranges[strToday] = [todayStart, todayEnd];
         ranges[strYesterday] = [yesterdayStart, yesterdayEnd];
-        ranges[strLast7] = [moment().subtract(8, 'days'), yesterdayEnd];
-        ranges[strLast30] = [moment().subtract(32, 'days'), yesterdayEnd];
-        ranges[strLast90] = [moment().subtract(92, 'days'), yesterdayEnd];
+        ranges[strLast7] = [moment(yesterdayEnd).subtract(6, 'days').startOf('day'), yesterdayEnd];
+        ranges[strLast30] = [moment(yesterdayEnd).subtract(29, 'days').startOf('day'), yesterdayEnd];
+        ranges[strLast90] = [moment(yesterdayEnd).subtract(89, 'days').startOf('day'), yesterdayEnd];
         ranges[strPreviousMonth] = [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')];
 
-        let unixStart = parseInt($('input[name=burst_date_start]').val());
-        let unixEnd = parseInt($('input[name=burst_date_end]').val());
+        // Default date range for the datepicker
+        // This time still has a timezone and is needed to display the correct date in the datepicker
+        let momentStart = moment(yesterdayEnd).subtract(6, 'days').startOf('day');
+        let momentEnd = yesterdayEnd;
 
-        if (unixStart === null || unixEnd === null) {
-            unixStart = moment().endOf('day').subtract(8, 'days').unix();
-            unixEnd = moment().endOf('day').subtract(1, 'day').unix();
-        }
+        $('.burst-compare-days-number').html(Math.abs(momentStart.diff(momentEnd, 'days'))+1);
 
-        unixStart = parseInt(unixStart);
-        unixEnd = parseInt(unixEnd);
-        //ranges[strExperiment] = [moment.unix(unixStart), moment.unix(unixEnd)];
-        burstUpdateDate(moment.unix(unixStart), moment.unix(unixEnd));
+        burstUpdateDate(momentStart, momentEnd);
+        // We need the utc time instead of user time (with timezone offset)
+        let startUnixUtc = momentStart.unix() + momentStart.utcOffset() * 60;
+        let endUnixUtc = momentEnd.unix() + momentEnd.utcOffset() * 60;
+        // On the server side we will adjust the time to the time + wordpress offset
+        // This way on the front end the datepicker shows the correct date for the corresponding data
+        // All the data will be shown in the wordpress timezone
+
+        $('input[name=burst_date_start]').val(startUnixUtc);
+        $('input[name=burst_date_end]').val(endUnixUtc);
+
+
+        burstLoadGridBlocks();
         burstInitChartJS();
-
-
         $('.burst-date-container.burst-date-range').daterangepicker(
             {
                 ranges: ranges,
@@ -178,37 +180,31 @@ jQuery(document).ready(function ($) {
                     "firstDay": 1
                 },
                 "alwaysShowCalendars": true,
-                startDate: moment.unix(unixStart),
-                endDate: moment.unix(unixEnd),
+                startDate: momentStart,
+                endDate: momentEnd,
                 "opens": "left",
-                maxDate: todayEnd,
-            }, function (start, end, label) {
-                burstUpdateDate(start, end);
-                burstInitChartJS(start.unix(), end.unix());
-                $('input[name=burst_date_start]').val(start.unix());
-                $('input[name=burst_date_end]').val(end.unix());
+                maxDate: yesterdayEnd,
+            }, function (momentStart, momentEnd, label) {
+                date_range = burst_unLocalizeString(label);
+                burstUpdateDate(momentStart, momentEnd);
+                let startUnixUtc = momentStart.unix() + momentStart.utcOffset() * 60;
+                let endUnixUtc = momentEnd.unix() + momentEnd.utcOffset() * 60;
+
+                $('input[name=burst_date_start]').val(startUnixUtc);
+                $('input[name=burst_date_end]').val(endUnixUtc);
+                burstInitChartJS();
+                $('.burst-compare-days-number').html(Math.abs(momentStart.diff(momentEnd, 'days'))+1);
                 burstLoadGridBlocks();
                 window.burstLoadAjaxTables();
             });
     }
 
-    $(document).on('change', 'select[name=burst_selected_metric]', function(){
-        let datepickerData = $('.burst-date-container.burst-date-range').data('daterangepicker');
-        let startDate = moment(datepickerData.startDate);
-        let endDate = moment(datepickerData.endDate);
-        burstInitChartJS(startDate.unix(), endDate.unix());
-    });
-
-    burstLoadGridBlocks();
     function burstLoadGridBlocks(){
-
         //let experiment_id = $('select[name=burst_selected_experiment_id]').val() ? $('select[name=burst_selected_experiment_id]').val() : 0 ;
-
-
         $('.burst-load-ajax').each(function(){
             let gridContainer = $(this);
             // if there is no skeleton add a skeleton
-            if (gridContainer.find('.burst-skeleton').length == 0) {
+            if ( gridContainer.find('.burst-skeleton').length ) {
                 gridContainer.find('.burst-grid-content').fadeOut(200, function() {
                     $(this).html('<div class="burst-skeleton"></div>').fadeIn(300);
                 });
@@ -217,6 +213,7 @@ jQuery(document).ready(function ($) {
             let type = gridContainer.data('block_type');
             let date_start = parseInt($('input[name=burst_date_start]').val());
             let date_end = parseInt($('input[name=burst_date_end]').val());
+
             $.ajax({
                 type: "get",
                 dataType: "json",
@@ -226,6 +223,7 @@ jQuery(document).ready(function ($) {
                     type:type,
                     date_start: date_start,
                     date_end: date_end,
+                    date_range: date_range,
                 },
                 success: function (response) {
                     if (response.success) {
@@ -272,6 +270,7 @@ jQuery(document).ready(function ($) {
 
     window.burstLoadAjaxTables = function() {
         $('.burst-grid-datatable').each(function(){
+            console.log('found datatable');
             if ($(this).find('.burst-skeleton').length == 0) {
                 $(this).find('.burst-grid-content').fadeOut(200, function() {
                     $(this).html('<div class="burst-skeleton"></div>').fadeIn(300);
@@ -282,10 +281,8 @@ jQuery(document).ready(function ($) {
     };
 
     window.burstLoadAjaxTables();
-
-    let initiliasedDatatables  = array();
+    
     function burstInitSingleDataTable(table, id) {
-        let win = $(window);
         let pageLength = burstDefaultRowCount;
         let pagingType = burstDefaultPagingType;
 
@@ -319,17 +316,6 @@ jQuery(document).ready(function ($) {
     }
 
 
-    function localize_html(str) {
-        let strings = burst.localize;
-        for (let k in strings) {
-            if (strings.hasOwnProperty(k)) {
-                if ( k === str ) return strings[k];
-            }
-        }
-        return str;
-    }
-
-
     function burstLoadDataTable(container, id, page, received){
         if(page===1) container.html(burst.skeleton);
         // let unixStart = localStorage.getItem('burst_range_start');
@@ -354,11 +340,15 @@ jQuery(document).ready(function ($) {
                 end         : unixEnd,
                 page        : page,
                 type        : type,
+                date_range: date_range,
                 // token  : burst.token
             }),
             success: function (response) {
+                console.log('response');
+                console.log(response);
                 //this only on first page of table
                 if (page===1){
+
                     let table = container.find('table');
 
                     container.find('.burst-skeleton').fadeOut(300, function() {

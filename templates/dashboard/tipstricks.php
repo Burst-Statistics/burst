@@ -1,4 +1,4 @@
-<?php
+<?php defined( 'ABSPATH' ) or die();
 
 $items = array(
     1 => array(

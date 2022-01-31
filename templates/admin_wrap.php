@@ -1,5 +1,5 @@
 <div class="burst wrap" id="burst">
-	<h1 class="burst-noticed-hook-element"></h1>
+	<h1 class="burst-notice-hook-element"></h1>
 	<div class="burst-{page}">
         <div class="burst-header-container">
 		    <div class="burst-header">
@@ -8,13 +8,19 @@
                     <nav class="burst-header-menu">
                         <ul>
                             <?php
-                            $burst_menus = $GLOBALS[ 'submenu' ][ 'burst' ];
-                            foreach($burst_menus as $menu){
-                                $page = $menu[2];
-                                $title = $menu[3];
-                                $active = $_GET['page'] === $page || $_GET['page'] === substr($page, 0, -1)  ? 'class=active' : '';
-                                $url = admin_url('admin.php?page=' . $page);
-                                echo '<li><a '. esc_html($active) .' href='. esc_url($url) .'>'. esc_html($title) .'</a></li>';
+                            $menu_items = BURST::$admin->get_burst_admin_pages();
+                            foreach($menu_items as $page => $settings){
+                                $active = false;
+                                if ($settings['show_in_menu'] === false) continue;
+                                if ( $_GET['page'] === 'burst' && isset($_GET['burst-page']) && $_GET['burst-page'] === $page){
+                                    $active = true;
+                                } else if ($_GET['page'] === 'burst' && !isset($_GET['burst-page']) && $page === 'dashboard')  {
+                                    $active = true;
+                                }
+                                $active_class = $active ? 'class=active' : '';
+                                $url = admin_url('index.php?page=burst&burst-page='.$page);
+
+                                echo '<li><a '. esc_html($active_class) .' href="'. esc_url($url) .'">'. esc_html($settings['title']) .'</a></li>';
                             }
                             ?>
                         </ul>
