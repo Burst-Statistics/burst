@@ -399,16 +399,24 @@ if ( ! class_exists( "burst_statistics" ) ) {
             }
 
             if ($group_by === 'referrer'){
+                $direct_text =  "'". __("Direct", "Burst")."'";
                 $remove = array("http://www.", "https://www.", "http://", "https://");
                 $site_url = str_replace( $remove, "", site_url());
                 $where .="AND $group_by NOT LIKE '%$site_url%'";
                 $select = "COUNT($group_by) AS hit_count,
-                trim( 'www.' from trim( trailing '/' from substring($group_by, locate('://', $group_by) + 3))) as val_grouped"; //Strip http:// and https://
+                CASE
+                    WHEN referrer = '/' THEN $direct_text
+                    ELSE trim( 'www.' from trim( trailing '/' from substring($group_by, locate('://', $group_by) + 3))) 
+                END as val_grouped"; //Strip http:// and https://
                 //substring_index(substring($group_by, locate('://', $group_by) + 3), '.', -2) as $group_by"; //Strip only subdomains and https
                 //substring_index(substring_index(substring($group_by, locate('://', $group_by) + 3), '/', 1), '.', -2) as $group_by"; STRIP FULL URL
             } else {
+                $homepage_text =  "'". __("Homepage", "Burst")."'";
                 $select = "COUNT($group_by) AS hit_count,
-                trim( trailing '/' from $group_by) as val_grouped";
+                CASE 
+                    WHEN $group_by = '/' THEN $homepage_text
+                    ELSE trim( trailing '/' from $group_by) 
+                END as val_grouped";
             }
 
             $search_sql ="SELECT 
