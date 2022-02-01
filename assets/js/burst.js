@@ -70,7 +70,6 @@ function burst_track_hit(callback) {
 		'time_on_page': TimeMe.getTimeOnCurrentPageInMilliseconds(),
 		//'scroll_percentage': scroll_percentage_max,
 	};
-	console.log(data);
 	request.setRequestHeader('Content-type', 'application/json')
 	request.send(JSON.stringify(data)) // Make sure to stringify
 	request.onreadystatechange = function() {

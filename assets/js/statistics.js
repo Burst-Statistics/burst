@@ -204,7 +204,7 @@ jQuery(document).ready(function ($) {
         $('.burst-load-ajax').each(function(){
             let gridContainer = $(this);
             // if there is no skeleton add a skeleton
-            if ( gridContainer.find('.burst-skeleton').length ) {
+            if ( gridContainer.find('.burst-skeleton').length === 0 ) {
                 gridContainer.find('.burst-grid-content').fadeOut(200, function() {
                     $(this).html('<div class="burst-skeleton"></div>').fadeIn(300);
                 });
@@ -270,10 +270,10 @@ jQuery(document).ready(function ($) {
 
     window.burstLoadAjaxTables = function() {
         $('.burst-grid-datatable').each(function(){
-            console.log('found datatable');
-            if ($(this).find('.burst-skeleton').length == 0) {
-                $(this).find('.burst-grid-content').fadeOut(200, function() {
-                    $(this).html('<div class="burst-skeleton"></div>').fadeIn(300);
+            let skeleton = $(this).find('.burst-skeleton');
+            if (skeleton.css('display') === 'none') {
+                $(this).find('.burst-datatable').fadeOut(200, function() {
+                    skeleton.fadeIn(300);
                 });
             }
             burstLoadDataTable( $(this), $(this).data('id'), 1, 0);
@@ -318,14 +318,6 @@ jQuery(document).ready(function ($) {
 
     function burstLoadDataTable(container, id, page, received){
         if(page===1) container.html(burst.skeleton);
-        // let unixStart = localStorage.getItem('burst_range_start');
-        // let unixEnd = localStorage.getItem('burst_range_end');
-        // if (unixStart === null || unixEnd === null ) {
-        //     unixStart = moment().subtract(100, 'week').unix();
-        //     unixEnd = moment().unix();
-        //     localStorage.setItem('burst_range_start', unixStart);
-        //     localStorage.setItem('burst_range_end', unixEnd);
-        // }
         let unixStart = parseInt($('input[name=burst_date_start]').val())
         let unixEnd = parseInt($('input[name=burst_date_end]').val())
         let type = container.data('block_type');
@@ -344,8 +336,6 @@ jQuery(document).ready(function ($) {
                 // token  : burst.token
             }),
             success: function (response) {
-                console.log('response');
-                console.log(response);
                 //this only on first page of table
                 if (page===1){
 
@@ -361,6 +351,8 @@ jQuery(document).ready(function ($) {
 
                         container.find('.dataTables_filter').appendTo( container.find('.burst-grid-controls') );
                         container.find('.dataTables_paginate').appendTo( container.find('.burst-grid-footer') );
+                        container.find('.burst-datatable').css('display', 'block');
+
                     });
 
                 } else {

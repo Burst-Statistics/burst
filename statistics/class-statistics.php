@@ -740,17 +740,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					if ($date_range!=='custom') wp_cache_set('cmplz_devices_browser_'.$device.'_'.$date_range, $most_popular_browser, 'burst', DAY_IN_SECONDS);
 				}
 				$result[$device]['browser'] = $most_popular_browser;
-				$most_popular_plaform = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_devices_platform_'.$device.'_'.$date_range, 'burst');
-				if ( !$most_popular_plaform ) {
+				$most_popular_platform = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_devices_platform_'.$device.'_'.$date_range, 'burst');
+				if ( !$most_popular_platform ) {
 					$sql = $wpdb->prepare("SELECT platform from (SELECT platform, COUNT(*) as count, device
 					FROM ($statistics_without_bounces) as without_bounces where time>%s AND time<%s AND device IS NOT NULL AND device <> '' AND platform is not null
 					GROUP BY platform, device ) as grouped_devices where $device_sql order by count desc limit 1
                     ", $date_start, $date_end );
-					$most_popular_plaform = $wpdb->get_var( $sql );
-					if (empty($most_popular_plaform)) $most_popular_plaform = ' - ';
-					if ($date_range!=='custom') wp_cache_set('cmplz_devices_platform_'.$device.'_'.$date_range, $most_popular_plaform, 'burst', DAY_IN_SECONDS);
+					$most_popular_platform = $wpdb->get_var( $sql );
+					if (empty($most_popular_platform)) $most_popular_platform = ' - ';
+					if ($date_range!=='custom') wp_cache_set('cmplz_devices_platform_'.$device.'_'.$date_range, $most_popular_platform, 'burst', DAY_IN_SECONDS);
 				}
-				$result[$device]['platform'] = $most_popular_plaform;
+				$result[$device]['platform'] = $most_popular_platform;
 			}
             return $result;
         }

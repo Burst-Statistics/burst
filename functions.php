@@ -714,7 +714,8 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
         $ua = \donatj\UserAgent\parse_user_agent($user_agent);
 
         switch ($ua['platform']) {
-            case 'Macintosh':case 'Chrome OS':
+            case 'Macintosh':
+            case 'Chrome OS':
             case 'Linux':
             case 'Windows':
             $ua['device'] = 'desktop';
@@ -743,8 +744,6 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
             case 'Nintendo Switch':
             case 'Nintendo Wii':
             case 'Nintendo WiiU':
-                $ua['device'] = 'console';
-                break;
             case 'iPod':
             case 'Kindle':
             case 'Kindle Fire':
