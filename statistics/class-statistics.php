@@ -124,7 +124,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				for ($i = $nr_of_periods-1; $i >= 0; $i--) {
 					$days = $i + $end_date_days_ago;
 					$unix_day = strtotime("-$days days");
-					$date = date( get_option( 'date_format' ), $unix_day);
+					$date = date( 'l - ' . get_option( 'date_format' ), $unix_day);
 					$data['dates'][] = $date;
                     $unix_day = strtotime("-$days days");
                     $date = date('M j', $unix_day);

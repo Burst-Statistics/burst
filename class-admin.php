@@ -37,8 +37,10 @@ if ( ! class_exists( "burst_admin" ) ) {
             add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
 
 			// deactivating
-			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
-			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
+//			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
+//			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
+
+            //disabled for now
 		}
 
 		static function this() {
@@ -596,7 +598,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 	    /**
 	     *
-	     * Add a button and thickbox to deactivate the plugin while keeping SSL
+	     * Add a button and thickbox to deactivate the plugin
 	     *
 	     * @since 3.0
 	     *
@@ -697,7 +699,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 	        <script>
 	            jQuery(document).ready(function ($) {
 	                $('#burst_close_tb_window').click(tb_remove);
-	                $(document).on('click', '#deactivate-burst-a-b-split-testing', function(e){
+	                $(document).on('click', '#deactivate-burst-statistics', function(e){
 	                    e.preventDefault();
 	                    tb_show( '', '#TB_inline?height=420&inlineId=deactivate_and_delete_data', 'null');
 	                    $("#TB_window").addClass('burst-deactivation-popup');

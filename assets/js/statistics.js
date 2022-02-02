@@ -14,8 +14,12 @@ jQuery(document).ready(function ($) {
         date_start = parseInt($('input[name=burst_date_start]').val());
         date_end = parseInt($('input[name=burst_date_end]').val());
         let style = getComputedStyle(document.body);
-        let pageviews_color = style.getPropertyValue('--rsp-blue');
-        let visitors_color = style.getPropertyValue('--rsp-yellow');
+        let pageviews_color = style.getPropertyValue('--rsp-yellow');
+        let visitors_color = style.getPropertyValue('--rsp-blue');
+        let text_color = style.getPropertyValue('--rsp-text-color');
+        let chartExtraData = [];
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = style.getPropertyValue('--rsp-text-color');
         let titleDisplay = false;
         let legend = true;
 
@@ -24,20 +28,42 @@ jQuery(document).ready(function ($) {
             beginAtZero: true,
             data: {
                 datasets: [{
-                    label: 'Pageviews',
-                    borderColor: pageviews_color,
-                    backgroundColor: pageviews_color,
-                }, {
                     label: 'Visitors',
                     borderColor: visitors_color,
                     backgroundColor: visitors_color,
 
+                },
+                {
+                    label: 'Pageviews',
+                    borderColor: pageviews_color,
+                    backgroundColor: pageviews_color,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 cubicInterpolationMode: 'monotone',
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: {
+                                size: 13,
+                                weight: 400,
+                            },
+                        },
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                let dates = chartExtraData.dates;
+                                let number = context['0']['dataIndex'];
+                                return dates[number];
+                            }
+                        }
+                    }
+                },
                 scales: {
                     y: {
                         ticks: {
@@ -51,6 +77,9 @@ jQuery(document).ready(function ($) {
                             maxTicksLimit: 8,
                         }
                     }
+                },
+                layout: {
+                    padding: 0,
                 }
             }
         };
@@ -90,10 +119,7 @@ jQuery(document).ready(function ($) {
                     });
 
                     insightsConfig.data.labels = response.data.labels;
-                    insightsConfig.data.dates = response.data.dates;
-                    // insightsConfig.options.title.text = response.title;
-                    // insightsConfig.options.scales.yAxes[0].ticks.max = parseInt(response.data.max);
-                    // insightsConfig.options.scales.yAxes[0].scaleLabel.labelString = response.options.scales.yAxes[0].scaleLabel;
+                    chartExtraData.dates = response.data.dates;
                     window.insightsGraph.update();
                 } else {
                     alert("Your data could not be loaded")
@@ -200,7 +226,6 @@ jQuery(document).ready(function ($) {
     }
 
     function burstLoadGridBlocks(){
-        //let experiment_id = $('select[name=burst_selected_experiment_id]').val() ? $('select[name=burst_selected_experiment_id]').val() : 0 ;
         $('.burst-load-ajax').each(function(){
             let gridContainer = $(this);
             // if there is no skeleton add a skeleton

@@ -77,7 +77,7 @@ jQuery(document).ready(function($) {
 						buttons: [
 							{
 								text: prevText[key],
-								classes: 'button button-primary',
+								classes: 'button button-secondary',
 								action: function () {
 									var step_id = $(this).closest('.shepherd-step').data('id');
 									if (step_id == 0 ) {
