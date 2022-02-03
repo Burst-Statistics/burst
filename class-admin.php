@@ -7,7 +7,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 		public $success_message = "";
 		public $grid_items;
 		public $default_grid_item;
-        public $rows_batch = 1000;
+        public $rows_batch = 200;
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
@@ -432,15 +432,12 @@ if ( ! class_exists( "burst_admin" ) ) {
         }
 
         public function sanitize_burst_page($page_unsanitized){
-            error_log($page_unsanitized);
             $pages = $this->get_burst_admin_pages();
             foreach ( $pages as $page => $value) {
                 if ($page_unsanitized === $page) {
-                    error_log($page);
                     return $page;
                 }
             }
-            error_log('return default');
             return 'dashboard';
         }
 

@@ -225,10 +225,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     break;
             }
 
-			$results = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_'.$metric.'_'.$date_range, 'burst');
+			$results = $clear_cache || $date_range === 'custom' ? false: get_transient('cmplz_'.$metric.'_'.$date_range );
 			if ( !$results ) {
 				$results = $wpdb->get_results($sql);
-				if ($date_range!=='custom') wp_cache_set('cmplz_'.$metric.'_'.$date_range, $results, 'burst', DAY_IN_SECONDS);
+				if ($date_range!=='custom') set_transient('cmplz_'.$metric.'_'.$date_range, $results, DAY_IN_SECONDS);
 			}
 
 			$nr_of_periods = $this->get_nr_of_periods('DAY', $start, $end );
@@ -425,10 +425,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
                             GROUP BY val_grouped 
                             ORDER BY $order_by $order $limit ";
 
-	        $searches = $clear_cache || $date_range === 'custom' ? false: wp_cache_get("cmplz_hits_single_{$group_by}_{$page}_{$date_range}", 'burst');
+	        $searches = $clear_cache || $date_range === 'custom' ? false: get_transient("cmplz_hits_single_{$group_by}_{$page}_{$date_range}");
             if ( !$searches ) {
 	            $searches =$wpdb->get_results( $search_sql );
-	            if ($date_range!=='custom') wp_cache_set("cmplz_hits_single_{$group_by}_{$page}_{$date_range}", $searches, 'burst', DAY_IN_SECONDS);
+	            if ($date_range!=='custom') set_transient("cmplz_hits_single_{$group_by}_{$page}_{$date_range}", $searches, DAY_IN_SECONDS);
             }
 
             return $searches;
@@ -705,7 +705,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
             $statistics_without_bounces = $this->get_sql_query_to_exclude_bounces($table_name);
-			$devices = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_devices_'.$date_range, 'burst');
+			$devices = $clear_cache || $date_range === 'custom' ? false: get_transient('cmplz_devices_'.$date_range);
 	        if ( !$devices ) {
 		        $sql = $wpdb->prepare("SELECT 
                         device as val,
@@ -716,7 +716,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     ORDER BY count DESC
                     ", $date_start, $date_end );
 		        $devices = $wpdb->get_results( $sql, ARRAY_A );
-		        wp_cache_set('cmplz_devices_'.$date_range, $devices, 'burst', DAY_IN_SECONDS);
+		        set_transient('cmplz_devices_'.$date_range, $devices, DAY_IN_SECONDS);
 	        }
 
 	        $total_count = 0;
@@ -736,7 +736,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				if ($device==='other') {
 					$device_sql = " device!='tablet' AND device !='mobile' AND device !='desktop' ";
 				}
-				$most_popular_browser = $clear_cache ||  $date_range === 'custom' ? false: wp_cache_get('cmplz_devices_browser_'.$device.'_'.$date_range, 'burst');
+				$most_popular_browser = $clear_cache ||  $date_range === 'custom' ? false: get_transient('cmplz_devices_browser_'.$device.'_'.$date_range );
 				if ( !$most_popular_browser ) {
 					$sql = $wpdb->prepare("SELECT browser from (SELECT browser, COUNT(*) as count, device
 					FROM ($statistics_without_bounces) as without_bounces where (time>%s AND time<%s) OR device IS NOT NULL AND device <> '' AND browser is not null
@@ -744,18 +744,18 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     ", $date_start, $date_end );
 					$most_popular_browser = $wpdb->get_var( $sql );
 					if (empty($most_popular_browser)) $most_popular_browser = ' - ';
-					if ($date_range!=='custom') wp_cache_set('cmplz_devices_browser_'.$device.'_'.$date_range, $most_popular_browser, 'burst', DAY_IN_SECONDS);
+					if ($date_range!=='custom') set_transient('cmplz_devices_browser_'.$device.'_'.$date_range, $most_popular_browser, DAY_IN_SECONDS);
 				}
 				$result[$device]['browser'] = $most_popular_browser;
-				$most_popular_platform = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_devices_platform_'.$device.'_'.$date_range, 'burst');
-				if ( !$most_popular_platform ) {
+				$most_popular_plaform = $clear_cache || $date_range === 'custom' ? false: get_transient('cmplz_devices_platform_'.$device.'_'.$date_range);
+				if ( !$most_popular_plaform ) {
 					$sql = $wpdb->prepare("SELECT platform from (SELECT platform, COUNT(*) as count, device
 					FROM ($statistics_without_bounces) as without_bounces where time>%s AND time<%s AND device IS NOT NULL AND device <> '' AND platform is not null
 					GROUP BY platform, device ) as grouped_devices where $device_sql order by count desc limit 1
                     ", $date_start, $date_end );
-					$most_popular_platform = $wpdb->get_var( $sql );
-					if (empty($most_popular_platform)) $most_popular_platform = ' - ';
-					if ($date_range!=='custom') wp_cache_set('cmplz_devices_platform_'.$device.'_'.$date_range, $most_popular_platform, 'burst', DAY_IN_SECONDS);
+					$most_popular_plaform = $wpdb->get_var( $sql );
+					if (empty($most_popular_plaform)) $most_popular_plaform = ' - ';
+					if ($date_range!=='custom') set_transient('cmplz_devices_platform_'.$device.'_'.$date_range, $most_popular_plaform, DAY_IN_SECONDS);
 				}
 				$result[$device]['platform'] = $most_popular_platform;
 			}
@@ -785,7 +785,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	        /**
 	         * current stats
              * */
-	        $current_stats = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_current_stats_'.$date_range, 'burst');
+	        $current_stats = $clear_cache || $date_range === 'custom' ? false: get_transient('cmplz_current_stats_'.$date_range );
 			if ( !$current_stats ) {
 				$sql           = "SELECT  COUNT( ID ) as pageviews,
                             COUNT( DISTINCT( session_id ) ) AS sessions,
@@ -795,14 +795,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     FROM ($statistics_without_bounces) as no_bounce
                     WHERE time > $date_start AND time < $date_end";
 				$current_stats = $wpdb->get_row( $sql, ARRAY_A );
-				if ($date_range!=='custom') wp_cache_set('cmplz_current_stats_'.$date_range, $current_stats, 'burst', DAY_IN_SECONDS);
+				if ($date_range!=='custom') set_transient('cmplz_current_stats_'.$date_range, $current_stats, DAY_IN_SECONDS);
 			}
 
 	        /**
 	         * previous stats
 	         * */
 
-	        $previous_stats = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_previous_stats_'.$date_range, 'burst');
+	        $previous_stats = $clear_cache || $date_range === 'custom' ? false: get_transient('cmplz_previous_stats_'.$date_range );
 	        if ( !$previous_stats ) {
 		        $sql = "SELECT  COUNT( ID ) as pageviews_prev,
                             COUNT( DISTINCT( session_id ) ) AS sessions_prev,
@@ -811,25 +811,23 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     WHERE time > $date_start_diff AND time < $date_end_diff";
 
 		        $previous_stats = $wpdb->get_row( $sql, ARRAY_A );
-		        if ($date_range!=='custom') wp_cache_set('cmplz_previous_stats_'.$date_range, $previous_stats, 'burst', DAY_IN_SECONDS);
+		        if ($date_range!=='custom') set_transient('cmplz_previous_stats_'.$date_range, $previous_stats, DAY_IN_SECONDS);
 	        }
 
             $sql_results = array_merge($current_stats, $previous_stats);
             $bounce_time =  apply_filters('burst_bounce_time', 5000);
-            error_log('bounce time');
-            error_log($bounce_time);
-	        $bounce_count = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_bounce_count_'.$date_range, 'burst');
+	        $bounce_count = $clear_cache || $date_range === 'custom' ? false: get_transient('cmplz_bounce_count_'.$date_range );
 	        if ( !$bounce_count ) {
 	            $sql = "SELECT COUNT(*) as bounces FROM ( SELECT session_id as bounces from $table_name WHERE time > $date_start AND time < $date_end AND time_on_page < $bounce_time GROUP BY session_id having COUNT(*) = 1) as bounces_table";
 	            $bounce_count = $wpdb->get_var( $sql );
-		        if ($date_range!=='custom') wp_cache_set('cmplz_bounce_count_'.$date_range, $bounce_count, 'burst', DAY_IN_SECONDS);
+		        if ($date_range!=='custom') set_transient('cmplz_bounce_count_'.$date_range, $bounce_count, DAY_IN_SECONDS);
 	        }
 
-	        $bounce_count_prev = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_bounce_count_prev_'.$date_range, 'burst');
+	        $bounce_count_prev = $clear_cache || $date_range === 'custom' ? false: get_transient('cmplz_bounce_count_prev_'.$date_range );
 	        if ( !$bounce_count_prev ) {
 	            $sql = "SELECT COUNT(*) as bounces FROM ( SELECT session_id as bounces from $table_name WHERE time > $date_start_diff AND time < $date_end_diff AND time_on_page < $bounce_time GROUP BY session_id having COUNT(*) = 1) as bounces_table";
 	            $bounce_count_prev = $wpdb->get_var( $sql );
-		        if ($date_range!=='custom') wp_cache_set('cmplz_bounce_count_prev_'.$date_range, $bounce_count_prev, 'burst', DAY_IN_SECONDS);
+		        if ($date_range!=='custom') set_transient('cmplz_bounce_count_prev_'.$date_range, $bounce_count_prev, DAY_IN_SECONDS);
 	        }
 
             $bounce_rate = $this->calculate_bounce_percentage($bounce_count, $sql_results['sessions']);

@@ -50,7 +50,6 @@ function burst_track_hit(WP_REST_Request $request){
         'time_on_page'              => intval($data['time_on_page']),
         'first_time_visit'          => intval($first_time_visit),
 	);
-    error_log(print_r($update_array,true));
     //get session id from burst statistic where uid and time < 30 minutes ago
     $time_minus_threshold = strtotime("-30 minutes");
     global $wpdb;
