@@ -11,6 +11,10 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 		'constant_or_function' => 'WP_ROCKET_VERSION',
 		'label'                => 'WP Rocket',
 	),
+	'complianz' => array(
+		'constant_or_function' => 'cmplz_version',
+		'label'                => 'Complianz GDPR/CCPA',
+	),
 ));
 
 foreach ( $burst_integrations_list as $plugin => $details ) {

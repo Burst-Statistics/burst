@@ -21,7 +21,7 @@ $plugins = array(
     ),
     'BURST' => array(
         'constant_free' => 'burst_plugin',
-        'constant_premium' => 'burst_premium_plugin',
+        'constant_premium' => 'burst_plugin',
         'website' => 'https://burst-statistics.com/premium/',
         'search' => 'burst+really+simple+plugins',
         'url' => 'https://wordpress.org/plugins/burst/',

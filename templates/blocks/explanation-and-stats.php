@@ -6,7 +6,7 @@
         <p>{subtitle}</p>
     </div>
     <div class="block__explanation-and-stats__right">
+        <span class="h4">{number}</span>
         <p class="uplift {uplift_status}">{uplift}</p>
-        <span class="h2">{number}</span>
     </div>
 </div>

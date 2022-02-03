@@ -7,17 +7,15 @@ if ( ! class_exists( "burst_statistics" ) ) {
             add_action( 'wp_ajax_burst_get_chart_statistics', array( $this, 'ajax_get_chart_statistics') );
             add_action( 'wp_ajax_burst_get_real_time_visitors', array( $this, 'ajax_get_real_time_visitors') );
             add_action( 'wp_ajax_burst_get_today_statistics_html', array( $this, 'ajax_get_today_statistics_html') );
-            add_action( 'wp_enqueue_scripts', array($this,'enqueue_assets'), 1);
+            add_action( 'wp_enqueue_scripts', array($this,'enqueue_burst_tracking_script'), 1);
 		}
 
         /**
          * Enqueue some assets
          * @param $hook
          */
-        public function enqueue_assets( $hook ) {
+        public function enqueue_burst_tracking_script( $hook ) {
             $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-
-
             if( !$this->exclude_from_tracking() ) {
                 global $post;
                 //set some defaults
@@ -27,12 +25,13 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     'goal_identifier'           => '',
                     'page_id'                   => isset($post->ID) ? $post->ID : 0,
                     'cookie_retention_days'     => 30,
-                    'anon_ip'                   => burst_get_anon_ip_address(),
                 );
-
+                wp_enqueue_script( 'burst-timeme',
+                    burst_url . "helpers/timeme/timeme$minified.js", array(),
+                    burst_version, false );
                 wp_enqueue_script( 'burst',
-                    burst_url . "assets/js/burst$minified.js", array(),
-                    burst_version, true );
+                    burst_url . "assets/js/burst$minified.js", apply_filters( 'burst_script_dependencies', array() ),
+                    burst_version, false );
                 wp_localize_script(
                     'burst',
                     'burst',
@@ -817,6 +816,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
             $sql_results = array_merge($current_stats, $previous_stats);
             $bounce_time =  apply_filters('burst_bounce_time', 5000);
+            error_log('bounce time');
+            error_log($bounce_time);
 	        $bounce_count = $clear_cache || $date_range === 'custom' ? false: wp_cache_get('cmplz_bounce_count_'.$date_range, 'burst');
 	        if ( !$bounce_count ) {
 	            $sql = "SELECT COUNT(*) as bounces FROM ( SELECT session_id as bounces from $table_name WHERE time > $date_start AND time < $date_end AND time_on_page < $bounce_time GROUP BY session_id having COUNT(*) = 1) as bounces_table";
@@ -838,10 +839,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $results = array(
                 'pageviews' => array(
                     'title' => __('Pageviews', 'burst'),
-                    'subtitle' => burst_sprintf(__('Avg. of %s pageviews per session', 'burst'),
-//                        $this->calculate_ratio( $sql_results['pageviews'], $sql_results['sessions'], 'ratio')
-                        burst_format_number( $sql_results['pageviews'] / $sql_results['sessions'], 1),
-                    ),
+                    'subtitle' => burst_format_number( $sql_results['pageviews'] / $sql_results['sessions'], 1) . ' ' . __('pageviews per session', 'burst'),
                     'tooltip' => '',
                     'number' => burst_format_number($sql_results['pageviews']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['pageviews_prev'], $sql_results['pageviews']),
@@ -849,9 +847,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 ),
                 'sessions' => array(
                     'title' => __('Sessions', 'burst'),
-                    'subtitle' => burst_sprintf(__('Avg. time %s per session', 'burst'),
-                        burst_format_milliseconds_to_readable_time($this->calculate_time_per_session($sql_results['pageviews'], $sql_results['sessions'], $sql_results['time_on_page']))
-                    ),
+                    'subtitle' => burst_format_milliseconds_to_readable_time($this->calculate_time_per_session($sql_results['pageviews'], $sql_results['sessions'], $sql_results['time_on_page'])) . ' ' . __('per session', 'burst'),
                     'tooltip' => '',
                     'number' => burst_format_number($sql_results['sessions']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['sessions_prev'], $sql_results['sessions']),
@@ -859,9 +855,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 ),
                 'visitors' => array(
                     'title' => __('Unique visitors', 'burst'),
-                    'subtitle' => burst_sprintf(__('%s are new visitors', 'burst'),
-	                    $this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ) . '%'
-                    ),
+                    'subtitle' => $this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ) . '%' . ' ' . __('are new visitors', 'burst'),
                     'tooltip' => '',
                     'number' => burst_format_number($sql_results['visitors']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['visitors_prev'], $sql_results['visitors']),
@@ -874,7 +868,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 //                ),
                 'bounces' => array(
                     'title' => __('Bounce rate', 'burst'),
-                    'subtitle' => burst_sprintf( __('%s visitors bounced', 'burst'), burst_format_number($bounce_count)),
+                    'subtitle' => burst_format_number($bounce_count) . ' ' .__('visitors bounced', 'burst'),
                     'tooltip' => '',
                     'number' => burst_format_number($bounce_rate, 1) . '%',
                     'uplift_status' => $this->calculate_uplift_status($bounce_rate, $bounce_rate_prev),
@@ -963,7 +957,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
          * @return string
          */
         function get_sql_query_to_exclude_bounces($table_name) {
-            $time_bounce = apply_filters('burst_bounce_time', 0);
+            $time_bounce = apply_filters('burst_bounce_time', 5000);
             $bounce = "select session_id from $table_name where time_on_page < $time_bounce group by session_id having count(*) = 1";
             $statistics_without_bounces = "SELECT * FROM $table_name WHERE session_id NOT IN ($bounce)";
             return $statistics_without_bounces;
@@ -1068,14 +1062,12 @@ function burst_install_statistics_table() {
             `entire_page_url` varchar(255) NOT NULL,
             `page_id` int(11) NOT NULL,
             `referrer` varchar(255),
-            `anon_ip` varchar(255),
             `browser` varchar(255),
             `browser_version` varchar(255),
             `platform` varchar(255),
             `device` varchar(255),
             `device_resolution` varchar(255),
             `user_agent` varchar(255),
-            `scroll_percentage` int(11),
             `session_id` int(11),
             `first_time_visit` int(11),
               PRIMARY KEY  (ID),

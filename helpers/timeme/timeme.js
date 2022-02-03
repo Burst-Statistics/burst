@@ -437,3 +437,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         return TimeMe;
     });
 }).call(this);
+
+// Initialize library and start tracking time
+TimeMe.initialize({
+    idleTimeoutInSeconds: 30 // seconds
+});

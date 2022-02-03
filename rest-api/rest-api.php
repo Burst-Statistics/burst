@@ -22,13 +22,10 @@ function burst_register_rest_routes(){
 
 function burst_track_hit(WP_REST_Request $request){
 	$data = $request->get_json_params();
-
 	$burst_info = burst_get_user_info();
 	$burst_uid = $burst_info['uid'];
     $first_time_visit = $burst_info['first_time_visit'];
-
 	$time = time();
-
     $referrer_url = trim( parse_url( $data['referrer_url'], PHP_URL_HOST ), 'www.' );
     $ref_spam_list = file(burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     if (array_search($referrer_url, $ref_spam_list)){
@@ -36,9 +33,7 @@ function burst_track_hit(WP_REST_Request $request){
     } else {
         $referrer_url = esc_url_raw($data['referrer_url']);
     }
-
     $user_agent_data = burst_get_user_agent_data($data['user_agent']);
-    $scroll_percentage = round( intval( $data['scroll_percentage']), 2);
 	$update_array = array(
 		'page_url'            		=> trailingslashit(sanitize_text_field( $data['url'] )),
         'entire_page_url'           => trailingslashit(esc_url_raw( $data['entire_url'] )),
@@ -46,22 +41,20 @@ function burst_track_hit(WP_REST_Request $request){
 		'time'               		=> $time,
 		'uid'               		=> sanitize_title($burst_uid),
         'referrer'                  => trailingslashit($referrer_url),
-        'anon_ip'                   => filter_var( $data['anon_ip'], FILTER_VALIDATE_IP),
         'user_agent'                => sanitize_text_field( $data['user_agent'] ),
         'browser'                   => $user_agent_data['browser'],
         'browser_version'           => $user_agent_data['version'],
         'platform'                  => $user_agent_data['platform'],
         'device'                    => $user_agent_data['device'],
         'device_resolution'         => sanitize_title($data['device_resolution']),
-        'scroll_percentage'         => intval($scroll_percentage),
         'time_on_page'              => intval($data['time_on_page']),
         'first_time_visit'          => intval($first_time_visit),
 	);
-
+    error_log(print_r($update_array,true));
     //get session id from burst statistic where uid and time < 30 minutes ago
     $time_minus_threshold = strtotime("-30 minutes");
     global $wpdb;
-    $prepare = $wpdb->prepare( "select `session_id`, `page_url` from {$wpdb->prefix}burst_statistics where uid = %s AND time> %s limit 1", $update_array['uid'], $time_minus_threshold );
+    $prepare = $wpdb->prepare( "select session_id, page_url from {$wpdb->prefix}burst_statistics where uid = %s AND time> %s limit 1", $update_array['uid'], $time_minus_threshold );
     $existing_session = $wpdb->get_row($prepare);
     $update_array['session_id'] = isset($existing_session) ? $existing_session->session_id : false;
 
@@ -113,10 +106,8 @@ function burst_update_time_on_page(WP_REST_Request $request)
     $data = $request->get_json_params();
     if ($data['ID'] == 'undefined') return;
     $id = (int) $data['ID'];
-    $scroll_percentage = round( intval( $data['scroll_percentage']), 2);
     $update_array = array(
         'time_on_page' => (int) $data['time_on_page'],
-        'scroll_percentage' => $scroll_percentage,
     );
     $where = array(
         'ID' => $id,

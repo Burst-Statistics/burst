@@ -23,7 +23,7 @@ foreach ($lines as $line){ $html .= '<p>' . $line . '</p>'; }
 
 $args = array(
     'title' => '',
-    'tooltip' => burst_icon('help', __("This shows the totals of today's visitors. This updates every 10 seconds.", 'burst')),
+    'tooltip' => '',
     'subtitles' => $html,
     'number' => $visitors_now,
     'number_subtitle' => __('online right now', 'burst'),

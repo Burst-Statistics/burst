@@ -41,7 +41,7 @@
 $hide = isset( $_GET['burst-save']) || isset( $_POST['burst-save'] ) ? 'burst-settings-saved--fade-in': ''; ?>
 <div class="burst-settings-saved <?php echo esc_attr($hide)?>">
     <div class="burst-settings-saved__text_and_icon">
-        <?php echo burst_icon('check', 'success', '', 18); ?>
+        <?php echo burst_icon('check'); ?>
         <span><?php _e('Changes saved successfully', 'burst') ?> </span>
     </div>
 </div>
@@ -51,7 +51,7 @@ $hide = isset( $_GET['burst-save']) || isset( $_POST['burst-save'] ) ? 'burst-se
 $hide = isset( $_GET['burst-start']) || isset( $_POST['burst-start'] ) ? 'burst-settings-saved--fade-in': ''; ?>
 <div class="burst-settings-saved <?php echo esc_attr($hide)?>">
     <div class="burst-settings-saved__text_and_icon">
-        <?php echo burst_icon('check', 'success', '', 18); ?>
+        <?php echo burst_icon('check'); ?>
         <span><?php _e('Experiment started successfully', 'burst') ?> </span>
     </div>
 </div>
@@ -60,7 +60,7 @@ $hide = isset( $_GET['burst-start']) || isset( $_POST['burst-start'] ) ? 'burst-
 $hide = isset( $_GET['burst-stop']) || isset( $_POST['burst-stop'] ) ? 'burst-settings-saved--fade-in': ''; ?>
 <div class="burst-settings-saved <?php echo esc_attr($hide)?>">
     <div class="burst-settings-saved__text_and_icon">
-        <?php echo burst_icon('check', 'success', '', 18); ?>
+        <?php echo burst_icon('check') ?>
         <span><?php _e('Experiment stopped successfully', 'burst') ?> </span>
     </div>
 </div>
