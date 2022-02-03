@@ -3,7 +3,7 @@
  * Plugin Name: Burst Statistics
  * Plugin URI: https://www.wordpress.org/plugins/burst
  * Description: Privacy Friendly Statistics. One click setup and start collecting valuable data.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Text Domain: burst
  * Domain Path: /languages
  * Author: Really Simple Plugins
@@ -102,7 +102,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			define( 'burst_plugin', plugin_basename( __FILE__ ) );
 			define( 'burst_plugin_name', 'Burst Statistics' );
 			$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
-			define( 'burst_version', '1.0.0' . $debug );
+			define( 'burst_version', '1.0.1' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
 		}
