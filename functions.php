@@ -241,11 +241,12 @@ if ( ! function_exists( 'burst_format_number' ) ) {
     /**
      * Format number with correct decimal and thousands separator
      *
-     * @param $n
-     * @param int $decimals
+     * @param $number
+     * @param int $precision
      * @return int|string
      */
     function burst_format_number( $number, $precision = 2 ) {
+        if (!intval($number)) return '0';
         $thousand_sep = burst_get_thousand_separator();
         $decimal_sep = burst_get_decimal_separator();
         if ( $number < 10000 ){

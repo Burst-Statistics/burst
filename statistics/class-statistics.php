@@ -518,8 +518,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	                $response = isset($results[0]) ? $results[0] : array();
                     break;
                 case 'referrer':
+                    $direct_text =  "'". __("Direct", "Burst")."'";
                     $sql = $wpdb->prepare("SELECT 
-                                substring(referrer, locate('://', referrer) + 3) as val,
+                                CASE
+                                    WHEN referrer = '/' THEN $direct_text
+                                    ELSE trim( 'www.' from trim( trailing '/' from substring(referrer, locate('://', referrer) + 3))) 
+                                END as val,
                                 COUNT(referrer) AS referrer_count
                             FROM $table_name
                             WHERE time>%s AND time<%s AND referrer IS NOT NULL AND referrer <> ''
@@ -536,8 +540,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     }
                     break;
                 case 'page_url':
+                    $homepage_text =  "'". __("Homepage", "Burst")."'";
                     $sql = $wpdb->prepare("SELECT 
-                                page_url as val,
+                                 CASE 
+                                    WHEN page_url = '/' THEN $homepage_text
+                                    ELSE trim( trailing '/' from page_url) 
+                                END as val,
                                 COUNT(page_url) AS page_url_count
                             FROM $table_name
                             WHERE time>%s AND time<%s AND page_url IS NOT NULL AND page_url <> ''
@@ -736,8 +744,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				if ($device==='other') {
 					$device_sql = " device!='tablet' AND device !='mobile' AND device !='desktop' ";
 				}
-				//$most_popular_browser = $clear_cache ||  $date_range === 'custom' ? false: get_transient('cmplz_devices_browser_'.$device.'_'.$date_range );
-                $most_popular_platform = false;
+				$most_popular_browser = $clear_cache ||  $date_range === 'custom' ? false: get_transient('cmplz_devices_browser_'.$device.'_'.$date_range );
 				if ( !$most_popular_browser ) {
 					$sql = $wpdb->prepare("SELECT browser from (SELECT browser, COUNT(*) as count, device
 					FROM ($statistics_without_bounces) as without_bounces where (time>%s AND time<%s) OR device IS NOT NULL AND device <> '' AND browser is not null
@@ -833,12 +840,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
             $bounce_rate = $this->calculate_bounce_percentage($bounce_count, $sql_results['sessions']);
             $bounce_rate_prev = $this->calculate_bounce_percentage($bounce_count_prev, $sql_results['sessions_prev']);
-
+            $pageviews_per_session = $sql_results['sessions'] > 0 ? $sql_results['pageviews'] / $sql_results['sessions'] : 0;
             // text for the compare block
             $results = array(
                 'pageviews' => array(
                     'title' => __('Pageviews', 'burst'),
-                    'subtitle' => burst_format_number( $sql_results['pageviews'] / $sql_results['sessions'], 1) . ' ' . __('pageviews per session', 'burst'),
+                    'subtitle' => burst_format_number( $pageviews_per_session, 1) . ' ' . __('pageviews per session', 'burst'),
                     'tooltip' => '',
                     'number' => burst_format_number($sql_results['pageviews']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['pageviews_prev'], $sql_results['pageviews']),
