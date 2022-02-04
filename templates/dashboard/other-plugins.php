@@ -24,7 +24,7 @@ $plugins = array(
         'constant_premium' => 'burst_plugin',
         'website' => 'https://burst-statistics.com/premium/',
         'search' => 'burst+really+simple+plugins',
-        'url' => 'https://wordpress.org/plugins/burst/',
+        'url' => 'https://wordpress.org/plugins/burst-statistics/',
         'title' => burst_plugin_name . ' - ' . __( 'Privacy Friendly Statistics' , 'burst' ),
     ),
 );

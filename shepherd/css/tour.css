@@ -45,8 +45,8 @@
   --rsp-color-error: var(--rsp-red);
   --rsp-color-warning: var(--rsp-orange);
   --rsp-color-open: var(--rsp-yellow);
-  --rsp-fs-100: 0.6125rem;
-  --rsp-fs-200: 0.625rem;
+  --rsp-fs-100: 0.6875rem;
+  --rsp-fs-200: 0.75rem;
   --rsp-fs-300: 0.8125rem;
   --rsp-fs-400: 0.875rem;
   --rsp-fs-500: 1rem;
