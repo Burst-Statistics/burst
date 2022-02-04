@@ -37,8 +37,8 @@ if ( ! class_exists( "burst_admin" ) ) {
             add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
 
 			// deactivating
-//			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
-//			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
+			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
+			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
 
             //disabled for now
 		}
@@ -182,7 +182,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 			array_unshift( $links, $settings_link );
 
 			$support_link = defined( 'burst_free' )
-				? "https://wordpress.org/support/plugin/burst"
+				? "https://wordpress.org/support/plugin/burst-statistics"
 				: "https://burst-statistics.com/support";
 			$faq_link     = '<a target="_blank" href="' . $support_link . '">'
 			                . __( 'Support', 'burst' ) . '</a>';
