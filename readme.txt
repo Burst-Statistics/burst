@@ -1,5 +1,5 @@
 === Burst Statistics ===
-Contributors: hdejong, RogierLankhorst, aahulsebos, leonwimmenhoeve
+Contributors: hesseldejong, RogierLankhorst, aahulsebos, leonwimmenhoeve
 Tags: statistics, analytics, privacy, 
 Requires at least: 5.4
 License: GPL2
