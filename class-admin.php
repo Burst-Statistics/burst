@@ -702,8 +702,8 @@ if ( ! class_exists( "burst_admin" ) ) {
 	                    $("#TB_window").addClass('burst-deactivation-popup');
 
 	                });
-	                if ($('#deactivate-burst-a-b-split-testing').length){
-	                    $('.burst-button-deactivate').attr('href',  $('#deactivate-burst-a-b-split-testing').attr('href') );
+	                if ($('#deactivate-burst-statistics').length){
+	                    $('.burst-button-deactivate').attr('href',  $('#deactivate-burst-statistics').attr('href') );
 	                }
 
 	            });
