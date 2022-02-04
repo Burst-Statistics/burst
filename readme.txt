@@ -27,6 +27,7 @@ Feature requests
 * [Metric Definitions](https://burst-statistics.com/definitions/)
 * [Translate Burst Statistics](https://translate.wordpress.org/projects/wp-plugins/burst-statistics/)
 * [Issues & pull requests](https://github.com/Really-Simple-Plugins/burst/issues)
+* [Feature requests](https://burst-statistics.com/feature-requests/how-to-add-a-feature-request/)
 
 == Need Support ==
 
