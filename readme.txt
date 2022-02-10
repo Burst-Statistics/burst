@@ -5,7 +5,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
 Tested up to: 5.9
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -59,6 +59,8 @@ No only don't we mind. We really want your feedback, please use the "Useful Link
 Not...yet.
 
 == Change log ==
+= 1.0.1 =
+* Fix: text domain, props @bonaldi
 
 = 1.0.0 =
 * Initial release
