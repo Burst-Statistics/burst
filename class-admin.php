@@ -75,7 +75,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 
 		public function enqueue_assets( $hook ) {
-			 if ( strpos( $hook, 'burst' ) === false
+			 if ( strpos( $hook, 'burst-statistics') === false
 			 ) {
 			 	return;
 			 }
@@ -126,26 +126,26 @@ if ( ! class_exists( "burst_admin" ) ) {
 				array(
 					'ajaxurl' => admin_url( 'admin-ajax.php' ),
 					'strings' => array(
-						'Today'        => __( 'Today', 'burst' ),
-						'Yesterday'    => __( 'Yesterday', 'burst' ),
-						'Previous 7 days'  => __( 'Last 7 days', 'burst' ),
-						'Previous 30 days' => __( 'Last 30 days', 'burst' ),
-						'This Month'   => __( 'This Month', 'burst' ),
-						'Previous Month'   => __( 'Last Month', 'burst' ),
+						'Today'        => __( 'Today', 'burst-statistics' ),
+						'Yesterday'    => __( 'Yesterday', 'burst-statistics' ),
+						'Previous 7 days'  => __( 'Last 7 days', 'burst-statistics' ),
+						'Previous 30 days' => __( 'Last 30 days', 'burst-statistics' ),
+						'This Month'   => __( 'This Month', 'burst-statistics' ),
+						'Previous Month'   => __( 'Last Month', 'burst-statistics' ),
 						'date_format'  => get_option( 'date_format' ),//_x( 'MM/DD/YYYY','Date format' 'burst' ),
-						'Apply'        => __( "Apply", "burst" ),
-						'Cancel'       => __( "Cancel", "burst" ),
-						'From'         => __( "From", "burst" ),
-						'To'           => __( "To", "burst" ),
-						'Custom'       => __( "Custom", "burst" ),
-						'W'            => __( "W", "burst" ),
-						"Mo"           => __( "Mo", "burst" ),
-						'Tu'           => __( "Tu", "burst" ),
-						'We'           => __( "We", "burst" ),
-						'Th'           => __( "Th", "burst" ),
-						'Fr'           => __( "Fr", "burst" ),
-						'Sa'           => __( "Sa", "burst" ),
-						'Su'           => __( "Su", "burst" ),
+						'Apply'        => __( "Apply", "burst-statistics" ),
+						'Cancel'       => __( "Cancel", "burst-statistics" ),
+						'From'         => __( "From", "burst-statistics" ),
+						'To'           => __( "To", "burst-statistics" ),
+						'Custom'       => __( "Custom", "burst-statistics" ),
+						'W'            => __( "W", "burst-statistics" ),
+						"Mo"           => __( "Mo", "burst-statistics" ),
+						'Tu'           => __( "Tu", "burst-statistics" ),
+						'We'           => __( "We", "burst-statistics" ),
+						'Th'           => __( "Th", "burst-statistics" ),
+						'Fr'           => __( "Fr", "burst-statistics" ),
+						'Sa'           => __( "Sa", "burst-statistics" ),
+						'Su'           => __( "Su", "burst-statistics" ),
 						'January'      => __( "January" ),
 						'February'     => __( "February" ),
 						'March'        => __( "March" ),
@@ -178,20 +178,20 @@ if ( ! class_exists( "burst_admin" ) ) {
 			$settings_link = '<a href="'
 			                 . admin_url( "admin.php?page=burst" )
 			                 . '" class="burst-settings-link">'
-			                 . __( "Settings", 'burst' ) . '</a>';
+			                 . __( "Settings", 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $settings_link );
 
 			$support_link = defined( 'burst_free' )
 				? "https://wordpress.org/support/plugin/burst-statistics"
 				: "https://burst-statistics.com/support";
 			$faq_link     = '<a target="_blank" href="' . $support_link . '">'
-			                . __( 'Support', 'burst' ) . '</a>';
+			                . __( 'Support', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $faq_link );
 
 			// if ( ! defined( 'burst_premium' ) ) {
 			// 	$upgrade_link
 			// 		= '<a style="color:#2DAAE1;font-weight:bold" target="_blank" href="https://burst-statistics.com/l/pricing">'
-			// 		  . __( 'Upgrade to premium', 'burst' ) . '</a>';
+			// 		  . __( 'Upgrade to premium', 'burst-statistics' ) . '</a>';
 			// 	array_unshift( $links, $upgrade_link );
 			// }
 
@@ -223,13 +223,13 @@ if ( ! class_exists( "burst_admin" ) ) {
 			$warnings      = BURST::$notices->get_notices( array('plus_ones'=>true) );
 			$warning_count = count( $warnings );
 			$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
-			$menu_label    = __('Statistics', 'burst') . burst_sprintf( __( ' %s', 'burst' ),
+			$menu_label    = __('Statistics', 'burst-statistics') . burst_sprintf( __( ' %s', 'burst-statistics' ),
 				"<span class='update-plugins count-$warning_count' title='$warning_title'><span class='update-count'>"
 				. number_format_i18n( $warning_count ) . "</span></span>" );
 
 			add_submenu_page(
 				'index.php',
-				__( 'Burst Statistics', 'burst' ),
+				__( 'Burst Statistics', 'burst-statistics' ),
                 $menu_label,
 				'manage_options',
 				'burst',
@@ -240,9 +240,9 @@ if ( ! class_exists( "burst_admin" ) ) {
         public function get_metric_dropdown(){
             //@todo add filter so we can add metrics with integrations
             $metrics = array(
-                    'conversion_percentages' => __('Conversion percentages', 'burst'),
-                    'conversions' => __('Conversions', 'burst'),
-                    'visits' => __('Visits', 'burst'),
+                    'conversion_percentages' => __('Conversion percentages', 'burst-statistics'),
+                    'conversions' => __('Conversions', 'burst-statistics'),
+                    'visits' => __('Visits', 'burst-statistics'),
             );
             ob_start();
             echo '<div class="burst-metric-container">';
@@ -291,33 +291,33 @@ if ( ! class_exists( "burst_admin" ) ) {
             $grid_items = apply_filters('burst_grid_items', array(
                 'dashboard' => array(
                     1 => array(
-                        'title' => __("Your notices", "burst"),
+                        'title' => __("Your notices", "burst-statistics" ),
                         'class' => 'burst-overview column-2 row-2',
                         'type' => 'progress',
                         'controls' => '',
                         'page' => 'dashboard',
                     ),
                     2 => array(
-                        'title' => __("Today", "burst"),
+                        'title' => __("Today", "burst-statistics" ),
                         'class' => 'row-2 border-to-border',
                         'type' => 'real-time',
                         'ajax_load' => true,
                         'page' => 'dashboard',
                     ),
                     3 => array(
-                        'title' => __("Settings", "burst"),
+                        'title' => __("Settings", "burst-statistics" ),
                         'class' => 'row-2 border-to-border',
                         'type' => 'settings',
                         'page' => 'dashboard',
                     ),
                     4 => array(
-                        'title' => __("Tips & Tricks", "burst"),
+                        'title' => __("Tips & Tricks", "burst-statistics" ),
                         'type' => 'tipstricks',
                         'class' => 'column-2',
                         'page' => 'dashboard',
                     ),
                     5 => array(
-                        'title' => __("Other Plugins", "burst"),
+                        'title' => __("Other Plugins", "burst-statistics" ),
                         'class' => 'column-2 no-border no-background ',
                         'type' => 'other-plugins',
                         'footer' => ' ',
@@ -327,14 +327,14 @@ if ( ! class_exists( "burst_admin" ) ) {
                 ),
                 'statistics' => array(
                     1 => array(
-                        'title' => __("Insights", "burst"),
+                        'title' => __("Insights", "burst-statistics" ),
                         'class' => 'statistics column-2',
                         'type' => 'insights-chart',
                         'controls' => '',
                         'page' => 'statistics',
                     ),
                     2 => array(
-                        'title' => __("Compare", "burst"),
+                        'title' => __("Compare", "burst-statistics" ),
                         'body' => '<div class="burst-skeleton"></div>',
                         'footer' => 'henkje',
                         'class' => 'burst-load-ajax',
@@ -345,7 +345,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
                     ),
                     3 => array(
-                        'title' => __("Devices", "burst"),
+                        'title' => __("Devices", "burst-statistics" ),
                         'body' => '<div class="burst-skeleton"></div>',
                         'class' => 'burst-load-ajax',
                         'type' => 'devices',
@@ -353,7 +353,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                         'page' => 'statistics',
                     ),
                     4 => array(
-                        'title' => __("Most visited", "burst"),
+                        'title' => __("Most visited", "burst-statistics" ),
                         'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table" width="100%"></table></div>',
                         'class' => 'burst-grid-datatable column-2 burst-load-ajax-datatable',
                         'type' => 'page_url',
@@ -361,7 +361,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                         'page' => 'statistics',
                     ),
                     5 => array(
-                        'title' => __("Top referrers", "burst"),
+                        'title' => __("Top referrers", "burst-statistics" ),
                         'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table" width="100%"></table></div>',
                         'class' => 'burst-grid-datatable column-2 burst-load-ajax-datatable',
                         'type' => 'referrer',
@@ -445,12 +445,12 @@ if ( ! class_exists( "burst_admin" ) ) {
             return apply_filters('burst_admin_pages',
                 array(
                     'dashboard' => array(
-                        'title' => __('Dashboard', 'burst'),
+                        'title' => __('Dashboard', 'burst-statistics'),
                         'show_in_menu' => true,
                         'controls' => '',
                     ),
                     'statistics' => array(
-                        'title' => __('Statistics', 'burst'),
+                        'title' => __('Statistics', 'burst-statistics'),
                         'show_in_menu' => true,
                         'controls' => $this->get_daterange_dropdown(),
                     ),
@@ -473,14 +473,14 @@ if ( ! class_exists( "burst_admin" ) ) {
             }
 
 	        if (defined($item['constant_free']) && defined($item['constant_premium'])) {
-		        $status = __("Installed", "burst");
+		        $status = __("Installed", "burst-statistics" );
 	        } elseif (defined($item['constant_free']) && !defined($item['constant_premium'])) {
 		        $link = $item['website'];
-		        $text = __('Upgrade to pro', 'burst');
+		        $text = __('Upgrade to pro', 'burst-statistics');
 		        $status = "<a href=$link>$text</a>";
 	        } else {
 		        $link = $install_url.$item['search']."&tab=search&type=term";
-		        $text = __('Install', 'burst');
+		        $text = __('Install', 'burst-statistics');
 		        $status = "<a href=$link>$text</a>";
 	        }
 	        return $status;
@@ -490,7 +490,7 @@ if ( ! class_exists( "burst_admin" ) ) {
         {
             $error = false;
             $total = 0;
-            $html  = __("No data found", "burst");
+            $html  = __("No data found", "burst-statistics" );
             if (!burst_user_can_manage()) {
                 $error = true;
             }
@@ -572,8 +572,8 @@ if ( ! class_exists( "burst_admin" ) ) {
             } else {
                 $output = '<table id="burst-table" class="burst-table" width="100%"><thead>
                     <tr class="burst-thead-th">
-                        <th scope="col">'.__( "Page", "burst" ).'</th>
-                        <th class="text-align-right" scope="col">'.__( "Pageviews", "burst" ).'</th>
+                        <th scope="col">'.__( "Page", "burst-statistics" ).'</th>
+                        <th class="text-align-right" scope="col">'.__( "Pageviews", "burst-statistics" ).'</th>
                     </tr>
                     </thead>
                     <tbody>';
@@ -712,13 +712,13 @@ if ( ! class_exists( "burst_admin" ) ) {
 	        <div id="deactivate_and_delete_data" style="display: none;">
 	                <div class="burst-deactivate-notice-content">
 	                    <h3 style="margin: 20px 0; text-align: left;">
-	                        <?php _e("To deactivate the plugin correctly, please select if you want to:", "burst") ?></h3>
+	                        <?php _e("To deactivate the plugin correctly, please select if you want to:", "burst-statistics" ) ?></h3>
 	                    <ul style="text-align: left; font-size: 1.2em;">
 
-	                        <li><?php _e("Deactivate", "burst") ?></li>
+	                        <li><?php _e("Deactivate", "burst-statistics" ) ?></li>
 	                        <li>
-	                        	<?php _e("Deactivate, and remove all statistics, experiments and settings.", "burst"); ?>
-	                        	<?php _e("The data will be gone forever.", "burst"); ?>		
+	                        	<?php _e("Deactivate, and remove all statistics, experiments and settings.", "burst-statistics" ); ?>
+	                        	<?php _e("The data will be gone forever.", "burst-statistics" ); ?>
 	                        </li>
 	                    </ul>
 	                </div>
@@ -728,9 +728,9 @@ if ( ! class_exists( "burst_admin" ) ) {
 	                $deactivate_and_remove_all_data_url = admin_url("options-general.php?page=burst&action=uninstall_delete_all_data&token=" . $token);
 	                ?>
 	                <div class="burst-deactivate-notice-footer">
-	                    <a class="button button-default" href="#" id="burst_close_tb_window"><?php _e("Cancel", "burst") ?></a>
-	                    <a class="button button-primary burst-button-deactivate" href="#"><?php _e("Deactivate", "burst") ?></a>
-	                    <a class="button button-burst-tertiary" href="<?php echo esc_url($deactivate_and_remove_all_data_url); ?>"><?php _e("Deactivate and delete all data", "burst") ?></a>
+	                    <a class="button button-default" href="#" id="burst_close_tb_window"><?php _e("Cancel", "burst-statistics" ) ?></a>
+	                    <a class="button button-primary burst-button-deactivate" href="#"><?php _e("Deactivate", "burst-statistics" ) ?></a>
+	                    <a class="button button-burst-tertiary" href="<?php echo esc_url($deactivate_and_remove_all_data_url); ?>"><?php _e("Deactivate and delete all data", "burst-statistics" ) ?></a>
 	                </div>
 	        </div>
 	        <?php

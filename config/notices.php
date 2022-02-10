@@ -55,7 +55,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 //        				'success_conditions'  => array(
 //        					'document->all_required_pages_created',
 //        				),
-						'open'     => __( 'An experiment has run one month, but has not reached the minimal sample size yet.', 'burst' ),
+						'open'     => __( 'An experiment has run one month, but has not reached the minimal sample size yet.', 'burst-statistics' ),
 						'plus_one' => true,
 					),
 				)
@@ -197,13 +197,13 @@ if ( ! class_exists( "burst_notices" ) ) {
 			$notice = $notice[ $id ];
 
 			if ( $notice['status'] === 'completed' ) {
-				$status_message = __( "Completed", 'burst' );
+				$status_message = __( "Completed", 'burst-statistics' );
 			}
 			if ( $notice['status'] === 'open' ) {
-				$status_message = __( "Open", 'burst' );
+				$status_message = __( "Open", 'burst-statistics' );
 			}
 			if ( $notice['status'] === 'urgent' ) {
-				$status_message = __( "Urgent", 'burst' );
+				$status_message = __( "Urgent", 'burst-statistics' );
 			}
 			$plus_one = $notice['plus_one'] ? '<span class="burst-plusone">1</span>' : '';
 			$dismiss  = '<button type="button" class="burst-dismiss-notice" data-notice_id="' . $id . '"><span class="burst-close-notice-x">X</span></button>';

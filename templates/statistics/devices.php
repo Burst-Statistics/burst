@@ -9,7 +9,7 @@ $date_range = burst_sanitize_date_range($_GET['date_range']);
 $results = BURST::$statistics->get_platform_and_device_statistics( $date_start, $date_end, $date_range );
 
 $args = array(
-    'title' => __('Desktop', 'burst'),
+    'title' => __('Desktop', 'burst-statistics'),
     'tooltip' => '',
     'subtitle' => $results['desktop']['platform'].' / '.$results['desktop']['browser'],
     'uplift' => '',
@@ -19,7 +19,7 @@ $args = array(
 echo burst_get_template('blocks/explanation-and-stats.php', $args );
 
 $args = array(
-    'title' => __('Tablet', 'burst'),
+    'title' => __('Tablet', 'burst-statistics'),
     'tooltip' => '',
     'subtitle' => $results['tablet']['platform'].' / '.$results['tablet']['browser'],
     'uplift' => '',
@@ -29,7 +29,7 @@ $args = array(
 echo burst_get_template('blocks/explanation-and-stats.php', $args );
 
 $args = array(
-    'title' => __('Mobile', 'burst'),
+    'title' => __('Mobile', 'burst-statistics'),
     'tooltip' => '',
     'subtitle' => $results['mobile']['platform'].' / '.$results['mobile']['browser'],
     'uplift' => '',
@@ -39,7 +39,7 @@ $args = array(
 echo burst_get_template('blocks/explanation-and-stats.php', $args );
 
 $args = array(
-    'title' => __('Other', 'burst'),
+    'title' => __('Other', 'burst-statistics'),
     'tooltip' => '',
     'subtitle' => $results['other']['platform'].' / '.$results['other']['browser'],
     'uplift' => '',

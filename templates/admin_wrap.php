@@ -28,7 +28,7 @@
                 </div>
                 <div class="burst-header-right">
                     {controls}
-                    <a href="https://wordpress.org/support/plugin/burst-statistics/" class="button button-black" target="_blank"><?php _e("Support", "burst") ?></a>
+                    <a href="https://wordpress.org/support/plugin/burst-statistics/" class="button button-black" target="_blank"><?php _e("Support", "burst-statistics") ?></a>
                 </div>
             </div>
 		</div>
@@ -42,7 +42,7 @@ $hide = isset( $_GET['burst-save']) || isset( $_POST['burst-save'] ) ? 'burst-se
 <div class="burst-settings-saved <?php echo esc_attr($hide)?>">
     <div class="burst-settings-saved__text_and_icon">
         <?php echo burst_icon('check'); ?>
-        <span><?php _e('Changes saved successfully', 'burst') ?> </span>
+        <span><?php _e('Changes saved successfully', 'burst-statistics') ?> </span>
     </div>
 </div>
 
@@ -52,7 +52,7 @@ $hide = isset( $_GET['burst-start']) || isset( $_POST['burst-start'] ) ? 'burst-
 <div class="burst-settings-saved <?php echo esc_attr($hide)?>">
     <div class="burst-settings-saved__text_and_icon">
         <?php echo burst_icon('check'); ?>
-        <span><?php _e('Experiment started successfully', 'burst') ?> </span>
+        <span><?php _e('Experiment started successfully', 'burst-statistics') ?> </span>
     </div>
 </div>
 <?php
@@ -61,6 +61,6 @@ $hide = isset( $_GET['burst-stop']) || isset( $_POST['burst-stop'] ) ? 'burst-se
 <div class="burst-settings-saved <?php echo esc_attr($hide)?>">
     <div class="burst-settings-saved__text_and_icon">
         <?php echo burst_icon('check') ?>
-        <span><?php _e('Experiment stopped successfully', 'burst') ?> </span>
+        <span><?php _e('Experiment stopped successfully', 'burst-statistics') ?> </span>
     </div>
 </div>

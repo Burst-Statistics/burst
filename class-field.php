@@ -570,7 +570,7 @@ if ( ! class_exists( "burst_field" ) ) {
 					<?php } ?>
 				</div>
 			<?php } else {
-				burst_notice( __( 'No options found', 'burst' ) );
+				burst_notice( __( 'No options found', 'burst-statistics' ) );
 			} ?>
 
 			<?php do_action( 'burst_after_field', $args ); ?>
@@ -878,7 +878,7 @@ if ( ! class_exists( "burst_field" ) ) {
                 <button type="button"
                         class="button button-medium burst-copy-button"
                         data-clipboard-text="<?php echo esc_attr($args['copy_text']); ?>">
-                    <?php _e('Copy', 'burst') ?>
+                    <?php _e('Copy', 'burst-statistics') ?>
                 </button>
                 <span class="success hidden" aria-hidden="true"><?php _e( 'Copied!' ); ?></span>
             </span>
@@ -1342,7 +1342,7 @@ if ( ! class_exists( "burst_field" ) ) {
 				<div class="burst-button">
 					<input class="button button-primary" type="submit"
 				       name="burst-save"
-				       value="<?php _e( "Save", 'burst' ) ?>">
+				       value="<?php _e( "Save", 'burst-statistics' ) ?>">
 				</div>
 			<?php
 		}

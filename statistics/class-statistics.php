@@ -86,8 +86,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 		public function get_metrics(){
 			return apply_filters("burst_metrics", array(
-				'visitors' => __('Unique visitors', 'burst'),
-				'pageviews' => __('Pageviews', 'burst'),
+				'visitors' => __('Unique visitors', 'burst-statistics'),
+				'pageviews' => __('Pageviews', 'burst-statistics'),
 			) );
 		}
 
@@ -159,7 +159,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'data' => array(0),
 					'backgroundColor' => $this->get_graph_color(0, 'background'),
 					'borderColor' => $this->get_graph_color(0),
-					'label' => __("No data for this selection", "burst"),
+					'label' => __("No data for this selection", "burst-statistics" ),
 					'fill' => 'false',
 				);
 			}
@@ -398,7 +398,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             }
 
             if ($group_by === 'referrer'){
-                $direct_text =  "'". __("Direct", "Burst")."'";
+                $direct_text =  "'". __("Direct", "burst-statistics" )."'";
                 $remove = array("http://www.", "https://www.", "http://", "https://");
                 $site_url = str_replace( $remove, "", site_url());
                 $where .="AND $group_by NOT LIKE '%$site_url%'";
@@ -410,7 +410,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 //substring_index(substring($group_by, locate('://', $group_by) + 3), '.', -2) as $group_by"; //Strip only subdomains and https
                 //substring_index(substring_index(substring($group_by, locate('://', $group_by) + 3), '/', 1), '.', -2) as $group_by"; STRIP FULL URL
             } else {
-                $homepage_text =  "'". __("Homepage", "Burst")."'";
+                $homepage_text =  "'". __("Homepage", "burst-statistics" )."'";
                 $select = "COUNT($group_by) AS hit_count,
                 CASE 
                     WHEN $group_by = '/' THEN $homepage_text
@@ -536,7 +536,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     if (count($results)) {
 	                    $response = isset($results[0]) ? $results[0] : array();
                     } else {
-	                    $response['val'] = __('No referrers today', 'burst');
+	                    $response['val'] = __('No referrers today', 'burst-statistics');
                     }
                     break;
                 case 'page_url':
@@ -558,7 +558,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     if (count($results)) {
 	                    $response = isset($results[0]) ? $results[0] : array();
                     } else {
-	                    $response['val'] = __('No pages visited today', 'burst');
+	                    $response['val'] = __('No pages visited today', 'burst-statistics');
                     }
                     break;
 
@@ -844,37 +844,37 @@ if ( ! class_exists( "burst_statistics" ) ) {
             // text for the compare block
             $results = array(
                 'pageviews' => array(
-                    'title' => __('Pageviews', 'burst'),
-                    'subtitle' => burst_format_number( $pageviews_per_session, 1) . ' ' . __('pageviews per session', 'burst'),
+                    'title' => __('Pageviews', 'burst-statistics'),
+                    'subtitle' => burst_format_number( $pageviews_per_session, 1) . ' ' . __('pageviews per session', 'burst-statistics'),
                     'tooltip' => '',
                     'number' => burst_format_number($sql_results['pageviews']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['pageviews_prev'], $sql_results['pageviews']),
                     'uplift' => $this->format_uplift($sql_results['pageviews_prev'], $sql_results['pageviews']),
                 ),
                 'sessions' => array(
-                    'title' => __('Sessions', 'burst'),
-                    'subtitle' => burst_format_milliseconds_to_readable_time($this->calculate_time_per_session($sql_results['pageviews'], $sql_results['sessions'], $sql_results['time_on_page'])) . ' ' . __('per session', 'burst'),
+                    'title' => __('Sessions', 'burst-statistics'),
+                    'subtitle' => burst_format_milliseconds_to_readable_time($this->calculate_time_per_session($sql_results['pageviews'], $sql_results['sessions'], $sql_results['time_on_page'])) . ' ' . __('per session', 'burst-statistics'),
                     'tooltip' => '',
                     'number' => burst_format_number($sql_results['sessions']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['sessions_prev'], $sql_results['sessions']),
                     'uplift' => $this->format_uplift($sql_results['sessions_prev'], $sql_results['sessions']),
                 ),
                 'visitors' => array(
-                    'title' => __('Unique visitors', 'burst'),
-                    'subtitle' => $this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ) . '%' . ' ' . __('are new visitors', 'burst'),
+                    'title' => __('Unique visitors', 'burst-statistics'),
+                    'subtitle' => $this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ) . '%' . ' ' . __('are new visitors', 'burst-statistics'),
                     'tooltip' => '',
                     'number' => burst_format_number($sql_results['visitors']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['visitors_prev'], $sql_results['visitors']),
                     'uplift' => $this->format_uplift($sql_results['visitors_prev'], $sql_results['visitors']),
                 ),
 //                'time_on_page' => array(
-//                    'title' => __('Avg. time on page', 'burst'),
+//                    'title' => __('Avg. time on page', 'burst-statistics'),
 //                    'tooltip' => '',
 //                    'number' => burst_format_milliseconds_to_readable_time($sql_results['time_on_page']),
 //                ),
                 'bounces' => array(
-                    'title' => __('Bounce rate', 'burst'),
-                    'subtitle' => burst_format_number($bounce_count) . ' ' .__('visitors bounced', 'burst'),
+                    'title' => __('Bounce rate', 'burst-statistics'),
+                    'subtitle' => burst_format_number($bounce_count) . ' ' .__('visitors bounced', 'burst-statistics'),
                     'tooltip' => '',
                     'number' => burst_format_number($bounce_rate, 1) . '%',
                     'uplift_status' => $this->calculate_uplift_status($bounce_rate, $bounce_rate_prev),

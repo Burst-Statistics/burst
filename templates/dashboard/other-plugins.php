@@ -9,7 +9,7 @@ $plugins = array(
         'website' => 'https://really-simple-ssl.com/premium/?src=complianz-plugin',
         'search' => 'really-simple-ssl%20rogier%20lankhorst&tab=search',
         'url' => 'https://wordpress.org/plugins/really-simple-ssl/',
-        'title' => 'Really Simple SSL - '. __("Easily migrate your website to SSL", "burst"),
+        'title' => 'Really Simple SSL - '. __("Easily migrate your website to SSL", "burst-statistics" ),
     ),
     'COMPLIANZ' => array(
         'constant_free' => 'cmplz_plugin',
@@ -17,7 +17,7 @@ $plugins = array(
         'url' => 'https://wordpress.org/plugins/complianz-gdpr/',
         'website' => 'https://complianz.io/pricing?src=burst-plugin',
         'search' => 'complianz',
-        'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst"),
+        'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst-statistics" ),
     ),
     'BURST' => array(
         'constant_free' => 'burst_plugin',
@@ -25,7 +25,7 @@ $plugins = array(
         'website' => 'https://burst-statistics.com/premium/',
         'search' => 'burst+really+simple+plugins',
         'url' => 'https://wordpress.org/plugins/burst-statistics/',
-        'title' => burst_plugin_name . ' - ' . __( 'Privacy Friendly Statistics' , 'burst' ),
+        'title' => burst_plugin_name . ' - ' . __( 'Privacy Friendly Statistics' , 'burst-statistics' ),
     ),
 );
 ?>

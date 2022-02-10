@@ -61,11 +61,13 @@ function burst_track_hit(WP_REST_Request $request){
     $session_array = array(
         'goal_id' => false,
     );
+
     if ( intval($update_array['session_id']) ) {
+		$session_id = intval($update_array['session_id']);
         $wpdb->update(
             $wpdb->prefix . 'burst_sessions',
             $session_array,
-            array('ID' => $update_array['session_id']),
+            array( 'ID' => $session_id ),
         );
     } else {
          $wpdb->insert(

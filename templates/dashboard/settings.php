@@ -5,4 +5,4 @@
 <!--    </form>-->
 <p><?php _e("We aim to give the user a really simple experience, that is why we don't have any settings yet.") ?></p>
 </br>
-<p><a href="https://burst-statistics.com/feature-requests/"><?php _e("Feature request?", 'burst') ?> </a></p>
+<p><a href="https://burst-statistics.com/feature-requests/"><?php _e("Feature request?", 'burst-statistics') ?> </a></p>

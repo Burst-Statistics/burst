@@ -23,8 +23,8 @@ if ( ! class_exists( "burst_config" ) ) {
 
 			//common options type
 			$this->yes_no = array(
-				'yes' => __( 'Yes', 'burst' ),
-				'no'  => __( 'No', 'burst' ),
+				'yes' => __( 'Yes', 'burst-statistics' ),
+				'no'  => __( 'No', 'burst-statistics' ),
 			);
 
 			/* config files */

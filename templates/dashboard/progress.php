@@ -17,7 +17,7 @@ $progress = 0;
 						'status' => 'completed',
 						'plus_one' => false,
 						'message'    => sprintf(
-                                            __( 'You have no new notices! Have a look at our %sdocumentation%s and see all the possibilities %s has to offer.', 'burst' ),
+                                            __( 'You have no new notices! Have a look at our %sdocumentation%s and see all the possibilities %s has to offer.', 'burst-statistics' ),
                                             '<a href="https://burst-statistics.com/docs/" target="_blank">',
                                             '</a>',
                                             burst_plugin_name
@@ -27,7 +27,7 @@ $progress = 0;
                     'status' => 'completed',
                     'plus_one' => false,
                     'message'    =>  burst_sprintf(
-                        __( 'If you have any suggestions to improve our plugin, feel free to  %s open a support thread%s.', 'burst' ),
+                        __( 'If you have any suggestions to improve our plugin, feel free to  %s open a support thread%s.', 'burst-statistics' ),
                         '<a href="https://wordpress.org/support/plugin/burst-statistics/" target="_blank">',
                         '</a>'
                     ),
@@ -39,16 +39,16 @@ $progress = 0;
 				$status = $notice['status'];
 				$plus_one = $notice['plus_one'];
 				if ( $status === 'completed' ) {
-					$status_message = __("Completed", 'burst');
+					$status_message = __("Completed", 'burst-statistics');
 				}
 				if ( $status === 'open' ) {
-					$status_message = __("Open", 'burst');
+					$status_message = __("Open", 'burst-statistics');
 				}
 				if ( $status === 'urgent' ) {
-					$status_message = __("Urgent", 'burst');
+					$status_message = __("Urgent", 'burst-statistics');
 				}
 				if ( $status === 'premium' ) {
-					$status_message = __("Premium", 'burst');
+					$status_message = __("Premium", 'burst-statistics');
 				}
 
 				?>

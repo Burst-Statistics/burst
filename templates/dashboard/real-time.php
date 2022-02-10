@@ -13,10 +13,10 @@ $pageviews_total = BURST::$statistics->get_single_statistic('pageviews', $date_s
 $visitors_now = BURST::$statistics->get_real_time_visitors();
 
 $lines = array(
-    //$pageviews_total['val'] . ' ' . __('are new visitors', 'burst'),
-    $visitors_total['val'] . ' ' . __('visitors', 'burst'),
-    $pageviews_total['val'] . ' ' . __('pageviews', 'burst'),
-    burst_format_milliseconds_to_readable_time($time_total['val']) . ' ' . __('time', 'burst'),
+    //$pageviews_total['val'] . ' ' . __('are new visitors', 'burst-statistics'),
+    $visitors_total['val'] . ' ' . __('visitors', 'burst-statistics'),
+    $pageviews_total['val'] . ' ' . __('pageviews', 'burst-statistics'),
+    burst_format_milliseconds_to_readable_time($time_total['val']) . ' ' . __('time', 'burst-statistics'),
 );
 $html = '';
 foreach ($lines as $line){ $html .= '<p>' . $line . '</p>'; }
@@ -26,14 +26,14 @@ $args = array(
     'tooltip' => '',
     'subtitles' => $html,
     'number' => $visitors_now,
-    'number_subtitle' => __('online right now', 'burst'),
+    'number_subtitle' => __('online right now', 'burst-statistics'),
 );
 echo burst_get_template('blocks/big-number.php', $args );
 
 
 $results = BURST::$statistics->get_single_statistic('referrer', $date_start, $date_end);
 $args = array(
-    'title' => __('Top referrer', 'burst'),
+    'title' => __('Top referrer', 'burst-statistics'),
     'tooltip' => '',
     'subtitle' => $results['val'],
     'uplift' => '',
@@ -44,7 +44,7 @@ echo burst_get_template('blocks/explanation-and-stats.php', $args );
 
 $results = BURST::$statistics->get_single_statistic('page_url', $date_start, $date_end);
 $args = array(
-    'title' => __('Most visited page', 'burst'),
+    'title' => __('Most visited page', 'burst-statistics'),
     'tooltip' => '',
     'subtitle' => $results['val'],
     'uplift' => '',
