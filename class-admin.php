@@ -75,7 +75,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 
 		public function enqueue_assets( $hook ) {
-			 if ( strpos( $hook, 'burst-statistics') === false
+			 if ( strpos( $hook, 'burst') === false
 			 ) {
 			 	return;
 			 }
