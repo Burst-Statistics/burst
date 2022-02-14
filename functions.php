@@ -1,6 +1,6 @@
 <?php
 
-use donatj\UserAgent\UserAgentParser;
+use burst\UserAgent\UserAgentParser;
 
 defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
 
@@ -712,7 +712,7 @@ if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
 
 if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
     function burst_get_user_agent_data($user_agent){
-        $ua = \donatj\UserAgent\parse_user_agent($user_agent);
+        $ua = \burst\UserAgent\parse_user_agent($user_agent);
 
         switch ($ua['platform']) {
             case 'Macintosh':

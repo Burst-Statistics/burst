@@ -1,6 +1,6 @@
 <?php
 
-namespace donatj\UserAgent;
+namespace burst\UserAgent;
 
 interface UserAgentInterface {
 
