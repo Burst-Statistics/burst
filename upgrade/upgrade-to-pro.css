@@ -1,12 +1,5 @@
-@gridblock _height_big: calc(auto + 20px);
-/**move to css variables in time */
 :root {
-  --rsp-break-xs: 400px;
-  --rsp-break-s: 576px;
-  --rsp-break-m: 768px;
-  --rsp-break-l: 992px;
-  --rsp-break-xl: 1200px;
-  --rsp-break-xxl: 1400px;
+  --rsp-spacing-xxs: 5px;
   --rsp-spacing-xs: 10px;
   --rsp-spacing-s: 15px;
   --rsp-spacing-m: 20px;
@@ -36,7 +29,7 @@
   --rsp-orange-faded: rgba(243, 156, 18, 0.1);
   --rsp-background-block-color: var(--rsp-white);
   --rsp-background-color: #f0f0f1;
-  --rsp-input-background-color: #F1F1F1;
+  --rsp-input-background-color: #fff;
   --rsp-input-text-color: var(--rsp-text-color);
   --rsp-input-border-color: #8c8f94;
   --rsp-text-color: rgba(26, 26, 26, 0.9);
@@ -52,8 +45,8 @@
   --rsp-color-error: var(--rsp-red);
   --rsp-color-warning: var(--rsp-orange);
   --rsp-color-open: var(--rsp-yellow);
-  --rsp-fs-100: 0.6125rem;
-  --rsp-fs-200: 0.625rem;
+  --rsp-fs-100: 0.6875rem;
+  --rsp-fs-200: 0.75rem;
   --rsp-fs-300: 0.8125rem;
   --rsp-fs-400: 0.875rem;
   --rsp-fs-500: 1rem;
@@ -61,9 +54,11 @@
   --rsp-fs-700: 1.25rem;
   --rsp-fs-800: 1.5rem;
   --rsp-fs-900: 2.5rem;
-  --rsp-brand-primary: var(--rsp-green);
-  --rsp-brand-secondary: var(--rsp-yellow);
-  --rsp-brand-primary-faded: var(--rsp-green-faded);
+}
+.burst-block {
+  background: var(--rsp-background-block-color);
+  box-shadow: var(--rsp-box-shadow);
+  border-radius: var(--rsp-border-radius);
 }
 #rsp-step-template,
 #rsp-plugin-suggestion-template {
@@ -177,14 +172,14 @@
   margin: 0;
 }
 .rsp-modal-transparent-background .rsp-install-plugin-modal .rsp-footer .rsp-btn.rsp-yellow {
-  background-color: #f8be2e;
+  background-color: #f4bf3e;
   color: #333;
   font-size: 17px;
-  border: 1px solid #f8be2e;
+  border: 1px solid #f4bf3e;
 }
 .rsp-modal-transparent-background .rsp-install-plugin-modal .rsp-footer .rsp-btn.rsp-yellow:hover {
-  background-color: #f8be2e;
-  border: 1px solid #f8be2e;
+  background-color: #f4bf3e;
+  border: 1px solid #f4bf3e;
 }
 .rsp-modal-transparent-background .rsp-install-plugin-modal .rsp-footer .rsp-btn.rsp-red {
   background-color: #D7263D;
@@ -206,13 +201,13 @@
   background-color: #dadada;
 }
 .rsp-modal-transparent-background .rsp-install-plugin-modal .rsp-green {
-  background-color: #22932e;
+  background-color: #2e8a37;
 }
 .rsp-modal-transparent-background .rsp-install-plugin-modal .rsp-red {
   background-color: #D7263D;
 }
 .rsp-modal-transparent-background .rsp-install-plugin-modal .rsp-yellow {
-  background-color: #f8be2e;
+  background-color: #f4bf3e;
 }
 .rsp-modal-transparent-background .rsp-install-plugin-modal .rsp-hidden {
   display: none;
