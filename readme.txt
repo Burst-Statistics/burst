@@ -61,6 +61,7 @@ Not...yet.
 == Change log ==
 = 1.0.1 =
 * Fix: text domain, props @bonaldi
+* Fix: parse_user_agent library prefix to fix compatibility with Rank Math
 
 = 1.0.0 =
 * Initial release
