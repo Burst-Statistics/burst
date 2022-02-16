@@ -23,7 +23,7 @@ Feature requests
 
 == Useful Links ==
 
-* [Documentation](https://burst-statistics/docs/)
+* [Documentation](https://burst-statistics.com/docs/)
 * [Metric Definitions](https://burst-statistics.com/definitions/)
 * [Translate Burst Statistics](https://translate.wordpress.org/projects/wp-plugins/burst-statistics/)
 * [Issues & pull requests](https://github.com/Really-Simple-Plugins/burst/issues)
