@@ -624,7 +624,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 							$args = array(
 								'date_from' => $time_stamp['start'],
 								'date_to' => $time_stamp['end'],
-								'group_by' => 'referer',
+								'group_by' => 'referrer',
 								'date_range' => $date_range,//for caching purposes
 								'page' => $page, //for caching purposes
 							);
