@@ -59,6 +59,9 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.0.2 =
+* Fix: typo fix in generate_cached_data, props @seath
+
 = 1.0.1 =
 * Fix: text domain, props @bonaldi
 * Fix: parse_user_agent library prefix to fix compatibility with Rank Math
