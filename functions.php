@@ -45,8 +45,7 @@ if ( ! function_exists('burst_read_more' ) ) {
 	 */
 	function burst_read_more( $url, $add_space = true ) {
 		$html
-			= burst_sprintf( __( "For more information on this subject, please read this %sarticle%s",
-			'burst' ), '<a target="_blank" href="' . $url . '">',
+			= burst_sprintf( __( "For more information on this subject, please read this %sarticle%s", 'burst-statistics' ), '<a target="_blank" href="' . $url . '">',
 			'</a>' );
 		if ( $add_space ) {
 			$html = '&nbsp;' . $html;
@@ -451,8 +450,7 @@ if ( ! function_exists( 'burst_get_value' ) ) {
                         $value = icl_translate('burst', $fieldname, $value);
                     }
 
-                    $value = apply_filters('wpml_translate_single_string', $value,
-                        'burst', $fieldname);
+                    $value = apply_filters('wpml_translate_single_string', $value, 'burst-statistics', $fieldname);
                 }
             }
 

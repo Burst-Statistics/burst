@@ -27,6 +27,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 			add_action( 'admin_menu', array( $this, 'register_admin_page' ), 20 );
+            add_action('wp_dashboard_setup', array($this, 'add_burst_dashboard_widget'));
 
 			$plugin = burst_plugin;
 			add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
@@ -75,20 +76,19 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 
 		public function enqueue_assets( $hook ) {
+            $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+            wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
+            wp_enqueue_style( 'burst-admin' );
+
 			 if ( strpos( $hook, 'burst') === false
 			 ) {
 			 	return;
 			 }
-			 
-
 
 			//select2
 //			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
 //			wp_enqueue_style( 'select2' );
 //			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
-
-			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-
 
 
             if (isset($_GET['burst-page']) && $_GET['burst-page'] ==='statistics') {
@@ -116,8 +116,6 @@ if ( ! class_exists( "burst_admin" ) ) {
                 wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version, false);
 			}
 
-            wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
-            wp_enqueue_style( 'burst-admin' );
             wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
 
 			wp_localize_script(
@@ -132,20 +130,20 @@ if ( ! class_exists( "burst_admin" ) ) {
 						'Previous 30 days' => __( 'Last 30 days', 'burst-statistics' ),
 						'This Month'   => __( 'This Month', 'burst-statistics' ),
 						'Previous Month'   => __( 'Last Month', 'burst-statistics' ),
-						'date_format'  => get_option( 'date_format' ),//_x( 'MM/DD/YYYY','Date format' 'burst' ),
+						'date_format'  => get_option( 'date_format' ),
 						'Apply'        => __( "Apply", "burst-statistics" ),
 						'Cancel'       => __( "Cancel", "burst-statistics" ),
 						'From'         => __( "From", "burst-statistics" ),
 						'To'           => __( "To", "burst-statistics" ),
 						'Custom'       => __( "Custom", "burst-statistics" ),
-						'W'            => __( "W", "burst-statistics" ),
-						"Mo"           => __( "Mo", "burst-statistics" ),
-						'Tu'           => __( "Tu", "burst-statistics" ),
-						'We'           => __( "We", "burst-statistics" ),
-						'Th'           => __( "Th", "burst-statistics" ),
-						'Fr'           => __( "Fr", "burst-statistics" ),
-						'Sa'           => __( "Sa", "burst-statistics" ),
-						'Su'           => __( "Su", "burst-statistics" ),
+						'W'            => _x( "W", "Abbreviation for week", "burst-statistics"),
+						"Mo"           => _x( "Mo", "Abbreviation for monday", "burst-statistics" ),
+						'Tu'           => _x( "Tu", "Abbreviation for Tuesday", "burst-statistics" ),
+						'We'           => _x( "We", "Abbreviation for Wednesday", "burst-statistics" ),
+						'Th'           => _x( "Th", "Abbreviation for Thursday", "burst-statistics" ),
+						'Fr'           => _x( "Fr", "Abbreviation for Friday", "burst-statistics" ),
+						'Sa'           => _x( "Sa", "Abbreviation for Saturday", "burst-statistics" ),
+						'Su'           => _x( "Su", "Abbreviation for Sunday", "burst-statistics" ),
 						'January'      => __( "January" ),
 						'February'     => __( "February" ),
 						'March'        => __( "March" ),
@@ -210,6 +208,56 @@ if ( ! class_exists( "burst_admin" ) ) {
 		    return array('warning-one');
         }
 
+        /**
+         *
+         * Add a dashboard widget
+         *
+         * @since 1.1
+         *
+         */
+
+        public function add_burst_dashboard_widget()
+        {
+
+            wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
+                $this,
+                'generate_burst_dashboard_widget_wrapper'
+            ));
+        }
+
+        /**
+         * Wrapper function for dashboard widget so params can be sent along
+         */
+
+        public function generate_burst_dashboard_widget_wrapper() {
+            echo $this->generate_dashboard_widget();
+        }
+
+        /**
+         *
+         * Generate the dashboard widget
+         * Also generated the Top Searches grid item
+         *
+         * @param int|bool $start
+         * @param int|bool $end
+         * @return false|string
+         */
+        public function generate_dashboard_widget($start = false, $end = false)
+        {
+            ob_start();
+
+            $template = burst_get_template('wordpress/dashboard-widget.php');
+            $html = "henkje";
+
+            //only use cached data on dash
+
+
+
+            ob_get_clean();
+//            $widget = str_replace('{top_searches}', $html, $widget);
+            return $template;
+
+        }
 
 		/**
 		 * Register admin page
@@ -223,13 +271,16 @@ if ( ! class_exists( "burst_admin" ) ) {
 			$warnings      = BURST::$notices->get_notices( array('plus_ones'=>true) );
 			$warning_count = count( $warnings );
 			$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
-			$menu_label    = __('Statistics', 'burst-statistics') . burst_sprintf( __( ' %s', 'burst-statistics' ),
-				"<span class='update-plugins count-$warning_count' title='$warning_title'><span class='update-count'>"
-				. number_format_i18n( $warning_count ) . "</span></span>" );
+			$menu_label    = __('Statistics', 'burst-statistics') .
+				"<span class='update-plugins count-$warning_count' title='$warning_title'>
+                    <span class='update-count'>
+				        ". number_format_i18n( $warning_count ) . "
+                    </span>
+                </span>";
 
 			add_submenu_page(
 				'index.php',
-				__( 'Burst Statistics', 'burst-statistics' ),
+				'Burst Statistics',
                 $menu_label,
 				'manage_options',
 				'burst',

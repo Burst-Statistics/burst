@@ -95,7 +95,7 @@ if ( ! class_exists( "burst_review" ) ) {
                         	<b>
                                 <?php _e( 'Hi, you have been using Burst for more than a month now, awesome!', 'burst-statistics') ?>&nbsp;
                         	</b>
-                            <?php burst_printf( __('If you have any questions or feedback, leave us a %s message%s.', 'burst-statistics' ), '<a href="https://burst-statistics.com/contact" target="_blank">', '</a>' );?>
+                            <?php burst_printf( __('If you have any questions or feedback, leave us a %smessage%s.', 'burst-statistics' ), '<a href="https://burst-statistics.com/contact" target="_blank">', '</a>' );?>
                         </p>
                         <p>
                             <?php _e('If you have a moment, please consider leaving a review on WordPress.org to spread the word. We greatly appreciate it!'); ?>
@@ -104,16 +104,16 @@ if ( ! class_exists( "burst_review" ) ) {
 						<div class="burst-buttons-row">
 							<a class="button button-primary" target="_blank"
 							   href="https://wordpress.org/support/plugin/burst-statistics/reviews/#new-post"><?php _e( 'Leave a review',
-									'burst' ); ?></a>
+									'burst-statistics' ); ?></a>
 
 							<div class="dashicons dashicons-calendar"></div>
 							<a href="#"
 							   id="maybe-later"><?php _e( 'Maybe later',
-									'burst' ); ?></a>
+									'burst-statistics' ); ?></a>
 
 							<div class="dashicons dashicons-no-alt"></div>
 							<a href="<?php echo add_query_arg(array('page'=>'burst', 'burst_dismiss_review'=>1), admin_url('admin.php') )?>"><?php _e( 'Don\'t show again',
-									'burst' ); ?></a>
+									'burst-statistics' ); ?></a>
 						</div>
 					</div>
 				</div>

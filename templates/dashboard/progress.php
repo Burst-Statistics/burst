@@ -27,7 +27,7 @@ $progress = 0;
                     'status' => 'completed',
                     'plus_one' => false,
                     'message'    =>  burst_sprintf(
-                        __( 'If you have any suggestions to improve our plugin, feel free to  %s open a support thread%s.', 'burst-statistics' ),
+                        __( 'If you have any suggestions to improve our plugin, feel free to %sopen a support thread%s.', 'burst-statistics' ),
                         '<a href="https://wordpress.org/support/plugin/burst-statistics/" target="_blank">',
                         '</a>'
                     ),
