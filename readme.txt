@@ -39,7 +39,7 @@ Check out other plugins developed by Really Simple Plugins as well: [Really Simp
 
 We're on [GitHub](https://github.com/Really-Simple-Plugins) as well!
 
-[Contact](https://burst-statistics.com#contact) us if you have any questions, issues, or suggestions. Burst Statistics is developed by [Burst B.V.](https://burst-statistics.com). Leave your feature requests [here](https://burst-statistics.com/feature-requests/).
+[Contact](https://burst-statistics.com#contact) us if you have any questions, issues, or suggestions. Burst Statistics is developed by [Burst Statistics B.V.](https://burst-statistics.com). Leave your feature requests [here](https://burst-statistics.com/feature-requests/).
 
 == Installation ==
 * Go to “Plugins” in your WordPress Dashboard, and click “Add new”.
