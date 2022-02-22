@@ -54,7 +54,7 @@ Burst will maintain and a grow a knowledgebase about Burst Statistics and other 
 = Why is Burst Statistics Privacy-friendly? =
 Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone. 
 = Do you mind if I give feedback about the product? =
-No only don't we mind. We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
+We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
 = Is there a Pro version? =
 Not...yet.
 
