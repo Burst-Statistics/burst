@@ -27,7 +27,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 			add_action( 'admin_menu', array( $this, 'register_admin_page' ), 20 );
-            add_action('wp_dashboard_setup', array($this, 'add_burst_dashboard_widget'));
 
 			$plugin = burst_plugin;
 			add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
@@ -76,19 +75,20 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 
 		public function enqueue_assets( $hook ) {
-            $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-            wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
-            wp_enqueue_style( 'burst-admin' );
-
 			 if ( strpos( $hook, 'burst') === false
 			 ) {
 			 	return;
 			 }
+			 
+
 
 			//select2
 //			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
 //			wp_enqueue_style( 'select2' );
 //			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
+
+			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 
 
             if (isset($_GET['burst-page']) && $_GET['burst-page'] ==='statistics') {
@@ -116,6 +116,8 @@ if ( ! class_exists( "burst_admin" ) ) {
                 wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version, false);
 			}
 
+            wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
+            wp_enqueue_style( 'burst-admin' );
             wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
 
 			wp_localize_script(
@@ -208,56 +210,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 		    return array('warning-one');
         }
 
-        /**
-         *
-         * Add a dashboard widget
-         *
-         * @since 1.1
-         *
-         */
-
-        public function add_burst_dashboard_widget()
-        {
-
-            wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
-                $this,
-                'generate_burst_dashboard_widget_wrapper'
-            ));
-        }
-
-        /**
-         * Wrapper function for dashboard widget so params can be sent along
-         */
-
-        public function generate_burst_dashboard_widget_wrapper() {
-            echo $this->generate_dashboard_widget();
-        }
-
-        /**
-         *
-         * Generate the dashboard widget
-         * Also generated the Top Searches grid item
-         *
-         * @param int|bool $start
-         * @param int|bool $end
-         * @return false|string
-         */
-        public function generate_dashboard_widget($start = false, $end = false)
-        {
-            ob_start();
-
-            $template = burst_get_template('wordpress/dashboard-widget.php');
-            $html = "henkje";
-
-            //only use cached data on dash
-
-
-
-            ob_get_clean();
-//            $widget = str_replace('{top_searches}', $html, $widget);
-            return $template;
-
-        }
 
 		/**
 		 * Register admin page

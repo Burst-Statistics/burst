@@ -2,7 +2,7 @@
 
 <div class="block__explanation-and-stats">
     <div class="block__explanation-and-stats__left">
-        <span class="h5">{title}{tooltip}</span>
+        <h3 class="h5">{title}{tooltip}</h3>
         <p>{subtitle}</p>
     </div>
     <div class="block__explanation-and-stats__right">
