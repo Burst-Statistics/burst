@@ -5,7 +5,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
 Tested up to: 5.9
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -61,6 +61,7 @@ Not...yet.
 == Change log ==
 = 1.0.2 =
 * Fix: typo fix in generate_cached_data, props @seath
+* Fix: some strings with wrong text domain
 
 = 1.0.1 =
 * Fix: text domain, props @bonaldi
