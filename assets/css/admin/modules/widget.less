@@ -1,0 +1,25 @@
+.burst-dashboard-widget{
+  &__content{
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rsp-spacing-xs);
+  }
+  &__footer{
+    margin-top: var(--rsp-spacing-s);
+  }
+  .burst-kpi-result{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--rsp-spacing-xxs);
+  }
+  .burst-kpi{
+    background-color: var(--rsp-green-faded);
+    padding: var(--rsp-spacing-xs);
+    border-radius: var(--rsp-border-radius);
+    width: calc(50% - var(--rsp-spacing-xs) / 2);
+  }
+  .block__explanation-and-stats{
+    width: 100%;
+  }
+}

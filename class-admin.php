@@ -132,20 +132,20 @@ if ( ! class_exists( "burst_admin" ) ) {
 						'Previous 30 days' => __( 'Last 30 days', 'burst-statistics' ),
 						'This Month'   => __( 'This Month', 'burst-statistics' ),
 						'Previous Month'   => __( 'Last Month', 'burst-statistics' ),
-						'date_format'  => get_option( 'date_format' ),//_x( 'MM/DD/YYYY','Date format' 'burst' ),
+						'date_format'  => get_option( 'date_format' ),
 						'Apply'        => __( "Apply", "burst-statistics" ),
 						'Cancel'       => __( "Cancel", "burst-statistics" ),
 						'From'         => __( "From", "burst-statistics" ),
 						'To'           => __( "To", "burst-statistics" ),
 						'Custom'       => __( "Custom", "burst-statistics" ),
-						'W'            => __( "W", "burst-statistics" ),
-						"Mo"           => __( "Mo", "burst-statistics" ),
-						'Tu'           => __( "Tu", "burst-statistics" ),
-						'We'           => __( "We", "burst-statistics" ),
-						'Th'           => __( "Th", "burst-statistics" ),
-						'Fr'           => __( "Fr", "burst-statistics" ),
-						'Sa'           => __( "Sa", "burst-statistics" ),
-						'Su'           => __( "Su", "burst-statistics" ),
+						'W'            => _x( "W", "Abbreviation for week", "burst-statistics"),
+						"Mo"           => _x( "Mo", "Abbreviation for monday", "burst-statistics" ),
+						'Tu'           => _x( "Tu", "Abbreviation for Tuesday", "burst-statistics" ),
+						'We'           => _x( "We", "Abbreviation for Wednesday", "burst-statistics" ),
+						'Th'           => _x( "Th", "Abbreviation for Thursday", "burst-statistics" ),
+						'Fr'           => _x( "Fr", "Abbreviation for Friday", "burst-statistics" ),
+						'Sa'           => _x( "Sa", "Abbreviation for Saturday", "burst-statistics" ),
+						'Su'           => _x( "Su", "Abbreviation for Sunday", "burst-statistics" ),
 						'January'      => __( "January" ),
 						'February'     => __( "February" ),
 						'March'        => __( "March" ),
@@ -223,13 +223,16 @@ if ( ! class_exists( "burst_admin" ) ) {
 			$warnings      = BURST::$notices->get_notices( array('plus_ones'=>true) );
 			$warning_count = count( $warnings );
 			$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
-			$menu_label    = __('Statistics', 'burst-statistics') . burst_sprintf( __( ' %s', 'burst-statistics' ),
-				"<span class='update-plugins count-$warning_count' title='$warning_title'><span class='update-count'>"
-				. number_format_i18n( $warning_count ) . "</span></span>" );
+			$menu_label    = __('Statistics', 'burst-statistics') .
+				"<span class='update-plugins count-$warning_count' title='$warning_title'>
+                    <span class='update-count'>
+				        ". number_format_i18n( $warning_count ) . "
+                    </span>
+                </span>";
 
 			add_submenu_page(
 				'index.php',
-				__( 'Burst Statistics', 'burst-statistics' ),
+				'Burst Statistics',
                 $menu_label,
 				'manage_options',
 				'burst',

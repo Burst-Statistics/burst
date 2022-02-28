@@ -264,8 +264,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			if ( in_array( $args['fieldname'], $this->form_errors ) ) {
 				?>
 				<div class="burst-form-errors">
-					<?php _e( "This field is required. Please complete the question before continuing",
-						'burst' ) ?>
+					<?php _e( "This field is required. Please complete the question before continuing", 'burst-statistics' ) ?>
 				</div>
 				<?php
 			}
@@ -1054,8 +1053,7 @@ if ( ! class_exists( "burst_field" ) ) {
 				echo 'required';
 			} ?> name="<?php echo esc_html( $fieldname ) ?>"
                  <?php if (isset($args['tooltip'])){ ?> data-burst-tooltip-simple="<?php echo wp_kses_post( $args['tooltip'] ) ?>" <?php } ?>>
-				<option value=""><?php _e( "Choose an option",
-						'burst' ) ?></option>
+				<option value=""><?php _e( "Choose an option", 'burst-statistics' ) ?></option>
 				<?php foreach (
 					$args['options'] as $option_key => $option_label
 				) { ?>
@@ -1105,8 +1103,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
 				} else { ?> 
 					<option value="">
-					<?php _e( "Choose an option",
-						'burst' ) ?></option>
+					<?php _e( "Choose an option", 'burst-statistics' ) ?></option>
 				<?php } ?>
 				
 			</select>
@@ -1152,8 +1149,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
                 } else { ?>
                     <option value="">
-                        <?php _e( "Choose an option",
-                            'burst' ) ?></option>
+                        <?php _e( "Choose an option", 'burst-statistics' ) ?></option>
                 <?php } ?>
 
             </select>
@@ -1199,8 +1195,7 @@ if ( ! class_exists( "burst_field" ) ) {
 
                 } else { ?>
                     <option value="0">
-                        <?php _e( "Choose an option",
-                            'burst' ) ?></option>
+                        <?php _e( "Choose an option", 'burst-statistics' ) ?></option>
                 <?php } ?>
 
             </select>

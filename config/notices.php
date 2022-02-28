@@ -49,17 +49,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 		}
 
 		public function get_notices( $args = array() ) {
-			$notices = apply_filters( 'burst_notices', array(
-					'not_reached_sample_size' => array(
-						'warning_condition' => 'burst_experiment_not_reached_sample_size',
-//        				'success_conditions'  => array(
-//        					'document->all_required_pages_created',
-//        				),
-						'open'     => __( 'An experiment has run one month, but has not reached the minimal sample size yet.', 'burst-statistics' ),
-						'plus_one' => true,
-					),
-				)
-			);
+			$notices = apply_filters( 'burst_notices', array());
 
 			$defaults = array(
 				'cache'     => true,
