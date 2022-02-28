@@ -37,7 +37,7 @@ Burst Statistics offers full support on the WordPress.org [Forum](https://wordpr
 
 Check out other plugins developed by Really Simple Plugins as well: [Really Simple SSL](https://wordpress.org/plugins/really-simple-ssl/) and [Complianz](https://wordpress.org/plugins/complianz-gdpr/)
 
-We're on [GitHub](https://github.com/Really-Simple-Plugins) as well!
+We're on [GitHub](https://github.com/really-Simple-Plugins/burst) as well!
 
 [Contact](https://burst-statistics.com#contact) us if you have any questions, issues, or suggestions. Burst Statistics is developed by [Burst B.V.](https://burst-statistics.com). Leave your feature requests [here](https://burst-statistics.com/feature-requests/).
 

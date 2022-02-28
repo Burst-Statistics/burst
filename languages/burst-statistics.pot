@@ -1,0 +1,801 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Project-Id-Version: Burst Statistics\n"
+"POT-Creation-Date: 2022-02-22 15:04+0100\n"
+"PO-Revision-Date: 2022-02-22 15:04+0100\n"
+"Last-Translator: Rogier Lankhorst <rogierlankhorst@gmail.com>\n"
+"Language-Team: Rogier Lankhorst <rogierlankhorst@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: burst.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: burst.php:41
+msgid "Burst cannot be activated. The plugin requires PHP 5.6 or higher"
+msgstr ""
+
+#: burst.php:48
+msgid "Burst cannot be activated. The plugin requires WordPress 5.0 or higher"
+msgstr ""
+
+#: class-admin.php:129 class-admin.php:301
+msgid "Today"
+msgstr ""
+
+#: class-admin.php:130
+msgid "Yesterday"
+msgstr ""
+
+#: class-admin.php:131
+msgid "Last 7 days"
+msgstr ""
+
+#: class-admin.php:132
+msgid "Last 30 days"
+msgstr ""
+
+#: class-admin.php:133
+msgid "This Month"
+msgstr ""
+
+#: class-admin.php:134
+msgid "Last Month"
+msgstr ""
+
+#: class-admin.php:136
+msgid "Apply"
+msgstr ""
+
+#: class-admin.php:137 class-admin.php:731 upgrade/upgrade-to-pro.php:363
+msgid "Cancel"
+msgstr ""
+
+#: class-admin.php:138
+msgid "From"
+msgstr ""
+
+#: class-admin.php:139
+msgid "To"
+msgstr ""
+
+#: class-admin.php:140
+msgid "Custom"
+msgstr ""
+
+#: class-admin.php:141
+msgid "W"
+msgstr ""
+
+#: class-admin.php:142
+msgid "Mo"
+msgstr ""
+
+#: class-admin.php:143
+msgid "Tu"
+msgstr ""
+
+#: class-admin.php:144
+msgid "We"
+msgstr ""
+
+#: class-admin.php:145
+msgid "Th"
+msgstr ""
+
+#: class-admin.php:146
+msgid "Fr"
+msgstr ""
+
+#: class-admin.php:147
+msgid "Sa"
+msgstr ""
+
+#: class-admin.php:148
+msgid "Su"
+msgstr ""
+
+#: class-admin.php:149
+msgid "January"
+msgstr ""
+
+#: class-admin.php:150
+msgid "February"
+msgstr ""
+
+#: class-admin.php:151
+msgid "March"
+msgstr ""
+
+#: class-admin.php:152
+msgid "April"
+msgstr ""
+
+#: class-admin.php:153
+msgid "May"
+msgstr ""
+
+#: class-admin.php:154
+msgid "June"
+msgstr ""
+
+#: class-admin.php:155
+msgid "July"
+msgstr ""
+
+#: class-admin.php:156
+msgid "August"
+msgstr ""
+
+#: class-admin.php:157
+msgid "September"
+msgstr ""
+
+#: class-admin.php:158
+msgid "October"
+msgstr ""
+
+#: class-admin.php:159
+msgid "November"
+msgstr ""
+
+#: class-admin.php:160
+msgid "December"
+msgstr ""
+
+#: class-admin.php:181 class-admin.php:308
+msgid "Settings"
+msgstr ""
+
+#: class-admin.php:188 shepherd/tour.php:89 templates/admin_wrap.php:31
+msgid "Support"
+msgstr ""
+
+#: class-admin.php:226 class-admin.php:453
+msgid "Statistics"
+msgstr ""
+
+#: class-admin.php:226
+#, php-format
+msgid " %s"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+#: class-admin.php:232
+msgid "Burst Statistics"
+msgstr ""
+
+#: class-admin.php:243
+msgid "Conversion percentages"
+msgstr ""
+
+#: class-admin.php:244
+msgid "Conversions"
+msgstr ""
+
+#: class-admin.php:245
+msgid "Visits"
+msgstr ""
+
+#: class-admin.php:294
+msgid "Your notices"
+msgstr ""
+
+#: class-admin.php:314
+msgid "Tips & Tricks"
+msgstr ""
+
+#: class-admin.php:320
+msgid "Other Plugins"
+msgstr ""
+
+#: class-admin.php:330
+msgid "Insights"
+msgstr ""
+
+#: class-admin.php:337
+msgid "Compare"
+msgstr ""
+
+#: class-admin.php:348
+msgid "Devices"
+msgstr ""
+
+#: class-admin.php:356
+msgid "Most visited"
+msgstr ""
+
+#: class-admin.php:364
+msgid "Top referrers"
+msgstr ""
+
+#: class-admin.php:448
+msgid "Dashboard"
+msgstr ""
+
+#: class-admin.php:476 upgrade/upgrade-to-pro.php:182
+msgid "Installed"
+msgstr ""
+
+#: class-admin.php:479
+msgid "Upgrade to pro"
+msgstr ""
+
+#: class-admin.php:483 upgrade/upgrade-to-pro.php:139
+#: upgrade/upgrade-to-pro.php:152 upgrade/upgrade-to-pro.php:169
+msgid "Install"
+msgstr ""
+
+#: class-admin.php:493
+msgid "No data found"
+msgstr ""
+
+#: class-admin.php:575
+msgid "Page"
+msgstr ""
+
+#: class-admin.php:576 statistics/class-statistics.php:90
+#: statistics/class-statistics.php:847
+msgid "Pageviews"
+msgstr ""
+
+#: class-admin.php:715
+msgid "To deactivate the plugin correctly, please select if you want to:"
+msgstr ""
+
+#: class-admin.php:718 class-admin.php:732
+msgid "Deactivate"
+msgstr ""
+
+#: class-admin.php:720
+msgid "Deactivate, and remove all statistics, experiments and settings."
+msgstr ""
+
+#: class-admin.php:721
+msgid "The data will be gone forever."
+msgstr ""
+
+#: class-admin.php:733
+msgid "Deactivate and delete all data"
+msgstr ""
+
+#: class-field.php:267
+msgid "This field is required. Please complete the question before continuing"
+msgstr ""
+
+#: class-field.php:573
+msgid "No options found"
+msgstr ""
+
+#: class-field.php:881
+msgid "Copy"
+msgstr ""
+
+#: class-field.php:883
+msgid "Copied!"
+msgstr ""
+
+#: class-field.php:1057 class-field.php:1108 class-field.php:1155
+#: class-field.php:1202
+msgid "Choose an option"
+msgstr ""
+
+#: class-field.php:1345
+msgid "Save"
+msgstr ""
+
+#: class-review.php:96
+msgid "Hi, you have been using Burst for more than a month now, awesome!"
+msgstr ""
+
+#: class-review.php:98
+#, php-format
+msgid "If you have any questions or feedback, leave us a %s message%s."
+msgstr ""
+
+#: class-review.php:101
+msgid ""
+"If you have a moment, please consider leaving a review on WordPress.org to "
+"spread the word. We greatly appreciate it!"
+msgstr ""
+
+#: class-review.php:106
+msgid "Leave a review"
+msgstr ""
+
+#: class-review.php:111
+msgid "Maybe later"
+msgstr ""
+
+#: class-review.php:115
+msgid "Don't show again"
+msgstr ""
+
+#: config/class-config.php:26
+msgid "Yes"
+msgstr ""
+
+#: config/class-config.php:27
+msgid "No"
+msgstr ""
+
+#: config/general-settings.php:11
+msgid "Delete all data on deactivate"
+msgstr ""
+
+#: config/general-settings.php:13
+msgid ""
+"Enabling this option will delete all your settings, statistics and "
+"experiments when you deactivate this plugin"
+msgstr ""
+
+#: config/notices.php:58
+msgid ""
+"An experiment has run one month, but has not reached the minimal sample size "
+"yet."
+msgstr ""
+
+#: config/notices.php:200 templates/dashboard/progress.php:42
+msgid "Completed"
+msgstr ""
+
+#: config/notices.php:203 templates/dashboard/progress.php:45
+msgid "Open"
+msgstr ""
+
+#: config/notices.php:206 templates/dashboard/progress.php:48
+msgid "Urgent"
+msgstr ""
+
+#: cron/cron.php:31
+msgid "Once every week"
+msgstr ""
+
+#: cron/cron.php:35
+msgid "Once every day"
+msgstr ""
+
+#: cron/cron.php:39
+msgid "Once every hour"
+msgstr ""
+
+#: functions.php:48
+#, php-format
+msgid "For more information on this subject, please read this %sarticle%s"
+msgstr ""
+
+#: shepherd/tour.php:47
+#, php-format
+msgid "Welcome to %s"
+msgstr ""
+
+#: shepherd/tour.php:48
+#, php-format
+msgid "%s is now active."
+msgstr ""
+
+#: shepherd/tour.php:48
+msgid "Follow a quick tour and make sure everything works."
+msgstr ""
+
+#: shepherd/tour.php:54
+msgid "Your dashboard"
+msgstr ""
+
+#: shepherd/tour.php:55
+msgid ""
+"This is your Dashboard. This will give you an overview of notices, real time "
+"data, and settings"
+msgstr ""
+
+#: shepherd/tour.php:61
+msgid "Real time data"
+msgstr ""
+
+#: shepherd/tour.php:62
+msgid "This block will show you real time visitors."
+msgstr ""
+
+#: shepherd/tour.php:62
+#, php-format
+msgid ""
+"To make sure %s is setup properly, try visiting this website on another "
+"device or open a private window."
+msgstr ""
+
+#: shepherd/tour.php:68
+msgid "Real time visitors"
+msgstr ""
+
+#: shepherd/tour.php:69
+msgid ""
+"Did you visit your website on another device? This number should change. If "
+"that is not the case, feel free to open a support thread."
+msgstr ""
+
+#: shepherd/tour.php:75
+msgid "Your website statistics"
+msgstr ""
+
+#: shepherd/tour.php:76
+msgid ""
+"This page is probably quite empty at the moment. The data from your website "
+"will show up here in a few days. So be sure to come back soon."
+msgstr ""
+
+#: shepherd/tour.php:82
+msgid "Changing the period"
+msgstr ""
+
+#: shepherd/tour.php:83
+msgid ""
+"Over here you can change the date range for the data being shown. Click on "
+"to different days or click twice on a single day to show the data for that "
+"period."
+msgstr ""
+
+#: shepherd/tour.php:90
+msgid ""
+"Feel free to post your questions or feedback on the WordPress forums. We are "
+"happy to help!"
+msgstr ""
+
+#: shepherd/tour.php:103
+msgid "Next"
+msgstr ""
+
+#: shepherd/tour.php:104
+msgid "Previous"
+msgstr ""
+
+#: shepherd/tour.php:105
+msgid "Skip tour"
+msgstr ""
+
+#: shepherd/tour.php:107
+msgid "Start tour"
+msgstr ""
+
+#: shepherd/tour.php:108
+msgid "End tour"
+msgstr ""
+
+#: statistics/class-statistics.php:89 statistics/class-statistics.php:863
+msgid "Unique visitors"
+msgstr ""
+
+#: statistics/class-statistics.php:162
+msgid "No data for this selection"
+msgstr ""
+
+#: statistics/class-statistics.php:401 statistics/class-statistics.php:521
+msgid "Direct"
+msgstr ""
+
+#: statistics/class-statistics.php:413 statistics/class-statistics.php:543
+msgid "Homepage"
+msgstr ""
+
+#: statistics/class-statistics.php:539
+msgid "No referrers today"
+msgstr ""
+
+#: statistics/class-statistics.php:561
+msgid "No pages visited today"
+msgstr ""
+
+#: statistics/class-statistics.php:848
+msgid "pageviews per session"
+msgstr ""
+
+#: statistics/class-statistics.php:855
+msgid "Sessions"
+msgstr ""
+
+#: statistics/class-statistics.php:856
+msgid "per session"
+msgstr ""
+
+#: statistics/class-statistics.php:864
+msgid "are new visitors"
+msgstr ""
+
+#: statistics/class-statistics.php:876
+msgid "Bounce rate"
+msgstr ""
+
+#: statistics/class-statistics.php:877
+msgid "visitors bounced"
+msgstr ""
+
+#: templates/admin_wrap.php:45
+msgid "Changes saved successfully"
+msgstr ""
+
+#: templates/admin_wrap.php:55
+msgid "Experiment started successfully"
+msgstr ""
+
+#: templates/admin_wrap.php:64
+msgid "Experiment stopped successfully"
+msgstr ""
+
+#: templates/dashboard/other-plugins.php:12
+msgid "Easily migrate your website to SSL"
+msgstr ""
+
+#: templates/dashboard/other-plugins.php:20
+msgid "Complianz Privacy Suite - Cookie Consent Management as it should be "
+msgstr ""
+
+#: templates/dashboard/other-plugins.php:28
+msgid "Privacy Friendly Statistics"
+msgstr ""
+
+#: templates/dashboard/progress-footer.php:3
+msgid "View my statistics"
+msgstr ""
+
+#: templates/dashboard/progress.php:20
+#, php-format
+msgid ""
+"You have no new notices! Have a look at our %sdocumentation%s and see all "
+"the possibilities %s has to offer."
+msgstr ""
+
+#: templates/dashboard/progress.php:30
+#, php-format
+msgid ""
+"If you have any suggestions to improve our plugin, feel free to  %s open a "
+"support thread%s."
+msgstr ""
+
+#: templates/dashboard/progress.php:51
+msgid "Premium"
+msgstr ""
+
+#: templates/dashboard/real-time.php:17
+msgid "visitors"
+msgstr ""
+
+#: templates/dashboard/real-time.php:18
+msgid "pageviews"
+msgstr ""
+
+#: templates/dashboard/real-time.php:19
+msgid "time"
+msgstr ""
+
+#: templates/dashboard/real-time.php:29
+msgid "online right now"
+msgstr ""
+
+#: templates/dashboard/real-time.php:36
+msgid "Top referrer"
+msgstr ""
+
+#: templates/dashboard/real-time.php:47
+msgid "Most visited page"
+msgstr ""
+
+#: templates/dashboard/settings.php:6
+msgid ""
+"We aim to give the user a really simple experience, that is why we don't "
+"have any settings yet."
+msgstr ""
+
+#: templates/dashboard/settings.php:8
+msgid "Feature request?"
+msgstr ""
+
+#: templates/dashboard/tipstricks-footer.php:3
+msgid "View all"
+msgstr ""
+
+#: templates/statistics/compare-footer.php:3
+#, php-format
+msgid "vs. the previous %s days"
+msgstr ""
+
+#: templates/statistics/devices.php:12
+msgid "Desktop"
+msgstr ""
+
+#: templates/statistics/devices.php:22
+msgid "Tablet"
+msgstr ""
+
+#: templates/statistics/devices.php:32
+msgid "Mobile"
+msgstr ""
+
+#: templates/statistics/devices.php:42
+msgid "Other"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:72
+msgid "Checking if plugin folder exists..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:73
+msgid "Able to create destination folder"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:74
+msgid "Destination folder already exists"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:79
+msgid "Validating license..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:80
+msgid "License valid"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:81
+msgid "License invalid"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:87
+msgid "Retrieving package information..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:88
+msgid "Package information retrieved"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:89
+msgid "Failed to gather package information"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:94
+msgid "Installing plugin..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:95
+msgid "Plugin installed"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:96
+msgid "Failed to install plugin"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:101
+msgid "Activating plugin..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:102
+msgid "Plugin activated"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:103
+msgid "Failed to activate plugin"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:137
+msgid "Self-hosted and privacy-friendly analytics tool."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:141
+msgid ""
+"Get detailed insights into visitors' behaviour with Burst Statistics, the "
+"privacy-friendly analytics dashboard from Really Simple Plugins."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:150
+msgid "GDPR/CCPA Privacy Suite"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:154
+msgid ""
+"Configure your Cookie Notice, Cookie Consent and Cookie Policy with our "
+"Wizard and Cookie Scan. Supports GDPR, DSGVO, TTDSG, LGPD, POPIA, RGPD, CCPA "
+"and PIPEDA."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:167
+msgid "One click SSL optimization"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:171
+msgid ""
+"Really Simple SSL automatically detects your settings and configures your "
+"website to run over HTTPS. To keep it lightweight, we kept the options to a "
+"minimum. Your website will move to SSL with one click."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:225
+msgid "Installation finished"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:323
+msgid "Recommended by Really Simple Plugins"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:349
+msgid "Installing"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:360
+msgid "Visit Dashboard"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:365 upgrade/upgrade-to-pro.php:366
+msgid "An Error Occurred:"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:365
+#, php-format
+msgid "Install %sManually%s."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:366
+#, php-format
+msgid "Check your %slicense%s."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:422
+msgid "Plugin already installed!"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:522 upgrade/upgrade-to-pro.php:554
+msgid "An error occurred, please try again."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:530
+#, php-format
+msgid "Your license key expired on %s."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:536
+msgid "Your license key has been disabled."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:539
+msgid "Missing license."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:542
+msgid "Invalid license."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:545
+msgid "Your license is not active for this URL."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:548
+msgid "This appears to be an invalid license key for this plugin."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:551
+msgid "Your license key has reached its activation limit."
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://www.wordpress.org/plugins/burst"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Privacy Friendly Statistics. One click setup and start collecting valuable "
+"data."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Really Simple Plugins"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://www.burst-statistics.com"
+msgstr ""
