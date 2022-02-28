@@ -12,7 +12,10 @@ window.addEventListener("pagehide", burst_update_time_on_page, false );
 window.addEventListener("beforeunload", burst_update_time_on_page, false );
 TimeMe.callWhenUserLeaves( burst_update_time_on_page );
 
-burst_track_hit();
+
+document.addEventListener("DOMContentLoaded", function(){
+	burst_track_hit();
+});
 
 /**
  *

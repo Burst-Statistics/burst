@@ -249,7 +249,7 @@ if ( ! function_exists( 'burst_format_number' ) ) {
         $thousand_sep = burst_get_thousand_separator();
         $decimal_sep = burst_get_decimal_separator();
         if ( $number < 10000 ){
-            return 0 + number_format($number, $precision, $decimal_sep, $thousand_sep);
+            return number_format($number, 0, $decimal_sep, $thousand_sep);
         }
         $divisors = array(
             pow(1000, 0) => '', // 1000^0 == 1
@@ -268,7 +268,7 @@ if ( ! function_exists( 'burst_format_number' ) ) {
         }
         // We found our match, or there were no matches.
         // Either way, use the last defined value for $divisor.
-        return 0 + number_format($number / $divisor, 1, $decimal_sep, $thousand_sep) . $shorthand;
+        return number_format($number / $divisor, 1, $decimal_sep, $thousand_sep) . $shorthand;
     }
 }
 
