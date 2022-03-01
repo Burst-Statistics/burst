@@ -128,10 +128,11 @@ if ( ! class_exists( "burst_admin" ) ) {
 					'strings' => array(
 						'Today'        => __( 'Today', 'burst-statistics' ),
 						'Yesterday'    => __( 'Yesterday', 'burst-statistics' ),
-						'Previous 7 days'  => __( 'Last 7 days', 'burst-statistics' ),
-						'Previous 30 days' => __( 'Last 30 days', 'burst-statistics' ),
+						'Last 7 days'  => __( 'Last 7 days', 'burst-statistics' ),
+						'Last 30 days' => __( 'Last 30 days', 'burst-statistics' ),
+						'Last 90 days' => __( 'Last 90 days', 'burst-statistics' ),
 						'This Month'   => __( 'This Month', 'burst-statistics' ),
-						'Previous Month'   => __( 'Last Month', 'burst-statistics' ),
+						'Last Month'   => __( 'Last Month', 'burst-statistics' ),
 						'date_format'  => get_option( 'date_format' ),
 						'Apply'        => __( "Apply", "burst-statistics" ),
 						'Cancel'       => __( "Cancel", "burst-statistics" ),
@@ -146,18 +147,23 @@ if ( ! class_exists( "burst_admin" ) ) {
 						'Fr'           => _x( "Fr", "Abbreviation for Friday", "burst-statistics" ),
 						'Sa'           => _x( "Sa", "Abbreviation for Saturday", "burst-statistics" ),
 						'Su'           => _x( "Su", "Abbreviation for Sunday", "burst-statistics" ),
-						'January'      => __( "January" ),
-						'February'     => __( "February" ),
-						'March'        => __( "March" ),
-						'April'        => __( "April" ),
-						'May'          => __( "May" ),
-						'June'         => __( "June" ),
-						'July'         => __( "July" ),
-						'August'       => __( "August" ),
-						'September'    => __( "September" ),
-						'October'      => __( "October" ),
-						'November'     => __( "November" ),
-						'December'     => __( "December" ),
+						'January'      => __( "January" , "burst-statistics"),
+						'February'     => __( "February" , "burst-statistics"),
+						'March'        => __( "March" , "burst-statistics"),
+						'April'        => __( "April" , "burst-statistics"),
+						'May'          => __( "May" , "burst-statistics"),
+						'June'         => __( "June" , "burst-statistics"),
+						'July'         => __( "July" , "burst-statistics"),
+						'August'       => __( "August" , "burst-statistics"),
+						'September'    => __( "September" , "burst-statistics"),
+						'October'      => __( "October" , "burst-statistics"),
+						'November'     => __( "November" , "burst-statistics"),
+						'December'     => __( "December" , "burst-statistics"),
+                        'Search'       => __( "Search" , "burst-statistics"),
+                        'Pageviews'    => __( "Pageviews" , "burst-statistics"),
+                        'Unique visitors'     => __( "Unique visitors" , "burst-statistics"),
+                        'No data found'     => __( "No data found" , "burst-statistics"),
+                        'No matching records found'     => __( "No matching records found" , "burst-statistics"),
                     ),
                 )
             );
@@ -611,6 +617,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 	        //only on plugins page
 	        $screen = get_current_screen();
 	        if (!$screen || $screen->base !=='plugins' ) return;
+            $slug = sanitize_title(burst_plugin_name);
 
 	        ?>
 		    <?php add_thickbox();?>
@@ -699,14 +706,15 @@ if ( ! class_exists( "burst_admin" ) ) {
 	        <script>
 	            jQuery(document).ready(function ($) {
 	                $('#burst_close_tb_window').click(tb_remove);
-	                $(document).on('click', '#deactivate-burst-statistics', function(e){
+
+	                $(document).on('click', '#deactivate-<?php echo $slug?>', function(e){
 	                    e.preventDefault();
 	                    tb_show( '', '#TB_inline?height=420&inlineId=deactivate_and_delete_data', 'null');
 	                    $("#TB_window").addClass('burst-deactivation-popup');
 
 	                });
-	                if ($('#deactivate-burst-statistics').length){
-	                    $('.burst-button-deactivate').attr('href',  $('#deactivate-burst-statistics').attr('href') );
+	                if ($('#deactivate-<?php echo $slug?>').length){
+	                    $('.burst-button-deactivate').attr('href',  $('#deactivate-<?php echo $slug?>').attr('href') );
 	                }
 
 	            });

@@ -28,13 +28,13 @@ jQuery(document).ready(function ($) {
             beginAtZero: true,
             data: {
                 datasets: [{
-                    label: 'Visitors',
+                    label: burstLocalizeString('Unique visitors'),
                     borderColor: visitors_color,
                     backgroundColor: visitors_color,
 
                 },
                 {
-                    label: 'Pageviews',
+                    label: burstLocalizeString('Pageviews'),
                     borderColor: pageviews_color,
                     backgroundColor: pageviews_color,
                 }]
@@ -136,10 +136,10 @@ jQuery(document).ready(function ($) {
         let yesterdayStart = moment().endOf('day').subtract(2, 'days').add(1, 'minutes');
         let yesterdayEnd = moment().endOf('day').subtract(1, 'days');
         let strYesterday = burstLocalizeString('Yesterday');
-        let strLast7 = burstLocalizeString('Previous 7 days');
-        let strLast30 = burstLocalizeString('Previous 30 days');
-        let strLast90 = burstLocalizeString('Previous 90 days');
-        let strPreviousMonth = burstLocalizeString('Previous Month') + ' (' +moment().subtract(1, 'month').format('MMMM') + ')';
+        let strLast7 = burstLocalizeString('Last 7 days');
+        let strLast30 = burstLocalizeString('Last 30 days');
+        let strLast90 = burstLocalizeString('Last 90 days');
+        let strPreviousMonth = burstLocalizeString('Last Month') + ' (' +moment().subtract(1, 'month').format('MMMM') + ')';
         let ranges = {}
         ranges[strYesterday] = [yesterdayStart, yesterdayEnd];
         ranges[strLast7] = [moment(yesterdayEnd).subtract(6, 'days').startOf('day'), yesterdayEnd];
@@ -172,22 +172,22 @@ jQuery(document).ready(function ($) {
             {
                 ranges: ranges,
                 "locale": {
-                    "format": burstLocalizeString("date_format", "burst"),
+                    "format": burstLocalizeString("date_format"),
                     "separator": " - ",
-                    "applyLabel": burstLocalizeString("Apply", "burst"),
-                    "cancelLabel": burstLocalizeString("Cancel", "burst"),
-                    "fromLabel": burstLocalizeString("From", "burst"),
-                    "toLabel": burstLocalizeString("To", "burst"),
-                    "customRangeLabel": burstLocalizeString("Custom", "burst"),
-                    "weekLabel": burstLocalizeString("W", "burst"),
+                    "applyLabel": burstLocalizeString("Apply"),
+                    "cancelLabel": burstLocalizeString("Cancel"),
+                    "fromLabel": burstLocalizeString("From"),
+                    "toLabel": burstLocalizeString("To"),
+                    "customRangeLabel": burstLocalizeString("Custom"),
+                    "weekLabel": burstLocalizeString("W"),
                     "daysOfWeek": [
-                        burstLocalizeString("Su", "burst"),
-                        burstLocalizeString("Mo", "burst"),
-                        burstLocalizeString("Tu", "burst"),
-                        burstLocalizeString("We", "burst"),
-                        burstLocalizeString("Th", "burst"),
-                        burstLocalizeString("Fr", "burst"),
-                        burstLocalizeString("Sa", "burst"),
+                        burstLocalizeString("Su"),
+                        burstLocalizeString("Mo"),
+                        burstLocalizeString("Tu"),
+                        burstLocalizeString("We"),
+                        burstLocalizeString("Th"),
+                        burstLocalizeString("Fr"),
+                        burstLocalizeString("Sa"),
                     ],
                     "monthNames": [
                         burstLocalizeString("January"),
@@ -262,6 +262,8 @@ jQuery(document).ready(function ($) {
     }
 
     function burstUpdateDate(start, end) {
+        console.log($( '.burst-date-container.burst-date-range' ).data());
+        burstLocalizeString("date_format")
         $('.burst-date-container span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
     }
 
@@ -326,7 +328,8 @@ jQuery(document).ready(function ($) {
                 },
                 "searchPlaceholder": burstLocalizeString('Search'),
                 "search": "",
-                "emptyTable": burstLocalizeString('No data available'),
+                "zeroRecords": burstLocalizeString('No matching records found'),
+                "emptyTable": burstLocalizeString('No data found'),
             },
             "order": [[ 1, "desc" ]],
         });

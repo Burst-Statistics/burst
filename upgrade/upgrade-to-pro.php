@@ -526,7 +526,7 @@ class rsp_upgrade_to_pro {
 			if ( false === $license_data->success ) {
 				switch( $license_data->error ) {
 					case 'expired' :
-						$message = cmplz_sprintf(
+						$message = burst_sprintf(
 								__( 'Your license key expired on %s.', "burst-statistics" ),
 								date_i18n( get_option( 'date_format' ), strtotime( $license_data->expires, current_time( 'timestamp' ) ) )
 						);
