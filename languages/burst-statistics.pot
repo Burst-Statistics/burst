@@ -2,9 +2,9 @@
 msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"Project-Id-Version: Burst Statistics\n"
-"POT-Creation-Date: 2022-02-22 15:04+0100\n"
-"PO-Revision-Date: 2022-02-22 15:04+0100\n"
+"Project-Id-Version: Burst Statistics Premium\n"
+"POT-Creation-Date: 2022-03-01 15:41+0100\n"
+"PO-Revision-Date: 2022-03-01 15:41+0100\n"
 "Last-Translator: Rogier Lankhorst <rogierlankhorst@gmail.com>\n"
 "Language-Team: Rogier Lankhorst <rogierlankhorst@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
-"X-Poedit-WPHeader: burst.php\n"
+"X-Poedit-WPHeader: burst-premium.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
@@ -21,15 +21,15 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: burst.php:41
+#: burst-premium.php:41
 msgid "Burst cannot be activated. The plugin requires PHP 5.6 or higher"
 msgstr ""
 
-#: burst.php:48
+#: burst-premium.php:48
 msgid "Burst cannot be activated. The plugin requires WordPress 5.0 or higher"
 msgstr ""
 
-#: class-admin.php:129 class-admin.php:301
+#: class-admin.php:129 class-admin.php:310
 msgid "Today"
 msgstr ""
 
@@ -46,226 +46,243 @@ msgid "Last 30 days"
 msgstr ""
 
 #: class-admin.php:133
-msgid "This Month"
+msgid "Last 90 days"
 msgstr ""
 
 #: class-admin.php:134
+msgid "This Month"
+msgstr ""
+
+#: class-admin.php:135
 msgid "Last Month"
 msgstr ""
 
-#: class-admin.php:136
+#: class-admin.php:137
 msgid "Apply"
 msgstr ""
 
-#: class-admin.php:137 class-admin.php:731 upgrade/upgrade-to-pro.php:363
+#: class-admin.php:138 class-admin.php:742 upgrade/upgrade-to-pro.php:363
 msgid "Cancel"
 msgstr ""
 
-#: class-admin.php:138
+#: class-admin.php:139
 msgid "From"
 msgstr ""
 
-#: class-admin.php:139
+#: class-admin.php:140
 msgid "To"
 msgstr ""
 
-#: class-admin.php:140
+#: class-admin.php:141
 msgid "Custom"
 msgstr ""
 
-#: class-admin.php:141
+#: class-admin.php:142
+msgctxt "Abbreviation for week"
 msgid "W"
 msgstr ""
 
-#: class-admin.php:142
+#: class-admin.php:143
+msgctxt "Abbreviation for monday"
 msgid "Mo"
 msgstr ""
 
-#: class-admin.php:143
+#: class-admin.php:144
+msgctxt "Abbreviation for Tuesday"
 msgid "Tu"
 msgstr ""
 
-#: class-admin.php:144
+#: class-admin.php:145
+msgctxt "Abbreviation for Wednesday"
 msgid "We"
 msgstr ""
 
-#: class-admin.php:145
+#: class-admin.php:146
+msgctxt "Abbreviation for Thursday"
 msgid "Th"
 msgstr ""
 
-#: class-admin.php:146
+#: class-admin.php:147
+msgctxt "Abbreviation for Friday"
 msgid "Fr"
 msgstr ""
 
-#: class-admin.php:147
+#: class-admin.php:148
+msgctxt "Abbreviation for Saturday"
 msgid "Sa"
 msgstr ""
 
-#: class-admin.php:148
+#: class-admin.php:149
+msgctxt "Abbreviation for Sunday"
 msgid "Su"
 msgstr ""
 
-#: class-admin.php:149
+#: class-admin.php:150
 msgid "January"
 msgstr ""
 
-#: class-admin.php:150
+#: class-admin.php:151
 msgid "February"
 msgstr ""
 
-#: class-admin.php:151
+#: class-admin.php:152
 msgid "March"
 msgstr ""
 
-#: class-admin.php:152
+#: class-admin.php:153
 msgid "April"
 msgstr ""
 
-#: class-admin.php:153
+#: class-admin.php:154
 msgid "May"
 msgstr ""
 
-#: class-admin.php:154
+#: class-admin.php:155
 msgid "June"
 msgstr ""
 
-#: class-admin.php:155
+#: class-admin.php:156
 msgid "July"
 msgstr ""
 
-#: class-admin.php:156
+#: class-admin.php:157
 msgid "August"
 msgstr ""
 
-#: class-admin.php:157
+#: class-admin.php:158
 msgid "September"
 msgstr ""
 
-#: class-admin.php:158
+#: class-admin.php:159
 msgid "October"
 msgstr ""
 
-#: class-admin.php:159
+#: class-admin.php:160
 msgid "November"
 msgstr ""
 
-#: class-admin.php:160
+#: class-admin.php:161
 msgid "December"
 msgstr ""
 
-#: class-admin.php:181 class-admin.php:308
+#: class-admin.php:162 pro/class-admin.php:223
+msgid "Search"
+msgstr ""
+
+#: class-admin.php:163 class-admin.php:585 statistics/class-statistics.php:90
+#: statistics/class-statistics.php:848
+msgid "Pageviews"
+msgstr ""
+
+#: class-admin.php:164 statistics/class-statistics.php:89
+#: statistics/class-statistics.php:864
+msgid "Unique visitors"
+msgstr ""
+
+#: class-admin.php:165 class-admin.php:502
+msgid "No data found"
+msgstr ""
+
+#: class-admin.php:166
+msgid "No matching records found"
+msgstr ""
+
+#: class-admin.php:187 class-admin.php:317
 msgid "Settings"
 msgstr ""
 
-#: class-admin.php:188 shepherd/tour.php:89 templates/admin_wrap.php:31
+#: class-admin.php:194 shepherd/tour.php:89 templates/admin_wrap.php:31
 msgid "Support"
 msgstr ""
 
-#: class-admin.php:226 class-admin.php:453
+#: class-admin.php:232 class-admin.php:462
 msgid "Statistics"
 msgstr ""
 
-#: class-admin.php:226
-#, php-format
-msgid " %s"
-msgstr ""
-
-#. Plugin Name of the plugin/theme
-#: class-admin.php:232
-msgid "Burst Statistics"
-msgstr ""
-
-#: class-admin.php:243
+#: class-admin.php:252 pro/class-statistics.php:29
 msgid "Conversion percentages"
 msgstr ""
 
-#: class-admin.php:244
+#: class-admin.php:253 pro/class-statistics.php:30
+#: pro/templates/experiments/objective.php:47
+#: pro/templates/experiments/objective.php:62
 msgid "Conversions"
 msgstr ""
 
-#: class-admin.php:245
+#: class-admin.php:254 pro/class-statistics.php:31
 msgid "Visits"
 msgstr ""
 
-#: class-admin.php:294
+#: class-admin.php:303
 msgid "Your notices"
 msgstr ""
 
-#: class-admin.php:314
+#: class-admin.php:323
 msgid "Tips & Tricks"
 msgstr ""
 
-#: class-admin.php:320
+#: class-admin.php:329
 msgid "Other Plugins"
 msgstr ""
 
-#: class-admin.php:330
+#: class-admin.php:339
 msgid "Insights"
 msgstr ""
 
-#: class-admin.php:337
+#: class-admin.php:346
 msgid "Compare"
 msgstr ""
 
-#: class-admin.php:348
+#: class-admin.php:357
 msgid "Devices"
 msgstr ""
 
-#: class-admin.php:356
+#: class-admin.php:365
 msgid "Most visited"
 msgstr ""
 
-#: class-admin.php:364
+#: class-admin.php:373
 msgid "Top referrers"
 msgstr ""
 
-#: class-admin.php:448
+#: class-admin.php:457 pro/class-admin.php:51
 msgid "Dashboard"
 msgstr ""
 
-#: class-admin.php:476 upgrade/upgrade-to-pro.php:182
+#: class-admin.php:485 upgrade/upgrade-to-pro.php:182
 msgid "Installed"
 msgstr ""
 
-#: class-admin.php:479
+#: class-admin.php:488
 msgid "Upgrade to pro"
 msgstr ""
 
-#: class-admin.php:483 upgrade/upgrade-to-pro.php:139
+#: class-admin.php:492 upgrade/upgrade-to-pro.php:139
 #: upgrade/upgrade-to-pro.php:152 upgrade/upgrade-to-pro.php:169
 msgid "Install"
 msgstr ""
 
-#: class-admin.php:493
-msgid "No data found"
-msgstr ""
-
-#: class-admin.php:575
+#: class-admin.php:584
 msgid "Page"
 msgstr ""
 
-#: class-admin.php:576 statistics/class-statistics.php:90
-#: statistics/class-statistics.php:847
-msgid "Pageviews"
-msgstr ""
-
-#: class-admin.php:715
+#: class-admin.php:726
 msgid "To deactivate the plugin correctly, please select if you want to:"
 msgstr ""
 
-#: class-admin.php:718 class-admin.php:732
+#: class-admin.php:729 class-admin.php:743
 msgid "Deactivate"
 msgstr ""
 
-#: class-admin.php:720
+#: class-admin.php:731
 msgid "Deactivate, and remove all statistics, experiments and settings."
 msgstr ""
 
-#: class-admin.php:721
+#: class-admin.php:732
 msgid "The data will be gone forever."
 msgstr ""
 
-#: class-admin.php:733
+#: class-admin.php:744
 msgid "Deactivate and delete all data"
 msgstr ""
 
@@ -273,24 +290,24 @@ msgstr ""
 msgid "This field is required. Please complete the question before continuing"
 msgstr ""
 
-#: class-field.php:573
+#: class-field.php:572
 msgid "No options found"
 msgstr ""
 
-#: class-field.php:881
+#: class-field.php:880
 msgid "Copy"
 msgstr ""
 
-#: class-field.php:883
+#: class-field.php:882
 msgid "Copied!"
 msgstr ""
 
-#: class-field.php:1057 class-field.php:1108 class-field.php:1155
-#: class-field.php:1202
+#: class-field.php:1056 class-field.php:1106 class-field.php:1152
+#: class-field.php:1198
 msgid "Choose an option"
 msgstr ""
 
-#: class-field.php:1345
+#: class-field.php:1340 pro/class-wizard.php:532
 msgid "Save"
 msgstr ""
 
@@ -300,7 +317,7 @@ msgstr ""
 
 #: class-review.php:98
 #, php-format
-msgid "If you have any questions or feedback, leave us a %s message%s."
+msgid "If you have any questions or feedback, leave us a %smessage%s."
 msgstr ""
 
 #: class-review.php:101
@@ -321,39 +338,26 @@ msgstr ""
 msgid "Don't show again"
 msgstr ""
 
-#: config/class-config.php:26
+#: config/class-config.php:26 pro/config/class-config.php:28
+#: pro/templates/experiments/objective.php:117
 msgid "Yes"
 msgstr ""
 
-#: config/class-config.php:27
+#: config/class-config.php:27 pro/config/class-config.php:29
+#: pro/templates/experiments/objective.php:119
 msgid "No"
 msgstr ""
 
-#: config/general-settings.php:11
-msgid "Delete all data on deactivate"
-msgstr ""
-
-#: config/general-settings.php:13
-msgid ""
-"Enabling this option will delete all your settings, statistics and "
-"experiments when you deactivate this plugin"
-msgstr ""
-
-#: config/notices.php:58
-msgid ""
-"An experiment has run one month, but has not reached the minimal sample size "
-"yet."
-msgstr ""
-
-#: config/notices.php:200 templates/dashboard/progress.php:42
+#: config/notices.php:190 pro/experiments/class-experiment-table.php:114
+#: pro/functions.php:341 templates/dashboard/progress.php:42
 msgid "Completed"
 msgstr ""
 
-#: config/notices.php:203 templates/dashboard/progress.php:45
+#: config/notices.php:193 templates/dashboard/progress.php:45
 msgid "Open"
 msgstr ""
 
-#: config/notices.php:206 templates/dashboard/progress.php:48
+#: config/notices.php:196 templates/dashboard/progress.php:48
 msgid "Urgent"
 msgstr ""
 
@@ -372,6 +376,453 @@ msgstr ""
 #: functions.php:48
 #, php-format
 msgid "For more information on this subject, please read this %sarticle%s"
+msgstr ""
+
+#: pro/class-admin.php:34
+#, php-format
+msgid "%s active experiments"
+msgstr ""
+
+#: pro/class-admin.php:60
+msgid "Active experiments"
+msgstr ""
+
+#: pro/class-admin.php:79 pro/class-admin.php:101 pro/class-admin.php:102
+#: pro/class-admin.php:215 pro/experiments/class-experiment.php:78
+msgid "New experiment"
+msgstr ""
+
+#: pro/class-admin.php:93 pro/class-admin.php:94 pro/class-admin.php:212
+msgid "Experiments"
+msgstr ""
+
+#: pro/class-admin.php:132
+msgid "Experiment completed on"
+msgstr ""
+
+#: pro/class-admin.php:258
+msgid "Create experiment"
+msgstr ""
+
+#: pro/class-admin.php:258
+msgid "Edit experiment"
+msgstr ""
+
+#: pro/class-statistics.php:28
+msgid "Count"
+msgstr ""
+
+#: pro/class-statistics.php:122 statistics/class-statistics.php:163
+msgid "No data for this selection"
+msgstr ""
+
+#: pro/class-statistics.php:138 pro/experiments/experimenting.php:383
+#: pro/experiments/experimenting.php:395 pro/experiments/experimenting.php:409
+#: pro/experiments/experimenting.php:417
+msgid "Experiment"
+msgstr ""
+
+#: pro/class-wizard.php:39
+msgid ""
+"Great, the main wizard is completed. This means the general data is already "
+"in the system, and you can continue with the next question. This will start "
+"a new, empty document."
+msgstr ""
+
+#: pro/class-wizard.php:44
+#, php-format
+msgid ""
+"The wizard isn't completed yet. If you have answered all required questions, "
+"you just need to click 'finish' to complete it. In the wizard some general "
+"data is entered which is needed for this document. %sPlease complete the "
+"wizard first%s."
+msgstr ""
+
+#: pro/class-wizard.php:90
+msgid ""
+"Not all required fields are completed yet. Please check the steps to "
+"complete all required questions before you can start the experiment."
+msgstr ""
+
+#: pro/class-wizard.php:100
+msgid "Start your experiment"
+msgstr ""
+
+#: pro/class-wizard.php:115 pro/class-wizard.php:136 pro/class-wizard.php:156
+#: pro/experiments/class-experiment-table.php:296
+#: pro/templates/experiments/experiment-setup.php:20
+msgid "Goal"
+msgstr ""
+
+#: pro/class-wizard.php:116 pro/class-wizard.php:137 pro/class-wizard.php:157
+#: pro/templates/experiments/objective.php:106
+msgid "Significance"
+msgstr ""
+
+#: pro/class-wizard.php:121
+msgid "Your experiment is active"
+msgstr ""
+
+#: pro/class-wizard.php:143
+msgid "Your experiment is completed"
+msgstr ""
+
+#: pro/class-wizard.php:158
+msgid "Started on"
+msgstr ""
+
+#: pro/class-wizard.php:159
+msgid "Ended on"
+msgstr ""
+
+#: pro/class-wizard.php:350
+#, php-format
+msgid "The wizard is currently being edited by %s"
+msgstr ""
+
+#: pro/class-wizard.php:351
+#, php-format
+msgid "If this user stops editing, the lock will expire after %s minutes."
+msgstr ""
+
+#: pro/class-wizard.php:435
+msgid "The Wizard"
+msgstr ""
+
+#: pro/class-wizard.php:522 shepherd/tour.php:104
+msgid "Previous"
+msgstr ""
+
+#: pro/class-wizard.php:526 pro/class-wizard.php:535
+msgid "Save and continue"
+msgstr ""
+
+#: pro/class-wizard.php:528 pro/class-wizard.php:541
+msgid "Start experiment"
+msgstr ""
+
+#: pro/class-wizard.php:543 pro/templates/experiments/statistics-footer.php:11
+msgid "Stop experiment"
+msgstr ""
+
+#: pro/class-wizard.php:544 pro/class-wizard.php:546
+#: pro/experiments/class-experiment-table.php:276
+msgid "View report"
+msgstr ""
+
+#: pro/config/class-config.php:33
+#, php-format
+msgid ""
+"If you want to run a/b testing to track which banner gets the highest "
+"acceptance ratio, %sget premium%s."
+msgstr ""
+
+#: pro/config/experiment-settings.php:10
+msgid "Experiment name"
+msgstr ""
+
+#: pro/config/experiment-settings.php:11
+msgid "For example: Red vs green buttons"
+msgstr ""
+
+#: pro/config/experiment-settings.php:12
+msgid ""
+"This name is for internal use only. Try to give the experiment a clear name, "
+"so you can find this test again."
+msgstr ""
+
+#: pro/config/experiment-settings.php:20
+msgid "Which page do you want to improve?"
+msgstr ""
+
+#: pro/config/experiment-settings.php:27
+msgid ""
+"The Control is the page you want to improve (or compare with another page)."
+msgstr ""
+
+#: pro/config/experiment-settings.php:35
+msgid "Which page do you want to use as the variant?"
+msgstr ""
+
+#: pro/config/experiment-settings.php:42
+msgid "The Variant is the page you think will do better than the control."
+msgstr ""
+
+#: pro/config/experiment-settings.php:52
+msgid "Page visit"
+msgstr ""
+
+#: pro/config/experiment-settings.php:53
+msgid "Click on element"
+msgstr ""
+
+#: pro/config/experiment-settings.php:54
+msgid "Woocommerce sale"
+msgstr ""
+
+#: pro/config/experiment-settings.php:56
+msgid "Select which metric you want to improve"
+msgstr ""
+
+#: pro/config/experiment-settings.php:58
+msgid ""
+"Select what metric you want to improve. For example a click on a button or a "
+"visit on a checkout page."
+msgstr ""
+
+#: pro/config/experiment-settings.php:66
+msgid "Add as a class to the button(s) you want to track"
+msgstr ""
+
+#: pro/config/experiment-settings.php:69
+msgid ".class or #id"
+msgstr ""
+
+#: pro/config/experiment-settings.php:80
+msgid "Which page do you want as a goal?"
+msgstr ""
+
+#: pro/config/experiment-settings.php:97
+msgid "Any Woocommerce sale"
+msgstr ""
+
+#: pro/config/experiment-settings.php:98
+msgid "Specific Woocommerce product"
+msgstr ""
+
+#: pro/config/experiment-settings.php:100
+msgid "Which Woocommerce sales do you want to track? "
+msgstr ""
+
+#: pro/config/experiment-settings.php:111
+msgid "Select the product"
+msgstr ""
+
+#: pro/config/experiment-settings.php:128
+msgid "What is most important for your experiment?"
+msgstr ""
+
+#: pro/config/experiment-settings.php:130
+msgid "Fast results"
+msgstr ""
+
+#: pro/config/experiment-settings.php:131
+msgid "Accurate data"
+msgstr ""
+
+#: pro/config/experiment-settings.php:132
+msgid "A fine balance of accuracy and speed"
+msgstr ""
+
+#: pro/config/experiment-settings.php:136
+msgid ""
+"Gathering accurate data is time consuming. When you do not have a lot of "
+"visitors, it is recommend to choose fast results. If you do have a lot of "
+"visitors choose whichever you want."
+msgstr ""
+
+#: pro/config/experiment-settings.php:145
+msgid "When should the experiment end?"
+msgstr ""
+
+#: pro/config/experiment-settings.php:146
+msgid ""
+"Burst will automatically determine when an experiment is finished. Leave "
+"blank if you do not need an explicit end date."
+msgstr ""
+
+#: pro/config/experiment-steps.php:8
+msgid "Create"
+msgstr ""
+
+#: pro/config/experiment-steps.php:12
+msgid "Metrics"
+msgstr ""
+
+#: pro/config/experiment-steps.php:16
+msgid "Define goals"
+msgstr ""
+
+#: pro/config/experiment-steps.php:19
+msgid "Duration and significance"
+msgstr ""
+
+#: pro/config/experiment-steps.php:20
+msgid ""
+"Burst will help you find the best settings for your experiment. When we "
+"gather enough data we will recommend the best settings for the experiments "
+"you create."
+msgstr ""
+
+#: pro/config/experiment-steps.php:26
+msgid "Start"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:65
+msgid "experiment"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:66
+msgid "experiments"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:113
+msgid "All"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:115 pro/functions.php:338
+msgid "Active"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:116 pro/functions.php:350
+msgid "Draft"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:117 pro/functions.php:333
+msgid "Archived"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:133
+#: pro/experiments/class-experiment-table.php:293
+msgid "Name"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:167
+#: pro/experiments/class-experiment-table.php:226
+msgid "Delete"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:209
+#: pro/experiments/experimenting.php:192
+msgid "Unnamed experiment"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:221
+#: pro/templates/wizard/conclusion.php:12
+#: pro/templates/wizard/conclusion.php:20
+msgid "Edit"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:223
+msgid "Archive"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:240
+msgid "No KPI selected"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:249
+msgid "No control ID"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:254
+msgid "Edit control post"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:266
+msgid "Edit variant post"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:294
+msgid "Control"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:295
+msgid "Variant"
+msgstr ""
+
+#: pro/experiments/class-experiment-table.php:297
+msgid "Status"
+msgstr ""
+
+#: pro/experiments/experimenting.php:127
+msgid "Variant:"
+msgstr ""
+
+#: pro/experiments/experimenting.php:402
+#, php-format
+msgid "Experiment <span class=\"count\">(%s)</span>"
+msgid_plural "Experiments <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: pro/filters-actions.php:17
+msgid "Your experiment"
+msgstr ""
+
+#: pro/filters-actions.php:25
+msgid "Objective"
+msgstr ""
+
+#: pro/filters-actions.php:34
+msgid "Setup"
+msgstr ""
+
+#: pro/functions.php:26
+msgid ""
+"You have installed Complianz Privacy Suite. We have deactivated the free "
+"plugin, it can be safely removed."
+msgstr ""
+
+#: pro/functions.php:345
+msgid "Loading..."
+msgstr ""
+
+#: pro/templates/experiments/experiment-setup.php:12
+msgid "Test period"
+msgstr ""
+
+#: pro/templates/experiments/experiment-setup.php:16
+msgid "Confidence (Significance)"
+msgstr ""
+
+#: pro/templates/experiments/objective.php:51
+#: pro/templates/experiments/objective.php:66
+msgid "Conversion rate"
+msgstr ""
+
+#: pro/templates/experiments/objective.php:70
+msgid "Uplift"
+msgstr ""
+
+#: pro/templates/experiments/objective.php:107
+msgid "(Significant)"
+msgstr ""
+
+#: pro/templates/experiments/objective.php:107
+msgid "(Not significant)"
+msgstr ""
+
+#: pro/templates/experiments/objective.php:110
+msgid "Margin of error"
+msgstr ""
+
+#: pro/templates/experiments/objective.php:114
+msgid "Sample size reached"
+msgstr ""
+
+#: pro/templates/experiments/statistics-footer.php:10
+msgid "Pause"
+msgstr ""
+
+#: pro/templates/experiments/statistics.php:24
+msgid "Show experiment data for:"
+msgstr ""
+
+#: pro/templates/experiments/statistics.php:26
+msgid "Select an experiment"
+msgstr ""
+
+#: pro/templates/wizard/conclusion.php:4
+msgid "Versus"
+msgstr ""
+
+#: pro/templates/wizard/conclusion.php:23
+msgid "Experiment settings"
+msgstr ""
+
+#: pro/templates/wizard/content.php:20
+msgid "Notifications"
 msgstr ""
 
 #: shepherd/tour.php:47
@@ -454,10 +905,6 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: shepherd/tour.php:104
-msgid "Previous"
-msgstr ""
-
 #: shepherd/tour.php:105
 msgid "Skip tour"
 msgstr ""
@@ -470,64 +917,48 @@ msgstr ""
 msgid "End tour"
 msgstr ""
 
-#: statistics/class-statistics.php:89 statistics/class-statistics.php:863
-msgid "Unique visitors"
-msgstr ""
-
-#: statistics/class-statistics.php:162
-msgid "No data for this selection"
-msgstr ""
-
-#: statistics/class-statistics.php:401 statistics/class-statistics.php:521
+#: statistics/class-statistics.php:402 statistics/class-statistics.php:522
 msgid "Direct"
 msgstr ""
 
-#: statistics/class-statistics.php:413 statistics/class-statistics.php:543
+#: statistics/class-statistics.php:414 statistics/class-statistics.php:544
 msgid "Homepage"
 msgstr ""
 
-#: statistics/class-statistics.php:539
+#: statistics/class-statistics.php:540
 msgid "No referrers today"
 msgstr ""
 
-#: statistics/class-statistics.php:561
+#: statistics/class-statistics.php:562
 msgid "No pages visited today"
 msgstr ""
 
-#: statistics/class-statistics.php:848
+#: statistics/class-statistics.php:849
 msgid "pageviews per session"
 msgstr ""
 
-#: statistics/class-statistics.php:855
+#: statistics/class-statistics.php:856
 msgid "Sessions"
 msgstr ""
 
-#: statistics/class-statistics.php:856
+#: statistics/class-statistics.php:857
 msgid "per session"
 msgstr ""
 
-#: statistics/class-statistics.php:864
+#: statistics/class-statistics.php:865
 msgid "are new visitors"
 msgstr ""
 
-#: statistics/class-statistics.php:876
+#: statistics/class-statistics.php:877
 msgid "Bounce rate"
 msgstr ""
 
-#: statistics/class-statistics.php:877
+#: statistics/class-statistics.php:878
 msgid "visitors bounced"
 msgstr ""
 
 #: templates/admin_wrap.php:45
 msgid "Changes saved successfully"
-msgstr ""
-
-#: templates/admin_wrap.php:55
-msgid "Experiment started successfully"
-msgstr ""
-
-#: templates/admin_wrap.php:64
-msgid "Experiment stopped successfully"
 msgstr ""
 
 #: templates/dashboard/other-plugins.php:12
@@ -556,7 +987,7 @@ msgstr ""
 #: templates/dashboard/progress.php:30
 #, php-format
 msgid ""
-"If you have any suggestions to improve our plugin, feel free to  %s open a "
+"If you have any suggestions to improve our plugin, feel free to %sopen a "
 "support thread%s."
 msgstr ""
 
@@ -782,14 +1213,16 @@ msgstr ""
 msgid "Your license key has reached its activation limit."
 msgstr ""
 
+#. Plugin Name of the plugin/theme
+msgid "Burst Statistics Premium"
+msgstr ""
+
 #. Plugin URI of the plugin/theme
-msgid "https://www.wordpress.org/plugins/burst"
+msgid "https://www.wordpress.org/plugins/burst-statistics"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid ""
-"Privacy Friendly Statistics. One click setup and start collecting valuable "
-"data."
+msgid "Privacy-friendly Statistics for WordPress"
 msgstr ""
 
 #. Author of the plugin/theme
