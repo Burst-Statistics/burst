@@ -1,7 +1,7 @@
 jQuery(document).ready(function ($) {
     'use strict';
 
-    let date_range = 'Previous 7 days'; //default selected date range
+    let date_range = 'Last 7 days'; //default selected date range
 
 
     /**

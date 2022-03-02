@@ -198,7 +198,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 'date_start' => 0,
                 'date_end' => 0,
                 'experiment_id' => '',
-                'date_range' => 'previous-7-days',
+                'date_range' => 'custom',
             );
             $args = wp_parse_args( $args, $default_args );
 			$metric = $this->sanitize_metric($args['metric']);
