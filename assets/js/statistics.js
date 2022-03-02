@@ -262,7 +262,6 @@ jQuery(document).ready(function ($) {
     }
 
     function burstUpdateDate(start, end) {
-        console.log($( '.burst-date-container.burst-date-range' ).data());
         burstLocalizeString("date_format")
         $('.burst-date-container span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
     }
