@@ -79,7 +79,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 			 ) {
 			 	return;
 			 }
-			 
+
 
 
 			//select2
@@ -167,7 +167,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                     ),
                 )
             );
-	
+
 		}
 
 		/**
@@ -623,85 +623,98 @@ if ( ! class_exists( "burst_admin" ) ) {
 		    <?php add_thickbox();?>
 	        <style>
 
-	            #TB_ajaxContent.burst-deactivation-popup {
-	                text-align: center !important;
-	                width:750px;
-	            }
-	            #TB_window.burst-deactivation-popup {
-	                height: auto;
-	                max-height: 400px;
-	                border-left: 7px solid black;
-	            }
-	            .burst-deactivation-popup #TB_title{
-	                height: 70px;
-	                border-bottom: 1px solid #dedede;
-	            }
-	            .burst-deactivation-popup #TB_ajaxWindowTitle {
-	                font-weight:bold;
-	                font-size:30px;
-	                padding: 20px;
-	            }
+                #TB_ajaxContent.burst-deactivation-popup {
+                    text-align: center !important;
+                }
+                #TB_window.burst-deactivation-popup {
+                    height: min-content !important;
+                    top:initial!important;
+                    margin-top:initial!important;
+                    margin-left:initial!important;
+                    display:flex;
+                    flex-direction: column;
+                    top: 50%!important;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 500px !important;
+                    border-radius: 12px!important;
+                    min-width: min-content;
+                }
+                .burst-deactivation-popup #TB_title{
+                    padding-bottom: 20px;
+                    border-radius:12px;
+                    border-bottom:none!important;
+                    background:#fff !important;
+                }
+                .burst-deactivation-popup #TB_ajaxWindowTitle {
+                    font-weight:bold;
+                    font-size:20px;
+                    padding: 20px;
+                    background:#fff !important;
+                    border-radius: 12px 12px 0 0;
+                    width: calc( 100% - 40px );
+                }
 
-	            .burst-deactivation-popup .tb-close-icon {
-	                color:#dedede;
-	                width: 50px;
-	                height: 50px;
-	                top: 12px;
-	                right: 20px;
-	            }
-	            .burst-deactivation-popup .tb-close-icon:before {
-	                font: normal 50px/50px dashicons;
-	            }
-	            .burst-deactivation-popup #TB_closeWindowButton:focus .tb-close-icon {
-	                outline:0;
-	                box-shadow: 0 0 0 0 #5b9dd9, 0 0 0 0 rgba(30, 140, 190, .8);
-	                color:#dedede;
-	            }
-	            .burst-deactivation-popup #TB_closeWindowButton .tb-close-icon:hover {
-	                color:#666;
-	            }
-	            .burst-deactivation-popup #TB_closeWindowButton:focus {
-	                outline:0;
-	            }
-	            .burst-deactivation-popup #TB_ajaxContent {
-	                width: 100% !important;
-	                padding: 0;
-	            }
+                .burst-deactivation-popup .tb-close-icon {
+                    color:#333;
+                    width: 25px;
+                    height: 25px;
+                    top: 12px;
+                    right: 20px;
+                }
+                .burst-deactivation-popup .tb-close-icon:before {
+                    font: normal 25px/25px dashicons;
+                }
+                .burst-deactivation-popup #TB_closeWindowButton:focus .tb-close-icon {
+                    outline:0;
+                    color:#666;
+                }
+                .burst-deactivation-popup #TB_closeWindowButton .tb-close-icon:hover {
+                    color:#666;
+                }
+                .burst-deactivation-popup #TB_closeWindowButton:focus {
+                    outline:0;
+                }
+                .burst-deactivation-popup #TB_ajaxContent {
+                    width: 90% !important;
+                    height:initial!important;
+                    padding-left: 20px!important;
+                }
 
-	            .burst-deactivation-popup .button-burst-tertiary.button {
-	                background-color: #D7263D !important;
-	                color: white !important;
-	                border-color: #D7263D;
-	            }
+                .burst-deactivation-popup .button-burst-tertiary.button {
+                    background-color: #D7263D !important;
+                    color: white !important;
+                    border-color: #D7263D;
+                }
 
-	            .burst-deactivation-popup .button-burst-tertiary.button:hover {
-	                background-color: #f1f1f1 !important;
-	                color: #d7263d !important;
-	            }
+                .burst-deactivation-popup .button-burst-tertiary.button:hover {
+                    background-color: #f1f1f1 !important;
+                    color: #d7263d !important;
+                }
 
-	            .burst-deactivate-notice-content {
-	                margin: 20px
-	            }
-	            .burst-deactivate-notice-content h3 , .burst-deactivate-notice-content ul{
-	                font-size:1.1em;
-	            }
+                .burst-deactivate-notice-content h3, .burst-deactivate-notice-content ul{
+                    font-size:14px!important;
+                }
 
-	            .burst-deactivate-notice-footer {
-	                padding-top: 20px;
-	                position:absolute;
-	                bottom:15px;
-	                width: 94%;
-	                margin-left: 3%;
-	                border-top: 1px solid #dedede;
-	            }
+                .burst-deactivate-notice-footer {
+                    display: flex;
+                    gap:10px;
+                    padding: 20px 10px;
+                }
 
-	            .burst-deactivation-popup ul {
-	                list-style: circle;
-	                padding-left: 20px;
-	            }
-	            .burst-deactivation-popup a {
-	                margin-right:10px !important;
-	            }
+                .burst-deactivation-popup ul {
+                    list-style: disc;
+                    padding-left: 20px;
+                }
+                .burst-deactivate-notice-footer .button {
+                    padding: 10px;
+                    min-width: fit-content;
+                    white-space: nowrap;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    text-decoration: none;
+                    text-align: center;
+                }
 	        </style>
 	        <script>
 	            jQuery(document).ready(function ($) {
@@ -722,7 +735,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 	        <div id="deactivate_and_delete_data" style="display: none;">
 	                <div class="burst-deactivate-notice-content">
-	                    <h3 style="margin: 20px 0; text-align: left;">
+	                    <h3 style="margin:0 0 20px 0; text-align: left;">
 	                        <?php _e("To deactivate the plugin correctly, please select if you want to:", "burst-statistics" ) ?></h3>
 	                    <ul style="text-align: left; font-size: 1.2em;">
 
@@ -753,7 +766,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 	     */
 
 	    public function listen_for_deactivation()
-	    {	
+	    {
 
 	        //check user role
 	        if (!current_user_can('activate_plugins')) return;
