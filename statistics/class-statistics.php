@@ -198,7 +198,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 'date_start' => 0,
                 'date_end' => 0,
                 'experiment_id' => '',
-                'date_range' => 'previous-7-days',
+                'date_range' => 'custom',
             );
             $args = wp_parse_args( $args, $default_args );
 			$metric = $this->sanitize_metric($args['metric']);
@@ -908,32 +908,24 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
         /**
          * get_real_time_visitors
-         * @param int $date_start
-         * @param int $date_end
          * @return int
          *
          *  WHERE explanation:
-         *  time_on_page(milliseconds) + time(seconds) + 3(seconds) is necessary because when a user goes from one page
+         *  time_on_page(milliseconds) + time(seconds) + 60(seconds) is necessary because when a user goes from one page
          *  to another there is no entry in between. So the counter would go to 0 and than back to 1 everytime a user switches pages
          */
 
-
-        public function get_real_time_visitors($date_start = 0, $date_end = 0){
-            if ($date_start === 0) { $date_start = strtotime('3 minutes ago'); }
-            $time = time();
-
+        public function get_real_time_visitors(){
+            $time_start = strtotime('3 minutes ago');
+			$now = time();
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
-            $sql = $wpdb->prepare(" SELECT COUNT(DISTINCT(uid)) as uid
+            $sql = $wpdb->prepare("select count(*) from (SELECT DISTINCT(uid) as uid
                      FROM $table_name
                      WHERE time>%s 
-                       AND (time_on_page / 1000 + time + 30 + 3 > %s)
-                    GROUP BY uid 
-                    ORDER BY time desc
-                         ", $date_start, $time);
-
-            $query = $wpdb->get_results( $sql, ARRAY_A );
-            return count($query);
+                       AND ( (time + time_on_page / 1000  + 60) > %s)
+                 ) as p", $time_start, $now );
+            return $wpdb->get_var( $sql );
         }
 
         /**

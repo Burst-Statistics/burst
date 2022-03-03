@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Burst Statistics\n"
-"POT-Creation-Date: 2022-03-01 16:41+0100\n"
-"PO-Revision-Date: 2022-03-01 16:41+0100\n"
+"POT-Creation-Date: 2022-03-03 14:32+0100\n"
+"PO-Revision-Date: 2022-03-03 14:32+0100\n"
 "Last-Translator: Rogier Lankhorst <rogierlankhorst@gmail.com>\n"
 "Language-Team: Rogier Lankhorst <rogierlankhorst@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -61,7 +61,7 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: class-admin.php:138 class-admin.php:742 upgrade/upgrade-to-pro.php:363
+#: class-admin.php:138 class-admin.php:754 upgrade/upgrade-to-pro.php:363
 msgid "Cancel"
 msgstr ""
 
@@ -265,23 +265,23 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
-#: class-admin.php:726
+#: class-admin.php:738
 msgid "To deactivate the plugin correctly, please select if you want to:"
 msgstr ""
 
-#: class-admin.php:729 class-admin.php:743
+#: class-admin.php:741 class-admin.php:755
 msgid "Deactivate"
 msgstr ""
 
-#: class-admin.php:731
+#: class-admin.php:743
 msgid "Deactivate, and remove all statistics, experiments and settings."
 msgstr ""
 
-#: class-admin.php:732
+#: class-admin.php:744
 msgid "The data will be gone forever."
 msgstr ""
 
-#: class-admin.php:744
+#: class-admin.php:756
 msgid "Deactivate and delete all data"
 msgstr ""
 

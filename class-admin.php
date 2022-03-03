@@ -628,7 +628,6 @@ if ( ! class_exists( "burst_admin" ) ) {
                 }
                 #TB_window.burst-deactivation-popup {
                     height: min-content !important;
-                    top:initial!important;
                     margin-top:initial!important;
                     margin-left:initial!important;
                     display:flex;

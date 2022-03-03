@@ -787,10 +787,10 @@ if ( !function_exists('burst_get_date_ranges')) {
 	function burst_get_date_ranges(){
 		return apply_filters('burst_date_ranges',array(
 			'yesterday',
-			'previous-7-days',
-			'previous-30-days',
-			'this-month' ,
-			'previous-month',
+			'last-7-days',
+			'last-30-days',
+            'last-90-days',
+			'last-month',
 			'custom'
 		));
 	}
@@ -803,7 +803,7 @@ if ( !function_exists('burst_sanitize_date_range')) {
         if ( in_array($date_range, $date_ranges) ){
             return $date_range;
         }
-        return 'previous-7-days';
+        return 'custom';
     }
 }
 

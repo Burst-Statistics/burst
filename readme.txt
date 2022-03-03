@@ -62,6 +62,7 @@ Not...yet.
 = 1.0.2 =
 * Fix: typo fix in generate_cached_data, props @seath
 * Fix: some strings with wrong text domain
+* Improvement: link in readme, props @8725z4twhugias
 
 = 1.0.1 =
 * Fix: text domain, props @bonaldi
