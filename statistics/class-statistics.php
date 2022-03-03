@@ -920,10 +920,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$now = time();
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
+			$on_page_offset = apply_filters("burst_on_page_offset", 60);
             $sql = $wpdb->prepare("select count(*) from (SELECT DISTINCT(uid) as uid
                      FROM $table_name
                      WHERE time>%s 
-                       AND ( (time + time_on_page / 1000  + 60) > %s)
+                       AND ( (time + time_on_page / 1000  + $on_page_offset) > %s)
                  ) as p", $time_start, $now );
             return $wpdb->get_var( $sql );
         }
