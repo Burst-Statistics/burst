@@ -3,7 +3,6 @@ jQuery(document).ready(function ($) {
 
     let date_range = 'Last 7 days'; //default selected date range
 
-
     /**
      * Generate a ChartJS in the element canvas.
      * @param date_start
@@ -89,6 +88,8 @@ jQuery(document).ready(function ($) {
             window.insightsGraph.destroy();
         }
         window.insightsGraph = new Chart(ctx, insightsConfig);
+        console.log(date_end);
+        console.log(date_end-24*60*60);
 
         let metrics = JSON.parse($('input[name=burst_chartjs_metrics]').val());
         $.ajax({
@@ -164,7 +165,6 @@ jQuery(document).ready(function ($) {
 
         $('input[name=burst_date_start]').val(startUnixUtc);
         $('input[name=burst_date_end]').val(endUnixUtc);
-
 
         burstLoadGridBlocks();
         burstInitChartJS();
