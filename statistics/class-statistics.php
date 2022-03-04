@@ -796,9 +796,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	         * current stats
              * */
 	        $current_stats = $clear_cache || $date_range === 'custom' ? false: get_transient('burst_current_stats_'.$date_range );
-            error_log('burst_current_stats_'.$date_range );
 			if ( !$current_stats ) {
-			    error_log('new query');
 				$sql           = "SELECT  COUNT( ID ) as pageviews,
                             COUNT( DISTINCT( session_id ) ) AS sessions,
                             COUNT( DISTINCT( uid ) ) AS visitors,
@@ -809,9 +807,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$current_stats = $wpdb->get_row( $sql, ARRAY_A );
 				if ($date_range!=='custom') set_transient('burst_current_stats_'.$date_range, $current_stats, DAY_IN_SECONDS);
 			}
-
-			
-			error_log(print_r($current_stats, true));
 
 	        /**
 	         * previous stats
