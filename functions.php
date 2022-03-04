@@ -232,7 +232,7 @@ if ( ! function_exists( 'burst_offset_utc_time_to_gtm_offset' ) ) {
         $utc_time = intval($utc_time);
         $gmt_offset_seconds = intval(get_option('gmt_offset') * HOUR_IN_SECONDS);
 
-        return $utc_time + $gmt_offset_seconds;
+        return $utc_time - $gmt_offset_seconds;
     }
 }
 
