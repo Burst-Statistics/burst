@@ -234,6 +234,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			$nr_of_periods = $this->get_nr_of_periods('DAY', $start, $end );
 			$end_date_days_ago = $this->nr_of_periods_ago('DAY', $end );
+
 			$data = array();
 
 			//count back from end until zero days.
@@ -275,7 +276,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 * @return float
 		 */
 		private function nr_of_periods_ago($period, $time ){
-			$range_in_seconds = time() - $time;
+			$range_in_seconds = burst_offset_utc_time_to_gtm_offset(strtotime('tomorrow') - 1) - $time;
 			$period_in_seconds = constant(strtoupper($period).'_IN_SECONDS' );
 			return ROUND($range_in_seconds/$period_in_seconds);
 		}
@@ -652,12 +653,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				case 'yesterday':
 					$start = $end - DAY_IN_SECONDS;
 					break;
-				case 'previous-30-days':
+				case 'last-30-days':
 					$start = $end - 30*DAY_IN_SECONDS;
 					break;
-				case 'this-month':
-					$start = mktime(0, 0, 0, date("n"), 1);;
-					break;
+                case 'last-90-days':
+                    $start = $end - 90*DAY_IN_SECONDS;
+                    break;
 				case 'previous-month':
 					$current_month = date('n');
 					$previous_month = $current_month-1;
@@ -665,7 +666,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					$start = mktime(0, 0, 0, $previous_month, 1);
 					$end = mktime(23, 59, 59, $previous_month, date('t', $start));
 					break;
-				case 'previous-7-days':
+				case 'last-7-days':
 				default:
 					$start = $end - 7*DAY_IN_SECONDS;
 					break;

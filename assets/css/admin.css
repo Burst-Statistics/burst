@@ -1342,6 +1342,9 @@ update-nag.notice {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.burst .burst-other-plugins-container .burst-other-plugins-element .burst-other-plugin-status {
+  min-width: fit-content;
+}
 .burst-tips-tricks-container {
   display: flex !important;
   flex-direction: row;

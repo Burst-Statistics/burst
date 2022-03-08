@@ -98,7 +98,7 @@ if ( ! class_exists( "burst_review" ) ) {
                             <?php burst_printf( __('If you have any questions or feedback, leave us a %smessage%s.', 'burst-statistics' ), '<a href="https://burst-statistics.com/contact" target="_blank">', '</a>' );?>
                         </p>
                         <p>
-                            <?php _e('If you have a moment, please consider leaving a review on WordPress.org to spread the word. We greatly appreciate it!'); ?>
+                            <?php _e('If you have a moment, please consider leaving a review on WordPress.org to spread the word. We greatly appreciate it!', 'burst-statistics'); ?>
                         </p>
 						<i>- Hessel</i>
 						<div class="burst-buttons-row">
