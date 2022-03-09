@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Burst Statistics
- * Plugin URI: https://www.wordpress.org/plugins/burst
+ * Plugin URI: https://www.wordpress.org/plugins/burst-statistics
  * Description: Privacy Friendly Statistics. One click setup and start collecting valuable data.
  * Version: 1.0.2
  * Text Domain: burst-statistics
