@@ -1,5 +1,6 @@
 === Burst Statistics ===
 Contributors: hesseldejong, RogierLankhorst, aahulsebos, leonwimmenhoeve
+Donate link: paypal.me/Burststatistics
 Tags: statistics, analytics, privacy, 
 Requires at least: 5.4
 License: GPL2
