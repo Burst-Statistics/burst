@@ -330,7 +330,7 @@
 }
 
 .daterangepicker .ranges li.active {
-    background-color: #29b6f6;
+    background-color: var(--rsp-brand-primary);
     color: #fff;
 }
 
