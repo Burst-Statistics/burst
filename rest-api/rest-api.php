@@ -85,11 +85,6 @@ function burst_track_hit(WP_REST_Request $request){
             $wpdb->prefix . 'burst_statistics',
             $update_array
         );
-        // Add count to post meta
-        $count = get_post_meta( $update_array['page_id'], 'burst_total_pageviews_count', true );
-        if ( ! $count ) $count = 0;
-        $count++;
-        update_post_meta( $update_array['page_id'], 'burst_total_pageviews_count', $count );
         $insert_id = $wpdb->insert_id;
     }
 

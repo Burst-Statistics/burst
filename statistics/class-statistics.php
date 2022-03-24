@@ -19,12 +19,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
             if( !$this->exclude_from_tracking() ) {
                 global $post;
                 //set some defaults
-                $localize_args = array(
-                    'url'                       => get_rest_url() . 'burst/v1/',
-                    'goal'                      => 'visit',
-                    'goal_identifier'           => '',
-                    'page_id'                   => isset($post->ID) ? $post->ID : 0,
-                    'cookie_retention_days'     => 30,
+                $localize_args = apply_filters( 'burst_tracking_localized_args',
+                    array(
+                        'url'                       => get_rest_url() . 'burst/v1/',
+                        'page_id'                   => isset($post->ID) ? $post->ID : 0,
+                        'cookie_retention_days'     => 30,
+                    )
                 );
                 wp_enqueue_script( 'burst-timeme',
                     burst_url . "helpers/timeme/timeme$minified.js", array(),

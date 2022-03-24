@@ -36,22 +36,41 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_action( 'admin_init', array($this, 'init_grid') );
             add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
 
-            // column
-            add_action( 'admin_init', array($this, 'add_burst_admin_columns' ), 1);
-            add_action( 'pre_get_posts', array($this, 'posts_orderby_total_pageviews'), 1);
-
 			// deactivating
 			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
 			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
+			add_action( 'admin_init', array($this, 'add_privacy_info'), 10);
 
             //disabled for now
 		}
+
 
 		static function this() {
 			return self::$_this;
 		}
 
+		/**
+		 * Add some privacy info
+		 */
 
+		public function add_privacy_info()
+		{
+			if (!function_exists('wp_add_privacy_policy_content')) {
+				return;
+			}
+
+			$content = sprintf(
+				__('This website uses Burst Statistics, a Privacy-Friendly Statistics Tool to analyze visitor behavior.
+				For this functionality we (this website) collect anonymized data, stored locally without sharing it with other parties.
+				For more information, please read the <a href="%s" target="_blank">Privacy Statement</a> from Burst.', 'burst-statistics'),
+				'https://burst-statistics.com/legal/privacy-statement/'
+			);
+
+			wp_add_privacy_policy_content(
+				'Burst Statistics',
+				wp_kses_post(wpautop($content, false))
+			);
+		}
 		/**
 		 * Do upgrade on update
 		 */
@@ -83,6 +102,8 @@ if ( ! class_exists( "burst_admin" ) ) {
 			 ) {
 			 	return;
 			 }
+
+
 
 			//select2
 //			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
@@ -247,6 +268,26 @@ if ( ! class_exists( "burst_admin" ) ) {
 				array( $this, 'burst_pages' )
 			);
 		}
+
+        public function get_metric_dropdown(){
+            //@todo add filter so we can add metrics with integrations
+            $metrics = array(
+                    'conversion_percentages' => __('Conversion percentages', 'burst-statistics'),
+                    'conversions' => __('Conversions', 'burst-statistics'),
+                    'visits' => __('Visits', 'burst-statistics'),
+            );
+            ob_start();
+            echo '<div class="burst-metric-container">';
+            echo '<select name="burst_selected_metric">';
+                foreach ($metrics as $metric_val => $metric){
+                    echo  esc_html('<option value="' . esc_html($metric_val) . '">'. esc_html($metric) .'</option>');
+                }
+            echo '</select></div>';
+
+            $html = ob_get_clean();
+
+            return $html;
+        }
 
         public function get_daterange_dropdown()
         {
@@ -584,71 +625,11 @@ if ( ! class_exists( "burst_admin" ) ) {
             }
         }
 
-        /**
-         * Function to easily add a column in a WordPress post table
-         * @param $column_title
-         * @param $post_type
-         * @param $cb
-         * @return void
-         * @since 1.1
-         */
-        public function add_admin_column($column_name, $column_title, $post_type, $sortable, $cb){
-            // Add column
-            add_filter( 'manage_' . $post_type . '_posts_columns', function($columns) use ($column_name, $column_title) {
-                $columns[ $column_name ] = $column_title;
-                return $columns;
-            } );
-
-            // Add column content
-            add_action( 'manage_' . $post_type . '_posts_custom_column' , function( $column, $post_id ) use ($column_name, $column_title, $cb) {
-                if($column_name === $column){
-                    $cb($post_id);
-                }
-            }, 10, 2 );
-
-            // Add sortable column
-            if ($sortable){
-                add_filter( 'manage_edit-' . $post_type . '_sortable_columns', function( $columns ) use ($column_name, $column_title) {
-                    $columns[ $column_name ] = $column_name;
-                    return $columns;
-                });
-            }
-        }
-
-        /**
-         * Function to add pageviews column to post table
-         * @return void
-         * @since 1.1
-         */
-        public function add_burst_admin_columns(){
-            $burst_column_post_types  = apply_filters('burst_column_post_types',
-                array('post', 'page')
-            );
-            foreach ($burst_column_post_types as $post_type) {
-                $this->add_admin_column('pageviews', __('Pageviews', 'burst-statistics'), $post_type, true, function($post_id){
-                    $burst_total_pageviews_count = get_post_meta( $post_id , 'burst_total_pageviews_count' , true );
-                    $count = intval($burst_total_pageviews_count) ? $burst_total_pageviews_count : 0;
-                    echo $count;
-                });
-            }
-        }
-
-        public function posts_orderby_total_pageviews( $query ) {
-            if( ! is_admin() || ! $query->is_main_query() ) {
-                return;
-            }
-
-            if ( 'pageviews' === $query->get( 'orderby') ) {
-                $query->set( 'orderby', 'meta_value_num title ' );
-                $query->set( 'meta_key', 'burst_total_pageviews_count' );
-            }
-        }
-
 	    /**
 	     *
 	     * Add a button and thickbox to deactivate the plugin
 	     *
-	     * @since 1.0
+	     * @since 3.0
 	     *
 	     * @access public
 	     *
