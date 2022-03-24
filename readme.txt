@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
 Tested up to: 5.9
-Stable tag: 1.0.3
+Stable tag: 1.1.0
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -60,9 +60,13 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
-= 1.0.3 =
-* Improvement: Added privacy annex
-* Improvement: visits in pages and posts overview. As these hits are stored differently, they will start at 0 for existing setups as well.
+= 1.1.0 =
+* Fix: better tracking script. Hits from one pageview can not be registered multiple times now
+* Improvement: visits in pages and posts overview. As these hits are stored differently, they will start at 0 for existing setups as well
+* Improvement: added parameter to clear the dashboard cache
+* Improvement: added JS event to so other plugins can integrate with Burst
+* Improvement: added privacy annex
+* Improvement: added widget to the Wordpress Dashboard
 
 = 1.0.2 =
 * Fix: typo fix in generate_cached_data, props @seath
