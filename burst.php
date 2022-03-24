@@ -135,6 +135,9 @@ if ( ! class_exists( 'BURST' ) ) {
 				require_once( burst_path . '/class-review.php' );
 				require_once( burst_path . '/shepherd/tour.php' );
 				require_once( burst_path . '/config/notices.php' );
+				if ( isset($_GET['install_pro'])) {
+					require_once( burst_path . 'upgrade/upgrade-to-pro.php' );
+				}
 			}
             require_once( burst_path . '/helpers/anonymize-ip.php' );
             require_once( burst_path . '/helpers/php-user-agent/UserAgentParser.php' );
