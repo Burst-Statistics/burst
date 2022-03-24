@@ -30,7 +30,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     burst_url . "helpers/timeme/timeme$minified.js", array(),
                     burst_version, false );
                 wp_enqueue_script( 'burst',
-                    burst_url . "assets/js/burst$minified.js", apply_filters( 'burst_script_dependencies', array() ),
+                    burst_url . "assets/js/burst$minified.js", apply_filters( 'burst_script_dependencies', array('burst-timeme') ),
                     burst_version, false );
                 wp_localize_script(
                     'burst',
