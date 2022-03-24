@@ -252,6 +252,7 @@
   display: flex;
 }
 .burst .burst-header-left .burst-header-menu a {
+  font-size: var(--rsp-fs-400);
   padding: 26px 15px;
   text-decoration: none;
   color: var(--rsp-text-color);
