@@ -62,6 +62,7 @@ if ( ! class_exists( 'BURST' ) ) {
         public static $sessions;
         public static $goals;
 		public static $admin;
+        public static $frontend;
         public static $wizard;
 		public static $review;
 		public static $field;
@@ -78,10 +79,12 @@ if ( ! class_exists( 'BURST' ) ) {
             self::$sessions  = new burst_sessions();
             self::$goals  = new burst_goals();
 			self::$config = new burst_config();
-
+            self::$frontend     = new burst_frontend();
+            if ( is_admin() || wp_doing_cron() ) {
+                self::$admin     = new burst_admin();
+            }
 			if ( is_admin() ) {
 				self::$review    = new burst_review();
-				self::$admin     = new burst_admin();
 				self::$field     = new burst_field();
 				self::$tour      = new burst_tour();
 				self::$notices   = new burst_notices();
@@ -126,10 +129,12 @@ if ( ! class_exists( 'BURST' ) ) {
 
 		private function includes() {
 			require_once( burst_path . 'integrations/integrations.php');
-
+            require_once( burst_path . '/class-frontend.php' );
+            if ( is_admin() || wp_doing_cron() ) {
+                require_once( burst_path . '/class-admin.php' );
+            }
 			if ( is_admin() ) {
                 require_once( burst_path . '/assets/icons.php');
-				require_once( burst_path . '/class-admin.php' );
 				require_once( burst_path . '/class-field.php');
 				require_once( burst_path . '/grid/grid.php' );
 				require_once( burst_path . '/class-review.php' );
