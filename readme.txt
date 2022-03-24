@@ -62,6 +62,7 @@ Not...yet.
 == Change log ==
 = 1.0.3 =
 * Improvement: Added privacy annex
+* Improvement: visits in pages and posts overview. As these hits are stored differently, they will start at 0 for existing setups as well.
 
 = 1.0.2 =
 * Fix: typo fix in generate_cached_data, props @seath
