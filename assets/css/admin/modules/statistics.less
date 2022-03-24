@@ -10,9 +10,17 @@
   }
 
   .block__explanation-and-stats{
-    .uplift{
-      margin-right: 3px;
-    }
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: stretch;
+	  gap: var(--rsp-spacing-xs);
+
+	  &__right {
+		  text-align: right;
+	  }
+	  .uplift{
+		margin-right: 3px;
+	  }
 
 	  p{
 		  font-size: var(--rsp-fs-200);

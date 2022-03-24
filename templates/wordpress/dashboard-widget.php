@@ -1,48 +1,49 @@
 <?php
 defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
-$date_start = burst_offset_utc_time_to_gtm_offset(strtotime('7 days ago'));
-$date_end = burst_offset_utc_time_to_gtm_offset(strtotime('tomorrow'));
+$date_range = burst_sanitize_date_range(apply_filters('burst_dashboard_widget_date_range', 'last-7-days'));
+$date_range_unix = BURST::$statistics->get_time_stamp_for_date_range($date_range);
+$date_end = $date_range_unix['end'];
+$date_start = $date_range_unix['start'];
 ?>
 <div class="burst burst-dashboard-widget">
     <div class="burst-dashboard-widget__content">
         <?php
+        $widget_statistics = BURST::$statistics->get_dashboard_widget_statistics($date_start, $date_end, $date_range);
         $args = array(
-            'title' => __('Total unique visitors', 'burst-statistics'),
+            'title' => __('Unique visitors', 'burst-statistics'),
             'tooltip' => '',
-            'number' => '330',
-            'uplift' => '+2%',
-            'uplift_status' => 'positive',
+            'uplift' => $widget_statistics['visitors_uplift'],
+            'uplift_status' => $widget_statistics['visitors_uplift_status'],
+            'number' => burst_format_number($widget_statistics['visitors'], 1),
         );
         echo burst_get_template('blocks/burst-kpi.php', $args );
 
         $args = array(
             'title' => __('Avg. time per session', 'burst-statistics'),
             'tooltip' => '',
-            'number' => '00:00:23',
-            'uplift' => '+2%',
-            'uplift_status' => 'positive',
+            'uplift' => $widget_statistics['time_per_session_uplift'],
+            'uplift_status' => $widget_statistics['time_per_session_uplift_status'],
+            'number' => burst_format_milliseconds_to_readable_time($widget_statistics['time_per_session']),
         );
         echo burst_get_template('blocks/burst-kpi.php', $args );
 
-        $results = BURST::$statistics->get_single_statistic('referrer', $date_start, $date_end);
         $args = array(
             'title' => __('Top referrer', 'burst-statistics'),
             'tooltip' => '',
-            'subtitle' => $results['val'],
-            'uplift' => '',
+            'subtitle' => $widget_statistics['top_referrer'],
+            'uplift' => __('Pageviews', 'burst-statistics'),
             'uplift_status' => '',
-            'number' => '',
+            'number' => burst_format_number($widget_statistics['top_referrer_pageviews'], 1),
         );
         echo burst_get_template('blocks/explanation-and-stats.php', $args );
 
-        $results = BURST::$statistics->get_single_statistic('page_url', $date_start, $date_end);
         $args = array(
             'title' => __('Most visited page', 'burst-statistics'),
             'tooltip' => '',
-            'subtitle' => $results['val'],
-            'uplift' => '',
+            'subtitle' => $widget_statistics['most_visited'],
+            'uplift' => __('Pageviews', 'burst-statistics'),
             'uplift_status' => '',
-            'number' => '',
+            'number' => burst_format_number($widget_statistics['most_visited_pageviews'], 1),
         );
         echo burst_get_template('blocks/explanation-and-stats.php', $args );
 
@@ -51,6 +52,10 @@ $date_end = burst_offset_utc_time_to_gtm_offset(strtotime('tomorrow'));
     <div class="burst-dashboard-widget__footer">
         <a href="<?php echo admin_url('index.php?page=burst') ?>"><?php _e("Dashboard", "burst-statistics") ?></a> |
         <a href="<?php echo admin_url('index.php?page=burst&burst-page=statistics') ?>"><?php _e("Statistics", "burst-statistics") ?></a>
+        <p class="burst-dashboard-widget__selected-date">
+            <i>
+                <?php echo date_i18n( 'j F', $date_start )  . ' - ' . date_i18n( 'j F', $date_end );  ?>
+            </i>
+        </p>
     </div>
 </div>
-

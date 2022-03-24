@@ -43,6 +43,9 @@ function burst_track_hit(callback) {
 		'time_on_page': TimeMe.getTimeOnCurrentPageInMilliseconds(),
 	};
 
+	let event = new CustomEvent( 'burst_track_hit', { detail: data });
+	document.dispatchEvent(event);
+
 	let request = new XMLHttpRequest();
 	request.open('POST', burst.url+'hit'+token, true);
 	request.setRequestHeader('Content-type', 'application/json')

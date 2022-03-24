@@ -9,8 +9,10 @@
   line-height: 1.5;
   color: var(--rsp-text-color);
   box-sizing: border-box;
-  padding-bottom: 20px;
-  margin: 0 0 0 -20px;
+  &.wrap{
+    padding-bottom: 20px;
+    margin: 0 0 0 -20px;
+  }
 
   *, *:before, *:after {
     box-sizing: inherit;
@@ -81,7 +83,7 @@
   }
 
   a {
-    font-size: 1em;
+    font-size: var(--rsp-fs-300);
   }
 
   //wordpress inserts notices after the first h1 or h2. To prevent breaking layout we insert an empty h1 tag at the start of our page, where WP can insert the notice.

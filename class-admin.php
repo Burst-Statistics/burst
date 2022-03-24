@@ -26,7 +26,9 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'body' => '',
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+            add_action('admin_init', array($this, 'empty_dashboard_cache'));
 			add_action( 'admin_menu', array( $this, 'register_admin_page' ), 20 );
+            add_action('wp_dashboard_setup', array($this, 'add_burst_dashboard_widget'));
 
 			$plugin = burst_plugin;
 			add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
@@ -35,6 +37,10 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_action( 'admin_init', array( $this, 'check_upgrade' ), 10, 2 );
 			add_action( 'admin_init', array($this, 'init_grid') );
             add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
+
+            // column
+            add_action( 'admin_init', array($this, 'add_burst_admin_columns' ), 1);
+            add_action( 'pre_get_posts', array($this, 'posts_orderby_total_pageviews'), 1);
 
 			// deactivating
 			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
@@ -98,21 +104,23 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 
 		public function enqueue_assets( $hook ) {
-			 if ( strpos( $hook, 'burst') === false
-			 ) {
-			 	return;
-			 }
+            $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+//          // register css for dashboard widget
+            if ( strpos( $hook, 'burst') === false
+            ) {
+                wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
+                wp_enqueue_style( 'burst-admin' );
+            }
 
-
+            if ( strpos( $hook, 'burst') === false
+            ) {
+            return;
+            }
 
 			//select2
 //			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
 //			wp_enqueue_style( 'select2' );
 //			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
-
-			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-
-
 
             if (isset($_GET['burst-page']) && $_GET['burst-page'] ==='statistics') {
                 wp_enqueue_script( 'chartjs', burst_url . "assets/chartjs/chart.min.js", array(), burst_version, true );
@@ -139,9 +147,9 @@ if ( ! class_exists( "burst_admin" ) ) {
                 wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version, false);
 			}
 
+            wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
             wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
             wp_enqueue_style( 'burst-admin' );
-            wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
 
 			wp_localize_script(
 				'burst-admin',
@@ -193,6 +201,32 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 		}
 
+        /**
+         * Empty dashboard cache for Burst
+         * @param $hook
+         */
+
+        public function empty_dashboard_cache( $hook ) {
+            if ( !burst_user_can_manage() ) return;
+            $skip_transients = array('burst_warnings');
+            if (isset($_GET['burst_clear_cache'])){
+                global $wpdb;
+                // get all burst transients
+                $results = $wpdb->get_results(
+                        "SELECT `option_name` AS `name`, `option_value` AS `value`
+                                FROM  $wpdb->options
+                                WHERE `option_name` LIKE '%transient_burst%'
+                                ORDER BY `option_name`", 'ARRAY_A'
+                );
+                // loop through all burst transients
+                foreach ($results as $key => $value){
+                    $transient_name = substr($value['name'], 11);
+                    if ( in_array($transient_name, $skip_transients) ) continue;
+                    delete_transient($transient_name);
+                }
+            }
+        }
+
 		/**
 		 * Add custom link to plugins overview page
 		 *
@@ -239,6 +273,53 @@ if ( ! class_exists( "burst_admin" ) ) {
 		    return array('warning-one');
         }
 
+        /**
+         *
+         * Add a dashboard widget
+         *
+         * @since 1.1
+         *
+         */
+
+        public function add_burst_dashboard_widget()
+        {
+
+            wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
+                $this,
+                'generate_burst_dashboard_widget_wrapper'
+            ));
+        }
+
+        /**
+         * Wrapper function for dashboard widget so params can be sent along
+         */
+
+        public function generate_burst_dashboard_widget_wrapper() {
+            echo $this->generate_dashboard_widget();
+        }
+
+        /**
+         *
+         * Generate the dashboard widget
+         * Also generated the Top Searches grid item
+         *
+         * @param int|bool $start
+         * @param int|bool $end
+         * @return false|string
+         */
+        public function generate_dashboard_widget($start = false, $end = false)
+        {
+            ob_start();
+
+            $template = burst_get_template('wordpress/dashboard-widget.php');
+            //only use cached data on dash
+
+
+
+            ob_get_clean();
+            return $template;
+
+        }
 
 		/**
 		 * Register admin page
@@ -268,26 +349,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 				array( $this, 'burst_pages' )
 			);
 		}
-
-        public function get_metric_dropdown(){
-            //@todo add filter so we can add metrics with integrations
-            $metrics = array(
-                    'conversion_percentages' => __('Conversion percentages', 'burst-statistics'),
-                    'conversions' => __('Conversions', 'burst-statistics'),
-                    'visits' => __('Visits', 'burst-statistics'),
-            );
-            ob_start();
-            echo '<div class="burst-metric-container">';
-            echo '<select name="burst_selected_metric">';
-                foreach ($metrics as $metric_val => $metric){
-                    echo  esc_html('<option value="' . esc_html($metric_val) . '">'. esc_html($metric) .'</option>');
-                }
-            echo '</select></div>';
-
-            $html = ob_get_clean();
-
-            return $html;
-        }
 
         public function get_daterange_dropdown()
         {
@@ -625,11 +686,71 @@ if ( ! class_exists( "burst_admin" ) ) {
             }
         }
 
+        /**
+         * Function to easily add a column in a WordPress post table
+         * @param $column_title
+         * @param $post_type
+         * @param $cb
+         * @return void
+         * @since 1.1
+         */
+        public function add_admin_column($column_name, $column_title, $post_type, $sortable, $cb){
+            // Add column
+            add_filter( 'manage_' . $post_type . '_posts_columns', function($columns) use ($column_name, $column_title) {
+                $columns[ $column_name ] = $column_title;
+                return $columns;
+            } );
+
+            // Add column content
+            add_action( 'manage_' . $post_type . '_posts_custom_column' , function( $column, $post_id ) use ($column_name, $column_title, $cb) {
+                if($column_name === $column){
+                    $cb($post_id);
+                }
+            }, 10, 2 );
+
+            // Add sortable column
+            if ($sortable){
+                add_filter( 'manage_edit-' . $post_type . '_sortable_columns', function( $columns ) use ($column_name, $column_title) {
+                    $columns[ $column_name ] = $column_name;
+                    return $columns;
+                });
+            }
+        }
+
+        /**
+         * Function to add pageviews column to post table
+         * @return void
+         * @since 1.1
+         */
+        public function add_burst_admin_columns(){
+            $burst_column_post_types  = apply_filters('burst_column_post_types',
+                array('post', 'page')
+            );
+            foreach ($burst_column_post_types as $post_type) {
+                $this->add_admin_column('pageviews', __('Pageviews', 'burst-statistics'), $post_type, true, function($post_id){
+                    $burst_total_pageviews_count = get_post_meta( $post_id , 'burst_total_pageviews_count' , true );
+                    $count = intval($burst_total_pageviews_count) ? $burst_total_pageviews_count : 0;
+                    echo $count;
+                });
+            }
+        }
+
+        public function posts_orderby_total_pageviews( $query ) {
+            if( ! is_admin() || ! $query->is_main_query() ) {
+                return;
+            }
+
+            if ( 'pageviews' === $query->get( 'orderby') ) {
+                $query->set( 'orderby', 'meta_value_num title ' );
+                $query->set( 'meta_key', 'burst_total_pageviews_count' );
+            }
+        }
+
 	    /**
 	     *
 	     * Add a button and thickbox to deactivate the plugin
 	     *
-	     * @since 3.0
+	     * @since 1.0
 	     *
 	     * @access public
 	     *
