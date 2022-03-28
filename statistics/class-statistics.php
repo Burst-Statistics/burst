@@ -527,53 +527,45 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 */
 
 		public function generate_cached_data(){
-			//check if it's night. If so, re-generate.
-			$date = date('j-n-Y', time() );
-			$timezone_offset = get_option( 'gmt_offset' );
-			$hour_now = time() + ( 60 * 60 * $timezone_offset );
-			$day_start = strtotime("today", time()) + HOUR_IN_SECONDS;
-			$max_time =  $day_start + (3*HOUR_IN_SECONDS);
-			$last_generated_date = get_option('burst_last_generated');
-			if ( !$last_generated_date || ( $hour_now>$day_start && $hour_now<$max_time) ) {
-				if ( $last_generated_date !== $date ) {
-					$date_ranges = burst_get_date_ranges();
-					foreach ( $date_ranges  as $date_range => $val ) {
-						if ($date_range === 'custom' ) continue;
-						$time_stamp = $this->get_time_stamp_for_date_range($date_range);
-						$this->get_platform_and_device_statistics($time_stamp['start'], $time_stamp['end'], $date_range, true);
-						$this->get_compare_statistics( $time_stamp['start'], $time_stamp['end'], $date_range , true);
-                        if ($date_range === 'last-7-days') $this->get_dashboard_widget_statistics( $time_stamp['start'], $time_stamp['end'], $date_range , true);
-						$metrics = $this->get_metrics();
-						foreach ( $metrics as $metric ) {
-							$args = array(
-								'metric' => $metric,
-								'date_start' => $time_stamp['start'],
-								'date_end' => $time_stamp['end'],
-								'date_range' => $date_range,
-							);
-							$this->get_grouped_statistics_array( $args, true );
-						}
-						for ($page = 1; $page <= 3; $page++) {
-							$args = array(
-								'date_from' => $time_stamp['start'],
-								'date_to' => $time_stamp['end'],
-								'group_by' => 'referrer',
-								'date_range' => $date_range,//for caching purposes
-								'page' => $page, //for caching purposes
-							);
-							$this->get_hits_single($args, true);
-							$args = array(
-								'date_from' => $time_stamp['start'],
-								'date_to' => $time_stamp['end'],
-								'group_by' => 'page_url',
-								'date_range' => $date_range,//for caching purposes
-								'page' => $page, //for caching purposes
-							);
-							$this->get_hits_single($args, true);
-						}
-
-					}
-					update_option('burst_last_generated', $date);
+            $date = date('j-n-Y', time() );
+            $last_generated_date = get_option('burst_last_generated');
+            if ( $last_generated_date !== $date ) {
+                update_option('burst_last_generated', $date);
+                $date_ranges = burst_get_date_ranges();
+                foreach ( $date_ranges  as $date_range ) {
+                    if ($date_range === 'custom' ) continue;
+                    $time_stamp = $this->get_time_stamp_for_date_range($date_range);
+                    $this->get_platform_and_device_statistics($time_stamp['start'], $time_stamp['end'], $date_range, true);
+                    $this->get_compare_statistics( $time_stamp['start'], $time_stamp['end'], $date_range , true);
+                    if ($date_range === 'last-7-days') $this->get_dashboard_widget_statistics( $time_stamp['start'], $time_stamp['end'], $date_range , true);
+                    $metrics = $this->get_metrics();
+                    foreach ( $metrics as $metric ) {
+                        $args = array(
+                            'metric' => $metric,
+                            'date_start' => $time_stamp['start'],
+                            'date_end' => $time_stamp['end'],
+                            'date_range' => $date_range,
+                        );
+                        $this->get_grouped_statistics_array( $args, true );
+                    }
+                    for ($page = 1; $page <= 3; $page++) {
+                        $args = array(
+                            'date_from' => $time_stamp['start'],
+                            'date_to' => $time_stamp['end'],
+                            'group_by' => 'referrer',
+                            'date_range' => $date_range,//for caching purposes
+                            'page' => $page, //for caching purposes
+                        );
+                        $this->get_hits_single($args, true);
+                        $args = array(
+                            'date_from' => $time_stamp['start'],
+                            'date_to' => $time_stamp['end'],
+                            'group_by' => 'page_url',
+                            'date_range' => $date_range,//for caching purposes
+                            'page' => $page, //for caching purposes
+                        );
+                        $this->get_hits_single($args, true);
+                    }
 				}
 			}
 		}
@@ -582,15 +574,15 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$end = strtotime("today", time()) - 1;
 			switch ($date_range){
 				case 'yesterday':
-					$start = $end - DAY_IN_SECONDS;
+					$start = $end - DAY_IN_SECONDS + 1; // Plus 1 because we want the start of the day
 					break;
 				case 'last-30-days':
-					$start = $end - 30*DAY_IN_SECONDS;
+					$start = $end - 30*DAY_IN_SECONDS + 1;
 					break;
                 case 'last-90-days':
-                    $start = $end - 90*DAY_IN_SECONDS;
+                    $start = $end - 90*DAY_IN_SECONDS + 1;
                     break;
-				case 'previous-month':
+				case 'last-month':
 					$current_month = date('n');
 					$previous_month = $current_month-1;
 					if ($current_month==1) $previous_month = 12;
@@ -599,10 +591,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					break;
 				case 'last-7-days':
 				default:
-					$start = $end - 7*DAY_IN_SECONDS;
+					$start = $end - 7*DAY_IN_SECONDS + 1;
 					break;
 			}
-
 			return ['start'=> $start, 'end'=> $end];
 		}
 
@@ -615,7 +606,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 */
 
         public function get_dashboard_widget_statistics($date_start = 0, $date_end = 0, $date_range = 'last-7-days', $clear_cache = false ){
-            $clear_cache = true;
 	        $date_start = burst_offset_utc_time_to_gtm_offset($date_start);
 			$date_end = burst_offset_utc_time_to_gtm_offset($date_end);
             $time_diff = $date_end - $date_start;
@@ -635,9 +625,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
             );
 			$dashboard_widget = $clear_cache || $date_range === 'custom' ? false : get_transient('burst_dashboard_widget_'.$date_range);
 	        if ( !$dashboard_widget ) {
-
                 $result['visitors'] = $this->get_single_statistic('visitors', $date_start, $date_end);
-                $visitors_prev = $this->get_single_statistic('time_per_session', $date_start_diff, $date_end_diff);
+                $visitors_prev = $this->get_single_statistic('visitors', $date_start_diff, $date_end_diff);
                 $result['visitors_uplift'] = $this->format_uplift($visitors_prev, $result['visitors']);
                 $result['visitors_uplift_status'] = $this->calculate_uplift_status($visitors_prev, $result['visitors']);
 
@@ -662,10 +651,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 }
 		        set_transient('burst_dashboard_widget_'.$date_range, $result, DAY_IN_SECONDS);
 
-                return $result;
-	        } else {
-                return $dashboard_widget;
-            }
+                $dashboard_widget = $result;
+	        }
+            return $dashboard_widget;
         }
 
         /**
