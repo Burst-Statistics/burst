@@ -4,6 +4,23 @@ use burst\UserAgent\UserAgentParser;
 
 defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
 
+if ( ! function_exists( 'burst_user_can_view' ) ) {
+    /**
+     * Check if user has Burst permissions
+     * @return boolean true or false
+     */
+    function burst_user_can_view() {
+        if ( ! is_user_logged_in() ) {
+            return false;
+        }
+        if ( ! current_user_can( 'view_burst_statistics' ) ) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
 if ( ! function_exists( 'burst_user_can_manage' ) ) {
 	/**
 	 * Check if user has Burst permissions 
@@ -13,7 +30,7 @@ if ( ! function_exists( 'burst_user_can_manage' ) ) {
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
-		if ( ! current_user_can( 'edit_posts' ) ) {
+		if ( ! current_user_can( 'manage_burst_statistics' ) ) {
 			return false;
 		}
 

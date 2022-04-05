@@ -101,7 +101,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$error = false;
 			$period = 'day';
 
-			if ( ! burst_user_can_manage() ) {
+			if ( ! burst_user_can_view() ) {
 				$error = true;
 			}
 

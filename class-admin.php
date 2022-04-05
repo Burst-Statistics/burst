@@ -87,9 +87,10 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			//set a default region if this is an upgrade:
 			if ( $prev_version
-			     && version_compare( $prev_version, '1.0.0', '<' )
+			     && version_compare( $prev_version, '1.1.0', '<' )
 			) {
-                //upgrade
+                add_view_burst_capability();
+                add_manage_burst_capability();
 			}
 
 			do_action( 'burst_upgrade', $prev_version );
@@ -198,7 +199,6 @@ if ( ! class_exists( "burst_admin" ) ) {
                     ),
                 )
             );
-
 		}
 
         /**
@@ -207,7 +207,7 @@ if ( ! class_exists( "burst_admin" ) ) {
          */
 
         public function empty_dashboard_cache( $hook ) {
-            if ( !burst_user_can_manage() ) return;
+            if ( !burst_user_can_view() ) return;
             $skip_transients = array('burst_warnings');
             if (isset($_GET['burst_clear_cache'])){
                 global $wpdb;
@@ -283,7 +283,9 @@ if ( ! class_exists( "burst_admin" ) ) {
 
         public function add_burst_dashboard_widget()
         {
-
+            if ( ! burst_user_can_view() ) {
+                return;
+            }
             wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
                 $this,
                 'generate_burst_dashboard_widget_wrapper'
@@ -315,7 +317,6 @@ if ( ! class_exists( "burst_admin" ) ) {
             //only use cached data on dash
 
 
-
             ob_get_clean();
             return $template;
 
@@ -326,7 +327,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 		 */
 
 		public function register_admin_page() {
-			if ( ! burst_user_can_manage() ) {
+			if ( ! burst_user_can_view() ) {
 				return;
 			}
 
@@ -344,7 +345,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'index.php',
 				'Burst Statistics',
                 $menu_label,
-				'manage_options',
+				'view_burst_statistics',
 				'burst',
 				array( $this, 'burst_pages' )
 			);
@@ -374,7 +375,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 		public function init_grid()
         {
-            if (!burst_user_can_manage()) return;
+            if (!burst_user_can_view()) return;
 
             if (!isset($_GET['page']) || substr($_GET['page'], 0, 5) !== 'burst') return;
 
@@ -584,7 +585,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             $error = false;
             $total = 0;
             $html  = __("No data found", "burst-statistics" );
-            if (!burst_user_can_manage()) {
+            if (!burst_user_can_view()) {
                 $error = true;
             }
 

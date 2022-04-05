@@ -3,7 +3,7 @@
  * Plugin Name: Burst Statistics
  * Plugin URI: https://www.wordpress.org/plugins/burst-statistics
  * Description: Privacy Friendly Statistics. One click setup and start collecting valuable data.
- * Version: 1.1.0
+ * Version: 1.1.0.1
  * Text Domain: burst-statistics
  * Domain Path: /languages
  * Author: Really Simple Plugins
@@ -105,7 +105,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			define( 'burst_plugin', plugin_basename( __FILE__ ) );
 			define( 'burst_plugin_name', 'Burst Statistics' );
 			$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
-			define( 'burst_version', '1.1.0' . $debug );
+			define( 'burst_version', '1.1.0.1' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
 		}
@@ -208,6 +208,42 @@ if ( !function_exists( 'burst_clear_scheduled_hooks' )) {
 		wp_clear_scheduled_hook( 'burst_every_week_hook' );
 		wp_clear_scheduled_hook( 'burst_every_day_hook' );
 	}
+}
+
+if ( ! function_exists('add_view_burst_capability')){
+    /**
+     * Add a user capability to WordPress and add to admin and editor role
+     */
+    function add_view_burst_capability(){
+        $capability = 'view_burst_statistics';
+        $roles = array('administrator', 'editor');
+        foreach( $roles as $role ){
+            $role = get_role( $role );
+            if( ! $role->has_cap( $capability ) ){
+                $role->add_cap( $capability );
+            }
+        }
+    }
+
+    register_activation_hook( __FILE__, 'add_view_burst_capability' );
+}
+
+if ( ! function_exists('add_manage_burst_capability')){
+    /**
+     * Add a user capability to WordPress and add to admin and editor role
+     */
+    function add_manage_burst_capability(){
+        $capability = 'manage_burst_statistics';
+        $roles = array('administrator', 'editor');
+        foreach( $roles as $role ){
+            $role = get_role( $role );
+            if( ! $role->has_cap( $capability ) ){
+                $role->add_cap( $capability );
+            }
+        }
+    }
+
+    register_activation_hook( __FILE__, 'add_manage_burst_capability' );
 }
 
 
