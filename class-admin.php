@@ -83,7 +83,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 		 */
 
 		public function check_upgrade() {
-            error_log('check_upgrade');
 			//when debug is enabled, a timestamp is appended. We strip this for version comparison purposes.
 			$prev_version = get_option( 'burst-current-version', false );
 
