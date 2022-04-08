@@ -210,13 +210,13 @@ if ( !function_exists( 'burst_clear_scheduled_hooks' )) {
 	}
 }
 
-if ( ! function_exists('add_view_burst_capability')){
+if ( ! function_exists('burst_add_view_capability')){
     /**
      * Add a user capability to WordPress and add to admin and editor role
      */
-    function add_view_burst_capability(){
+    function burst_add_view_capability(){
         $capability = 'view_burst_statistics';
-        $roles = array('administrator', 'editor');
+        $roles = apply_filters('burst_burst_add_view_capability', array('administrator', 'editor') );
         foreach( $roles as $role ){
             $role = get_role( $role );
             if( ! $role->has_cap( $capability ) ){
@@ -225,16 +225,17 @@ if ( ! function_exists('add_view_burst_capability')){
         }
     }
 
-    register_activation_hook( __FILE__, 'add_view_burst_capability' );
+    register_activation_hook( __FILE__, 'burst_add_view_capability' );
 }
 
-if ( ! function_exists('add_manage_burst_capability')){
+if ( ! function_exists('burst_add_manage_capability')){
     /**
      * Add a user capability to WordPress and add to admin and editor role
      */
-    function add_manage_burst_capability(){
+    function burst_add_manage_capability(){
+        error_log('burst_add_manage_capability');
         $capability = 'manage_burst_statistics';
-        $roles = array('administrator', 'editor');
+        $roles = apply_filters('burst_burst_add_manage_capability', array('administrator', 'editor') );
         foreach( $roles as $role ){
             $role = get_role( $role );
             if( ! $role->has_cap( $capability ) ){
@@ -243,7 +244,7 @@ if ( ! function_exists('add_manage_burst_capability')){
         }
     }
 
-    register_activation_hook( __FILE__, 'add_manage_burst_capability' );
+    register_activation_hook( __FILE__, 'burst_add_manage_capability' );
 }
 
 
