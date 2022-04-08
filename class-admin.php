@@ -91,7 +91,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 			if ( $prev_version
 			     && version_compare( $prev_version, '1.1.1', '<' )
 			) {
-                error_log('check_upgrade: set default region');
                 burst_add_view_capability();
                 burst_add_manage_capability();
 			}

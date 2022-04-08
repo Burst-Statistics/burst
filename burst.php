@@ -233,7 +233,6 @@ if ( ! function_exists('burst_add_manage_capability')){
      * Add a user capability to WordPress and add to admin and editor role
      */
     function burst_add_manage_capability(){
-        error_log('burst_add_manage_capability');
         $capability = 'manage_burst_statistics';
         $roles = apply_filters('burst_burst_add_manage_capability', array('administrator', 'editor') );
         foreach( $roles as $role ){
