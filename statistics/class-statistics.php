@@ -101,7 +101,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$error = false;
 			$period = 'day';
 
-			if ( ! burst_user_can_manage() ) {
+			if ( ! burst_user_can_view() ) {
 				$error = true;
 			}
 
@@ -717,7 +717,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 $devices_count[$device['val']] = $device['count'];
             }
             foreach ($devices_count as $device => $count){
-                $percentage = round($count / $total_count * 100, 1);
+                $percentage = burst_format_number($count / $total_count * 100, 1);
                 $result[$device]['percentage'] = $percentage;
                 $result[$device]['total'] = $count;
             }
@@ -844,7 +844,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 ),
                 'visitors' => array(
                     'title' => __('Unique visitors', 'burst-statistics'),
-                    'subtitle' => $this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ) . '%' . ' ' . __('are new visitors', 'burst-statistics'),
+                    'subtitle' => burst_format_number($this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ), 1) . '%' . ' ' . __('are new visitors', 'burst-statistics'),
                     'tooltip' => '',
                     'number' => burst_format_number($sql_results['visitors']),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['visitors_prev'], $sql_results['visitors']),
@@ -982,7 +982,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
          */
 
         public function calculate_percentage_uplift($original_value, $new_value){
-            $increase = round($original_value - $new_value, 1);
+            $increase = burst_format_number($original_value - $new_value, 1);
             return $increase > 0 ? '+' . $increase . '%' : $increase . '%';
         }
 

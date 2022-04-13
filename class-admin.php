@@ -26,17 +26,18 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'body' => '',
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-            add_action('admin_init', array($this, 'empty_dashboard_cache'));
+            add_action( 'admin_init', array($this, 'empty_dashboard_cache') );
 			add_action( 'admin_menu', array( $this, 'register_admin_page' ), 20 );
-            add_action('wp_dashboard_setup', array($this, 'add_burst_dashboard_widget'));
+            add_action( 'wp_dashboard_setup', array($this, 'add_burst_dashboard_widget') );
 
 			$plugin = burst_plugin;
 			add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
+
 			//multisite
 			add_filter( "network_admin_plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
 			add_action( 'admin_init', array( $this, 'check_upgrade' ), 10, 2 );
 			add_action( 'admin_init', array($this, 'init_grid') );
-            add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
+            add_action( 'wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable') );
 
             // column
             add_action( 'admin_init', array($this, 'add_burst_admin_columns' ), 1);
@@ -85,11 +86,12 @@ if ( ! class_exists( "burst_admin" ) ) {
 			//when debug is enabled, a timestamp is appended. We strip this for version comparison purposes.
 			$prev_version = get_option( 'burst-current-version', false );
 
-			//set a default region if this is an upgrade:
+            // add burst capabilities
 			if ( $prev_version
-			     && version_compare( $prev_version, '1.0.0', '<' )
+			     && version_compare( $prev_version, '1.1.1', '<' )
 			) {
-                //upgrade
+                burst_add_view_capability();
+                burst_add_manage_capability();
 			}
 
 			do_action( 'burst_upgrade', $prev_version );
@@ -105,7 +107,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 		public function enqueue_assets( $hook ) {
             $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-//          // register css for dashboard widget
+            // register css for dashboard widget
             if ( strpos( $hook, 'burst') === false
             ) {
                 wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
@@ -118,9 +120,9 @@ if ( ! class_exists( "burst_admin" ) ) {
             }
 
 			//select2
-//			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
-//			wp_enqueue_style( 'select2' );
-//			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
+            //			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
+            //			wp_enqueue_style( 'select2' );
+            //			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
 
             if (isset($_GET['burst-page']) && $_GET['burst-page'] ==='statistics') {
                 wp_enqueue_script( 'chartjs', burst_url . "assets/chartjs/chart.min.js", array(), burst_version, true );
@@ -198,7 +200,6 @@ if ( ! class_exists( "burst_admin" ) ) {
                     ),
                 )
             );
-
 		}
 
         /**
@@ -207,7 +208,7 @@ if ( ! class_exists( "burst_admin" ) ) {
          */
 
         public function empty_dashboard_cache( $hook ) {
-            if ( !burst_user_can_manage() ) return;
+            if ( !burst_user_can_view() ) return;
             $skip_transients = array('burst_warnings');
             if (isset($_GET['burst_clear_cache'])){
                 global $wpdb;
@@ -283,7 +284,9 @@ if ( ! class_exists( "burst_admin" ) ) {
 
         public function add_burst_dashboard_widget()
         {
-
+            if ( ! burst_user_can_view() ) {
+                return;
+            }
             wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
                 $this,
                 'generate_burst_dashboard_widget_wrapper'
@@ -315,7 +318,6 @@ if ( ! class_exists( "burst_admin" ) ) {
             //only use cached data on dash
 
 
-
             ob_get_clean();
             return $template;
 
@@ -326,7 +328,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 		 */
 
 		public function register_admin_page() {
-			if ( ! burst_user_can_manage() ) {
+			if ( ! burst_user_can_view() ) {
 				return;
 			}
 
@@ -344,7 +346,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'index.php',
 				'Burst Statistics',
                 $menu_label,
-				'manage_options',
+				'view_burst_statistics',
 				'burst',
 				array( $this, 'burst_pages' )
 			);
@@ -374,7 +376,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 		public function init_grid()
         {
-            if (!burst_user_can_manage()) return;
+            if (!burst_user_can_view()) return;
 
             if (!isset($_GET['page']) || substr($_GET['page'], 0, 5) !== 'burst') return;
 
@@ -584,7 +586,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             $error = false;
             $total = 0;
             $html  = __("No data found", "burst-statistics" );
-            if (!burst_user_can_manage()) {
+            if (!burst_user_can_view()) {
                 $error = true;
             }
 
@@ -910,7 +912,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 	    public function listen_for_deactivation()
 	    {
-
 	        //check user role
 	        if (!current_user_can('activate_plugins')) return;
 
@@ -949,28 +950,51 @@ if ( ! class_exists( "burst_admin" ) ) {
          */
         public function delete_all_burst_data(){
             if (!current_user_can('activate_plugins')) return;
+            global $wpdb;
+            global $wp_roles;
 
+            // options to delete
             $options = array(
                 'burst_activation_time',
-                'burst_db_version',
                 'burst-current-version',
-                'burst_options_settings',
                 'burst_review_notice_shown',
-                'burst_activation_time',
+                'burst_tour_shown_once',
                 'burst_stats_db_version',
+                'burst_sessions_db_version',
+                'burst_goals_db_version',
+                'burst_experiments_db_version',
+                'burst_options_settings',
+                'burst_last_generated',
             );
 
+            // capabilities to delete
+            $roles = $wp_roles->roles;
+            $capabilities = array(
+                'manage_burst_statistics',
+                'view_burst_statistics'
+            );
+
+            // tables to delete
+            $table_names = array(
+                $wpdb->prefix . 'burst_sessions',
+                $wpdb->prefix . 'burst_statistics',
+                $wpdb->prefix . 'burst_goals',
+            );
+
+            // delete options
             foreach ($options as $option_name) {
                 delete_option($option_name);
                 delete_site_option($option_name);
             }
 
-            global $wpdb;
-            $table_names = array(
-                $wpdb->prefix . 'burst_sessions',
-                $wpdb->prefix . 'burst_statistics',
-            );
+            // delete user capabilities from all user roles
+            foreach ($roles as $role_name => $role_info) {
+                foreach ($capabilities as $capability) {
+                    $wp_roles->remove_cap($role_name, $capability);
+                }
+            }
 
+            // delete tables
             foreach($table_names as $table_name){
                 $sql = "DROP TABLE IF EXISTS $table_name";
                 $wpdb->query($sql);

@@ -4,6 +4,23 @@ use burst\UserAgent\UserAgentParser;
 
 defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
 
+if ( ! function_exists( 'burst_user_can_view' ) ) {
+    /**
+     * Check if user has Burst permissions
+     * @return boolean true or false
+     */
+    function burst_user_can_view() {
+        if ( ! is_user_logged_in() ) {
+            return false;
+        }
+        if ( ! current_user_can( 'view_burst_statistics' ) ) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
 if ( ! function_exists( 'burst_user_can_manage' ) ) {
 	/**
 	 * Check if user has Burst permissions 
@@ -13,7 +30,7 @@ if ( ! function_exists( 'burst_user_can_manage' ) ) {
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
-		if ( ! current_user_can( 'edit_posts' ) ) {
+		if ( ! current_user_can( 'manage_burst_statistics' ) ) {
 			return false;
 		}
 
@@ -248,8 +265,13 @@ if ( ! function_exists( 'burst_format_number' ) ) {
         if (!intval($number)) return '0';
         $thousand_sep = burst_get_thousand_separator();
         $decimal_sep = burst_get_decimal_separator();
+        $number_rounded = round( $number, 0 );
         if ( $number < 10000 ){
-            return number_format($number, 0, $decimal_sep, $thousand_sep);
+            if ($number_rounded - $number > 0 && $number_rounded - $number < 1) {
+                return number_format($number, $precision, $decimal_sep, $thousand_sep);
+            } else {
+                return number_format($number, 0, $decimal_sep, $thousand_sep);
+            }
         }
         $divisors = array(
             pow(1000, 0) => '', // 1000^0 == 1
