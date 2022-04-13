@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
 Tested up to: 5.9
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -60,6 +60,11 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.1.1 =
+* Improvement: Added capabilities to view and/or edit burst
+* Improvement: Added Polestar and Tesla to recognized devices
+* Improvement: Added filters so that you can change the decimal and thousand seperator
+
 = 1.1.0 =
 * Fix: better tracking script. Hits from one pageview can not be registered multiple times now
 * Improvement: visits in pages and posts overview. As these hits are stored differently, they will start at 0 for existing setups as well
