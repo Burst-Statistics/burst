@@ -844,9 +844,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 ),
                 'visitors' => array(
                     'title' => __('Unique visitors', 'burst-statistics'),
-                    'subtitle' => burst_format_number($this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ), 1) . '%' . ' ' . __('are new visitors', 'burst-statistics'),
+                    'subtitle' => burst_format_number($this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ), 0) . '%' . ' ' . __('are new visitors', 'burst-statistics'),
                     'tooltip' => '',
-                    'number' => burst_format_number($sql_results['visitors']),
+                    'number' => burst_format_number($sql_results['visitors'], 0),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['visitors_prev'], $sql_results['visitors']),
                     'uplift' => $this->format_uplift($sql_results['visitors_prev'], $sql_results['visitors']),
                 ),
@@ -955,7 +955,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
          * @return string
          */
         public function format_uplift($original_value, $new_value){
-            $uplift = burst_format_number($this->calculate_uplift($new_value, $original_value));
+            $uplift = burst_format_number($this->calculate_uplift($new_value, $original_value), 0);
             if ($uplift === 0) {
                 return '';
             }
