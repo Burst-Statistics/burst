@@ -62,20 +62,21 @@ Not...yet.
 == Change log ==
 = 1.1.1 =
 * Improvement: Added capabilities to view and/or edit burst
-* Improvement: Added Polestar and Tesla to recognized devices
+* Improvement: Added new devices to recognized devices Props: Abraham
 * Improvement: Added filters so that you can change the decimal and thousand seperator
 
 = 1.1.0 =
 * Fix: better tracking script. Hits from one pageview can not be registered multiple times now
-* Improvement: visits in pages and posts overview. As these hits are stored differently, they will start at 0 for existing setups as well
+* Improvement: visits in pages and posts overview. As these hits are stored differently,
+  they will start at 0 for existing setups as well. Props: Shayne
 * Improvement: added parameter to clear the dashboard cache
 * Improvement: added JS event to so other plugins can integrate with Burst
 * Improvement: added privacy annex
-* Improvement: added widget to the Wordpress Dashboard
+* Improvement: added widget to the Wordpress Dashboard Props: Shayne
 
 = 1.0.2 =
 * Fix: typo fix in generate_cached_data, props @seath
-* Fix: some strings with wrong text domain
+* Fix: some strings with wrong text domain 
 * Improvement: link in readme, props @8725z4twhugias
 
 = 1.0.1 =
