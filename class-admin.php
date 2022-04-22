@@ -67,23 +67,22 @@ if ( ! class_exists( "burst_admin" ) ) {
 			}
 
 			$content = sprintf(
-				__('This website uses Burst Statistics, a Privacy-Friendly Statistics Tool to analyze visitor behavior.
-				For this functionality we (this website) collect anonymized data, stored locally without sharing it with other parties.
-				For more information, please read the <a href="%s" target="_blank">Privacy Statement</a> from Burst.', 'burst-statistics'),
-				'https://burst-statistics.com/legal/privacy-statement/'
+				__('This website uses Burst Statistics, a Privacy-Friendly Statistics Tool to analyze visitor behavior. For this functionality we (this website) collect anonymized data, stored locally without sharing it with other parties. For more information, please read the %s Privacy Statement %s from Burst.', 'burst-statistics'),
+				'<a href="https://burst-statistics.com/legal/privacy-statement/" target="_blank">', '</a>'
 			);
-
 			wp_add_privacy_policy_content(
 				'Burst Statistics',
 				wp_kses_post(wpautop($content, false))
 			);
 		}
+
 		/**
-		 * Do upgrade on update
+		 * Do upgrade on plugin update. Hooked to plugins_loaded because
+         * capabilities need to be added before registering the burst menu items.
 		 */
 
 		public function check_upgrade() {
-			//when debug is enabled, a timestamp is appended. We strip this for version comparison purposes.
+            if ( $prev_version === cmplz_version ) return; // no upgrade
 			$prev_version = get_option( 'burst-current-version', false );
 
             // add burst capabilities
