@@ -4,23 +4,6 @@ use burst\UserAgent\UserAgentParser;
 
 defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
 
-if ( ! function_exists( 'burst_user_can_view' ) ) {
-    /**
-     * Check if user has Burst permissions
-     * @return boolean true or false
-     */
-    function burst_user_can_view() {
-        if ( ! is_user_logged_in() ) {
-            return false;
-        }
-        if ( ! current_user_can( 'view_burst_statistics' ) ) {
-            return false;
-        }
-
-        return true;
-    }
-}
-
 if ( ! function_exists( 'burst_user_can_manage' ) ) {
 	/**
 	 * Check if user has Burst permissions 
@@ -30,7 +13,7 @@ if ( ! function_exists( 'burst_user_can_manage' ) ) {
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
-		if ( ! current_user_can( 'manage_burst_statistics' ) ) {
+		if ( ! current_user_can( 'edit_posts' ) ) {
 			return false;
 		}
 
@@ -263,21 +246,16 @@ if ( ! function_exists( 'burst_format_number' ) ) {
      */
     function burst_format_number( $number, $precision = 2 ) {
         if (!intval($number)) return '0';
-        $number_rounded = round( $number, 0 );
+        $thousand_sep = burst_get_thousand_separator();
+        $decimal_sep = burst_get_decimal_separator();
         if ( $number < 10000 ){
-            if ($number_rounded - $number > 0 && $number_rounded - $number < 1) { // if difference is less than 1
-                return number_format_i18n($number, $precision); // return number with specified decimal precision
-            } else {
-                return number_format_i18n($number, 0); // return number without decimal
-            }
+            return number_format($number, 0, $decimal_sep, $thousand_sep);
         }
         $divisors = array(
             pow(1000, 0) => '', // 1000^0 == 1
-            pow(1000, 1) => 'k', // Thousand - kilo
-            pow(1000, 2) => 'M', // Million - mega
-            pow(1000, 3) => 'G', // Billion - giga
-            pow(1000, 4) => 'T', // Trillion - tera
-            pow(1000, 5) => 'P', // quadrillion - peta
+            pow(1000, 1) => 'K', // Thousand
+            pow(1000, 2) => 'M', // Million
+            pow(1000, 3) => 'B', // Billion
         );
 
         // Loop through each $divisor and find the
@@ -290,13 +268,19 @@ if ( ! function_exists( 'burst_format_number' ) ) {
         }
         // We found our match, or there were no matches.
         // Either way, use the last defined value for $divisor.
-        $number_rounded = round( $number / $divisor, 0 );
-        $number = $number / $divisor;
-        if ($number_rounded - $number > 0 && $number_rounded - $number < 1) { // if difference is less than 1
-            return number_format_i18n($number, $precision) . $shorthand; // return number with specified decimal precision
-        } else {
-            return number_format_i18n($number, 0) . $shorthand; // return number without decimal
-        }
+        return number_format($number / $divisor, 1, $decimal_sep, $thousand_sep) . $shorthand;
+    }
+}
+
+if ( ! function_exists( 'burst_get_thousand_separator' ) ) {
+    function burst_get_thousand_separator() {
+        return apply_filters('burst_change_thousand_separator', ' ');
+    }
+}
+
+if ( ! function_exists( 'burst_get_decimal_separator' ) ) {
+    function burst_get_decimal_separator() {
+        return apply_filters('burst_change_decimal_separator', '.');
     }
 }
 

@@ -23,7 +23,7 @@ if ( ! class_exists( "burst_frontend" ) ) {
         }
 
         function add_to_admin_bar_menu( $wp_admin_bar ) {
-            if ( ! burst_user_can_view() || is_admin() ) {
+            if ( ! burst_user_can_manage() || is_admin() ) {
                 return;
             }
             $wp_admin_bar->add_node(
