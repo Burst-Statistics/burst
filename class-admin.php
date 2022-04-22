@@ -35,7 +35,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			//multisite
 			add_filter( "network_admin_plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
-			add_action( 'admin_init', array( $this, 'check_upgrade' ), 10, 2 );
+			add_action( 'plugins_loaded', array( $this, 'check_upgrade' ), 10, 2 );
 			add_action( 'admin_init', array($this, 'init_grid') );
             add_action( 'wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable') );
 
