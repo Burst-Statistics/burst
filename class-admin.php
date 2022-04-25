@@ -82,8 +82,8 @@ if ( ! class_exists( "burst_admin" ) ) {
 		 */
 
 		public function check_upgrade() {
-            if ( $prev_version === cmplz_version ) return; // no upgrade
-			$prev_version = get_option( 'burst-current-version', false );
+            $prev_version = get_option( 'burst-current-version', false );
+            if ( $prev_version === burst_version ) return; // no upgrade
 
             // add burst capabilities
 			if ( $prev_version

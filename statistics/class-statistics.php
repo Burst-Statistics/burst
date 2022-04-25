@@ -539,7 +539,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     $this->get_compare_statistics( $time_stamp['start'], $time_stamp['end'], $date_range , true);
                     if ($date_range === 'last-7-days') $this->get_dashboard_widget_statistics( $time_stamp['start'], $time_stamp['end'], $date_range , true);
                     $metrics = $this->get_metrics();
-                    foreach ( $metrics as $metric ) {
+                    foreach ( $metrics as $metric => $metric_name ) {
                         $args = array(
                             'metric' => $metric,
                             'date_start' => $time_stamp['start'],
