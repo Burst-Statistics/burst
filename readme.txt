@@ -5,7 +5,7 @@ Tags: statistics, analytics, privacy,
 Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
-Tested up to: 5.9
+Tested up to: 6.0
 Stable tag: 1.1.1
 
 Self-hosted and privacy-friendly analytics tool. 
