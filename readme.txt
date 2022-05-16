@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
 Tested up to: 6.0
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -60,6 +60,9 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.1.2 =
+* Improvement: Added drop down to datatables, props @topfgartenwelt
+
 = 1.1.1 =
 * Improvement: Added capabilities to view and/or edit burst
 * Improvement: Added new devices to recognized devices Props: Abraham
