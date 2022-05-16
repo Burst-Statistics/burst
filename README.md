@@ -18,6 +18,6 @@ If you're a developer and want to help out, please feel free to contribute anywa
 
 ### Support
 
-For support we kindly ask you to start at our [support forum](https://wordpress.org/support/plugin/burst-statistics/) and our documentation at [burst-statistics.com/docs/](https://burst-statistics.com/docs). If you can't find a solution, do not hesitate to ask either on the forum or log a suppor ticket.
+For support we kindly ask you to start at our [support forum](https://wordpress.org/support/plugin/burst-statistics/) and our documentation at [burst-statistics.com/docs/](https://burst-statistics.com/docs). If you can't find a solution, do not hesitate to ask either on the forum or log a support ticket.
 
 If you like Burst Statistics - Please [rate us](https://wordpress.org/support/plugin/burst-statistics/reviews/) on WordPress.org

@@ -34,7 +34,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
 			//multisite
 			add_filter( "network_admin_plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
-			add_action( 'admin_init', array( $this, 'check_upgrade' ), 10, 2 );
+			add_action( 'plugins_loaded', array( $this, 'check_upgrade' ), 10, 2 );
 			add_action( 'admin_init', array($this, 'init_grid') );
             add_action('wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable'));
 
@@ -66,24 +66,23 @@ if ( ! class_exists( "burst_admin" ) ) {
 			}
 
 			$content = sprintf(
-				__('This website uses Burst Statistics, a Privacy-Friendly Statistics Tool to analyze visitor behavior.
-				For this functionality we (this website) collect anonymized data, stored locally without sharing it with other parties.
-				For more information, please read the <a href="%s" target="_blank">Privacy Statement</a> from Burst.', 'burst-statistics'),
-				'https://burst-statistics.com/legal/privacy-statement/'
+				__('This website uses Burst Statistics, a Privacy-Friendly Statistics Tool to analyze visitor behavior. For this functionality we (this website) collect anonymized data, stored locally without sharing it with other parties. For more information, please read the %s Privacy Statement %s from Burst.', 'burst-statistics'),
+				'<a href="https://burst-statistics.com/legal/privacy-statement/" target="_blank">', '</a>'
 			);
-
 			wp_add_privacy_policy_content(
 				'Burst Statistics',
 				wp_kses_post(wpautop($content, false))
 			);
 		}
+
 		/**
-		 * Do upgrade on update
+		 * Do upgrade on plugin update. Hooked to plugins_loaded because
+         * capabilities need to be added before registering the burst menu items.
 		 */
 
 		public function check_upgrade() {
-			//when debug is enabled, a timestamp is appended. We strip this for version comparison purposes.
-			$prev_version = get_option( 'burst-current-version', false );
+            $prev_version = get_option( 'burst-current-version', false );
+            if ( $prev_version === burst_version ) return; // no upgrade
 
 			//set a default region if this is an upgrade:
 			if ( $prev_version
