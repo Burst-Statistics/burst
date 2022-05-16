@@ -101,7 +101,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$error = false;
 			$period = 'day';
 
-			if ( ! burst_user_can_manage() ) {
+			if ( ! burst_user_can_view() ) {
 				$error = true;
 			}
 
@@ -487,7 +487,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
                     $response = $wpdb->get_var( $sql );
                     if (!$response) {
-                        $response = __('No referrers today', 'burst-statistics');
+                        $response = false;
                     }
                     break;
                 case 'page_url':
@@ -507,7 +507,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
                     $response = $wpdb->get_var( $sql );
                     if (!$response) {
-	                    $response = __('No pages visited today', 'burst-statistics');
+	                    $response = false;
                     }
                     break;
                 case 'pageviews':
@@ -597,17 +597,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			return ['start'=> $start, 'end'=> $end];
 		}
 
-		/**
-		 * @param int $date_start
-		 * @param int $date_end
-		 * @param string $date_range
-		 *
-		 * @return array
-		 */
+        /**
+         * @param int $date_start
+         * @param int $date_end
+         * @param string $date_range
+         *
+         * @return array
+         */
 
         public function get_dashboard_widget_statistics($date_start = 0, $date_end = 0, $date_range = 'last-7-days', $clear_cache = false ){
-	        $date_start = burst_offset_utc_time_to_gtm_offset($date_start);
-			$date_end = burst_offset_utc_time_to_gtm_offset($date_end);
+            $date_start = burst_offset_utc_time_to_gtm_offset($date_start);
+            $date_end = burst_offset_utc_time_to_gtm_offset($date_end);
             $time_diff = $date_end - $date_start;
             $date_start_diff = $date_start - $time_diff;
             $date_end_diff = $date_end - $time_diff;
@@ -623,8 +623,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 'most_visited' => '',
                 'most_visited_pageviews' => '',
             );
-			$dashboard_widget = $clear_cache || $date_range === 'custom' ? false : get_transient('burst_dashboard_widget_'.$date_range);
-	        if ( !$dashboard_widget ) {
+            $dashboard_widget = $clear_cache || $date_range === 'custom' ? false : get_transient('burst_dashboard_widget_'.$date_range);
+            if ( !$dashboard_widget ) {
                 $result['visitors'] = $this->get_single_statistic('visitors', $date_start, $date_end);
                 $visitors_prev = $this->get_single_statistic('visitors', $date_start_diff, $date_end_diff);
                 $result['visitors_uplift'] = $this->format_uplift($visitors_prev, $result['visitors']);
@@ -636,26 +636,27 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 $result['time_per_session_uplift_status'] = $this->calculate_uplift_status($time_per_session_prev, $result['time_per_session']);
 
                 $result['top_referrer'] = $this->get_single_statistic('referrer', $date_start, $date_end);
-                $direct_text =  __("Direct", "burst-statistics");
-                if( $result['top_referrer'] === $direct_text ) {
+                if ( !$result['top_referrer'] ) $result['top_referrer'] = __('No referrers', 'burst-statistics');
+                if( $result['top_referrer'] === __("Direct", "burst-statistics") ) {
                     $result['top_referrer_pageviews'] = $this->get_single_statistic('pageviews', $date_start, $date_end, 'referrer', '/');
                 } else {
                     $result['top_referrer_pageviews'] = $this->get_single_statistic('pageviews', $date_start, $date_end, 'referrer', $result['top_referrer']);
                 }
+
                 $result['most_visited'] = $this->get_single_statistic('page_url', $date_start, $date_end);
-                $homepage_text =  __("Homepage", "burst-statistics");
-                if ( $result['most_visited'] === $homepage_text ) {
+                if ( !$result['most_visited'] ) $result['most_visited'] = __('No pageviews', 'burst-statistics');
+                if ( $result['most_visited'] === __("Homepage", "burst-statistics") ) {
                     $result['most_visited_pageviews'] = $this->get_single_statistic('pageviews', $date_start, $date_end, 'page_url', '/');
                 } else {
                     $result['most_visited_pageviews'] = $this->get_single_statistic('pageviews', $date_start, $date_end, 'page_url', $result['most_visited']);
                 }
-		        set_transient('burst_dashboard_widget_'.$date_range, $result, DAY_IN_SECONDS);
+
+                set_transient('burst_dashboard_widget_'.$date_range, $result, DAY_IN_SECONDS);
 
                 $dashboard_widget = $result;
-	        }
+            }
             return $dashboard_widget;
         }
-
         /**
          * @param int $date_start
          * @param int $date_end
@@ -717,7 +718,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 $devices_count[$device['val']] = $device['count'];
             }
             foreach ($devices_count as $device => $count){
-                $percentage = round($count / $total_count * 100, 1);
+                $percentage = burst_format_number($count / $total_count * 100, 1);
                 $result[$device]['percentage'] = $percentage;
                 $result[$device]['total'] = $count;
             }
@@ -844,9 +845,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 ),
                 'visitors' => array(
                     'title' => __('Unique visitors', 'burst-statistics'),
-                    'subtitle' => $this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ) . '%' . ' ' . __('are new visitors', 'burst-statistics'),
+                    'subtitle' => burst_format_number($this->calculate_ratio($sql_results['new_visitors'] , $sql_results['visitors'], '%' ), 0) . '%' . ' ' . __('are new visitors', 'burst-statistics'),
                     'tooltip' => '',
-                    'number' => burst_format_number($sql_results['visitors']),
+                    'number' => burst_format_number($sql_results['visitors'], 0),
                     'uplift_status' => $this->calculate_uplift_status($sql_results['visitors_prev'], $sql_results['visitors']),
                     'uplift' => $this->format_uplift($sql_results['visitors_prev'], $sql_results['visitors']),
                 ),
@@ -955,7 +956,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
          * @return string
          */
         public function format_uplift($original_value, $new_value){
-            $uplift = burst_format_number($this->calculate_uplift($new_value, $original_value));
+            $uplift = burst_format_number($this->calculate_uplift($new_value, $original_value), 0);
             if ($uplift === 0) {
                 return '';
             }
@@ -982,7 +983,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
          */
 
         public function calculate_percentage_uplift($original_value, $new_value){
-            $increase = round($original_value - $new_value, 1);
+            $increase = burst_format_number($original_value - $new_value, 1);
             return $increase > 0 ? '+' . $increase . '%' : $increase . '%';
         }
 

@@ -137,7 +137,7 @@ class burst_tour {
 			return;
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( 'view_burst_statistics' ) ) {
 			return;
 		}
 

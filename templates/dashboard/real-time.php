@@ -32,6 +32,8 @@ echo burst_get_template('blocks/big-number.php', $args );
 
 
 $referrer = BURST::$statistics->get_single_statistic('referrer', $date_start, $date_end);
+if ( !$referrer ) $referrer = __('No referrers today', 'burst-statistics');
+
 $args = array(
     'title' => __('Top referrer', 'burst-statistics'),
     'tooltip' => '',
@@ -43,6 +45,7 @@ $args = array(
 echo burst_get_template('blocks/explanation-and-stats.php', $args );
 
 $most_visited = BURST::$statistics->get_single_statistic('page_url', $date_start, $date_end);
+if ( !$most_visited ) $most_visited = __('No pages visited today', 'burst-statistics');
 $args = array(
     'title' => __('Most visited page', 'burst-statistics'),
     'tooltip' => '',

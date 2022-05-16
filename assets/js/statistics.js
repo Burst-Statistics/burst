@@ -113,7 +113,6 @@ jQuery(document).ready(function ($) {
                             let newDataset = dataset;
                             insightsConfig.data.datasets.push(newDataset);
                         }
-
                         i++;
                     });
 

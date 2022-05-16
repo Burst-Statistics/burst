@@ -409,9 +409,9 @@ update-nag.notice {
 .burst a.button.button-primary,
 .burst button.button-primary,
 .burst input.button-primary {
-  background: var(--rsp-dark-blue);
+  background: var(--rsp-wp-blue);
   color: var(--rsp-text-color-white);
-  border-color: var(--rsp-dark-blue);
+  border-color: var(--rsp-wp-blue);
   outline: 2px transparent solid;
   outline-offset: 1px;
 }
@@ -424,15 +424,15 @@ update-nag.notice {
 .burst a.button.button-primary:active,
 .burst button.button-primary:active,
 .burst input.button-primary:active {
-  outline: 2px var(--rsp-dark-blue) solid;
-  background: var(--rsp-dark-blue);
+  outline: 2px var(--rsp-wp-blue) solid;
+  background: var(--rsp-wp-blue);
 }
 .burst a.button.button-secondary,
 .burst button.button-secondary,
 .burst input.button-secondary {
   background: transparent;
-  color: var(--rsp-dark-blue);
-  border-color: var(--rsp-dark-blue);
+  color: var(--rsp-wp-blue);
+  border-color: var(--rsp-wp-blue);
   outline: 1px transparent solid;
 }
 .burst a.button.button-secondary:hover,
@@ -444,7 +444,7 @@ update-nag.notice {
 .burst a.button.button-secondary:active,
 .burst button.button-secondary:active,
 .burst input.button-secondary:active {
-  outline: 1px var(--rsp-dark-blue) solid;
+  outline: 1px var(--rsp-wp-blue) solid;
 }
 .burst a.button.button-black,
 .burst button.button-black,
@@ -555,6 +555,7 @@ update-nag.notice {
   right: 0;
   bottom: 0;
   background-color: #ccc;
+  -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 .burst .burst-slider:before {
@@ -565,6 +566,7 @@ update-nag.notice {
   left: 4px;
   bottom: 3px;
   background-color: white;
+  -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 .burst .burst-slider.burst-round {
@@ -581,6 +583,7 @@ update-nag.notice {
   right: 0;
   bottom: 0;
   background-color: #ccc;
+  -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 .burst .burst-slider-na:before {
@@ -595,6 +598,8 @@ update-nag.notice {
   background-color: var(--rsp-brand-primary);
 }
 .burst input:checked + .burst-slider:before {
+  -webkit-transform: translateX(17px);
+  -ms-transform: translateX(17px);
   transform: translateX(17px);
 }
 .burst input:checked:disabled + .burst-slider {
@@ -653,8 +658,7 @@ update-nag.notice {
 [burst-tooltip]::after {
   text-transform: none;
   font-size: 13px;
-  -webkit-user-select: none;
-          user-select: none;
+  user-select: none;
   pointer-events: none;
   position: absolute;
   display: none;
@@ -857,7 +861,91 @@ update-nag.notice {
 }
 .burst-settings-saved.burst-settings-saved--fade-in {
   display: block;
+  -webkit-animation: fadeInFromNone 5s ease-in-out;
+  -moz-animation: fadeInFromNone 5s ease-in-out;
+  -o-animation: fadeInFromNone 5s ease-in-out;
   animation: fadeInFromNone 5s ease-in-out;
+}
+@-webkit-keyframes fadeInFromNone {
+  0% {
+    display: none;
+    opacity: 0;
+    top: 20px;
+  }
+  5% {
+    display: block;
+    opacity: 0;
+    top: -10px;
+  }
+  15% {
+    display: block;
+    opacity: 1;
+    top: 20px;
+  }
+  90% {
+    display: block;
+    opacity: 1;
+    top: 20px;
+  }
+  100% {
+    display: none;
+    opacity: 0;
+    top: 20px;
+  }
+}
+@-moz-keyframes fadeInFromNone {
+  0% {
+    display: none;
+    opacity: 0;
+    top: 20px;
+  }
+  5% {
+    display: block;
+    opacity: 0;
+    top: -10px;
+  }
+  15% {
+    display: block;
+    opacity: 1;
+    top: 20px;
+  }
+  90% {
+    display: block;
+    opacity: 1;
+    top: 20px;
+  }
+  100% {
+    display: none;
+    opacity: 0;
+    top: 20px;
+  }
+}
+@-o-keyframes fadeInFromNone {
+  0% {
+    display: none;
+    opacity: 0;
+    top: 20px;
+  }
+  5% {
+    display: block;
+    opacity: 0;
+    top: -10px;
+  }
+  15% {
+    display: block;
+    opacity: 1;
+    top: 20px;
+  }
+  90% {
+    display: block;
+    opacity: 1;
+    top: 20px;
+  }
+  100% {
+    display: none;
+    opacity: 0;
+    top: 20px;
+  }
 }
 @keyframes fadeInFromNone {
   0% {
@@ -1367,7 +1455,7 @@ update-nag.notice {
   gap: var(--rsp-spacing-xxs);
 }
 .burst-dashboard-widget .burst-kpi {
-  background-color: var(--rsp-dark-blue-faded);
+  background-color: var(--rsp-wp-blue-faded);
   padding: var(--rsp-spacing-m);
   width: clamp(50%, 50%, 100%);
 }
@@ -1383,3 +1471,4 @@ update-nag.notice {
   --rsp-brand-secondary: var(--rsp-yellow);
   --rsp-brand-primary-faded: var(--rsp-green-faded);
 }
+/*# sourceMappingURL=admin.css.map */
