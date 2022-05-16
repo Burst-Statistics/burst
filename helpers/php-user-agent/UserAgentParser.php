@@ -40,7 +40,6 @@ namespace burst\UserAgent {
 		if( !$u_agent ) {
 			return $return;
 		}
-        error_log("u_agent: ".$u_agent);
 
 		if( preg_match('/\((.*?)\)/m', $u_agent, $parent_matches) ) {
 			preg_match_all(<<<'REGEX'
@@ -188,14 +187,7 @@ REGEX
 
 			$platform = 'PlayStation ' . preg_replace('/\D/', '', $pKey);
 			$browser  = 'NetFront';
-        }
-        if (strpos($u_agent, 'Tesla') !== false) {
-            $platform = 'Tesla';
-        }
-        if (strpos($u_agent, 'Polestar') !== false) {
-            $platform = 'Polestar';
-        }
-
+		}
 
 		return $return;
 	}

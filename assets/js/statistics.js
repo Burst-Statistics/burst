@@ -317,12 +317,13 @@ jQuery(document).ready(function ($) {
             "conditionalPaging": true,
             "autoWidth": true,
             "info": false,
-            "lengthChange": false,
+            "lengthChange": true,
             "language": {
                 "paginate": {
                     "previous": burstLocalizeString('Previous'),
                     "next": burstLocalizeString('Next'),
                 },
+                "sLengthMenu": "_MENU_",
                 "searchPlaceholder": burstLocalizeString('Search'),
                 "search": "",
                 "zeroRecords": burstLocalizeString('No matching records found'),
@@ -371,11 +372,13 @@ jQuery(document).ready(function ($) {
                         table.DataTable().destroy();
                         container.find('.dataTables_filter').remove();
                         container.find('.dataTables_paginate').remove();
+                        container.find('.dataTables_length').remove();
 
                         burstInitSingleDataTable(table, id);
 
                         container.find('.dataTables_filter').appendTo( container.find('.burst-grid-controls') );
                         container.find('.dataTables_paginate').appendTo( container.find('.burst-grid-footer') );
+                        container.find('.dataTables_length').appendTo( container.find('.burst-grid-footer') );
                         container.find('.burst-datatable').css('display', 'block');
 
                     });

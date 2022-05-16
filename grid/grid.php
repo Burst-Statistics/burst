@@ -84,7 +84,7 @@ function burst_load_grid_block(){
 	$error = false;
 	$html = '';
 
-	if ( ! burst_user_can_view() ) {
+	if ( ! burst_user_can_manage() ) {
 		$error = true;
 	}
 
