@@ -14,7 +14,6 @@ Self-hosted and privacy-friendly analytics tool.
 Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.
 
 == Features ==
-Feature requests
 
 * Essential Metrics: Pageviews, Visitors, Sessions, Time on Page, Referrers etc
 * Privacy-friendly: Locally hosted, and anonymized data in collaboration with Complianz
@@ -51,7 +50,8 @@ We're on [GitHub](https://github.com/Really-Simple-Plugins/burst) as well!
 == Frequently Asked Questions ==
 = Knowledgebase =
 Burst will maintain and a grow a knowledgebase about Burst Statistics and other products to assist, while using Burst Statistics [burst-statistics.com](https://burst-statistics.com)
-
+= Can I block IP Addresses?
+Before creating a dedicated user interface we collect proposed features as MU Plugins at [Github - Burst Integrations](https://github.com/Really-Simple-Plugins/burst-integrations)
 = Why is Burst Statistics Privacy-friendly? =
 Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone. 
 = Do you mind if I give feedback about the product? =
@@ -60,12 +60,18 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+
+= 1.1.3 =
+* Fix: Fatal error on PHP 7.2
+* Improvement: Block IP address with MU Plugin
+* Improvement: Notice for REST API failure
+
 = 1.1.2 =
 * Improvement: Added drop down to datatables, props @topfgartenwelt
 
 = 1.1.1 =
 * Improvement: Added capabilities to view and/or edit burst
-* Improvement: Added new devices to recognized devices Props: Abraham
+* Improvement: Added new devices to recognized devices
 * Improvement: Added filters so that you can change the decimal and thousand seperator
 
 = 1.1.0 =
