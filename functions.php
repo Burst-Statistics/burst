@@ -629,9 +629,11 @@ if ( ! function_exists( 'burst_sidebar_notice' ) ) {
 }
 
 if ( !function_exists('burst_admin_notice')) {
-    /**
-     * @param $msg
-     */
+	/**
+	 * @param $msg
+	 *
+	 * @return void
+	 */
     function burst_admin_notice( $msg ) {
         /**
          * Prevent notice from being shown on Gutenberg page, as it strips off the class we need for the ajax callback.
@@ -661,7 +663,16 @@ if ( !function_exists('burst_admin_notice')) {
 }
 
 if ( ! function_exists( 'burst_panel' ) ) {
-
+	/**
+	 * @param $title
+	 * @param $html
+	 * @param $custom_btn
+	 * @param $validate
+	 * @param $echo
+	 * @param $open
+	 *
+	 * @return string|void
+	 */
     function burst_panel($title, $html, $custom_btn = '', $validate = '', $echo = true, $open = false) {
         if ( $title == '' ) {
             return '';
@@ -710,21 +721,42 @@ if ( ! function_exists( 'burst_update_option' ) ) {
     }
 }
 if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
+    /**
+     * Get anon ip address
+     * @return string
+     */
     function burst_get_anon_ip_address()
     {
-        if ( !empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif ( !empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
+        $ip = burst_get_ip_address();
         $anon_ip = BURST::$anonymize_IP->anonymizeIp($ip);
         return $anon_ip;
     }
 }
+if ( ! function_exists( 'burst_get_ip_address' ) ) {
+    /**
+     * Get IP address
+     * @return string
+     */
+	function burst_get_ip_address()
+	{
+		if ( !empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif ( !empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		} else {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		return $ip;
+	}
+}
 
 if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
+	/**
+     * Get user agent data
+	 * @param $user_agent
+	 *
+	 * @return null[]|string[]
+	 */
     function burst_get_user_agent_data($user_agent){
         $ua = \burst\UserAgent\parse_user_agent($user_agent);
 

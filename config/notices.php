@@ -48,6 +48,13 @@ if ( ! class_exists( "burst_notices" ) ) {
 			die( json_encode( $out ) );
 		}
 
+		/**
+		 * Get list of notices for the burst dashboard
+		 *
+		 * @param array $args
+		 *
+		 * @return array
+		 */
 		public function get_notices( $args = array() ) {
 			$notices = apply_filters( 'burst_notices', array());
 
@@ -174,7 +181,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 				}
 			}
 			$active_notices = $urgent + $open + $completed;
-
 			return $active_notices;
 		}
 

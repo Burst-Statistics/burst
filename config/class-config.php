@@ -35,10 +35,32 @@ if ( ! class_exists( "burst_config" ) ) {
 			 * Because we want to initialize after that, we use 15 here
 			 */
 			add_action( 'plugins_loaded', array( $this, 'init' ), 15 );
+			add_filter( 'burst_notices', array( $this, 'notices' ) );
 		}
 
 		static function this() {
 			return self::$_this;
+		}
+
+		/**
+		 * Add list of notices with conditions
+		 * @param $notices
+		 *
+		 * @return array[]
+		 */
+		public function notices($notices){
+			$new_notices = [
+				'pretty-permalinks-error' => [
+					'success_conditions'  => [
+						'get_option_permalink_structure',
+					],
+					'plus_one' => true,
+					'urgent' => __( "You are using 'plain' permalinks on your site. This causes issues with the REST API, which is used for registering the statistics.", 'burst-statistics' ) . '&nbsp; <a href="'.admin_url('options-permalink.php').'">'.__("Change the setting", "burst-statistics").'</a>',
+					'include_in_progress' => true,
+					'dismissible' => false,
+				]
+			];
+			return $notices + $new_notices;
 		}
 
 

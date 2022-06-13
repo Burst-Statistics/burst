@@ -21,6 +21,17 @@ function burst_register_rest_routes(){
  */
 
 function burst_track_hit(WP_REST_Request $request){
+	// block list ip
+	$ip = burst_get_ip_address();
+	error_log('ip: ' . $ip);
+	$ip_blocklist = apply_filters('burst_ip_blocklist', array() );
+	error_log('ip_blocklist: ' . print_r($ip_blocklist, true));
+	if( in_array($ip, $ip_blocklist)){
+		// blocked ip
+		return new WP_REST_Response(array('error' => 'ip_blocked'), 403);
+	}
+
+	// continue request
 	$data = $request->get_json_params();
 	$burst_info = burst_get_user_info();
 	$burst_uid = $burst_info['uid'];
@@ -67,7 +78,7 @@ function burst_track_hit(WP_REST_Request $request){
         $wpdb->update(
             $wpdb->prefix . 'burst_sessions',
             $session_array,
-            array( 'ID' => $session_id ),
+            array( 'ID' => $session_id )
         );
     } else {
          $wpdb->insert(

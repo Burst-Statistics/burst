@@ -548,7 +548,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                         'show_in_menu' => true,
                         'controls' => $this->get_daterange_dropdown(),
                     ),
-                ),
+                )
             );
         }
 
