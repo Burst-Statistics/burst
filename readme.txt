@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
 Tested up to: 6.0
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 
 Self-hosted and privacy-friendly analytics tool. 
 

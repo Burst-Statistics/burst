@@ -3,7 +3,7 @@
  * Plugin Name: Burst Statistics - Privacy-Friendly Analytics for WordPress
  * Plugin URI: https://www.wordpress.org/plugins/burst-statistics
  * Description: Get detailed insights into visitors’ behavior with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.
- * Version: 1.1.2
+ * Version: 1.1.3
  * Text Domain: burst-statistics
  * Domain Path: /languages
  * Author: Really Simple Plugins
@@ -105,7 +105,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			define( 'burst_plugin', plugin_basename( __FILE__ ) );
 			define( 'burst_plugin_name', 'Burst Statistics' );
 			$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
-			define( 'burst_version', '1.1.2' . $debug );
+			define( 'burst_version', '1.1.3' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
 		}
