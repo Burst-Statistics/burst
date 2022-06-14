@@ -23,9 +23,7 @@ function burst_register_rest_routes(){
 function burst_track_hit(WP_REST_Request $request){
 	// block list ip
 	$ip = burst_get_ip_address();
-	error_log('ip: ' . $ip);
 	$ip_blocklist = apply_filters('burst_ip_blocklist', array() );
-	error_log('ip_blocklist: ' . print_r($ip_blocklist, true));
 	if( in_array($ip, $ip_blocklist)){
 		// blocked ip
 		return new WP_REST_Response(array('error' => 'ip_blocked'), 403);
