@@ -1275,7 +1275,7 @@ if ( ! class_exists( "burst_field" ) ) {
 				for="<?php echo esc_html( $fieldname ) ?>">
                 <?php echo esc_html( $args['label'] ) ?>
                 <?php if ( isset($args['tooltip']) ) {
-                echo burst_icon('help', 'normal', $args['tooltip']);
+                echo burst_icon('help', 'default', $args['tooltip']);
                 } ?>
             </label>
 			<?php do_action( 'burst_after_label', $args ); ?>
@@ -1306,7 +1306,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label><?php echo esc_html( $args['label'] ) ?>
                 <?php if ( isset($args['tooltip']) ) {
-                    echo burst_icon('help', 'normal', $args['tooltip']);
+                    echo burst_icon('help', 'default', $args['tooltip']);
                 } ?>
             </label>
 			<?php do_action( 'burst_after_label', $args ); ?>
@@ -1365,7 +1365,7 @@ if ( ! class_exists( "burst_field" ) ) {
 			<?php do_action( 'burst_before_label', $args ); ?>
 			<label><?php echo esc_html( $args['label'] ) ?>
                 <?php if ( isset($args['tooltip']) ) {
-                    echo burst_icon('help', 'normal', $args['tooltip']);
+                    echo burst_icon('help', 'default', $args['tooltip']);
                 } ?>
             </label>
 			<?php do_action( 'burst_after_label', $args ); ?>

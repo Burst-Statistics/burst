@@ -23,10 +23,10 @@ function burst_install_sessions_table() {
 
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
-
 		$table_name = $wpdb->prefix . 'burst_sessions';
 		$sql        = "CREATE TABLE $table_name (
 			`ID` int(11) NOT NULL AUTO_INCREMENT,
+			`last_visited_url` varchar(255) NOT NULL,
             `goal_id` int(11),
             `experiment_id` int(11),
             `experiment_version` int(11),    

@@ -14,23 +14,29 @@ if ( ! class_exists( "burst_statistics" ) ) {
          * Enqueue some assets
          * @param $hook
          */
+
         public function enqueue_burst_tracking_script( $hook ) {
             $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+			$cookieless = burst_get_value('enable_cookieless_tracking');
+			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
             if( !$this->exclude_from_tracking() ) {
                 global $post;
                 //set some defaults
-                $localize_args = apply_filters( 'burst_tracking_localized_args',
+                $localize_args = apply_filters( 'burst_tracking_options',
                     array(
                         'url'                       => get_rest_url() . 'burst/v1/',
                         'page_id'                   => isset($post->ID) ? $post->ID : 0,
                         'cookie_retention_days'     => 30,
+                        'options'                   => array(
+                            'enable_cookieless_tracking' => $cookieless,
+                        ),
                     )
                 );
                 wp_enqueue_script( 'burst-timeme',
                     burst_url . "helpers/timeme/timeme$minified.js", array(),
                     burst_version, false );
                 wp_enqueue_script( 'burst',
-                    burst_url . "assets/js/burst$minified.js", apply_filters( 'burst_script_dependencies', array('burst-timeme') ),
+                    burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', array('burst-timeme') ),
                     burst_version, false );
                 wp_localize_script(
                     'burst',
@@ -304,46 +310,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					return "rgba(238, 126, 35, $o)";
 
 			}
-		}
-
-		/**
-		 * Get the latest visit for a UID for a specific page.
-		 * Specify a data_variable if you just want the result for a specific parameter
-		 *
-		 * @param  integer $burst_uid     The Burst UID which is saved in a cookie
-		 *                                (and in the user meta if the user is logged in)
-		 * @param  string  $page_url      The page URL you want the latest visit from
-		 * @param  string  $data_variable Specify which data you want, if left empty you'll
-		 *                                get an object with everything
-		 * @return object|bool                 Returns the latest visit data
-		 */
-		public function get_latest_visit_data($burst_uid = false, $page_url = false, $data_variable = false){
-			if (!$burst_uid && !$page_url) {
-				return false;
-			}
-			$sql = "";
-			if ($page_url) {
-				$sql = " AND page_url ='" . esc_attr($page_url) . "' ";
-			}
-
-			global $wpdb;
-			$statistics = false;
-			if ($burst_uid) {
-				$statistics
-					= $wpdb->get_row( $wpdb->prepare( "select * from {$wpdb->prefix}burst_statistics where uid = %s". $sql ." ORDER BY time DESC LIMIT 1 ",
-					esc_attr( $burst_uid) ) );
-			}
-			if (empty($statistics)){
-				return false;
-			} else {
-				if ($data_variable) {
-					return $statistics->$data_variable;
-				} else {
-					return $statistics;
-				}
-
-			}
-
 		}
 
         /**
@@ -944,7 +910,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
          */
         function get_sql_query_to_exclude_bounces($table_name) {
             $time_bounce = apply_filters('burst_bounce_time', 5000);
-            $bounce = "select session_id from $table_name where time_on_page < $time_bounce group by session_id having count(*) = 1";
+	        $bounce = "select session_id
+						from $table_name
+						GROUP BY session_id
+						having count(*) < 6
+						   and sum(time_on_page) < $time_bounce";
             $statistics_without_bounces = "SELECT * FROM $table_name WHERE session_id NOT IN ($bounce)";
             return $statistics_without_bounces;
         }
@@ -1062,6 +1032,7 @@ function burst_install_statistics_table() {
             `first_time_visit` int(11),
               PRIMARY KEY  (ID),
               KEY `time_index` (time)
+                   
             ) $charset_collate;";
         /**
          * We use b-tree index as it can be used for < or > operations, which is not possible for HASH

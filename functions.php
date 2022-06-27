@@ -71,45 +71,6 @@ if ( ! function_exists('burst_read_more' ) ) {
 		return $html;
 	}
 }
-if ( ! function_exists('burst_get_user_info' ) ) {
-    /**
-     * Get burst uid and first time visit and set a cookie if necessary
-     * @return array
-     */
-    function burst_get_user_info()
-    {
-        $first_time_visit = false;
-        //check if this user has a cookie
-        $burst_uid = isset($_COOKIE['burst_uid']) ? sanitize_title($_COOKIE['burst_uid']) : false;
-        if (!$burst_uid) {
-            // if user is logged in get burst meta user id
-            if (is_user_logged_in()) {
-                $burst_uid = get_user_meta(get_current_user_id(), 'burst_cookie_uid');
-                //if no user meta is found, add new unique ID
-                if (!isset($burst_uid)) {
-                    //generate random string
-                    $burst_uid = burst_random_str();
-                    update_user_meta(get_current_user_id(), 'burst_cookie_uid', $burst_uid);
-                    $first_time_visit = true;
-                }
-            } else {
-                $burst_uid = burst_random_str();
-                // add first_time_visit data
-                $first_time_visit = true;
-            }
-        }
-
-        //make sure it's set.
-        if (!isset($_COOKIE['burst_uid'])) {
-            burst_setcookie('burst_uid', $burst_uid, 30);
-        }
-        return array(
-                'uid' => $burst_uid,
-                'first_time_visit' => $first_time_visit,
-        );
-    }
-}
-
 if ( ! function_exists( 'burst_get_template' ) ) {
 	/**
 	 * Get a template based on filename, overridable in theme dir
@@ -253,6 +214,21 @@ if ( ! function_exists( 'burst_offset_utc_time_to_gtm_offset' ) ) {
     }
 }
 
+if ( ! function_exists( 'burst_sanitize_uid' ) ) {
+	/**
+     * Sanitize a UID
+	 * @param $uid
+	 *
+	 * @return false|string
+	 */
+	function burst_sanitize_uid( $uid ) {
+		if ( ! preg_match( '/^[a-z0-9-]*/', $uid ) ) {
+			return false;
+		}
+		return $uid;
+	}
+}
+
 if ( ! function_exists( 'burst_format_number' ) ) {
     /**
      * Format number with correct decimal and thousands separator
@@ -298,39 +274,6 @@ if ( ! function_exists( 'burst_format_number' ) ) {
             return number_format_i18n($number, 0) . $shorthand; // return number without decimal
         }
     }
-}
-
-/**
- * Generate a random string, using a cryptographically secure 
- * pseudorandom number generator (random_int)
- *
- * This function uses type hints now (PHP 7+ only), but it was originally
- * written for PHP 5 as well.
- * 
- * For PHP 7, random_int is a PHP core function
- * For PHP 5.x, depends on https://github.com/paragonie/random_compat
- * 
- * @param int $length      How many characters do we want?
- * @param string $keyspace A string of all possible characters
- *                         to select from
- * @return string
- */
-
-if ( ! function_exists( 'burst_random_str' ) ) {
-	function burst_random_str(
-	    int $length = 64,
-	    string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	): string {
-	    if ($length < 1) {
-	        throw new \RangeException("Length must be a positive integer");
-	    }
-	    $pieces = [];
-	    $max = mb_strlen($keyspace, '8bit') - 1;
-	    for ($i = 0; $i < $length; ++$i) {
-	        $pieces []= $keyspace[random_int(0, $max)];
-	    }
-	    return implode('', $pieces);
-	}
 }
 
 if ( ! function_exists( 'burst_get_current_post_type' ) ) {
@@ -685,7 +628,7 @@ if ( ! function_exists( 'burst_panel' ) ) {
             <div class="burst-panel-title">
 
                 <span class="burst-panel-toggle">
-                    '. burst_icon('arrow-right', 'success') .'
+                    '. burst_icon('arrow-right', 'default') .'
                     <span class="burst-title">' . $title . '</span>
                  </span>
                 <span>' . $validate . '</span>
@@ -720,6 +663,7 @@ if ( ! function_exists( 'burst_update_option' ) ) {
         }
     }
 }
+
 if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
     /**
      * Get anon ip address
@@ -831,30 +775,6 @@ if ( ! function_exists( 'burst_sprintf' ) ) {
     }
 }
 
-if ( !function_exists('burst_get_date_ranges')) {
-	function burst_get_date_ranges(){
-		return apply_filters('burst_date_ranges',array(
-			'yesterday',
-			'last-7-days',
-			'last-30-days',
-            'last-90-days',
-			'last-month',
-			'custom'
-		));
-	}
-}
-
-if ( !function_exists('burst_sanitize_date_range')) {
-    function burst_sanitize_date_range($date_range){
-        $date_range = sanitize_title($date_range);
-	    $date_ranges = burst_get_date_ranges();
-        if ( in_array($date_range, $date_ranges) ){
-            return $date_range;
-        }
-        return 'custom';
-    }
-}
-
 if ( ! function_exists( 'burst_printf' ) ) {
     /**
      * @param string $format
@@ -876,16 +796,26 @@ if ( ! function_exists( 'burst_printf' ) ) {
 }
 
 
+if ( !function_exists('burst_get_date_ranges')) {
+	function burst_get_date_ranges(){
+		return apply_filters('burst_date_ranges',array(
+			'yesterday',
+			'last-7-days',
+			'last-30-days',
+			'last-90-days',
+			'last-month',
+			'custom'
+		));
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+if ( !function_exists('burst_sanitize_date_range')) {
+	function burst_sanitize_date_range($date_range){
+		$date_range = sanitize_title($date_range);
+		$date_ranges = burst_get_date_ranges();
+		if ( in_array($date_range, $date_ranges) ){
+			return $date_range;
+		}
+		return 'custom';
+	}
+}

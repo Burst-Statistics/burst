@@ -6,8 +6,8 @@ $items = array(
         'link'    => 'https://burst-statistics.com/hidden-features-of-the-insights-graph/',
     ),
     2 => array(
-        'content' => "Can I leave a Feature Request?",
-        'link' => 'https://burst-statistics.com/can-i-leave-a-feature-request/',
+        'content' => "What is Cookieless tracking?",
+        'link' => 'https://burst-statistics.com/what-is-cookieless-tracking/',
     ),
     3 => array(
         'content' => "Why is Burst Privacy-Friendly?",
