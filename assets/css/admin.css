@@ -1416,7 +1416,7 @@ update-nag.notice {
 .burst-dashboard-widget .block__explanation-and-stats .uplift {
   margin-right: 0;
 }
-:root {
+.burst {
   --rsp-brand-primary: var(--rsp-green);
   --rsp-brand-secondary: var(--rsp-yellow);
   --rsp-brand-primary-faded: var(--rsp-green-faded);

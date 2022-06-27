@@ -60,6 +60,9 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.1.4 =
+* Fix: Bounce rate calculation
+* Feature: Cookieless tracking
 
 = 1.1.3 =
 * Fix: Fatal error on PHP 7.2
