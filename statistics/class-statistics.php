@@ -739,6 +739,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
             $statistics_without_bounces = $this->get_sql_query_to_exclude_bounces($table_name);
+			$bounces_query = $this->get_sql_query_to_get_bounces($table_name);
 
 	        /**
 	         * current stats
@@ -776,14 +777,18 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $bounce_time =  apply_filters('burst_bounce_time', 5000);
 	        $bounce_count = $clear_cache || $date_range === 'custom' ? false: get_transient('burst_bounce_count_'.$date_range );
 	        if ( !$bounce_count ) {
-	            $sql = "SELECT COUNT(*) as bounces FROM ( SELECT session_id as bounces from $table_name WHERE time > $date_start AND time < $date_end AND time_on_page < $bounce_time GROUP BY session_id having COUNT(*) = 1) as bounces_table";
+		        $sql = "SELECT COUNT(*) as bounces
+                    FROM ($bounces_query) as bounces
+                    WHERE time > $date_start AND time < $date_end";
 	            $bounce_count = $wpdb->get_var( $sql );
 		        if ($date_range!=='custom') set_transient('burst_bounce_count_'.$date_range, $bounce_count, DAY_IN_SECONDS);
 	        }
 
 	        $bounce_count_prev = $clear_cache || $date_range === 'custom' ? false: get_transient('burst_bounce_count_prev_'.$date_range );
 	        if ( !$bounce_count_prev ) {
-	            $sql = "SELECT COUNT(*) as bounces FROM ( SELECT session_id as bounces from $table_name WHERE time > $date_start_diff AND time < $date_end_diff AND time_on_page < $bounce_time GROUP BY session_id having COUNT(*) = 1) as bounces_table";
+		        $sql = "SELECT COUNT(*) as bounces
+                    FROM ($bounces_query) as bounces
+                    WHERE time > $date_start_diff AND time < $date_end_diff";
 	            $bounce_count_prev = $wpdb->get_var( $sql );
 		        if ($date_range!=='custom') set_transient('burst_bounce_count_prev_'.$date_range, $bounce_count_prev, DAY_IN_SECONDS);
 	        }
@@ -918,6 +923,22 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $statistics_without_bounces = "SELECT * FROM $table_name WHERE session_id NOT IN ($bounce)";
             return $statistics_without_bounces;
         }
+
+		/**
+		 * Function to get the SQL query to exclude bounces from query's
+		 *
+		 * @return string
+		 */
+		function get_sql_query_to_get_bounces($table_name) {
+			$time_bounce = apply_filters('burst_bounce_time', 5000);
+			$bounce = "select session_id
+						from $table_name
+						GROUP BY session_id
+						having count(*) = 1
+						   and sum(time_on_page) < $time_bounce";
+			$statistics_without_bounces = "SELECT * FROM $table_name WHERE session_id IN ($bounce)";
+			return $statistics_without_bounces;
+		}
 
         /**
          * Function to format uplift
