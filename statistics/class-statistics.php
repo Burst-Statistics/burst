@@ -913,7 +913,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	        $bounce = "select session_id
 						from $table_name
 						GROUP BY session_id
-						having count(*) < 6
+						having count(*) = 1
 						   and sum(time_on_page) < $time_bounce";
             $statistics_without_bounces = "SELECT * FROM $table_name WHERE session_id NOT IN ($bounce)";
             return $statistics_without_bounces;
