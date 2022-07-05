@@ -61,6 +61,9 @@ Not...yet.
 
 == Change log ==
 = 1.1.4 =
+* Improvement: Changed from .less to .scss because WordPress also uses .scss
+
+= 1.1.4 =
 * Fix: Bounce rate calculation
 * Feature: Cookieless tracking
 
