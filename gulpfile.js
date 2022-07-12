@@ -1,5 +1,4 @@
 const gulp = require('gulp');
-const { watch } = require('gulp');
 const concat = require('gulp-concat');
 const cssbeautify = require('gulp-cssbeautify');
 const cssuglify = require('gulp-uglifycss');
@@ -21,14 +20,17 @@ function scssTask(cb) {
 exports.scss = scssTask
 
 function jsTask(cb) {
-  gulp.src(['./js/src/imprintjs/dist/imprint.js','js/src/burst.js'])
+  gulp.src(
+      ['./js/src/imprintjs/dist/imprint.js',
+        'js/src/burst.js'
+      ], { allowEmpty: true })
   .pipe(concat('burst-cookieless.js'))
   .pipe(gulp.dest('./js/build'))
   .pipe(concat('burst-cookieless.min.js'))
   .pipe(jsuglify())
   .pipe(gulp.dest('./js/build'));
 
-  gulp.src('js/src/burst.js')
+  gulp.src('js/src/burst.js', { allowEmpty: true })
   .pipe(concat('burst.js'))
   .pipe(gulp.dest('./js/build'))
   .pipe(concat('burst.min.js'))
@@ -39,8 +41,11 @@ function jsTask(cb) {
 }
 exports.js = jsTask
 
-exports.default = function() {
-  // You can use a single task
-  watch('./assets/css/**/*.scss', { ignoreInitial: false }, scssTask);
-  watch('./assets/js/**/*.js', { ignoreInitial: false }, jsTask);
-};
+function defaultTask(cb) {
+  gulp.watch('./assets/css/**/*.scss', { ignoreInitial: false }, scssTask);
+  gulp.watch('./assets/js/**/*.js', { ignoreInitial: false }, jsTask);
+
+  cb();
+}
+exports.default = defaultTask
+
