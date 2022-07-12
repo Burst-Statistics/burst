@@ -39,7 +39,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 				if ( !in_array($notice_id, $dismissed_warnings) ) {
 					$dismissed_warnings[] = $notice_id;
 				}
-				update_option('burst_dismissed_warnings', $dismissed_warnings );
+				update_option('burst_dismissed_warnings', $dismissed_warnings, false );
 			}
 
 			$out = array(

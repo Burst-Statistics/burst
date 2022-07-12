@@ -60,8 +60,12 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
-= 1.1.4 =
+= 1.1.5 =
 * Improvement: Changed from .less to .scss because WordPress also uses .scss
+* Improvement: Update option autoload turned off on front end for better performance
+* Fix: Fixed bug where UID could be empty resulting in an SQL error
+* Fix: Fixed last step of shepherd tour to be inside the viewport
+* Improvement: Integration with Complianz that adds burt_uid to the cookie-scanner
 
 = 1.1.4 =
 * Fix: Bounce rate calculation

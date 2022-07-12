@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
+defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 if ( ! class_exists( "burst_admin" ) ) {
 	class burst_admin {
 		private static $_this;
@@ -95,7 +95,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			do_action( 'burst_upgrade', $prev_version );
 
-			update_option( 'burst-current-version', burst_version );
+			update_option( 'burst-current-version', burst_version, false );
 		}
 
 		/**

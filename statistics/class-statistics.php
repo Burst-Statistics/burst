@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
+defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 
 if ( ! class_exists( "burst_statistics" ) ) {
 	class burst_statistics{
@@ -496,7 +496,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $date = date('j-n-Y', time() );
             $last_generated_date = get_option('burst_last_generated');
             if ( $last_generated_date !== $date ) {
-                update_option('burst_last_generated', $date);
+                update_option('burst_last_generated', $date, false);
                 $date_ranges = burst_get_date_ranges();
                 foreach ( $date_ranges  as $date_range ) {
                     if ($date_range === 'custom' ) continue;

@@ -86,11 +86,11 @@ class burst_tour {
                     'position' => 'bottom',
                 ),
                 array(
-                    'title'  => __( 'Support', 'burst-statistics' ),
+                    'title'  => __( 'Support & feedback', 'burst-statistics' ),
                     'text'   => __( "Feel free to post your questions or feedback on the WordPress forums. We are happy to help!", 'burst-statistics' ),
                     'link'   => admin_url( "index.php?page=burst&burst-page=statistics" ),
                     'attach' => '.burst-header-right .button',
-                    'position' => 'left',
+                    'position' => 'auto',
                 ),
 			);
 

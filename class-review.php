@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
+defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 
 if ( ! class_exists( "burst_review" ) ) {
 	class burst_review {
@@ -34,7 +34,7 @@ if ( ! class_exists( "burst_review" ) ) {
 
 				//set a time for users who didn't have it set yet.
 				if ( ! get_option( 'burst_activation_time' ) ) {
-					update_option( 'burst_activation_time', time() );
+					update_option( 'burst_activation_time', time(), false );
 				}
 			}
 
@@ -177,11 +177,11 @@ if ( ! class_exists( "burst_review" ) ) {
 			$type = isset( $_POST['type'] ) ? sanitize_title($_POST['type']) : false;
 
 			if ( $type === 'dismiss' ) {
-				update_option( 'burst_review_notice_shown', true );
+				update_option( 'burst_review_notice_shown', true, false );
 			}
 			if ( $type === 'later' ) {
 				//Reset activation timestamp, notice will show again in one month.
-				update_option( 'burst_activation_time', time() );
+				update_option( 'burst_activation_time', time(), false );
 			}
 
 			wp_die(); // this is required to terminate immediately and return a proper response
@@ -193,7 +193,7 @@ if ( ! class_exists( "burst_review" ) ) {
 
 		public function process_get_review_dismiss(){
 			if (isset( $_GET['burst_dismiss_review'] ) ){
-				update_option( 'burst_review_notice_shown', true );
+				update_option( 'burst_review_notice_shown', true, false );
 			}
 		}
 	}

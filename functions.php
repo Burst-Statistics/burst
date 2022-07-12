@@ -2,7 +2,7 @@
 
 use burst\UserAgent\UserAgentParser;
 
-defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
+defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 
 if ( ! function_exists( 'burst_user_can_view' ) ) {
     /**
@@ -35,19 +35,6 @@ if ( ! function_exists( 'burst_user_can_manage' ) ) {
 		}
 
 		return true;
-	}
-}
-
-if ( !function_exists( 'burst_setcookie') ) {
-	function burst_setcookie( $key, $value, $expiration_days ){
-		$options = array (
-			'expires' => time() + (DAY_IN_SECONDS * apply_filters('burst_cookie_retention', $expiration_days) ),
-			'path' => '/',
-			'secure' => is_ssl(),
-			'samesite' => 'Lax' // None || Lax  || Strict
-		);
-
-		setcookie($key, $value, $options );
 	}
 }
 
@@ -223,9 +210,61 @@ if ( ! function_exists( 'burst_sanitize_uid' ) ) {
 	 */
 	function burst_sanitize_uid( $uid ) {
 		if ( ! preg_match( '/^[a-z0-9-]*/', $uid ) ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'Burst Statistics: Invalid UID detected: ' . $uid );
+			}
 			return false;
 		}
 		return $uid;
+	}
+}
+
+if ( ! function_exists( 'burst_get_referrer_url' ) ){
+    /**
+     * Get the referrer url
+     *
+     * @return string
+     */
+    function burst_get_referrer_url($unsanitzed_referrer) {
+        $referrer = esc_url_raw($unsanitzed_referrer);
+        $referrer_url = parse_url( $referrer, PHP_URL_HOST );
+        $ref_spam_list = file(burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if (array_search($referrer_url, $ref_spam_list)){
+            $referrer_url = 'spammer';
+        } else {
+            $referrer_url = esc_url_raw($unsanitzed_referrer);
+        }
+	    return trailingslashit( $referrer_url );
+    }
+}
+
+if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
+	function burst_is_ip_blocked() {
+		$ip           = burst_get_ip_address();
+		$ip_blocklist = apply_filters( 'burst_ip_blocklist', array() );
+		if ( in_array( $ip, $ip_blocklist ) ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'IP ' . $ip . ' is blocked for tracking' );
+			}
+			return true;
+		}
+		return false;
+	}
+}
+if ( ! function_exists( 'burst_get_first_time_visit' ) ) {
+	function burst_get_first_time_visit( $unsanitized_first_time_visit, $burst_uid ) {
+        global $wpdb;
+		$first_time_visit = burst_sanitize_uid( $unsanitized_first_time_visit );
+		if ( $first_time_visit === 'fingerprint' ) {
+			// check if fingerprint is already in the database in the past 30 days
+			$after_time         = time() - MONTH_IN_SECONDS;
+			$sql                = $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}burst_statistics WHERE uid = %s AND time > %s LIMIT 1", $burst_uid, $after_time );
+			$fingerprint_exists = $wpdb->get_var( $sql );
+
+			return ! ( $fingerprint_exists > 0 ) ? 1 : 0;
+		}
+
+		return $first_time_visit == '1' ? 1 : 0;
 	}
 }
 

@@ -1,5 +1,5 @@
 <?php 
-defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
+defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 
 global $burst_integrations_list;
 $burst_integrations_list = apply_filters( 'burst_integrations', array(
@@ -10,6 +10,10 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 	'wp-rocket' => array(
 		'constant_or_function' => 'WP_ROCKET_VERSION',
 		'label'                => 'WP Rocket',
+	),
+	'complianz' => array(
+		'constant_or_function' => 'cmplz_version',
+		'label'                => 'Complianz GDPR/CCPA',
 	),
 ));
 

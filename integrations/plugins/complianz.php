@@ -1,23 +1,14 @@
 <?php
 
 /**
- * Add a script to the blocked list
- * @param array $tags
+ * Add burst cookies to list of detected cookies during scan
+ * @param array $cookies
  *
  * @return array
  */
-function burst_complianz_script( $tags ) {
-	$tags[] = array(
-		'name' => 'burst',
-		'category' => 'statistics',
-		'urls' => array(
-			'assets/js/burst.js',
-			'assets/js/burst.min.js',
-		),
-		'enable_placeholder' => '0',
-		'enable_dependency' => '0',
-	);
 
-	return $tags;
+function burst_complianz_add_cookies( $cookies ){
+	$cookies['burst_uid'] = 'uid';
+	return $cookies;
 }
-add_filter( 'cmplz_known_script_tags', 'burst_complianz_script' );
+add_filter('cmplz_detected_cookies', 'burst_complianz_add_cookies');

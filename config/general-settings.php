@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) or die( "you do not have acces to this page!" );
+defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 
 add_filter('burst_fields', 'burst_add_general_settings');
 function burst_add_general_settings($fields){
@@ -10,8 +10,6 @@ function burst_add_general_settings($fields){
                 'type'    => 'checkbox',
                 'label'   => __( "Enable Cookieless tracking", 'burst' ),
                 'default' => false,
-                'tooltip'    => __( 'This will add an url parameter with an unique identifier.',
-                    'burst' ),
                 'table'   => true,
             ),
 	);
