@@ -17,6 +17,7 @@ Get detailed insights into visitors' behaviour with Burst Statistics, the privac
 
 * Essential Metrics: Pageviews, Visitors, Sessions, Time on Page, Referrers etc
 * Privacy-friendly: Locally hosted, and anonymized data in collaboration with Complianz
+* Cookieless Tracking: Get data based on anonymous parameters without storing data in browsers.
 * Optimized: Built for performance and data minimization.
 * Flexibility: Have your own idea how Bounce Rate should be measured? Configure your own metrics.
 * Open-Source: We see our users as collaborators, so please feel free to use the below links to help us out building the best analytics tool for WordPress
@@ -53,7 +54,9 @@ Burst will maintain and a grow a knowledgebase about Burst Statistics and other 
 = Can I block IP Addresses?
 Before creating a dedicated user interface we collect proposed features as MU Plugins at [Github - Burst Integrations](https://github.com/Really-Simple-Plugins/burst-integrations)
 = Why is Burst Statistics Privacy-friendly? =
-Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone. 
+Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone.
+= What is Cookieless tracking? =
+Burst Statistics can be used without setting cookies or storing data in browsers. This, however, can affect accuracy; that's why a hybrid option is possible with cookies after consent. Read more about [Cookieless tracking](https://burst-statistics.com/definition/what-is-cookieless-tracking/).
 = Do you mind if I give feedback about the product? =
 We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
 = Is there a Pro version? =
