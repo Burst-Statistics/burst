@@ -68,7 +68,7 @@ Not...yet.
 * Improvement: Update option autoload turned off on front end for better performance
 * Fix: Fixed bug where UID could be empty resulting in an SQL error
 * Fix: Fixed last step of shepherd tour to be inside the viewport
-* Improvement: Integration with Complianz that adds burt_uid to the cookie-scanner
+* Improvement: Integration with Complianz that adds burst_uid to the cookie-scanner
 
 = 1.1.4 =
 * Fix: Bounce rate calculation
