@@ -58,7 +58,7 @@ function burst_track_hit( WP_REST_Request $request ) {
 	$update_array  = array_merge( $default_array, $update_array );
 
 	if ( empty( $update_array['uid'] ) ) {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		if ( WP_DEBUG ) {
 			error_log( 'Burst Statistics: Empty UID detected' );
 			error_log( 'Information that could be useful for debugging' );
 			error_log( print_r( $update_array, true ) );

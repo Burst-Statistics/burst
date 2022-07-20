@@ -80,7 +80,7 @@ class burst_tour {
 				),
                 array(
                     'title'  => __( "Changing the period", "burst-statistics" ),
-                    'text'   => __( "Over here you can change the date range for the data being shown. Click on to different days or click twice on a single day to show the data for that period.", 'burst-statistics' ),
+                    'text'   => __( "Over here you can change the date range for the data being shown. Click on two different days or click twice on a single day to show the data for that period.", 'burst-statistics' ),
                     'link'   => admin_url( "index.php?page=burst&burst-page=statistics" ),
                     'attach' => '.burst-date-container',
                     'position' => 'bottom',

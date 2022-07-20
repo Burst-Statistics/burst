@@ -21,21 +21,21 @@ exports.scss = scssTask
 
 function jsTask(cb) {
   gulp.src(
-      ['./js/src/imprintjs/dist/imprint.js',
-        'js/src/burst.js'
+      ['./assets/js/src/imprintjs/dist/imprint.js',
+        './assets/js/src/burst.js'
       ], { allowEmpty: true })
   .pipe(concat('burst-cookieless.js'))
-  .pipe(gulp.dest('./js/build'))
+  .pipe(gulp.dest('./assets/js/build'))
   .pipe(concat('burst-cookieless.min.js'))
   .pipe(jsuglify())
-  .pipe(gulp.dest('./js/build'));
+  .pipe(gulp.dest('./assets/js/build'));
 
-  gulp.src('js/src/burst.js', { allowEmpty: true })
+  gulp.src('./assets/js/src/burst.js', { allowEmpty: true })
   .pipe(concat('burst.js'))
-  .pipe(gulp.dest('./js/build'))
+  .pipe(gulp.dest('./assets/js/build'))
   .pipe(concat('burst.min.js'))
   .pipe(jsuglify())
-  .pipe(gulp.dest('./js/build'));
+  .pipe(gulp.dest('./assets/js/build'));
 
   cb();
 }
