@@ -28,6 +28,8 @@ if (isset($general_settings['clear_data_on_uninstall']) && $general_settings['cl
 		$wpdb->query($sql);
 	}
 
-
+	if (file_exists(ABSPATH . '/burst-statistics-endpoint.php')) {
+		unlink(ABSPATH . '/burst-statistics-endpoint.php');
+	}
 
 }

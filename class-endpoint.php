@@ -28,7 +28,7 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 
 		// install endpoint file
 		public function install_endpoint_file() {
-			$file = __DIR__ . '/burst-statistics-endpoint.php';
+			$file = ABSPATH . '/burst-statistics-endpoint.php';
 			error_log($file);
 			if ( ! file_exists( $file ) ){
 				error_log('file does not exist');
