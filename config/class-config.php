@@ -48,15 +48,29 @@ if ( ! class_exists( "burst_config" ) ) {
 		 *
 		 * @return array[]
 		 */
-		public function notices($notices){
+		public function notices( $notices ) {
 			$new_notices = [
 				'pretty-permalinks-error' => [
 					'success_conditions'  => [
-						'get_option_permalink_structure',
+						'get_option_permalink_structure', // If pretty permalinks are enabled
 					],
 					'plus_one' => true,
-					'urgent' => __( "You are using 'plain' permalinks on your site. This causes issues with the REST API, which is used for registering the statistics.", 'burst-statistics' ) . '&nbsp; <a href="'.admin_url('options-permalink.php').'">'.__("Change the setting", "burst-statistics").'</a>',
+					'urgent' => __( "You are using 'plain' permalinks on your site. This is not supported.", 'burst-statistics' ) . '&nbsp; <a href="'.admin_url('options-permalink.php').'">'.__("Change the setting", "burst-statistics").'</a>',
 					'include_in_progress' => true,
+					'dismissible' => false,
+				],
+				'tracking-error' => [
+					'warning_condition' => 'burst_tracking_status_error', // true if rest and beacon don't work
+					'plus_one' => true,
+					'urgent' => __( "Tracking error.", 'burst-statistics' ) . '&nbsp; <a target="_blank" href="https://burst-statistics.com/troubleshoot-tracking/">'.__("Read how to troubleshoot", "burst-statistics").'</a>',
+					'include_in_progress' => false,
+					'dismissible' => false,
+				],
+				'tracking-with-rest-api' => [
+					'warning_condition' => 'burst_tracking_status_rest_api', // true if rest api is enabled and beacon does not work
+					'plus_one' => false,
+					'open' => __( "You are using the REST API for tracking. Speed up your website by adding an endpoint.", 'burst-statistics' ) . '&nbsp; <a target="_blank" href="https://burst-statistics.com/troubleshoot-tracking/">'.__("Read more", "burst-statistics").'</a>',
+					'include_in_progress' => false,
 					'dismissible' => false,
 				]
 			];

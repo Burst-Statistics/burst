@@ -201,24 +201,6 @@ if ( ! function_exists( 'burst_offset_utc_time_to_gtm_offset' ) ) {
     }
 }
 
-if ( ! function_exists( 'burst_sanitize_uid' ) ) {
-	/**
-     * Sanitize a UID
-	 * @param $uid
-	 *
-	 * @return false|string
-	 */
-	function burst_sanitize_uid( $uid ) {
-		if ( ! preg_match( '/^[a-z0-9-]*/', $uid ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'Burst Statistics: Invalid UID detected: ' . $uid );
-			}
-			return false;
-		}
-		return $uid;
-	}
-}
-
 if ( ! function_exists( 'burst_get_referrer_url' ) ){
     /**
      * Get the referrer url
@@ -249,22 +231,6 @@ if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
 			return true;
 		}
 		return false;
-	}
-}
-if ( ! function_exists( 'burst_get_first_time_visit' ) ) {
-	function burst_get_first_time_visit( $unsanitized_first_time_visit, $burst_uid ) {
-        global $wpdb;
-		$first_time_visit = burst_sanitize_uid( $unsanitized_first_time_visit );
-		if ( $first_time_visit === 'fingerprint' ) {
-			// check if fingerprint is already in the database in the past 30 days
-			$after_time         = time() - MONTH_IN_SECONDS;
-			$sql                = $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}burst_statistics WHERE uid = %s AND time > %s LIMIT 1", $burst_uid, $after_time );
-			$fingerprint_exists = $wpdb->get_var( $sql );
-
-			return ! ( $fingerprint_exists > 0 ) ? 1 : 0;
-		}
-
-		return $first_time_visit == '1' ? 1 : 0;
 	}
 }
 
@@ -714,23 +680,6 @@ if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
         $anon_ip = BURST::$anonymize_IP->anonymizeIp($ip);
         return $anon_ip;
     }
-}
-if ( ! function_exists( 'burst_get_ip_address' ) ) {
-    /**
-     * Get IP address
-     * @return string
-     */
-	function burst_get_ip_address()
-	{
-		if ( !empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-			$ip = $_SERVER['HTTP_CLIENT_IP'];
-		} elseif ( !empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		} else {
-			$ip = $_SERVER['REMOTE_ADDR'];
-		}
-		return $ip;
-	}
 }
 
 if ( ! function_exists( 'burst_get_user_agent_data' ) ) {

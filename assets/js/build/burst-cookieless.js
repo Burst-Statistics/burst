@@ -1062,9 +1062,8 @@ var FontDetector = function() {
 })(window);
 // TimeMe.js should be loaded and running to track time as soon as it is loaded.
 const burst_token = '?token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 7);
-let burst_insert_id = 0;
 let burst_track_hit_running = false;
-let burst_last_time_update = false;
+let burst_initial_track_hit = false;
 let burst_cookieless_option = burst.options.enable_cookieless_tracking; // User cookieless option
 // add option to window so a consent plugin can change this value
 window.burst_enable_cookieless_tracking = burst.options.enable_cookieless_tracking; // Consent plugin ccokieless option
@@ -1119,7 +1118,7 @@ let burst_set_cookie = (name, value) => {
  */
 let burst_use_cookies = () => {
 	if ( !navigator.cookieEnabled ) return false; // cookies blocked by browser
-	if ( burst_cookieless_option == '1' && window.burst_enable_cookieless_tracking == '1' ) return false; // cookieless is enabled by user or consent plugin
+	if ( burst_cookieless_option === '1' && window.burst_enable_cookieless_tracking === '1' ) return false; // cookieless is enabled by user or consent plugin
 	return true; // cookies are enabled
 };
 
@@ -1134,6 +1133,23 @@ function burst_enable_cookies() {
 			burst_set_cookie( 'burst_uid', obj.uid ); // set uid cookie
 		});
 	}
+}
+
+/**
+ * Get or set the user identifier
+ * @returns {Promise}
+ */
+const burst_uid = () => {
+	return new Promise((resolve) => {
+		burst_get_cookie('burst_uid').then( cookie_uid => {
+			resolve( cookie_uid );
+		}).catch( () => {
+			// if no cookie, generate a uid and set it
+			let uid  = burst_generate_uid();
+			burst_set_cookie('burst_uid', uid);
+			resolve( uid );
+		});
+	});
 };
 
 /**
@@ -1146,45 +1162,6 @@ let burst_generate_uid = () => {
 		uid += Math.floor(Math.random() * 16).toString(16);
 	}
 	return uid;
-};
-
-/**
- * Get or set the user identifier
- * @returns {Promise}
- */
-const burst_uid = () => {
-	return new Promise((resolve) => {
-		let obj = {
-			'uid': false,
-			'first_time_visit': false,
-		};
-		if ( burst_use_cookies() ) {
-			burst_get_cookie('burst_uid').then( cookie_uid => {
-				obj.uid = cookie_uid;
-				obj.first_time_visit = false;
-				resolve( obj );
-			}).catch( () => {
-				// if no cookie, generate a uid and set it
-				obj.uid  = burst_generate_uid();
-				obj.first_time_visit = true;
-				burst_set_cookie('burst_uid', obj.uid);
-				resolve( obj );
-			});
-		} else {
-			// if no cookies, generate a fingerprint and resolve
-			burst_fingerprint().then(fingerprint => {
-				// add prefix so we can identify it as a fingerprint
-				obj.uid = 'f-' + fingerprint;
-				obj.first_time_visit = 'fingerprint';
-				resolve( obj );
-			}).catch( () => {
-				// if we can't get the fingerprint, generate a random uid
-				obj.uid = 'f-' + burst_generate_uid();
-				obj.first_time_visit = 'fingerprint';
-				resolve( obj );
-			});
-		}
-	});
 };
 
 /**
@@ -1202,7 +1179,6 @@ const burst_fingerprint = () => {
 			"deviceDpi",
 			"doNotTrack",
 			"indexedDb",
-			// "installedFonts",
 			"language",
 			"localStorage",
 			"pixelRatio",
@@ -1228,12 +1204,14 @@ const burst_fingerprint = () => {
 
 let burst_get_time_on_page = () => {
 	return new Promise((resolve) => {
+		// get time on page
 		let current_time_on_page = TimeMe.getTimeOnCurrentPageInMilliseconds();
-		if ( burst_last_time_update + 1000 < current_time_on_page) {
-			burst_last_time_update = current_time_on_page;
-			resolve(current_time_on_page);
-		}
-		resolve(0);
+		// reset time on page
+		TimeMe.resetAllRecordedPageTimes();
+		TimeMe.initialize({
+			idleTimeoutInSeconds: 30 // seconds
+		});
+		resolve(current_time_on_page);
 	});
 };
 
@@ -1256,19 +1234,28 @@ let burst_is_user_agent = () => {
  */
 let burst_api_request = obj => {
 	return new Promise((resolve, reject) => {
-
-		let request = new XMLHttpRequest();
-		request.open(obj.method || "POST", obj.url, true);
-		request.setRequestHeader('Content-type', 'application/json');
-		request.send(obj.data);
-		request.onload = () => {
-			if (request.status >= 200 && request.status < 300) {
-				resolve(request.response);
-			} else {
-				reject(request.statusText);
-			}
-		};
-		request.onerror = () => reject(request.statusText);
+		// if browser supports sendBeacon use it
+		if (window.navigator.sendBeacon && burst.options.beacon_enabled) {
+			// send the request using sendBeacon
+			obj.url = '/burst-statistics-endpoint.php'
+			window.navigator.sendBeacon(obj.url, JSON.stringify( obj.data) );
+		} else {
+			// send the request using XMLHttpRequest
+			obj.url = burst.url + 'track' + burst_token;
+			console.log('sendBeacon is not supported');
+			let request = new XMLHttpRequest();
+			request.open(obj.method || "POST", obj.url, true);
+			request.setRequestHeader('Content-type', 'application/json');
+			request.send(obj.data);
+			request.onload = () => {
+				if (request.status >= 200 && request.status < 300) {
+					resolve(request.response);
+				} else {
+					reject(request.statusText);
+				}
+			};
+			request.onerror = () => reject(request.statusText);
+		}
 	});
 };
 
@@ -1280,29 +1267,34 @@ let burst_api_request = obj => {
 
 async function burst_update_hit ( update_uid = false ){
 	if ( burst_is_user_agent() ) return;
-	if ( burst_insert_id < 1 ) return;
+	if ( ! burst_initial_track_hit ) return;
 
 	let event = new CustomEvent('burst_before_update_hit', {detail: burst});
 	document.dispatchEvent(event);
 
 	let data = {
-		'ID': burst_insert_id,
+		'fingerprint': false,
 		'uid': false,
-		'time_on_page': 0,
+		'url': location.href,
+		'time_on_page': await burst_get_time_on_page(),
 	};
 
-	await burst_get_time_on_page().then( time_on_page => { data.time_on_page = time_on_page; });
-
-	if ( update_uid !== false) {
-		await burst_uid().then( obj => data.uid = obj.uid );
+	if ( update_uid ){
+		// add both the uid and the fingerprint to the data
+		// this way we can update the fingerprint with the uid
+		// this is useful for consent plugins
+		data.uid = await burst_uid();
+		data.fingerprint = await burst_fingerprint();
+	} else if (	burst_use_cookies() ) {
+		data.uid = await burst_uid();
+	} else {
+		data.fingerprint = await burst_fingerprint();
 	}
-
 	if (data.time_on_page > 0 || data.uid !== false) {
 		await burst_api_request({
 			url: burst.url + 'update' + burst_token,
 			data: JSON.stringify(data)
 		}).catch(error => {
-			console.log(error);
 		});
 	}
 }
@@ -1313,29 +1305,28 @@ async function burst_update_hit ( update_uid = false ){
  */
 async function burst_track_hit () {
 	if (burst_is_user_agent()) return;
-	if (burst_insert_id > 0) return;
 	if (burst_track_hit_running) return;
 	burst_track_hit_running = true;
 	let event = new CustomEvent('burst_before_track_hit', {detail: burst});
 	document.dispatchEvent(event);
 
-	burst_last_time_update = TimeMe.getTimeOnCurrentPageInMilliseconds();
 	// add browser data to the hit
 	let data = {
 		'uid': false,
-		'url': location.pathname,
-		'entire_url': location.href,
+		'fingerprint': false,
+		'url': location.href,
 		'page_id': burst.page_id,
 		'referrer_url': document.referrer,
 		'user_agent': navigator.userAgent,
 		'device_resolution': window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio,
-		'time_on_page': burst_last_time_update,
+		'time_on_page': await burst_get_time_on_page(),
 	};
 
-	await burst_uid().then( ( obj ) => {
-		data.uid = obj.uid;
-		data.first_time_visit = obj.first_time_visit;
-	})
+	if ( burst_use_cookies() ) {
+		data.uid = await burst_uid();
+	} else {
+		data.fingerprint = await burst_fingerprint();
+	}
 
 	event = new CustomEvent('burst_track_hit', {detail: data});
 	document.dispatchEvent(event);
@@ -1345,40 +1336,60 @@ async function burst_track_hit () {
 		url: burst.url + 'hit' + burst_token,
 		data: JSON.stringify(data)
 	};
-	burst_api_request(request_params)
-		.then(data => {
-			let response = JSON.parse(data);
-			burst_insert_id = response.insert_id;
+	burst_api_request(request_params).catch(error => {
 			burst_track_hit_running	= false;
-		}).catch(error => {
-			burst_track_hit_running	= false;
-			console.log(error);
 		} );
+
+	burst_initial_track_hit = true;
+	burst_track_hit_running	= false;
 }
 
 
 /**
  * Initialize events
+ * @returns {Promise<void>}
+ *
+ * More information on why we just use visibilitychange instead of beforeunload
+ * to update the hits:
+ * https://www.igvita.com/2015/11/20/dont-lose-user-and-app-state-use-page-visibility/
+ *     https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event
+ *     https://xgwang.me/posts/you-may-not-know-beacon/#the-confusion
+ *
  */
 function burst_init_events() {
-	// visibilitychange and pagehide work in most browsers hence we check if they are supported and try to use them
-	document.addEventListener('visibilitychange', function () {
-		if ( document.visibilityState === 'hidden' ) {
+	// Initial track hit
+	let tracking_type = burst.options.type_of_tracking;
+	if ( tracking_type === 'balanced' ) { // if burst.options.type_of_tracking == 'balanced' then we track the hit after the DOM has loaded
+		if (document.readyState !== 'loading') burst_track_hit()
+		else document.addEventListener('DOMContentLoaded', burst_track_hit);
+	} else if ( tracking_type === 'fast' ) { // if burst.options.type_of_tracking == 'fast' then we track the hit after the whole page has loaded
+		if (document.readyState !== 'loading') burst_track_hit()
+		else document.addEventListener('load', burst_track_hit);
+	} else { // default: if burst.options.type_of_tracking == 'accurate' then we track the hit immediately
+		burst_track_hit();
+	}
+
+	// Update hit on visibility change (Navigating away from the page)
+	// Supported by most browsers
+	document.addEventListener("visibilitychange", function(){
+		if (
+				document.visibilityState === 'hidden' ||
+				document.visibilityState === 'unloaded'
+
+		) {
 			burst_update_hit();
 		}
 	});
-	window.addEventListener("pagehide", burst_update_hit, false );
-	// beforeunload does not get fired all the time. But it is the latest event that is fired before the page is unloaded.
-	window.addEventListener("beforeunload", burst_update_hit, false );
-	TimeMe.callWhenUserLeaves( burst_update_hit );
 
-	if (document.readyState !== 'loading') burst_track_hit()
-	else document.addEventListener('DOMContentLoaded', burst_track_hit);
+	// This is a fallback for Safari
+	document.addEventListener('pagehide', burst_update_hit);
 
+	// Add event so other plugins can add their own events
 	document.addEventListener("burst_fire_hit", function(){
 		burst_track_hit();
 	});
 
+	// add event so other plugins can add their own events
 	document.addEventListener("burst_enable_cookies", function(){
 		burst_enable_cookies();
 		burst_update_hit(true);
