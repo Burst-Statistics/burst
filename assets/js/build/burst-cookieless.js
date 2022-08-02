@@ -1242,7 +1242,6 @@ let burst_api_request = obj => {
 		} else {
 			// send the request using XMLHttpRequest
 			obj.url = burst.url + 'track' + burst_token;
-			console.log('sendBeacon is not supported');
 			let request = new XMLHttpRequest();
 			request.open(obj.method || "POST", obj.url, true);
 			request.setRequestHeader('Content-type', 'application/json');
@@ -1358,14 +1357,11 @@ async function burst_track_hit () {
  */
 function burst_init_events() {
 	// Initial track hit
-	let tracking_type = burst.options.type_of_tracking;
-	if ( tracking_type === 'balanced' ) { // if burst.options.type_of_tracking == 'balanced' then we track the hit after the DOM has loaded
-		if (document.readyState !== 'loading') burst_track_hit()
-		else document.addEventListener('DOMContentLoaded', burst_track_hit);
-	} else if ( tracking_type === 'fast' ) { // if burst.options.type_of_tracking == 'fast' then we track the hit after the whole page has loaded
+	let turbo_mode = burst.options.enable_turbo_mode;
+	if ( turbo_mode ) { // if turbo mode is enabled, we track the hit after the whole page has loaded
 		if (document.readyState !== 'loading') burst_track_hit()
 		else document.addEventListener('load', burst_track_hit);
-	} else { // default: if burst.options.type_of_tracking == 'accurate' then we track the hit immediately
+	} else { // if default, we track the hit immediately
 		burst_track_hit();
 	}
 

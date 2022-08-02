@@ -29,12 +29,9 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		// install endpoint file
 		public function install_endpoint_file() {
 			$file = ABSPATH . '/burst-statistics-endpoint.php';
-			error_log($file);
 			if ( ! file_exists( $file ) ){
-				error_log('file does not exist');
 				$success = file_put_contents( $file, $this->get_endpoint_file_contents() );
 				if ( $success === false ) {
-					error_log('file put contents did not work');
 					return false;
 				}
 			}
@@ -48,7 +45,7 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 			$tracking_filename = burst_path . 'tracking/tracking.php';
 			$ua_parser_filename =  burst_path . '/helpers/php-user-agent/UserAgentParser.php';
 			return <<<EOT
-				<?php defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
+				<?php
 				/**
 				 * Burst Statistics endpoint for collecting hits
 				 */

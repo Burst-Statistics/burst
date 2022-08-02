@@ -103,7 +103,7 @@
 }
 
 .burst *, .burst *:before, .burst *:after {
-    box-sizing: inherit;
+    box-sizing: border-box;
 }
 
 .burst body, .burst h1, .burst h2, .burst h3, .burst h4, .burst h5, .burst h6, .burst p, .burst ol, .burst ul {

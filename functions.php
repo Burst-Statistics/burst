@@ -220,20 +220,6 @@ if ( ! function_exists( 'burst_get_referrer_url' ) ){
     }
 }
 
-if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
-	function burst_is_ip_blocked() {
-		$ip           = burst_get_ip_address();
-		$ip_blocklist = apply_filters( 'burst_ip_blocklist', array() );
-		if ( in_array( $ip, $ip_blocklist ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'IP ' . $ip . ' is blocked for tracking' );
-			}
-			return true;
-		}
-		return false;
-	}
-}
-
 if ( ! function_exists( 'burst_format_number' ) ) {
     /**
      * Format number with correct decimal and thousands separator
@@ -327,7 +313,7 @@ if ( ! function_exists( 'burst_get_current_post_id' ) ) {
 if ( ! function_exists( 'burst_get_value' ) ) {
 
     /**
-     * Get value for an a burst option
+     * Get value for a burst option
      * For usage very early in the execution order, use the $page option. This bypasses the class usage.
      *
      * @param string $fieldname
@@ -679,62 +665,6 @@ if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
         $ip = burst_get_ip_address();
         $anon_ip = BURST::$anonymize_IP->anonymizeIp($ip);
         return $anon_ip;
-    }
-}
-
-if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
-	/**
-     * Get user agent data
-	 * @param $user_agent
-	 *
-	 * @return null[]|string[]
-	 */
-    function burst_get_user_agent_data($user_agent){
-        $ua = \burst\UserAgent\parse_user_agent($user_agent);
-
-        switch ($ua['platform']) {
-            case 'Macintosh':
-            case 'Chrome OS':
-            case 'Linux':
-            case 'Windows':
-            $ua['device'] = 'desktop';
-                break;
-            case 'Android':
-            case 'BlackBerry':
-            case 'iPhone':
-            case 'Windows Phone':
-            case 'Sailfish':
-            case 'Symbian':
-            case 'Tizen':
-            $ua['device'] = 'mobile';
-                break;
-            case 'iPad':
-                $ua['device'] = 'tablet';
-                break;
-            case 'PlayStation 3':
-            case 'PlayStation 4':
-            case 'PlayStation 5':
-            case 'PlayStation Vita':
-            case 'Xbox':
-            case 'Xbox One':
-            case 'New Nintendo 3DS':
-            case 'Nintendo 3DS':
-            case 'Nintendo DS':
-            case 'Nintendo Switch':
-            case 'Nintendo Wii':
-            case 'Nintendo WiiU':
-            case 'iPod':
-            case 'Kindle':
-            case 'Kindle Fire':
-            case 'NetBSD':
-            case 'OpenBSD':
-            case 'PlayBook':
-            case 'FreeBSD':
-            default:
-                $ua['device'] = 'other';
-                break;
-        }
-        return $ua;
     }
 }
 

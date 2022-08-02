@@ -36,7 +36,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 			$cookieless = burst_get_value('enable_cookieless_tracking');
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
-			$in_footer = burst_get_value('type_of_tracking') === 'fast';
+			$in_footer = burst_get_value('enable_turbo_mode');
 			if( !$this->exclude_from_tracking() ) {
 
 				global $post;
@@ -49,7 +49,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'options'                   => array(
 							'beacon_enabled'         => burst_tracking_status_beacon(),
 							'enable_cookieless_tracking' => $cookieless,
-							'type_of_tracking'           => burst_get_value('type_of_tracking'),
+							'enable_turbo_mode'           => burst_get_value('enable_turbo_mode'),
 						),
 					)
 				);
@@ -70,20 +70,15 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				return str_replace( ' src', ' async src', $tag );
 			}
 
-			$type_of_tracking = burst_get_value('type_of_tracking');
-			if ( 'fast' == $type_of_tracking || 'balanced' == $type_of_tracking ) {
+			$turbo = burst_get_value('enable_turbo_mode');
+			if ( $turbo ) {
 				if ( 'burst' == $handle ) {
 					return str_replace( ' src', ' defer src', $tag );
 				}
 			}
-			if ( 'accurate' == $type_of_tracking ) {
-				if ( 'burst' == $handle ) {
-					return str_replace( ' src', ' async src', $tag );
-				}
-			}
 
 			if ( 'burst' === $handle ) {
-				return str_replace( ' src', ' defer src', $tag );
+				return str_replace( ' src', ' async src', $tag );
 			}
 			return $tag;
 		}

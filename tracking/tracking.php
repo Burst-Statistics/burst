@@ -46,12 +46,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		$arr['device']            = apply_filters( 'burst_sanitize_device', $user_agent_data['device'] );
 		$arr['device_resolution'] = apply_filters( 'burst_sanitize_device_resolution', $data['device_resolution'] );
 		$arr['time_on_page']      = apply_filters( 'burst_sanitize_time_on_page', $data['time_on_page'] );
-		error_log('==========================================================================');
-		error_log('Track hit ('. date('H:i:s'). '): ');
-		error_log('UID: ' . $arr['uid']);
-		error_log('Fingerprint: ' . $arr['fingerprint']);
-
-		$arr = apply_filters( 'burst_remove_empty_values', $arr );
 
 		$session_arr = array(
 			'last_visited_url' => $arr['page_url'],
@@ -549,7 +543,6 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 		}
 		return $data;
 	}
-	add_action( 'burst_remove_empty_values', 'burst_remove_empty_values' );
 }
 
 if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
@@ -608,6 +601,24 @@ if ( ! function_exists( 'burst_get_tracking_status' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_get_tracking_type' ) ) {
+	/**
+	 * Get tracking status
+	 *
+	 * @return string
+	 */
+	function burst_get_tracking_type() {
+		$status = get_option( 'burst_tracking_status' );
+		$last_test = get_option( 'burst_tracking_status_last_test' );
+		// if last test was more than 24 hours ago, test again or there is an error
+		if ( $last_test && $last_test > strtotime( '-1 day' ) ) {
+			return $status;
+		}
+
+		return 'error';
+	}
+}
+
 if ( ! function_exists( 'burst_test_tracking_status' ) ) {
 	/**
 	 * Test tracking status
@@ -652,7 +663,7 @@ if ( ! function_exists( 'burst_endpoint_test_request' ) ) {
 		$result = @file_get_contents($url, false, $context);
 		if ($result === FALSE) {
 			if ( WP_DEBUG ) {
-				error_log( 'Error: Endpoint does not work.' );
+				error_log( 'Error: Endpoint does not respond with 200' );
 			}
 			return false;
 		}
