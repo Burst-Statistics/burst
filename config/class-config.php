@@ -62,14 +62,14 @@ if ( ! class_exists( "burst_config" ) ) {
 				'tracking-error' => [
 					'warning_condition' => 'burst_tracking_status_error', // true if rest and beacon don't work
 					'plus_one' => true,
-					'urgent' => __( "Tracking error.", 'burst-statistics' ) . '&nbsp; <a target="_blank" href="https://burst-statistics.com/troubleshoot-tracking/">'.__("Read how to troubleshoot", "burst-statistics").'</a>',
+					'urgent' => __( "Due to your server or website configuration it is not possible to track statistics.", 'burst-statistics' ) . burst_read_more("https://burst-statistics.com/troubleshoot-tracking/"),
 					'include_in_progress' => false,
 					'dismissible' => false,
 				],
 				'tracking-with-rest-api' => [
 					'warning_condition' => 'burst_tracking_status_rest_api', // true if rest api is enabled and beacon does not work
 					'plus_one' => false,
-					'open' => __( "You are using the REST API for tracking. Speed up your website by adding an endpoint.", 'burst-statistics' ) . '&nbsp; <a target="_blank" href="https://burst-statistics.com/troubleshoot-tracking/">'.__("Read more", "burst-statistics").'</a>',
+					'open' => __( "Due to your server or website configuration the fastest tracking method is not available, the fallback is used instead.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/troubleshoot-tracking/'),
 					'include_in_progress' => false,
 					'dismissible' => false,
 				]

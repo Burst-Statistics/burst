@@ -40,7 +40,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			if( !$this->exclude_from_tracking() ) {
 
 				global $post;
-				//set some defaults
+				//set some defaults;
 				$localize_args = apply_filters( 'burst_tracking_options',
 					array(
 						'url'                       => get_rest_url() . 'burst/v1/',

@@ -1203,16 +1203,21 @@ const burst_fingerprint = () => {
 };
 
 let burst_get_time_on_page = () => {
-	return new Promise((resolve) => {
-		// get time on page
-		let current_time_on_page = TimeMe.getTimeOnCurrentPageInMilliseconds();
-		// reset time on page
-		TimeMe.resetAllRecordedPageTimes();
-		TimeMe.initialize({
-			idleTimeoutInSeconds: 30 // seconds
-		});
-		resolve(current_time_on_page);
-	});
+  return new Promise((resolve) => {
+    // wait for timeMe.js to be loaded
+    if (typeof TimeMe === 'undefined') {
+      resolve(0); // return 0 if timeMe.js is not (yet) loaded
+    }
+
+    let current_time_on_page = TimeMe.getTimeOnCurrentPageInMilliseconds();
+    // reset time on page
+    TimeMe.resetAllRecordedPageTimes();
+    TimeMe.initialize({
+      idleTimeoutInSeconds: 30, // seconds
+    });
+    resolve(current_time_on_page);
+
+  });
 };
 
 /**
@@ -1275,7 +1280,7 @@ async function burst_update_hit ( update_uid = false ){
 		'fingerprint': false,
 		'uid': false,
 		'url': location.href,
-		'time_on_page': await burst_get_time_on_page(),
+		'time_on_page': await burst_get_time_on_page()
 	};
 
 	if ( update_uid ){
@@ -1318,7 +1323,7 @@ async function burst_track_hit () {
 		'referrer_url': document.referrer,
 		'user_agent': navigator.userAgent,
 		'device_resolution': window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio,
-		'time_on_page': await burst_get_time_on_page(),
+		'time_on_page': await burst_get_time_on_page()
 	};
 
 	if ( burst_use_cookies() ) {
