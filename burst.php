@@ -36,9 +36,9 @@ if ( ! function_exists( 'burst_activation_check' ) ) {
 	 * @since 1.0.0
 	 */
 	function burst_activation_check() {
-		if ( version_compare( PHP_VERSION, '5.6', '<' ) ) {
+		if ( version_compare( PHP_VERSION, '7.2', '<' ) ) {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
-			wp_die( __( 'Burst cannot be activated. The plugin requires PHP 5.6 or higher',
+			wp_die( __( 'Burst cannot be activated. The plugin requires PHP 7.2 or higher',
 				'burst' ) );
 		}
 
