@@ -139,10 +139,11 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 		if ( burst_is_ip_blocked() ) {
 			return new WP_REST_Response( array( 'error' => 'ip_blocked' ), 403 );
 		}
-		$data = $request->get_json_params();
+		$data = json_decode($request->get_json_params(), true);
 		if ( isset( $data['request'] ) && $data['request'] === 'test' ) {
 			return new WP_REST_Response( array( 'success' => 'test' ), 200 );
 		}
+		error_log( print_r( $data, true ) );
 		burst_track_hit( $data );
 
 		return new WP_REST_Response( array( 'success' => 'hit_tracked' ), 200 );
@@ -157,9 +158,9 @@ if ( ! function_exists( 'burst_sanitize_entire_page_url' ) ) {
 	 *
 	 * @return string
 	 */
-	function burst_sanitize_entire_page_url( string $url ): string {
+	function burst_sanitize_entire_page_url( $url ): string {
 
-		return trailingslashit( esc_url_raw( $url ) );
+		return trailingslashit( filter_var( $url, FILTER_SANITIZE_URL ) );
 	}
 }
 
@@ -190,7 +191,8 @@ if ( ! function_exists( 'burst_sanitize_page_id' ) ) {
 	 * @return int
 	 */
 	function burst_sanitize_page_id( $page_id ) {
-		return (int) $page_id;
+
+		return (int) $page_id > 0 ? (int) $page_id : null;
 	}
 }
 
@@ -250,7 +252,10 @@ if ( ! function_exists( 'burst_sanitize_referrer' ) ) {
 	 * @return string|null
 	 */
 	function burst_sanitize_referrer( $referrer ): ?string {
-		$referrer      = esc_url_raw( $referrer );
+		if ( ! defined( 'burst_path' ) ) {
+			define( 'burst_path', plugin_dir_path( __FILE__ ).'../' );
+		}
+		$referrer = filter_var( $referrer, FILTER_SANITIZE_URL );
 		$referrer_url  = parse_url( $referrer, PHP_URL_HOST );
 		$ref_spam_list = file( burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 		if ( array_search( $referrer_url, $ref_spam_list ) ) {
@@ -485,6 +490,7 @@ if ( ! function_exists( 'burst_create_statistic' ) ) {
 	function burst_create_statistic( $data ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
+		if ( burst_required_values_are_set( $data ) ) return;
 		$wpdb->insert(
 			$wpdb->prefix . 'burst_statistics',
 			$data
@@ -503,6 +509,8 @@ if ( ! function_exists( 'burst_update_statistic' ) ) {
 	function burst_update_statistic( $data ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
+		if ( burst_required_values_are_set( $data ) ) return;
+
 		$wpdb->update(
 			$wpdb->prefix . 'burst_statistics',
 			(array) $data,
@@ -527,6 +535,18 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 		}
 
 		return $data;
+	}
+}
+if ( ! function_exists('burst_required_values_are_set') ) {
+	/**
+	 * Check if required values are set
+	 *
+	 * @param array $data
+	 *
+	 * @return bool
+	 */
+	function burst_required_values_are_set( array $data ): bool {
+		return ! ( isset( $data['uid'] ) && isset($data['page_url']) && isset( $data['entire_page_url'] ) && isset( $data['page_id'] ) !== null );
 	}
 }
 

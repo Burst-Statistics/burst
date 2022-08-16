@@ -4,7 +4,7 @@ let burst_track_hit_running = false;
 let burst_initial_track_hit = false;
 let burst_cookieless_option = burst.options.enable_cookieless_tracking; // User cookieless option
 // add option to window so a consent plugin can change this value
-window.burst_enable_cookieless_tracking = burst.options.enable_cookieless_tracking; // Consent plugin ccokieless option
+window.burst_enable_cookieless_tracking = burst.options.enable_cookieless_tracking; // Consent plugin cookieless option
 
 /**
  * Get a cookie by name
@@ -178,25 +178,23 @@ let burst_is_user_agent = () => {
 let burst_api_request = obj => {
 	return new Promise((resolve, reject) => {
 		// if browser supports sendBeacon use it
+		burst.options.beacon_enabled = false;
 		if (window.navigator.sendBeacon && burst.options.beacon_enabled) {
 			// send the request using sendBeacon
 			obj.url = '/burst-statistics-endpoint.php'
 			window.navigator.sendBeacon(obj.url, JSON.stringify( obj.data) );
+			resolve('ok');
 		} else {
-			// send the request using XMLHttpRequest
 			obj.url = burst.url + 'track' + burst_token;
-			let request = new XMLHttpRequest();
-			request.open(obj.method || "POST", obj.url, true);
-			request.setRequestHeader('Content-type', 'application/json');
-			request.send(obj.data);
-			request.onload = () => {
-				if (request.status >= 200 && request.status < 300) {
-					resolve(request.response);
-				} else {
-					reject(request.statusText);
-				}
-			};
-			request.onerror = () => reject(request.statusText);
+			// browser supports fetch keepalive
+			fetch(obj.url, {
+				keepalive: true,
+				method: 'POST',
+				headers: new Headers({
+					'Content-Type': 'application/json',
+				}),
+				body: JSON.stringify(obj.data),
+			}).then( response => resolve(response)).catch( error => reject(error));
 		}
 	});
 };
@@ -234,10 +232,10 @@ async function burst_update_hit ( update_uid = false ){
 	}
 	if (data.time_on_page > 0 || data.uid !== false) {
 		await burst_api_request({
-			url: burst.url + 'update' + burst_token,
 			data: JSON.stringify(data)
 		}).catch(error => {
-		});
+
+		}) // @todo handle error and send notice to the user
 	}
 }
 
@@ -275,7 +273,6 @@ async function burst_track_hit () {
 
 	let request_params = {
 		method: 'POST',
-		url: burst.url + 'hit' + burst_token,
 		data: JSON.stringify(data)
 	};
 	burst_api_request(request_params).catch(error => {
