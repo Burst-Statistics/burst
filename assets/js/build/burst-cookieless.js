@@ -1240,7 +1240,6 @@ let burst_is_user_agent = () => {
 let burst_api_request = obj => {
 	return new Promise((resolve, reject) => {
 		// if browser supports sendBeacon use it
-		burst.options.beacon_enabled = false;
 		if (window.navigator.sendBeacon && burst.options.beacon_enabled) {
 			// send the request using sendBeacon
 			obj.url = '/burst-statistics-endpoint.php'
