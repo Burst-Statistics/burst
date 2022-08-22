@@ -83,13 +83,12 @@ EOT;
 		 */
 		public function get_tracking_status(): string {
 			$status    = get_option( 'burst_tracking_status' );
-			$last_test = get_option( 'burst_tracking_status_last_test' );
+			$last_test = (int) get_option( 'burst_tracking_status_last_test' );
 			// if last test was more than 24 hours ago, test again or there is an error
-			if ( $last_test < strtotime( '-1 day' ) ) {
-				return $status;
+			if ( $last_test < 1  || $last_test > strtotime( '-1 day' ) ) {
+				return $this->test_tracking_status();
 			}
-
-			return $this->test_tracking_status();
+			return $status;
 		}
 
 		/**
