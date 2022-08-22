@@ -143,7 +143,6 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 		if ( isset( $data['request'] ) && $data['request'] === 'test' ) {
 			return new WP_REST_Response( array( 'success' => 'test' ), 200 );
 		}
-		error_log( print_r( $data, true ) );
 		burst_track_hit( $data );
 
 		return new WP_REST_Response( array( 'success' => 'hit_tracked' ), 200 );
@@ -560,7 +559,7 @@ if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
 		$ip           = burst_get_ip_address();
 		$ip_blocklist = apply_filters( 'burst_ip_blocklist', array() );
 		if ( in_array( $ip, $ip_blocklist ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			if ( WP_DEBUG ) {
 				error_log( 'IP ' . $ip . ' is blocked for tracking' );
 			}
 
