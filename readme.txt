@@ -1,7 +1,7 @@
 === Burst Statistics - Privacy-Friendly Analytics for WordPress ===
 Contributors: hesseldejong, RogierLankhorst, aahulsebos, leonwimmenhoeve
 Donate link: paypal.me/Burststatistics
-Tags: statistics, analytics, privacy
+Tags: statistics, analytics, privacy, analytics alternative
 Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.0
@@ -57,12 +57,19 @@ Before creating a dedicated user interface we collect proposed features as MU Pl
 Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone.
 = What is Cookieless tracking? =
 Burst Statistics can be used without setting cookies or storing data in browsers. This, however, can affect accuracy; that's why a hybrid option is possible with cookies after consent. Read more about [Cookieless tracking](https://burst-statistics.com/definition/what-is-cookieless-tracking/).
+= Does it affect perfomance? =
+Burst Statistics uses an endpoint to minimize requests during sessions, minimizing performance issues. For the best performance you can always use our 'Turbo Mode' which loads Burst in the footer, using the defer attribute.
 = Do you mind if I give feedback about the product? =
 We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
 = Is there a Pro version? =
 Not...yet.
 
 == Change log ==
+= 1.2.0 =
+* Feature: Introducing defer/footer as option
+* Feature: Introducing new tracking method
+* Improvement: Feedback notices
+
 = 1.1.5 =
 * Improvement: Changed from .less to .scss because WordPress also uses .scss
 * Improvement: Update option autoload turned off on front end for better performance
