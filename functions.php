@@ -38,7 +38,7 @@ if ( ! function_exists( 'burst_user_can_manage' ) ) {
 	}
 }
 
-if ( ! function_exists('burst_read_more' ) ) {
+if ( ! function_exists( 'burst_read_more' ) ) {
 	/**
 	 * Create a generic read more text with link for help texts.
 	 *
@@ -47,15 +47,10 @@ if ( ! function_exists('burst_read_more' ) ) {
 	 *
 	 * @return string
 	 */
-	function burst_read_more( $url, $add_space = true ) {
-		$html
-			= burst_sprintf( __( "For more information on this subject, please read this %sarticle%s", 'burst-statistics' ), '<a target="_blank" href="' . $url . '">',
-			'</a>' );
-		if ( $add_space ) {
-			$html = '&nbsp;' . $html;
-		}
+	function burst_read_more( string $url, string $text = ''): string {
+		$text = ( $text !== '' ) ? $text : (string) __('Read more', 'burst-statistics');
 
-		return $html;
+		return '<a class="burst-read-more" target="_blank" title="' . $text . '" href="' . $url . '">' . $text . '</a>';
 	}
 }
 if ( ! function_exists( 'burst_get_template' ) ) {

@@ -174,6 +174,10 @@
     font-size: var(--rsp-fs-300);
 }
 
+.burst .burst-read-more {
+    margin-left: 4px;
+}
+
 .burst .burst-notice-hook-element {
     display: none !important;
 }
@@ -1201,6 +1205,7 @@ update-nag.notice {
     border-radius: 15px;
     padding: 4px 0;
     font-size: var(--rsp-fs-200);
+    color: var(--rsp-text-color);
     font-weight: 500;
 }
 
@@ -1215,7 +1220,7 @@ update-nag.notice {
 
 .burst-notice__status.completed {
     background-color: var(--rsp-color-success);
-    color: #fff;
+    color: var(--rsp-text-color-white);
 }
 
 .burst-notice__status.open {
@@ -1224,7 +1229,12 @@ update-nag.notice {
 
 .burst-notice__status.urgent {
     background-color: var(--rsp-color-warning);
-    color: #fff;
+    color: var(--rsp-text-color-white);
+}
+
+.burst-notice__status.new {
+    background-color: var(--rsp-dark-blue);
+    color: var(--rsp-text-color-white);
 }
 
 .burst-notice .burst-notice__message p {
@@ -1238,7 +1248,7 @@ update-nag.notice {
 
 .burst-notice__dismiss button {
     background: transparent;
-    color: #ccc;
+    color: var(--rsp-grey-500);
     font-size: var(--rsp-fs-300);
     border: 0 solid transparent;
     cursor: pointer;
