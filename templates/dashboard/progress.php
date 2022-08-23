@@ -50,6 +50,9 @@ $progress = 0;
 				if ( $status === 'premium' ) {
 					$status_message = __("Premium", 'burst-statistics');
 				}
+				if ( $status === 'new' ) {
+					$status_message = __("New feature", 'burst-statistics');
+				}
 
 				?>
                     <div class="burst-notice">
@@ -63,8 +66,8 @@ $progress = 0;
                             </p>
                         </div>
                         <div class="burst-notice__dismiss">
-                            <?php if ( $status === 'open' ) { ?>
-                                <button type="button" class="burst-dismiss-warning" data-warning_id="<?php echo intval($id)?>">
+                            <?php if ( $status === 'open' || $status === 'new' ) { ?>
+                                <button type="button" class="burst-dismiss-warning" data-warning_id="<?php echo $id ?>">
                                     X
                                 </button>
                             <?php } ?>

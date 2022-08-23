@@ -194,7 +194,23 @@
     width: 100%;
     min-height: calc( 30px + var(--rsp-spacing-s) * 2);
     box-sizing: border-box;
-    padding: var(--rsp-spacing-s) var(--rsp-spacing-l);
+    padding: var(--rsp-spacing-m) var(--rsp-spacing-l);
+    @media(max-width: $rsp-break-xl){
+      padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
+    }
     align-self: flex-end;
+
+    .burst-legend {
+      display:flex;
+      span {
+        padding-left:5px;
+      }
+    }
+  }
+  .burst-flex-push-right{
+    margin-left: auto;
+  }
+  .burst-flex-push-left{
+    margin-right: auto;
   }
 }

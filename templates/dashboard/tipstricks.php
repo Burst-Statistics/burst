@@ -18,12 +18,12 @@ $items = array(
         'link' => 'https://burst-statistics.com/how-can-i-compare-metrics/',
     ),
     5 => array(
-        'content' => "What are Referrers?",
-        'link' => 'https://burst-statistics.com/definition/what-are-referrers/',
-    ),
-    6 => array(
         'content' => "What is Bounce Rate?",
         'link' => 'https://burst-statistics.com/definition/what-is-bounce-rate/',
+    ),
+    6 => array(
+	    'content' => "What is Turbo Mode?",
+	    'link' => 'https://burst-statistics.com/definition/turbo-mode/',
     ),
 );
 $container = '<div class="burst-tips-tricks-element"><a href="{link}" target="_blank" title="{content}"><div class="burst-bullet medium"></div><div class="burst-tips-tricks-content">{content}</div></a></div>';

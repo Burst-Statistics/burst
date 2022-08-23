@@ -105,52 +105,39 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 
 		public function enqueue_assets( $hook ) {
-            $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-            // register css for dashboard widget
-            if ( strpos( $hook, 'burst') === false
-            ) {
-                wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
-                wp_enqueue_style( 'burst-admin' );
-            }
+			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-            if ( strpos( $hook, 'burst') === false
-            ) {
-            return;
-            }
-
-			//select2
-            //			wp_register_style( 'select2', burst_url . 'assets/select2/css/select2.min.css', false, burst_version );
-            //			wp_enqueue_style( 'select2' );
-            //			wp_enqueue_script( 'select2', burst_url . "assets/select2/js/select2.min.js", array( 'jquery' ), burst_version, true );
-
-            if (isset($_GET['burst-page']) && $_GET['burst-page'] ==='statistics') {
-                wp_enqueue_script( 'chartjs', burst_url . "assets/chartjs/chart.min.js", array(), burst_version, true );
-
-                //datapicker
-                wp_enqueue_style( 'burst-datepicker' , trailingslashit(burst_url) . 'assets/datepicker/datepicker.css', "", burst_version);
-                wp_enqueue_script('burst-moment', trailingslashit(burst_url) . 'assets/datepicker/moment.js', array("jquery"), burst_version);
-                wp_enqueue_script('burst-datepicker', trailingslashit(burst_url) . 'assets/datepicker/datepicker.js', array("jquery", "burst-moment"), burst_version);
-
-                wp_enqueue_script('burst-statistics', burst_url . "assets/js/statistics$minified.js", array('burst-admin'), burst_version, false);
-
-                //Datatables
-                wp_register_script('burst-datatables',
-                    trailingslashit(burst_url)
-                    . 'assets/datatables/datatables.min.js', array("jquery"), burst_version);
-                wp_enqueue_script('burst-datatables');
-
-                //Datatables plugin to hide pagination when it isn't needed
-                wp_register_script('burst-datatables-pagination',
-                    trailingslashit(burst_url)
-                    . 'assets/datatables/dataTables.conditionalPaging.js', array("jquery"), burst_version);
-                wp_enqueue_script('burst-datatables-pagination');
-            } else if (isset($_GET['page']) && $_GET['page'] ==='burst') {
-                wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version, false);
+			// register css for dashboard widget and return
+			if ( strpos( $hook, 'burst') === false ) {
+				wp_enqueue_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
+				return;
 			}
 
-            wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version, false );
-            wp_register_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
-            wp_enqueue_style( 'burst-admin' );
+			if (isset($_GET['burst-page']) && $_GET['burst-page'] ==='statistics') {
+
+				// Chart JS
+				wp_enqueue_script( 'burst-chartjs', burst_url . "assets/chartjs/chart.min.js", array(), burst_version );
+
+				// Datepicker
+				wp_enqueue_style( 'burst-datepicker' , trailingslashit(burst_url) . 'assets/datepicker/datepicker.css', "", burst_version);
+				wp_enqueue_script('burst-moment', trailingslashit(burst_url) . 'assets/datepicker/moment.js', array("jquery"), burst_version);
+				wp_enqueue_script('burst-datepicker', trailingslashit(burst_url) . 'assets/datepicker/datepicker.js', array("jquery", "burst-moment"), burst_version);
+
+				//Datatables
+				wp_enqueue_script('burst-datatables', trailingslashit(burst_url) . 'assets/datatables/datatables.min.js', array("jquery"), burst_version);
+
+				//Datatables plugin to hide pagination when it isn't needed
+				wp_enqueue_script('burst-datatables-pagination', trailingslashit(burst_url) . 'assets/datatables/dataTables.conditionalPaging.js', array("jquery"), burst_version);
+
+				// Statistics page script
+				wp_enqueue_script('burst-statistics', burst_url . "assets/js/statistics$minified.js", array('burst-admin', 'burst-chartjs', 'burst-moment', 'burst-datatables', 'burst-datatables-pagination' ), burst_version, false);
+
+			} else if (isset($_GET['page']) && $_GET['page'] ==='burst') {
+				wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version );
+			}
+
+			wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version );
+			wp_enqueue_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
 
 			wp_localize_script(
 				'burst-admin',
@@ -191,17 +178,17 @@ if ( ! class_exists( "burst_admin" ) ) {
 						'October'      => __( "October" , "burst-statistics"),
 						'November'     => __( "November" , "burst-statistics"),
 						'December'     => __( "December" , "burst-statistics"),
-                        'Search'       => __( "Search" , "burst-statistics"),
-                        'Pageviews'    => __( "Pageviews" , "burst-statistics"),
-                        'Unique visitors'     => __( "Unique visitors" , "burst-statistics"),
-                        'No data found'     => __( "No data found" , "burst-statistics"),
-                        'No matching records found'     => __( "No matching records found" , "burst-statistics"),
-                    ),
-                )
-            );
+						'Search'       => __( "Search" , "burst-statistics"),
+						'Pageviews'    => __( "Pageviews" , "burst-statistics"),
+						'Unique visitors'     => __( "Unique visitors" , "burst-statistics"),
+						'No data found'     => __( "No data found" , "burst-statistics"),
+						'No matching records found'     => __( "No matching records found" , "burst-statistics"),
+					),
+				)
+			);
 		}
 
-        /**
+		/**
          * Empty dashboard cache for Burst
          * @param $hook
          */
