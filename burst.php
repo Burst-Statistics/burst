@@ -153,7 +153,6 @@ if ( ! class_exists( 'BURST' ) ) {
 			require_once( burst_path . '/statistics/class-statistics.php' );
             require_once( burst_path . '/sessions/class-sessions.php' );
             require_once( burst_path . '/goals/class-goals.php' );
-			require_once( burst_path . '/rest-api/rest-api.php' );
 			require_once( burst_path . '/config/class-config.php');
 			require_once( burst_path . '/cron/cron.php');
 		}

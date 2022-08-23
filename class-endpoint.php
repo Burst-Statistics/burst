@@ -63,7 +63,7 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		 * @return string
 		 */
 		public function get_endpoint_file_contents(): string {
-			$tracking_filename  = burst_path . 'tracking/tracking.php';
+			$tracking_filename  = burst_path . '/tracking/tracking.php';
 			$ua_parser_filename = burst_path . '/helpers/php-user-agent/UserAgentParser.php';
 
 			// Indentation is important here for PHP 7.2 compatibility: https://wiki.php.net/rfc/flexible_heredoc_nowdoc_syntaxes
