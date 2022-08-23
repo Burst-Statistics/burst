@@ -36,9 +36,9 @@ if ( ! function_exists( 'burst_activation_check' ) ) {
 	 * @since 1.0.0
 	 */
 	function burst_activation_check() {
-		if ( version_compare( PHP_VERSION, '5.6', '<' ) ) {
+		if ( version_compare( PHP_VERSION, '7.2', '<' ) ) {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
-			wp_die( __( 'Burst cannot be activated. The plugin requires PHP 5.6 or higher',
+			wp_die( __( 'Burst cannot be activated. The plugin requires PHP 7.2 or higher',
 				'burst' ) );
 		}
 
@@ -57,6 +57,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'functions.php' );
 if ( ! class_exists( 'BURST' ) ) {
 	class BURST {
 		public static $instance;
+		public static $endpoint;
         public static $anonymize_IP;
 		public static $statistics;
         public static $sessions;
@@ -74,6 +75,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			self::setup_constants();
 			self::includes();
 			self::hooks();
+			self::$endpoint = new burst_endpoint();
 			self::$anonymize_IP = new burst_ip_anonymizer();
 			self::$statistics  = new burst_statistics();
             self::$sessions  = new burst_sessions();
@@ -129,6 +131,8 @@ if ( ! class_exists( 'BURST' ) ) {
 
 		private function includes() {
 			require_once( burst_path . 'integrations/integrations.php');
+			require_once( burst_path . '/class-endpoint.php' );
+			require_once( burst_path . '/tracking/tracking.php' );
             require_once( burst_path . '/class-frontend.php' );
             if ( is_admin() || wp_doing_cron() ) {
                 require_once( burst_path . '/class-admin.php' );
