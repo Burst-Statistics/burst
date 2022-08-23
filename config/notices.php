@@ -206,8 +206,8 @@ if ( ! class_exists( "burst_notices" ) ) {
 			$plus_one = $notice['plus_one'] ? '<span class="burst-plusone">1</span>' : '';
 			$dismiss  = '<button type="button" class="burst-dismiss-notice" data-notice_id="' . $id . '"><span class="burst-close-notice-x">X</span></button>';
 			$args     = array(
-				'status'         => $notice['status'] . 'henkie',
-				'status-message' => $status_message . ' henkie',
+				'status'         => $notice['status'],
+				'status-message' => $status_message,
 				'message'        => $notice['message'],
 				'plus-one'       => $plus_one,
 				'dismiss'        => $dismiss,
