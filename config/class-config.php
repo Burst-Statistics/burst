@@ -78,7 +78,7 @@ if ( ! class_exists( "burst_config" ) ) {
 						'false',
 					],
 					'plus_one' => true,
-					'new' => __( "We have improved tracking and added Turbo mode! Tracking has become faster and more accurate. Want an even faster page load? Enable Turbo Mode.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/new-feature-tracking-with-endpoint', __('Learn more', 'burst-statistics')),
+					'new' => __( "We have improved tracking and added Turbo mode! Tracking has become faster and more accurate. Want an even faster page load? Enable Turbo Mode.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/new-feature-tracking-with-endpoint', '%s' . __('Learn more', 'burst-statistics') .'%s'),
 					'include_in_progress' => true,
 					'dismissible' => true,
 				],
