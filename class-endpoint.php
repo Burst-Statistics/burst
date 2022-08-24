@@ -24,11 +24,9 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 			if ( is_admin() || wp_doing_cron() ) {
 				$endpoint_installed = (bool) get_transient( 'burst_install_endpoint' ); // casts strings 'true' & 'false' to bool true
 				if ( ! $endpoint_installed ) {
+					set_transient( 'burst_install_endpoint', 'true', HOUR_IN_SECONDS );
 					$endpoint_status = $this->install_endpoint_file();
 					update_option( 'burst_endpoint_status', $endpoint_status, false );
-
-					$endpoint_transient_status = $endpoint_status ? 'true' : 'false';
-					set_transient( 'burst_install_endpoint', $endpoint_transient_status, HOUR_IN_SECONDS );
 				}
 			}
 		}
@@ -89,9 +87,9 @@ EOT;
 		 */
 		public function get_tracking_status(): string {
 			$status    = get_option( 'burst_tracking_status' );
-			$last_test = (int) get_option( 'burst_tracking_status_last_test' );
-			// if last test was more than 1 hours ago, test again or there is an error
-			if ( $last_test < strtotime( '-1 hour' ) ) {
+			$last_test = (bool) get_transient( 'burst_ran_test' ); // casts strings 'true' & 'false' to bool true
+			if ( ! $last_test ) {
+				set_transient( 'burst_ran_test', true, HOUR_IN_SECONDS );
 				return $this->test_tracking_status();
 			}
 			return $status;
@@ -112,7 +110,6 @@ EOT;
 			}
 
 			update_option( 'burst_tracking_status', $status, true );
-			update_option( 'burst_tracking_status_last_test', time(), false );
 
 			return $status;
 		}
@@ -153,7 +150,7 @@ EOT;
 		 */
 		public function rest_api_test_request(): bool {
 			$url      = get_rest_url( null, 'burst/v1/track' );
-			$data     = array( 'request' => 'test' );
+			$data = '{"request":"test"}';
 			$response = wp_remote_post( $url, array(
 				'headers'     => array( 'Content-Type' => 'application/json; charset=utf-8' ),
 				'method'      => 'POST',
