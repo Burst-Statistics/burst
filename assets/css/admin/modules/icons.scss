@@ -1,4 +1,4 @@
-.cmplz-icon, .cmplz-icon-tooltip{
+.burst-icon, .burst-icon-tooltip{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7,12 +7,12 @@
   }
 }
 
-.cmplz-copy-shortcode{
+.burst-copy-shortcode{
   cursor:pointer;
   display: flex;
   justify-content: center;
   transition: transform 0.1s ease-in;
-  &.cmplz-click-animation .cmplz-icon{
+  &.burst-click-animation .burst-icon{
     animation: beat 0.4s ease-out;
   }
   @keyframes beat {
@@ -31,7 +31,7 @@
   }
 }
 
-.cmplz-copy-shortcode-text {
+.burst-copy-shortcode-text {
   right:10000px;
   position:absolute;
   background-color:#fff;

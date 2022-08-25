@@ -6,7 +6,7 @@ if ( ! class_exists( "burst_config" ) ) {
 	class burst_config {
 		private static $_this;
 		public $fields = array();
-        public $steps = array();
+		public $steps = array();
 		public $sections;
 		public $pages;
 		public $warning_types;
@@ -28,7 +28,7 @@ if ( ! class_exists( "burst_config" ) ) {
 			);
 
 			/* config files */
-            require_once( burst_path . '/config/general-settings.php' );
+			require_once( burst_path . '/config/general-settings.php' );
 
 			/**
 			 * The integrations are loaded with priority 10
@@ -48,16 +48,52 @@ if ( ! class_exists( "burst_config" ) ) {
 		 *
 		 * @return array[]
 		 */
-		public function notices($notices){
+		public function notices( $notices ) {
 			$new_notices = [
 				'pretty-permalinks-error' => [
 					'success_conditions'  => [
-						'get_option_permalink_structure',
+						'get_option_permalink_structure', // If pretty permalinks are enabled
 					],
 					'plus_one' => true,
-					'urgent' => __( "You are using 'plain' permalinks on your site. This causes issues with the REST API, which is used for registering the statistics.", 'burst-statistics' ) . '&nbsp; <a href="'.admin_url('options-permalink.php').'">'.__("Change the setting", "burst-statistics").'</a>',
+					'urgent' => __( "You are using 'plain' permalinks on your site. This is not supported.", 'burst-statistics' ) . '&nbsp; <a href="'.admin_url('options-permalink.php').'">'.__("Change the setting", "burst-statistics").'</a>',
 					'include_in_progress' => true,
 					'dismissible' => false,
+				],
+				'tracking-error' => [
+					'warning_condition' => 'burst_tracking_status_error', // true if rest and beacon don't work
+					'plus_one' => true,
+					'urgent' => __( "Due to your server or website configuration it is not possible to track statistics.", 'burst-statistics' ) . burst_read_more("https://burst-statistics.com/troubleshoot-tracking/"),
+					'include_in_progress' => false,
+					'dismissible' => false,
+				],
+//				'tracking-with-rest-api' => [
+//					'warning_condition' => 'burst_tracking_status_rest_api', // true if rest api is enabled and beacon does not work
+//					'plus_one' => false,
+//					'open' => __( "Due to your server or website configuration the fastest tracking method is not available, the fallback is used instead.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/troubleshoot-tracking/'),
+//					'include_in_progress' => false,
+//					'dismissible' => false,
+//				],
+				'new-feature-turbo-mode' => [
+					'success_conditions'  => [
+						'false',
+					],
+					'plus_one' => true,
+					'new' => __( "We have improved tracking and added Turbo mode! Tracking has become faster and more accurate. Want an even faster page load? Enable Turbo Mode.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/new-feature-tracking-with-endpoint', '%s' . __('Learn more', 'burst-statistics') .'%s'),
+					'include_in_progress' => true,
+					'dismissible' => true,
+				],
+				'leave_feedback' => [
+					'status' => 'completed',
+					'success_conditions'  => [
+						'false',
+					],
+					'plus_one' => false,
+					'dismissible' => false,
+					'open'    =>  burst_sprintf(
+						__( 'If you have any suggestions to improve our plugin, feel free to %sopen a support thread%s.', 'burst-statistics' ),
+						'<a href="https://wordpress.org/support/plugin/burst-statistics/" target="_blank">',
+						'</a>'
+					),
 				]
 			];
 			return $notices + $new_notices;
@@ -87,66 +123,66 @@ if ( ! class_exists( "burst_config" ) ) {
 		}
 
 
-        public function fields(
-            $page = false, $step = false, $section = false,
-            $get_by_fieldname = false
-        ) {
+		public function fields(
+			$page = false, $step = false, $section = false,
+			$get_by_fieldname = false
+		) {
 
-            $output = array();
-            $fields = $this->fields;
-            if ( $page ) {
-                $fields = burst_array_filter_multidimensional( $this->fields,
-                    'source', $page );
-            }
+			$output = array();
+			$fields = $this->fields;
+			if ( $page ) {
+				$fields = burst_array_filter_multidimensional( $this->fields,
+					'source', $page );
+			}
 
-            foreach ( $fields as $fieldname => $field ) {
-                if ( $get_by_fieldname && $fieldname !== $get_by_fieldname ) {
-                    continue;
-                }
+			foreach ( $fields as $fieldname => $field ) {
+				if ( $get_by_fieldname && $fieldname !== $get_by_fieldname ) {
+					continue;
+				}
 
-                if ( $step ) {
-                    if ( $section && isset( $field['section'] ) ) {
-                        if ( ( $field['step'] == $step
-                                || ( is_array( $field['step'] )
-                                    && in_array( $step, $field['step'] ) ) )
-                            && ( $field['section'] == $section )
-                        ) {
-                            $output[ $fieldname ] = $field;
-                        }
-                    } else {
-                        if ( ( $field['step'] == $step )
-                            || ( is_array( $field['step'] )
-                                && in_array( $step, $field['step'] ) )
-                        ) {
-                            $output[ $fieldname ] = $field;
-                        }
-                    }
-                }
-                if ( ! $step ) {
-                    $output[ $fieldname ] = $field;
-                }
+				if ( $step ) {
+					if ( $section && isset( $field['section'] ) ) {
+						if ( ( $field['step'] == $step
+						       || ( is_array( $field['step'] )
+						            && in_array( $step, $field['step'] ) ) )
+						     && ( $field['section'] == $section )
+						) {
+							$output[ $fieldname ] = $field;
+						}
+					} else {
+						if ( ( $field['step'] == $step )
+						     || ( is_array( $field['step'] )
+						          && in_array( $step, $field['step'] ) )
+						) {
+							$output[ $fieldname ] = $field;
+						}
+					}
+				}
+				if ( ! $step ) {
+					$output[ $fieldname ] = $field;
+				}
 
-            }
+			}
 
-            return $output;
-        }
+			return $output;
+		}
 
-        public function preload_init(){
-            $this->fields = apply_filters( 'burst_fields_load_types', $this->fields );
-        }
+		public function preload_init(){
+			$this->fields = apply_filters( 'burst_fields_load_types', $this->fields );
+		}
 
 		public function init() {
-            $this->steps = apply_filters('burst_steps', $this->steps );
+			$this->steps = apply_filters('burst_steps', $this->steps );
 			$this->fields = apply_filters('burst_fields', $this->fields );
 		}
 
-        public function has_sections( $page, $step ) {
-            if ( isset( $this->steps[ $page ][ $step ]["sections"] ) ) {
-                return true;
-            }
+		public function has_sections( $page, $step ) {
+			if ( isset( $this->steps[ $page ][ $step ]["sections"] ) ) {
+				return true;
+			}
 
-            return false;
-        }
+			return false;
+		}
 
 	}
 

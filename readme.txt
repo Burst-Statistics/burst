@@ -4,9 +4,9 @@ Donate link: paypal.me/Burststatistics
 Tags: statistics, analytics, privacy, analytics alternative
 Requires at least: 5.4
 License: GPL2
-Requires PHP: 7.0
+Requires PHP: 7.2
 Tested up to: 6.0
-Stable tag: 1.1.5
+Stable tag: 1.2.0
 
 Self-hosted and privacy-friendly analytics tool. 
 

@@ -36,7 +36,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 			if ( !$error ) {
 				$notice_id = sanitize_title($_POST['id']);
 				$dismissed_warnings = get_option( 'burst_dismissed_warnings', array() );
-				if ( !in_array($notice_id, $dismissed_warnings) ) {
+				if ( ! in_array( $notice_id, $dismissed_warnings, true ) ) {
 					$dismissed_warnings[] = $notice_id;
 				}
 				update_option('burst_dismissed_warnings', $dismissed_warnings, false );
@@ -97,13 +97,9 @@ if ( ! class_exists( "burst_notices" ) ) {
 					if ( ! $show_warning ) {
 						continue;
 					}
-
+					$success = $notice['relation'] === 'AND';
 					$relation = $notice['relation'];
-					if ( $relation === 'AND' ) {
-						$success = true;
-					} else {
-						$success = false;
-					}
+
 					foreach ( $notice['success_conditions'] as $func ) {
 						$condition = $this->validate_function( $func );
 						if ( $relation === 'AND' ) {
@@ -121,6 +117,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 						} else if ( isset( $notice['urgent'] ) ) {
 							$notice['message']    = $notice['urgent'];
 							$notice['status']     = 'urgent';
+							$active_notices[ $id ] = $notice;
+						} else if ( isset( $notice['new'] ) ) {
+							$notice['message']    = $notice['new'];
+							$notice['status']     = 'new';
 							$active_notices[ $id ] = $notice;
 						}
 					} else {
@@ -192,15 +192,17 @@ if ( ! class_exists( "burst_notices" ) ) {
 			$id     = key( $notice );
 			$notice = $notice[ $id ];
 
+			$status_message = __( "Open", 'burst-statistics' ); // default
 			if ( $notice['status'] === 'completed' ) {
 				$status_message = __( "Completed", 'burst-statistics' );
-			}
-			if ( $notice['status'] === 'open' ) {
-				$status_message = __( "Open", 'burst-statistics' );
 			}
 			if ( $notice['status'] === 'urgent' ) {
 				$status_message = __( "Urgent", 'burst-statistics' );
 			}
+			if ( $notice['status'] === 'new' ) {
+				$status_message = __( "New!", 'burst-statistics' );
+			}
+
 			$plus_one = $notice['plus_one'] ? '<span class="burst-plusone">1</span>' : '';
 			$dismiss  = '<button type="button" class="burst-dismiss-notice" data-notice_id="' . $id . '"><span class="burst-close-notice-x">X</span></button>';
 			$args     = array(
@@ -225,7 +227,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 		 */
 
 		public function validate_function( $func ) {
-            $output = false;
+			$output = false;
 			$invert = false;
 			if ( strpos( $func, 'NOT ' ) !== false ) {
 				$func   = str_replace( 'NOT ', '', $func );

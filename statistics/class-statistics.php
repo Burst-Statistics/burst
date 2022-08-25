@@ -7,44 +7,81 @@ if ( ! class_exists( "burst_statistics" ) ) {
             add_action( 'wp_ajax_burst_get_chart_statistics', array( $this, 'ajax_get_chart_statistics') );
             add_action( 'wp_ajax_burst_get_real_time_visitors', array( $this, 'ajax_get_real_time_visitors') );
             add_action( 'wp_ajax_burst_get_today_statistics_html', array( $this, 'ajax_get_today_statistics_html') );
-            add_action( 'wp_enqueue_scripts', array($this,'enqueue_burst_tracking_script'), 1);
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_burst_time_tracking_script' ), 0 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_burst_tracking_script' ), 0 );
+			add_filter( 'script_loader_tag', array( $this, 'defer_burst_tracking_script' ), 10, 3 );
 		}
 
-        /**
-         * Enqueue some assets
-         * @param $hook
-         */
 
-        public function enqueue_burst_tracking_script( $hook ) {
-            $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+		/**
+		 * Enqueue some assets
+		 * @param $hook
+		 */
+
+		public function enqueue_burst_time_tracking_script( $hook ) {
+			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+			if( !$this->exclude_from_tracking() ) {
+				wp_enqueue_script( 'burst-timeme',
+					burst_url . "helpers/timeme/timeme$minified.js", array(),
+					burst_version, false );
+			}
+		}
+
+		/**
+		 * Enqueue some assets
+		 * @param $hook
+		 */
+
+		public function enqueue_burst_tracking_script( $hook ) {
+			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 			$cookieless = burst_get_value('enable_cookieless_tracking');
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
-            if( !$this->exclude_from_tracking() ) {
-                global $post;
-                //set some defaults
-                $localize_args = apply_filters( 'burst_tracking_options',
-                    array(
-                        'url'                       => get_rest_url() . 'burst/v1/',
-                        'page_id'                   => isset($post->ID) ? $post->ID : 0,
-                        'cookie_retention_days'     => 30,
-                        'options'                   => array(
-                            'enable_cookieless_tracking' => $cookieless,
-                        ),
-                    )
-                );
-                wp_enqueue_script( 'burst-timeme',
-                    burst_url . "helpers/timeme/timeme$minified.js", array(),
-                    burst_version, false );
-                wp_enqueue_script( 'burst',
-                    burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', array('burst-timeme') ),
-                    burst_version, false );
-                wp_localize_script(
-                    'burst',
-                    'burst',
-                    $localize_args
-                );
-            }
-        }
+			$in_footer = burst_get_value('enable_turbo_mode');
+			if( !$this->exclude_from_tracking() ) {
+
+				global $post;
+				//set some defaults;
+				$localize_args = apply_filters( 'burst_tracking_options',
+					array(
+						'url'                       => get_rest_url() . 'burst/v1/',
+						'page_id'                   => isset($post->ID) ? $post->ID : 0,
+						'cookie_retention_days'     => 30,
+						'options'                   => array(
+							'beacon_enabled'         => burst_tracking_status_beacon(),
+							'enable_cookieless_tracking' => $cookieless,
+							'enable_turbo_mode'           => burst_get_value('enable_turbo_mode'),
+						),
+					)
+				);
+				wp_enqueue_script( 'burst',
+					burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', array('burst-timeme') ),
+					burst_version, $in_footer );
+				wp_localize_script(
+					'burst',
+					'burst',
+					$localize_args
+				);
+			}
+		}
+
+		public function defer_burst_tracking_script( $tag, $handle, $src ) {
+			// time me load asap but async to avoid blocking the page load
+			if ( 'burst-timeme' === $handle ) {
+				return str_replace( ' src', ' async src', $tag );
+			}
+
+			$turbo = burst_get_value('enable_turbo_mode');
+			if ( $turbo ) {
+				if ( 'burst' == $handle ) {
+					return str_replace( ' src', ' defer src', $tag );
+				}
+			}
+
+			if ( 'burst' === $handle ) {
+				return str_replace( ' src', ' async src', $tag );
+			}
+			return $tag;
+		}
 
         function exclude_from_tracking(){
             if( is_user_logged_in() ){

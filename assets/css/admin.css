@@ -103,7 +103,7 @@
 }
 
 .burst *, .burst *:before, .burst *:after {
-    box-sizing: inherit;
+    box-sizing: border-box;
 }
 
 .burst body, .burst h1, .burst h2, .burst h3, .burst h4, .burst h5, .burst h6, .burst p, .burst ol, .burst ul {
@@ -172,6 +172,10 @@
 
 .burst a {
     font-size: var(--rsp-fs-300);
+}
+
+.burst .burst-read-more {
+    margin-left: 4px;
 }
 
 .burst .burst-notice-hook-element {
@@ -417,8 +421,30 @@
     width: 100%;
     min-height: calc( 30px + var(--rsp-spacing-s) * 2);
     box-sizing: border-box;
-    padding: var(--rsp-spacing-s) var(--rsp-spacing-l);
+    padding: var(--rsp-spacing-m) var(--rsp-spacing-l);
     align-self: flex-end;
+}
+
+@media (max-width: 1440px) {
+    .burst .burst-grid-footer {
+        padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
+    }
+}
+
+.burst .burst-grid-footer .burst-legend {
+    display: flex;
+}
+
+.burst .burst-grid-footer .burst-legend span {
+    padding-left: 5px;
+}
+
+.burst .burst-flex-push-right {
+    margin-left: auto;
+}
+
+.burst .burst-flex-push-left {
+    margin-right: auto;
 }
 
 update-nag.notice {
@@ -494,6 +520,7 @@ update-nag.notice {
 .burst .field-group .burst-label {
     text-align: left;
     margin: var(--rsp-spacing-xs) var(--rsp-spacing-xs) var(--rsp-spacing-xs) 0;
+    font-weight: 500;
 }
 
 .burst .field-group.first .burst-label {
@@ -827,19 +854,19 @@ update-nag.notice {
 [burst-tooltip][flow^="right"]:hover::after, [burst-tooltip][flow^="right"]:focus::after {
   animation: tooltips-horz 300ms ease-out forwards; }
 
-.cmplz-icon, .cmplz-icon-tooltip {
+.burst-icon, .burst-icon-tooltip {
   display: flex;
   align-items: center;
   justify-content: center; }
-  .cmplz-icon svg, .cmplz-icon-tooltip svg {
+  .burst-icon svg, .burst-icon-tooltip svg {
     fill: currentColor; }
 
-.cmplz-copy-shortcode {
+.burst-copy-shortcode {
   cursor: pointer;
   display: flex;
   justify-content: center;
   transition: transform 0.1s ease-in; }
-  .cmplz-copy-shortcode.cmplz-click-animation .cmplz-icon {
+  .burst-copy-shortcode.burst-click-animation .burst-icon {
     animation: beat 0.4s ease-out; }
 
 @keyframes beat {
@@ -852,7 +879,7 @@ update-nag.notice {
   100% {
     transform: scale(1); } }
 
-.cmplz-copy-shortcode-text {
+.burst-copy-shortcode-text {
   right: 10000px;
   position: absolute;
   background-color: #fff;
@@ -1201,6 +1228,7 @@ update-nag.notice {
     border-radius: 15px;
     padding: 4px 0;
     font-size: var(--rsp-fs-200);
+    color: var(--rsp-text-color);
     font-weight: 500;
 }
 
@@ -1215,7 +1243,7 @@ update-nag.notice {
 
 .burst-notice__status.completed {
     background-color: var(--rsp-color-success);
-    color: #fff;
+    color: var(--rsp-text-color-white);
 }
 
 .burst-notice__status.open {
@@ -1223,8 +1251,13 @@ update-nag.notice {
 }
 
 .burst-notice__status.urgent {
-    background-color: var(--rsp-color-warning);
-    color: #fff;
+    background-color: var(--rsp-color-error);
+    color: var(--rsp-text-color-white);
+}
+
+.burst-notice__status.new {
+    background-color: var(--rsp-dark-blue);
+    color: var(--rsp-text-color-white);
 }
 
 .burst-notice .burst-notice__message p {
@@ -1238,7 +1271,7 @@ update-nag.notice {
 
 .burst-notice__dismiss button {
     background: transparent;
-    color: #ccc;
+    color: var(--rsp-grey-500);
     font-size: var(--rsp-fs-300);
     border: 0 solid transparent;
     cursor: pointer;
