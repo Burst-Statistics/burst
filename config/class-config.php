@@ -66,13 +66,13 @@ if ( ! class_exists( "burst_config" ) ) {
 					'include_in_progress' => false,
 					'dismissible' => false,
 				],
-				'tracking-with-rest-api' => [
-					'warning_condition' => 'burst_tracking_status_rest_api', // true if rest api is enabled and beacon does not work
-					'plus_one' => false,
-					'open' => __( "Due to your server or website configuration the fastest tracking method is not available, the fallback is used instead.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/troubleshoot-tracking/'),
-					'include_in_progress' => false,
-					'dismissible' => false,
-				],
+//				'tracking-with-rest-api' => [
+//					'warning_condition' => 'burst_tracking_status_rest_api', // true if rest api is enabled and beacon does not work
+//					'plus_one' => false,
+//					'open' => __( "Due to your server or website configuration the fastest tracking method is not available, the fallback is used instead.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/troubleshoot-tracking/'),
+//					'include_in_progress' => false,
+//					'dismissible' => false,
+//				],
 				'new-feature-turbo-mode' => [
 					'success_conditions'  => [
 						'false',
