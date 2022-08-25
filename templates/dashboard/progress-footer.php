@@ -18,9 +18,9 @@ $tracking_statuses = array(
 		'icon-status' => 'success',
 	),
 	'rest'    => array(
-		'label'       => __( 'Tracking with REST API', 'burst-statistics' ),
-		'icon'        => 'warning',
-		'icon-status' => 'warning',
+		'label'       => __( 'REST API enabled', 'burst-statistics' ),
+		'icon'        => 'circle-check',
+		'icon-status' => 'success',
 	),
 	'beacon'  => array(
 		'label'       => __( 'Endpoint enabled', 'burst-statistics' ),
