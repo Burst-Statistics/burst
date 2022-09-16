@@ -65,9 +65,13 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.2.1 =
+* Fix: Fixed an issue where adding role capabilities would result in a fatal error.
+
+== Change log ==
 = 1.2.0 =
 * Feature: Introducing defer/footer as option
-* Feature: Introducing new tracking method
+* Feature: Introducing new  improved tracking method
 * Improvement: Feedback notices
 
 = 1.1.5 =
