@@ -1600,7 +1600,7 @@ update-nag.notice {
 }
 
 .burst-dashboard-widget .burst-kpi {
-    background-color: var(--rsp-wp-blue-faded);
+    background-color: var(--rsp-dark-blue-faded);
     padding: var(--rsp-spacing-m);
     width: clamp(50%, 50%, 100%);
 }
