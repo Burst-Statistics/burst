@@ -701,3 +701,16 @@ if ( ! function_exists( 'burst_tracking_status_beacon' ) ) {
 		return BURST::$endpoint->get_tracking_status() === 'beacon';
 	}
 }
+
+if ( ! function_exists( 'burst_get_beacon_url' ) ) {
+    /**
+     * Get beacon directory
+     *
+     * @return string
+     */
+    function burst_get_beacon_url() {
+        $wp_dir = get_site_url();
+        return trailingslashit( $wp_dir ) . 'burst-statistics-endpoint.php';
+
+    }
+}

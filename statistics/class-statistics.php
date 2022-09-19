@@ -46,6 +46,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'url'                       => get_rest_url() . 'burst/v1/',
 						'page_id'                   => isset($post->ID) ? $post->ID : 0,
 						'cookie_retention_days'     => 30,
+						'beacon_url'                => burst_get_beacon_url(),
 						'options'                   => array(
 							'beacon_enabled'         => burst_tracking_status_beacon(),
 							'enable_cookieless_tracking' => $cookieless,

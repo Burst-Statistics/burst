@@ -180,8 +180,7 @@ let burst_api_request = obj => {
 		// if browser supports sendBeacon use it
 		if (window.navigator.sendBeacon && burst.options.beacon_enabled) {
 			// send the request using sendBeacon
-			obj.url = '/burst-statistics-endpoint.php'
-			window.navigator.sendBeacon(obj.url, JSON.stringify( obj.data) );
+			window.navigator.sendBeacon(burst.beacon_url, JSON.stringify( obj.data) );
 			resolve('ok');
 		} else {
 			obj.url = burst.url + 'track' + burst_token;

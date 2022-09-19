@@ -67,6 +67,10 @@ Not...yet.
 == Change log ==
 = 1.2.1 =
 * Fix: Fixed an issue where adding role capabilities would result in a fatal error.
+* Fix: Post and page counts did not update, this is fixed now.
+* Fix: Changed endpoint DIR to URL to prevent 404 errors on subfolder installs.
+* Improvement: Delete endpoint on uninstallation.
+
 
 == Change log ==
 = 1.2.0 =
