@@ -63,6 +63,8 @@ if ( ! class_exists( 'BURST' ) ) {
         public static $sessions;
         public static $goals;
 		public static $admin;
+		public static $settings;
+		public static $progress;
         public static $frontend;
         public static $wizard;
 		public static $review;
@@ -82,10 +84,11 @@ if ( ! class_exists( 'BURST' ) ) {
             self::$goals  = new burst_goals();
 			self::$config = new burst_config();
             self::$frontend     = new burst_frontend();
-            if ( is_admin() || wp_doing_cron() ) {
-                self::$admin     = new burst_admin();
-            }
-			if ( is_admin() ) {
+			if ( is_admin() || wp_doing_cron() ) {
+				self::$admin     = new burst_admin();
+			}
+			if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() ) {
+				self::$progress  = new burst_progress();
 				self::$review    = new burst_review();
 				self::$field     = new burst_field();
 				self::$tour      = new burst_tour();
@@ -110,6 +113,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			define( 'burst_version', '1.2.1' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
+			define( 'burst_premium_url', 'https://burst-statistics.com/premium?src=burst-plugin' );
 		}
 
 		/**
@@ -134,14 +138,16 @@ if ( ! class_exists( 'BURST' ) ) {
 			require_once( burst_path . '/class-endpoint.php' );
 			require_once( burst_path . '/tracking/tracking.php' );
             require_once( burst_path . '/class-frontend.php' );
-            if ( is_admin() || wp_doing_cron() ) {
-                require_once( burst_path . '/class-admin.php' );
-            }
-			if ( is_admin() ) {
-                require_once( burst_path . '/assets/icons.php');
+			if ( is_admin() || wp_doing_cron() ) {
+				require_once( burst_path . '/class-admin.php' );
+			}
+			if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() ) {
+				require_once( burst_path . 'settings/settings.php' );
+				require_once( burst_path . '/assets/icons.php');
 				require_once( burst_path . '/class-field.php');
 				require_once( burst_path . '/grid/grid.php' );
 				require_once( burst_path . '/class-review.php' );
+				require_once( burst_path . 'progress/class-progress.php');
 				require_once( burst_path . '/shepherd/tour.php' );
 				require_once( burst_path . '/config/notices.php' );
 				if ( isset($_GET['install_pro'])) {
@@ -186,7 +192,7 @@ if ( ! function_exists( 'burst_set_activation_time_stamp' ) ) {
 	 * @param $networkwide
 	 */
 	function burst_set_activation_time_stamp( $networkwide ) {
-		update_option( 'burst_activation_time', time() );
+		update_option( 'burst_activation_time', time(), false );
 	}
 
 	register_activation_hook( __FILE__, 'burst_set_activation_time_stamp' );
@@ -247,4 +253,17 @@ if ( ! function_exists('burst_add_manage_capability')){
 	}
 
 	register_activation_hook( __FILE__, 'burst_add_manage_capability' );
+}
+
+function BURST()
+{
+	return BURST::get_instance();
+}
+add_action('plugins_loaded', 'BURST', 8);
+
+if ( ! function_exists( 'burst_is_logged_in_rest' ) ) {
+	function burst_is_logged_in_rest() {
+		$is_settings_page = isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], 'wp-json/burst/v1/' ) !== false;
+		return $is_settings_page && isset( $_SERVER['HTTP_X_WP_NONCE'] ) && wp_verify_nonce( $_SERVER['HTTP_X_WP_NONCE'], 'wp_rest' );
+	}
 }
