@@ -38,38 +38,24 @@
     }
 
     .border-to-border {
-      .burst-grid-content {
+      .burst-grid-item-content {
         padding: 0;
 
         & > * {
-          padding-left: var(--rsp-spacing-l);
-          padding-right: var(--rsp-spacing-l);
+          padding-inline: var(--rsp-spacing-l);
           width: 100%;
           display: flex;
           flex-wrap: wrap;
           align-items: center;
         }
       }
-      .burst-grid-content form {
-        padding-left: 0;
-        padding-right: 0;
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        flex-basis: 100%;
-        min-height: 100%;
+    }
+    .border-to-border.datatable, .border-to-border.burst-today{
+      .burst-grid-item-content {
 
-        & > .field-group {
-          width: 100%;
-          padding: 0 var(--rsp-spacing-l);
-        }
-
-        .burst-grid-footer {
-          margin-top: auto;
-
-          > *:last-child {
-            margin-left: auto;
-          }
+        & > * {
+          padding-left: 0;
+          padding-right: 0;
         }
       }
     }

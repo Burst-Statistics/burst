@@ -1,45 +1,50 @@
 .burst {
-  a.button, button, input {
+  a.button, button.button, input.button {
     font-size: var(--rsp-fs-300);
     font-weight: 300;
     letter-spacing: 0.5px;
     transition: all 0.3s ease;
 
-    &.button-primary {
-      background: var(--rsp-wp-blue);
-      color: var(--rsp-text-color-white);
-      border-color: var(--rsp-wp-blue);
-      outline: 2px transparent solid;
-      outline-offset: 1px;
-      &:hover, &:focus, &:active {
-        outline: 2px var(--rsp-wp-blue) solid;
-        background: var(--rsp-wp-blue);
-      }
-    }
-
-    &.button-secondary {
-      background: transparent;
-      color: var(--rsp-wp-blue);
-      border-color: var(--rsp-wp-blue);
-      outline: 1px transparent solid;
-      &:hover, &:focus, &:active {
-        outline: 1px var(--rsp-wp-blue) solid;
-      }
-    }
-
     &.button-black {
       border: 0 solid transparent;
       background: var(--rsp-black);
       color: var(--rsp-text-color-white);
-      outline: 2px transparent solid;
-      outline-offset: 1px;
+
       &:hover, &:focus, &:active {
-        outline: 2px var(--rsp-black) solid;
+        box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--rsp-black);
       }
     }
 
-    &:hover {
-      opacity: 0.9;
+    &.button-tertiary, &.button-red {
+      border: 0 solid transparent;
+      background: var(--rsp-red);
+      color: var(--rsp-text-color-white);
+
+      &:hover, &:focus, &:active {
+        box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--rsp-red);
+        background: var(--rsp-red);
+        color: var(--rsp-text-color-white);
+      }
     }
   }
+}
+
+.burst {
+  a.burst-button-small, button.burst-button-small, input.burst-button-small {
+    font-size: var(--rsp-fs-100);
+    font-weight: 300;
+    min-height: auto;
+  }
+}
+/* Documents overview */
+.burst-shortcode {
+  right: 10000px;
+  position: absolute;
+  background-color: #fff;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.shortcode {
+  cursor: pointer;
 }

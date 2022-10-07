@@ -29,7 +29,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 	 * @return string
 	 */
 	function burst_track_hit( $data ): string {
-		global $wpdb;
 		$user_agent_data = isset( $data['user_agent'] ) ? burst_get_user_agent_data( $data['user_agent'] ) : array(
 			'browser'  => '',
 			'version'  => '',
@@ -102,23 +101,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			$arr['first_time_visit'] = burst_get_first_time_visit( $arr['uid'] );
 
 			burst_create_statistic( $arr );
-
-			// if postmeta burst_total_pageviews_count does not exist, create it with sql and set it to 1
-			// if it exists, add 1 to it via sql
-			$meta_key = 'burst_total_pageviews_count';
-			// get post meta via sql
-			$sql = $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s", $arr['page_id'], $meta_key );
-			$meta_value = $wpdb->get_var( $sql );
-
-			if ( (int) $meta_value > 0 ) {
-				$meta_value = (int) $meta_value + 1;
-				$sql = $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %d WHERE post_id = %d AND meta_key = %s", $meta_value, $arr['page_id'], $meta_key );
-				$wpdb->query( $sql );
-			} else {
-				$meta_value = 1;
-				$sql = $wpdb->prepare( "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES (%d, %s, %d)", $arr['page_id'], $meta_key, $meta_value );
-				$wpdb->query( $sql );
-			}
 		}
 
 		return 'success';
