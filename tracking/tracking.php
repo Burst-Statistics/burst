@@ -29,6 +29,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 	 * @return string
 	 */
 	function burst_track_hit( $data ): string {
+		global $wpdb;
 		$user_agent_data = isset( $data['user_agent'] ) ? burst_get_user_agent_data( $data['user_agent'] ) : array(
 			'browser'  => '',
 			'version'  => '',
@@ -101,6 +102,23 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			$arr['first_time_visit'] = burst_get_first_time_visit( $arr['uid'] );
 
 			burst_create_statistic( $arr );
+
+			// if postmeta burst_total_pageviews_count does not exist, create it with sql and set it to 1
+			// if it exists, add 1 to it via sql
+			$meta_key = 'burst_total_pageviews_count';
+			// get post meta via sql
+			$sql = $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s", $arr['page_id'], $meta_key );
+			$meta_value = $wpdb->get_var( $sql );
+
+			if ( (int) $meta_value > 0 ) {
+				$meta_value = (int) $meta_value + 1;
+				$sql = $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %d WHERE post_id = %d AND meta_key = %s", $meta_value, $arr['page_id'], $meta_key );
+				$wpdb->query( $sql );
+			} else {
+				$meta_value = 1;
+				$sql = $wpdb->prepare( "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES (%d, %s, %d)", $arr['page_id'], $meta_key, $meta_value );
+				$wpdb->query( $sql );
+			}
 		}
 
 		return 'success';
@@ -557,14 +575,7 @@ if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
 	 */
 	function burst_is_ip_blocked(): bool {
 		$ip           = burst_get_ip_address();
-		$blocked_ips  = burst_get_option( 'ip_blocklist' );
-		// line break seperated list to array
-		$blocked_ips  = preg_split('/\r\n|\r|\n/', $blocked_ips); // split by line break
-		error_log( 'blocked_ips: ' . print_r( $blocked_ips, true ) );
-		$blocked_ips  = array_map( 'trim', $blocked_ips );
-
-		error_log( 'blocked_ips: ' . print_r( $blocked_ips, true ) );
-		$ip_blocklist = apply_filters( 'burst_ip_blocklist', $blocked_ips );
+		$ip_blocklist = apply_filters( 'burst_ip_blocklist', array() );
 		if ( in_array( $ip, $ip_blocklist ) ) {
 			if ( WP_DEBUG ) {
 				error_log( 'IP ' . $ip . ' is blocked for tracking' );

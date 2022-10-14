@@ -3,17 +3,16 @@
   .burst-header, .burst-content-area {
     max-width: calc(100% - var(--rsp-spacing-xl) * 4);
     margin: 0 auto;
-    @media(max-width: $rsp-break-xxl) {
+    @media(max-width: $rsp-break-xl){
       max-width: calc(100% - var(--rsp-spacing-xl) * 1);
     }
-    @media(max-width: $rsp-break-xl) {
+    @media(max-width: $rsp-break-l){
       max-width: calc(100% - var(--rsp-spacing-xl) * 2);
     }
-    @media(max-width: $rsp-break-s) {
+    @media(max-width: $rsp-break-xs){
       max-width: calc(100% - var(--rsp-spacing-xl) * 1);
     }
   }
-
   .burst-header {
     display: flex;
     flex-wrap: wrap;
@@ -21,11 +20,13 @@
     height: 70px;
     box-sizing: border-box;
     background-color: var(--rsp-background-block-color);
-    @media(max-width: $rsp-break-l) {
+    @media( max-width: $rsp-break-l ){
       height: auto;
     }
 
     img {
+      margin: auto 0;
+      width: 74px;
       margin: var(--rsp-spacing-m) 0;
     }
   }
@@ -33,7 +34,7 @@
   .burst-header-left {
     display: flex;
     font-size: var(--rsp-fs-400);
-    @media(max-width: $rsp-break-l) {
+    @media( max-width: $rsp-break-l ){
       justify-content: center;
       margin: var(--rsp-spacing-xs) 0;
       order: 3;
@@ -43,17 +44,15 @@
 
     .burst-header-menu {
       margin: auto 15px;
-
-      ul {
+      ul{
         display: flex;
       }
-
       li {
         margin-bottom: 0;
       }
-
       a {
-        padding: 23px 15px;
+        font-size: var(--rsp-fs-400);
+        padding: 26px 15px;
         text-decoration: none;
         color: var(--rsp-text-color);
         height: 100%;
@@ -62,7 +61,7 @@
         box-sizing: border-box;
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
-        @media(max-width: $rsp-break-l) {
+        @media( max-width: $rsp-break-l ){
           padding: 15px;
         }
 
@@ -84,24 +83,30 @@
     align-items: center;
     margin-left: auto;
     gap: var(--rsp-spacing-s);
-
     select {
       max-width: 60ch;
     }
-
-    @media(max-width: $rsp-break-xs) {
-      .button {
+    @media( max-width: $rsp-break-xs ) {
+      .button{
         display: none;
       }
     }
   }
 
   .burst-content-area {
-    margin-top: var(--rsp-grid-gap);
+    margin-top: calc(var(--rsp-grid-margin) * 2);
   }
 
   .burst-header-container {
-    background: var(--rsp-background-block-color);
+    background: #fff;
+  }
+  .burst-date-container {
+    background: #fff;
+    cursor: pointer;
+    padding: 4px 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    white-space: nowrap;
   }
 
   .burst-grid {
@@ -109,121 +114,103 @@
     grid-template-columns: repeat(4, calc(25% - var(--rsp-spacing-s)) [col-start]); // We use calc because of the grid gap
     grid-auto-rows: max-content;
     gap: var(--rsp-grid-gap);
-    min-height: calc(100vh - 32px - 80px - 20px - var(--rsp-grid-gap)); //32px = wordpress bar, 80px = cmplz bar, 20px = margin-top, 20px is grid gap
+    min-height: calc(100vh - 32px - 80px - 20px - var(--rsp-grid-gap)); //32px = wordpress bar, 80px = burst bar, 20px = margin-top, 20px is grid gap
   }
-
-  .no-background {
-    background: none;
-    border: none;
-    box-shadow: none;
-  }
-
-  .burst-column-2 {
-    grid-column: span 2;
-  }
-
-  .burst-row-2 {
-    grid-row: span 2;
-    min-height: 400px;
-  }
-
-  @media(max-width: $rsp-break-xxl) {
-    grid-column: span 2;
-    .burst-progress, .burst-overview {
-      grid-column: span 4;
-    }
-  }
-  @media(max-width: $rsp-break-m) {
-    grid-column: span 2;
-    .burst-column-2 {
-      grid-column: span 4;
-    }
-  }
-  @media(max-width: $rsp-break-s) {
-    grid-column: span 4;
-  }
-  .burst-grid-item-footer {
+  .burst-grid-container {
+    @include burst-block;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--rsp-grid-margin);
-    width: 100%;
-    min-height: calc(30px + var(--rsp-spacing-s) * 2);
-    box-sizing: border-box;
-    @include burst-block-padding;
-    align-self: flex-end;
+    justify-content: flex-start;
+    flex-direction: column;
+    flex-basis: 100%;
+    min-height: 100%;
+    grid-column: span 1;
+    grid-row: span 1;
+    p{
+      font-size: var(--rsp-fs-300);
+    }
 
-    .burst-legend {
-      display: flex;
+    &.no-background {
+      background: none;
+      border: none;
+      box-shadow: none;
+    }
+    &.column-2 {
+      grid-column: span 2;
+    }
 
-      span {
-        padding-left: 5px;
+    &.row-2 {
+      grid-row: span 2;
+    }
+    @media( max-width: $rsp-break-l ){
+      grid-column: span 2;
+      &.burst-insights-chart, &.burst-overview{
+        grid-column: span 4;
       }
     }
-    //&:empty{
-    //  display: none;
-    //}
+    @media( max-width: $rsp-break-m ){
+      grid-column: span 2;
+      &.column-2 {
+        grid-column: span 4;
+      }
+    }
+    @media( max-width: $rsp-break-s ) {
+      grid-column: span 4;
+    }
   }
 
-  .burst-flex-push-right {
-    margin-left: auto;
-  }
-
-  .burst-flex-push-left {
-    margin-right: auto;
-  }
-}
-
-.burst-grid-item {
-  @include burst-block;
-  transition: all 1s ease;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  flex-direction: column;
-  flex-basis: 100%;
-  min-height: 100px;
-  grid-column: span 1;
-  grid-row: span 1;
-
-  p {
-    font-size: var(--rsp-fs-300);
-  }
-
-  .burst-grid-item-header {
+  .burst-grid-header {
     width: 100%;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    @include burst-inline-block-padding;
-    min-height: 60px;
-    &:empty {
-      display: none;
-    }
+    padding: var(--rsp-spacing-s) var(--rsp-spacing-l);
+  }
+  .burst-grid-title {
+    padding: 9px 0 4px 0;
   }
 
-  .burst-grid-item-title {
-    margin: 4px 0 4px 0;
-  }
-
-  .burst-grid-item-controls {
+  .burst-grid-controls {
     font-size: var(--rsp-fs-300);
     display: flex;
     gap: var(--rsp-spacing-s);
   }
 
 
-  .burst-grid-item-content {
+  .burst-grid-content {
     width: 100%;
     box-sizing: border-box;
-    @include burst-block-padding;
-    padding-block: 0;
+    padding: 0 var(--rsp-spacing-l);
     flex-grow: 100;
+  }
 
-    &:empty {
-      display: none;
+  .burst-grid-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--rsp-grid-margin);
+    width: 100%;
+    min-height: calc( 30px + var(--rsp-spacing-s) * 2);
+    box-sizing: border-box;
+    padding: var(--rsp-spacing-m) var(--rsp-spacing-l);
+    @media(max-width: $rsp-break-xl){
+      padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
     }
+    align-self: flex-end;
+
+    .burst-legend {
+      display:flex;
+      span {
+        padding-left:5px;
+      }
+    }
+  }
+  .burst-flex-push-right{
+    margin-left: auto;
+  }
+  .burst-flex-push-left{
+    margin-right: auto;
   }
 }

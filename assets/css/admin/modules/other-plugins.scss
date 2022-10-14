@@ -1,6 +1,6 @@
 .burst {
   .burst-other-plugins .rsp-logo img {
-	height: 20px;
+	height: 34px;
   }
 
   .burst-other-plugins-container {
@@ -25,8 +25,8 @@
 	  gap: 10px;
 	  --rsp-other-plugins-color: var(---rsp-brand-primary);
 
-	  &.burst-rsssl {
-		--rsp-other-plugins-color: var(--rsp-yellow);
+	  &.burst-zip {
+		--rsp-other-plugins-color: var(--rsp-pink);
 	  }
 
 	  &.burst-burst {
@@ -37,18 +37,16 @@
 		--rsp-other-plugins-color: var(--rsp-blue);
 	  }
 
-	  &.burst-burst {
+	  &.burst-rsssl {
 		--rsp-other-plugins-color: var(--rsp-yellow);
 	  }
-
 	  a {
-		width: max-content;
 		color: var(--rsp-text-color-light);
 		transition: color 0.3s ease;
 		display: flex;
 		align-items: center;
 		min-width: 0;
-		gap: var(--rsp-spacing-xs);
+	    gap: var(--rsp-spacing-xs);
 		text-decoration: none;
 
 		&:hover {
@@ -69,14 +67,13 @@
 		transition: background-color 0.3s ease;
 		background-color: var(--rsp-other-plugins-color);
 	  }
-
 	  .burst-other-plugins-content {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	  }
 	  .burst-other-plugin-status{
-		min-width: fit-content;
+		  min-width: fit-content;
 	  }
 	}
   }

@@ -14,9 +14,9 @@
 
   .burst-tips-tricks-element {
 	width: calc(50% - var(--rsp-spacing-xxs));
-	@media( max-width: $rsp-break-xs ){
-	  width: 100%;
-	}
+	  @media( max-width: $rsp-break-xs ){
+		  width: 100%;
+	  }
 	a {
 	  color: var(--rsp-text-color-light);
 	  transition: color 0.3s ease;

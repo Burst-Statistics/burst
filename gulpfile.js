@@ -4,7 +4,6 @@ const cssbeautify = require('gulp-cssbeautify');
 const cssuglify = require('gulp-uglifycss');
 const jsuglify = require('gulp-uglify');
 const sass = require('gulp-sass')(require('node-sass'));
-const spawn = require('child_process').spawn;
 
 function scssTask(cb) {
   // compile scss to css and minify
@@ -45,7 +44,7 @@ exports.js = jsTask
 function defaultTask(cb) {
   gulp.watch('./assets/css/**/*.scss', { ignoreInitial: false }, scssTask);
   gulp.watch('./assets/js/**/*.js', { ignoreInitial: false }, jsTask);
-  spawn('npm', ['start'], { cwd: 'settings', stdio: 'inherit' })
+
   cb();
 }
 exports.default = defaultTask
