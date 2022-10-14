@@ -1,3 +1,4 @@
+// @todo remove? because we now use react
 jQuery(document).ready(function ($) {
     'use strict';
 

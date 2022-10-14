@@ -120,7 +120,7 @@ EOT;
 		 * @return bool
 		 */
 		public function endpoint_test_request(): bool {
-			$url  = burst_get_beacon_url();
+			$url  = site_url( 'burst-statistics-endpoint.php' );
 			$data = array( 'request' => 'test' );
 
 			// use key 'http' even if you send the request to https://...

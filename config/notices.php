@@ -49,219 +49,312 @@ if ( ! class_exists( "burst_notices" ) ) {
 		}
 
 		/**
-		 * Get list of notices for the burst dashboard
-		 *
+		 * Get array of notices
+		 * - condition: function returning boolean, if notice should be shown or not
+		 * - callback: function, returning boolean or string, with multiple possible answers, and resulting messages and icons
 		 * @param array $args
-		 *
 		 * @return array
 		 */
-		public function get_notices( $args = array() ) {
-			$notices = apply_filters( 'burst_notices', array());
+
+		public function get_notices_list( $args = array() )
+		{
+			$icon_labels = [
+				'completed' => __( "Completed", "burst-statistics" ),
+				'new'     => __( "New!", "burst-statistics" ),
+				'warning' => __( "Warning", "burst-statistics" ),
+				'error' => __( "Error", "burst-statistics" ),
+				'open'    => __( "Open", "burst-statistics" ),
+				'premium' => __( "Premium", "burst-statistics" ),
+			];
 
 			$defaults = array(
-				'cache'     => true,
-				'status'    => 'all',
-				'plus_ones' => false,
+				'admin_notices'      => false,
+				'premium_only'       => false,
+				'dismiss_on_upgrade' => false,
+				'status'             => 'open', //status can be "all" (all tasks, regardless of dismissed or open), "open" (not success/completed) or "completed"
 			);
-			$args     = wp_parse_args( $args, $defaults );
-			$cache    = $args['cache'];
-			if ( isset( $_GET['page'] ) && ( $_GET['page'] === 'burst' ) ) {
-				$cache = false;
+			$args = wp_parse_args($args, $defaults);
+
+			$cache_admin_notices = !$this->is_burst_page() && $args['admin_notices'];
+
+			//if we're on the settings page, we need to clear the admin notices transient, because this list never gets requested on the settings page, and won'd get cleared otherwise
+			if ( $this->is_burst_page() ) {
+				delete_transient('burst_admin_notices');
 			}
-
-			$active_notices = $cache ? get_transient( 'burst_warnings' ) : false;
-			//re-check if there are no warnings, or if the transient has expired
-			if ( ! $active_notices ) {
-				$active_notices = array();
-
-				$notice_type_defaults = array(
-					'plus_one'           => false,
-					'warning_condition'  => '_true_',
-					'success_conditions' => array(),
-					'relation'           => 'OR',
-					'status'             => 'open',
-					'dismissable'        => true,
-				);
-
-				foreach ( $notices as $id => $notice_type ) {
-					$notices[ $id ] = wp_parse_args( $notice_type, $notice_type_defaults );
-				}
-
-				$dismissed_warnings = get_option( 'burst_dismissed_warnings', array() );
-				foreach ( $notices as $id => $notice ) {
-					if ( in_array( $id, $dismissed_warnings ) ) {
-						continue;
-					}
-
-					$show_warning = $this->validate_function( $notice['warning_condition'] );
-					if ( ! $show_warning ) {
-						continue;
-					}
-					$success = $notice['relation'] === 'AND';
-					$relation = $notice['relation'];
-
-					foreach ( $notice['success_conditions'] as $func ) {
-						$condition = $this->validate_function( $func );
-						if ( $relation === 'AND' ) {
-							$success = $success && $condition;
-						} else {
-							$success = $success || $condition;
-						}
-					}
-
-					if ( ! $success ) {
-						if ( isset( $notice['open'] ) ) {
-							$notice['message']    = $notice['open'];
-							$notice['status']     = 'open';
-							$active_notices[ $id ] = $notice;
-						} else if ( isset( $notice['urgent'] ) ) {
-							$notice['message']    = $notice['urgent'];
-							$notice['status']     = 'urgent';
-							$active_notices[ $id ] = $notice;
-						} else if ( isset( $notice['new'] ) ) {
-							$notice['message']    = $notice['new'];
-							$notice['status']     = 'new';
-							$active_notices[ $id ] = $notice;
-						}
-					} else {
-						if ( isset( $notice['completed'] ) ) {
-							$notice['message']    = $notice['completed'];
-							$notice['status']     = 'completed';
-							$notice['plus_one']   = false;
-							$active_notices[ $id ] = $notice;
-						}
-					}
-				}
-				set_transient( 'burst_warnings', $active_notices, HOUR_IN_SECONDS );
-			}
-
-			if (!is_array($active_notices)) $active_notices = array();
-
-			//filtering outside cache if, to make sure all warnings are saved for the cache.
-			//filter by status
-			if ( $args['status'] !== 'all' ) {
-				$filter_statuses = is_array( $args['status'] ) ? $args['status'] : array( $args['status'] );
-				foreach ( $active_notices as $id => $notice ) {
-					if ( ! in_array( $notice['status'], $filter_statuses ) ) {
-						unset( $active_notices[ $id ] );
-					}
+			if ( $cache_admin_notices) {
+				$cached_notices = get_transient('burst_admin_notices');
+				if ( $cached_notices ) {
+					return $cached_notices;
 				}
 			}
 
-			//filter by plus ones
-			if ( $args['plus_ones'] ) {
-				foreach ( $active_notices as $id => $notice ) {
-					//prevent notices on upgrade to 5.0
-					if ( ! isset( $notice['plus_one'] ) ) {
-						continue;
-					}
+			$notice_defaults = array(
+				'condition' => array(),
+				'callback' => false,
+			);
 
-					if ( ! $notice['plus_one'] ) {
-						unset( $active_notices[ $id ] );
-					}
-				}
+			$notices = [
+				'tracking-error' => [
+					'callback' => '_true_', // @todo burst_tracking_status_error
+					'score' => 0,
+					'output' => array(
+						'true' => array(
+							'msg' => __( "Due to your server or website configuration it is not possible to track statistics.", 'burst-statistics' ),
+							'url' => 'https://burst-statistics.com/troubleshoot-tracking/',
+							'icon' => 'error',
+							'dismissible' => false,
+						),
+					),
+				],
+				'new-feature-turbo-mode' => [
+					'callback' => '_true_',
+					'score' => 0,
+					'output' => array(
+						'true' => array(
+							'msg' => __( "We have improved tracking and added Turbo mode! Tracking has become faster and more accurate. Want an even faster page load? Enable Turbo Mode.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/new-feature-tracking-with-endpoint', '%s' . __('Learn more', 'burst-statistics') .'%s'),
+							'icon' => 'new',
+							'dismissible' => true,
+						),
+					),
+				],
+				'leave-feedback' => [
+					'callback' => '_true_',
+					'score' => 0,
+					'status' => 'all',
+					'output' => array(
+						'true' => array(
+							'msg' => burst_sprintf(
+								__( 'If you have any suggestions to improve our plugin, feel free to %sopen a support thread%s.', 'burst-statistics' ),
+								'<a href="https://wordpress.org/support/plugin/burst-statistics/" target="_blank">',
+								'</a>'),
+							'icon' => 'completed',
+							'dismissible' => false,
+						),
+					),
+				],
+			];
+
+			//on multisite, don't show the notice on subsites.
+			if ( is_multisite() && !is_network_admin() ) {
+				unset($notices['secure_cookies_set']);
 			}
 
-			//sort so warnings are on top
-			$completed = array();
-			$open      = array();
-			$urgent    = array();
-			foreach ( $active_notices as $key => $notice ) {
-				//prevent notices on upgrade to 5.0
-				if ( ! isset( $notice['status'] ) ) {
+			$notices = apply_filters('burst_notices', $notices);
+			foreach ($notices as $id => $notice) {
+				$notices[$id] = wp_parse_args($notice, $notice_defaults);
+			}
+
+			/**
+			 * If a list of notices that should be dismissed on upgrade is requested
+			 */
+			if ( $args['dismiss_on_upgrade'] ) {
+				$output = array();
+				foreach( $notices as $key => $notice ) {
+					if ( isset($notice['dismiss_on_upgrade']) && $notice['dismiss_on_upgrade'] ) {
+						$output[] = $key;
+					}
+				}
+				return $output;
+			}
+
+			/**
+			 * Filter out notice that do not apply, or are dismissed
+			 */
+
+			foreach ( $notices as $id => $notice ) {
+				$func   = $notice['callback'];
+				$output = $this->validate_function($func);
+
+				//check if all notices should be dismissed
+				if ( isset( $notice['output'][$output]['dismissible'] )
+				     && $notice['output'][$output]['dismissible']
+				     && burst_get_option('dismiss_all_notices')
+				) {
+					unset($notices[$id]);
 					continue;
 				}
 
-				if ( $notice['status'] === 'urgent' ) {
-					$urgent[ $key ] = $notice;
-				} else if ( $notice['status'] === 'open' ) {
-					$open[ $key ] = $notice;
+				if ( !isset($notice['output'][ $output ]) ) {
+					unset($notices[$id]);
+					continue;
 				} else {
-					$completed[ $key ] = $notice;
+					$notices[$id]['output'] = $notice['output'][ $output ];
+				}
+
+				$notices[$id]['output']['status'] = ( $notices[$id]['output']['icon'] !== 'success') ? 'open' : 'completed';
+				if ( $args['status'] === 'open' && ($notices[$id]['output']['status'] === 'completed' ) ){
+					unset($notices[$id]);
+					continue;
+				}
+				$condition_functions = $notice['condition'];
+				foreach ( $condition_functions as $func ) {
+					$condition = $this->validate_function($func, true);
+					if ( ! $condition ) {
+						unset($notices[$id]);
+					}
+				}
+
+				if ( isset($notices[$id]) ) {
+					$notices[$id]['output']['label'] = $icon_labels[ $notices[$id]['output']['icon'] ];
+				}
+
+				//only remove this option if it's both dismissed AND not completed. This way we keep completed notices in the list.
+				if ( isset($notices[$id]) && get_option( "burst_" . $id . "_dismissed" ) && $notices[$id]['output']['status'] !== 'completed') {
+					unset($notices[$id]);
 				}
 			}
-			$active_notices = $urgent + $open + $completed;
-			return $active_notices;
+
+			//if only admin_notices are required, filter out the rest.
+			if ( $args['admin_notices'] ) {
+				foreach ( $notices as $id => $notice ) {
+					if (!isset($notice['output']['admin_notice']) || !$notice['output']['admin_notice']){
+						unset( $notices[$id]);
+					}
+				}
+				//ensure an empty list is also cached
+				$cache_notices = empty($notices) ? 'empty' : $notices;
+				set_transient('burst_admin_notices', $cache_notices, WEEK_IN_SECONDS );
+			}
+
+			//sort so warnings are on top
+			$warnings = array();
+			$open = array();
+			$other = array();
+			foreach ($notices as $key => $notice){
+				if (!isset($notice['output']['icon'])) continue;
+
+				if ($notice['output']['icon']==='warning') {
+					$warnings[$key] = $notice;
+				} else if ($notice['output']['icon']==='open') {
+					$open[$key] = $notice;
+				} else {
+					$other[$key] = $notice;
+				}
+			}
+			$notices = $warnings + $open + $other;
+
+			//if we only want a list of premium notices
+			if ( $args['premium_only'] ) {
+				foreach ($notices as $key => $notice){
+					if ( !isset($notice['output']['icon']) || $notice['output']['icon'] !== 'premium' ) {
+						unset($notices[$key]);
+					}
+				}
+			}
+
+			error_log(print_r($notices, true));
+			return $notices;
 		}
 
 		/**
-		 * Render a notice
-		 * @param $notice
+		 * Count number of premium notices we have in the list.
+		 * @return int
 		 */
-		public function render_warning( $notice ) {
-			$id     = key( $notice );
-			$notice = $notice[ $id ];
-
-			$status_message = __( "Open", 'burst-statistics' ); // default
-			if ( $notice['status'] === 'completed' ) {
-				$status_message = __( "Completed", 'burst-statistics' );
-			}
-			if ( $notice['status'] === 'urgent' ) {
-				$status_message = __( "Urgent", 'burst-statistics' );
-			}
-			if ( $notice['status'] === 'new' ) {
-				$status_message = __( "New!", 'burst-statistics' );
-			}
-
-			$plus_one = $notice['plus_one'] ? '<span class="burst-plusone">1</span>' : '';
-			$dismiss  = '<button type="button" class="burst-dismiss-notice" data-notice_id="' . $id . '"><span class="burst-close-notice-x">X</span></button>';
-			$args     = array(
-				'status'         => $notice['status'],
-				'status-message' => $status_message,
-				'message'        => $notice['message'],
-				'plus-one'       => $plus_one,
-				'dismiss'        => $dismiss,
-			);
-			$template = burst_get_template( 'dashboard/notice.php', $args );
-			echo esc_html($template);
+		public function get_lowest_possible_task_count() {
+			$premium_notices = $this->get_notices_list(array('premium_only'=>true));
+			return count($premium_notices) ;
 		}
 
-
 		/**
-		 * Get output of function, in format 'function', or 'class()->sub()->function'
-		 * We can pass one variable to the function
+		 * Count the plusones
 		 *
-		 * @param string $func
+		 * @return int
 		 *
-		 * @return string|bool
+		 * @since 3.2
 		 */
 
-		public function validate_function( $func ) {
-			$output = false;
-			$invert = false;
-			if ( strpos( $func, 'NOT ' ) !== false ) {
-				$func   = str_replace( 'NOT ', '', $func );
-				$invert = true;
+		public function count_plusones() {
+			if ( ! burst_user_can_manage() ) {
+				return 0;
 			}
 
-			if ( empty( $func ) ) {
+			$cache = $this->is_burst_page() ? false : true;
+			$count = get_transient( 'burst_plusone_count' );
+			if ( !$cache || ($count === false) ) {
+				$count = 0;
+				$notices = $this->get_notices_list();
+				foreach ( $notices as $id => $notice ) {
+					$success = ( isset( $notice['output']['icon'] ) && ( $notice['output']['icon'] === 'success' ) ) ? true : false;
+					if ( ! $success
+					     && isset( $notice['output']['plusone'] )
+					     && $notice['output']['plusone']
+					) {
+						$count++;
+					}
+				}
+				if ( $count==0) {
+					$count = 'empty';
+				}
+				set_transient( 'burst_plusone_count', $count, DAY_IN_SECONDS );
+			}
+
+			if ( $count==='empty' ) {
+				return 0;
+			}
+			return $count;
+		}
+
+		public function is_burst_page()
+		{
+			if ( burst_is_logged_in_rest() ) {
 				return true;
 			}
 
-			if ( strpos( $func, 'get_option_' ) !== false ) {
-				$field  = str_replace( 'get_option_', '', $func );
-				$output = get_option( $field );
-			} else if ( $func === '_true_' ) {
+			if ( !isset($_SERVER['QUERY_STRING']) ) {
+				return false;
+			}
+
+			parse_str($_SERVER['QUERY_STRING'], $params);
+			if ( array_key_exists("page", $params) && ($params["page"] == "burst") ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Get output of function, in format 'function', or 'class()->sub()->function'
+		 * @param string $func
+		 * @param bool $is_condition // if the check is a condition, which should return a boolean
+		 * @return string|bool
+		 */
+
+		private function validate_function($func, $is_condition = false ){
+			$invert = false;
+			if (strpos($func, 'NOT ') !== FALSE ) {
+				$func = str_replace('NOT ', '', $func);
+				$invert = true;
+			}
+
+			if ( $func === '_true_') {
 				$output = true;
 			} else if ( $func === '_false_' ) {
 				$output = false;
 			} else {
-				//check if this is a function
-				if ( function_exists( $func ) ) {
+				if ( preg_match( '/(.*)\(\)\-\>(.*)->(.*)/i', $func, $matches)) {
+					$base = $matches[1];
+					$class = $matches[2];
+					$function = $matches[3];
+					$output = call_user_func( array( $base()->{$class}, $function ) );
+				} else {
 					$output = $func();
 				}
-				//check for object function array: array(obj, 'func')
-				//untested yet.
-				elseif ( is_array( $func ) ) {
-					$output = $func[0]->$func[1]();
+
+				if ( $invert ) {
+					$output = !$output;
 				}
 			}
 
-			if ( $invert ) {
-				$output = ! $output;
+			//stringyfy booleans
+			if (!$is_condition) {
+				if ( $output === false || $output === 0 ) {
+					$output = 'false';
+				}
+				if ( $output === true || $output === 1 ) {
+					$output = 'true';
+				}
 			}
-
-			return $output;
+			return sanitize_text_field($output);
 		}
 
 	}

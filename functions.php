@@ -34,6 +34,18 @@ if ( ! function_exists( 'burst_user_can_manage' ) ) {
 	}
 }
 
+if ( !function_exists('burst_admin_url')) {
+	/**
+	 * Get admin url, adjusted for multisite
+	 * @return string|null
+	 */
+	function burst_admin_url(){
+         // @todo is this correct?
+		return is_multisite() && is_network_admin() ? network_admin_url('index.php') : admin_url("index.php");
+	}
+}
+
+
 if ( ! function_exists('burst_read_more' ) ) {
 	/**
 	 * Create a generic read more text with link for help texts.
@@ -59,47 +71,6 @@ if ( ! function_exists('burst_read_more' ) ) {
 		}
 
 		return $html;
-	}
-}
-if ( ! function_exists( 'burst_get_template' ) ) {
-	/**
-	 * Get a template based on filename, overridable in theme dir
-	 *
-	 * @param $filename
-	 *
-	 * @return string
-	 */
-
-	function burst_get_template( $filename, $args = array() ) {
-
-		$file       = trailingslashit( burst_path ) . 'templates/' . $filename;
-		$theme_file = trailingslashit( get_stylesheet_directory() )
-		              . trailingslashit( basename( burst_path ) )
-		              . 'templates/' . $filename;
-
-		if ( file_exists( $theme_file ) ) {
-			$file = $theme_file;
-		}
-
-		if ( ! file_exists( $file ) ) {
-			return false;
-		}
-
-		if ( strpos( $file, '.php' ) !== false ) {
-			ob_start();
-			require $file;
-			$contents = ob_get_clean();
-		} else {
-			$contents = file_get_contents( $file );
-		}
-
-		if ( ! empty( $args ) && is_array( $args ) ) {
-			foreach ( $args as $fieldname => $value ) {
-				$contents = str_replace( '{' . $fieldname . '}', $value, $contents );
-			}
-		}
-
-		return $contents;
 	}
 }
 
@@ -189,7 +160,12 @@ if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
 	}
 }
 
-
+/*
+ * Function to get the current page URL
+ * @return string
+ * @since 1.0.0
+ * @todo maybe remove after react?
+ */
 if ( ! function_exists( 'burst_offset_utc_time_to_gtm_offset' ) ) {
 	function burst_offset_utc_time_to_gtm_offset( $utc_time ): int {
 		$utc_time           = (int) $utc_time;
@@ -311,104 +287,30 @@ if ( ! function_exists( 'burst_get_current_post_id' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_get_value' ) ) {
 
-	/**
-	 * Get value for a burst option
-	 * For usage very early in the execution order, use the $page option. This bypasses the class usage.
-	 *
-	 * @param string      $fieldname
-	 * @param bool|int    $post_id
-	 * @param bool|string $page
-	 * @param bool        $use_default
-	 * @param bool        $use_translate
-	 *
-	 * @return array|bool|mixed|string
-	 */
+/**
+ * Get a Really Simple SSL option by name
+ *
+ * @param string $name
+ * @param mixed $default
+ *
+ * @return mixed
+ */
 
-	function burst_get_value(
-		$fieldname, $post_id = false, $page = false, $use_default = true, $use_translate = true
-	) {
-		if ( ! is_numeric( $post_id ) ) {
-			$post_id = false;
-		}
-
-		if ( ! $page && ! isset( BURST::$config->fields[ $fieldname ] ) ) {
-			return false;
-		}
-
-		//if  a post id is passed we retrieve the data from the post
-		if ( ! $page ) {
-			$page = BURST::$config->fields[ $fieldname ]['source'];
-		}
-		if ( $post_id && ( $page !== 'wizard' ) ) {
-			$value = get_post_meta( $post_id, $fieldname, true );
-		} else {
-			$fields = get_option( 'burst_options_' . $page );
-
-			$default = ( $use_default && $page && isset( BURST::$config->fields[ $fieldname ]['default'] ) )
-				? BURST::$config->fields[ $fieldname ]['default'] : '';
-			//@todo $default = apply_filters( 'burst_default_value', $default, $fieldname );
-
-			$value = isset( $fields[ $fieldname ] ) ? $fields[ $fieldname ] : $default;
-		}
-
-		/*
-		 * Translate output
-		 *
-		 * */
-		if ( $use_translate ) {
-
-			$type = isset( BURST::$config->fields[ $fieldname ]['type'] )
-				? BURST::$config->fields[ $fieldname ]['type'] : false;
-			if ( $type === 'cookies' || $type === 'thirdparties'
-			     || $type === 'processors'
-			) {
-				if ( is_array( $value ) ) {
-
-					//this is for example a cookie array, like ($item = cookie("name"=>"_ga")
-
-					foreach ( $value as $item_key => $item ) {
-						//contains the values of an item
-						foreach ( $item as $key => $key_value ) {
-							if ( function_exists( 'pll__' ) ) {
-								$value[ $item_key ][ $key ] = pll__( $item_key . '_'
-								                                     . $fieldname
-								                                     . "_" . $key );
-							}
-							if ( function_exists( 'icl_translate' ) ) {
-								$value[ $item_key ][ $key ]
-									= icl_translate( 'burst',
-									$item_key . '_' . $fieldname . "_" . $key,
-									$key_value );
-							}
-
-							$value[ $item_key ][ $key ]
-								= apply_filters( 'wpml_translate_single_string',
-								$key_value, 'burst',
-								$item_key . '_' . $fieldname . "_" . $key );
-						}
-					}
-				}
-			} else {
-				if ( isset( BURST::$config->fields[ $fieldname ]['translatable'] )
-				     && BURST::$config->fields[ $fieldname ]['translatable']
-				) {
-					if ( function_exists( 'pll__' ) ) {
-						$value = pll__( $value );
-					}
-					if ( function_exists( 'icl_translate' ) ) {
-						$value = icl_translate( 'burst', $fieldname, $value );
-					}
-
-					$value = apply_filters( 'wpml_translate_single_string', $value, 'burst-statistics', $fieldname );
-				}
-			}
-
-		}
-
-		return $value;
+function burst_get_option( $name, $default=false ) {
+	$name = sanitize_title($name);
+	if ( is_multisite() && burst_is_networkwide_active() ) {
+		$options = get_site_option( 'burst_options_settings', [] );
+	} else {
+		$options = get_option( 'burst_options_settings', [] );
 	}
+
+	$value = isset($options[$name]) ? $options[$name] : false;
+	if ( $value===false && $default!==false ) {
+		$value = $default;
+	}
+
+	return apply_filters("burst_option_$name", $value, $name);
 }
 
 if ( ! function_exists( 'burst_intro' ) ) {
@@ -567,23 +469,6 @@ if ( ! function_exists( 'burst_panel' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_update_option' ) ) {
-	/**
-	 * Save a burst option
-	 *
-	 * @param string $page
-	 * @param string $fieldname
-	 * @param mixed  $value
-	 */
-	function burst_update_option( $page, $fieldname, $value ) {
-		$options               = get_option( 'burst_options_' . $page );
-		$options[ $fieldname ] = $value;
-		if ( ! empty( $options ) ) {
-			update_option( 'burst_options_' . $page, $options );
-		}
-	}
-}
-
 if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
 	/**
 	 * Get anon ip address
@@ -700,17 +585,4 @@ if ( ! function_exists( 'burst_tracking_status_beacon' ) ) {
 	function burst_tracking_status_beacon() {
 		return BURST::$endpoint->get_tracking_status() === 'beacon';
 	}
-}
-
-if ( ! function_exists( 'burst_get_beacon_url' ) ) {
-    /**
-     * Get beacon directory
-     *
-     * @return string
-     */
-    function burst_get_beacon_url() {
-        $wp_dir = get_site_url();
-        return trailingslashit( $wp_dir ) . 'burst-statistics-endpoint.php';
-
-    }
 }
