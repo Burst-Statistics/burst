@@ -163,15 +163,20 @@ class Settings extends Component {
                     </div>
                 </div>
                 <div className="burst-wizard-help">
-                    <div className="burst-help-header">
-                        <div className="burst-help-title burst-h4">
-                            {__("Notifications", "burst-statistics")}
+                    {notices.length > 0 &&
+                        <div className="burst-help-header">
+                            <div className="burst-help-title burst-h4">
+                                {__("Notifications", "burst-statistics")}
+                            </div>
+                            <div className="burst-help-control"
+                                 onClick={() => this.toggleNotices()}>
+                                {!noticesExpanded &&
+                                    __("Expand all", "burst-statistics")}
+                                {noticesExpanded &&
+                                    __("Collapse all", "burst-statistics")}
+                            </div>
                         </div>
-                        <div className="burst-help-control" onClick={ () => this.toggleNotices() }>
-                            {!noticesExpanded && __("Expand all","burst-statistics")}
-                            {noticesExpanded && __("Collapse all","burst-statistics")}
-                        </div>
-                    </div>
+                    }
                     {notices.map((field, i) => <Help key={i} noticesExpanded={noticesExpanded} index={i} help={field} fieldId={field.id}/>)}
                 </div>
             </Fragment>

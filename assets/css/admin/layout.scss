@@ -197,8 +197,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    @include burst-block-padding;
-
+    @include burst-inline-block-padding;
+    min-height: 60px;
     &:empty {
       display: none;
     }

@@ -75,10 +75,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 			);
 			$args = wp_parse_args($args, $defaults);
 
-			$cache_admin_notices = !$this->is_settings_page() && $args['admin_notices'];
+			$cache_admin_notices = !$this->is_burst_page() && $args['admin_notices'];
 
 			//if we're on the settings page, we need to clear the admin notices transient, because this list never gets requested on the settings page, and won'd get cleared otherwise
-			if ( $this->is_settings_page() ) {
+			if ( $this->is_burst_page() ) {
 				delete_transient('burst_admin_notices');
 			}
 			if ( $cache_admin_notices) {
@@ -256,28 +256,61 @@ if ( ! class_exists( "burst_notices" ) ) {
 		}
 
 		/**
-		 * Check to see if we are on the settings page, action hook independent
+		 * Count the plusones
 		 *
-		 * @since  2.1
+		 * @return int
 		 *
-		 * @access public
-		 *
+		 * @since 3.2
 		 */
 
-		public function is_settings_page()
+		public function count_plusones() {
+			if ( ! burst_user_can_manage() ) {
+				return 0;
+			}
+
+			$cache = $this->is_burst_page() ? false : true;
+			$count = get_transient( 'burst_plusone_count' );
+			if ( !$cache || ($count === false) ) {
+				$count = 0;
+				$notices = $this->get_notices_list();
+				foreach ( $notices as $id => $notice ) {
+					$success = ( isset( $notice['output']['icon'] ) && ( $notice['output']['icon'] === 'success' ) ) ? true : false;
+					if ( ! $success
+					     && isset( $notice['output']['plusone'] )
+					     && $notice['output']['plusone']
+					) {
+						$count++;
+					}
+				}
+				if ( $count==0) {
+					$count = 'empty';
+				}
+				set_transient( 'burst_plusone_count', $count, DAY_IN_SECONDS );
+			}
+
+			if ( $count==='empty' ) {
+				return 0;
+			}
+			return $count;
+		}
+
+		public function is_burst_page()
 		{
+			if ( burst_is_logged_in_rest() ) {
+				return true;
+			}
+
 			if ( !isset($_SERVER['QUERY_STRING']) ) {
 				return false;
 			}
 
 			parse_str($_SERVER['QUERY_STRING'], $params);
-			if ( array_key_exists("page", $params) && ( $params["page"] === "burst") ) {
+			if ( array_key_exists("page", $params) && ($params["page"] == "burst") ) {
 				return true;
 			}
 
 			return false;
 		}
-
 
 		/**
 		 * Get output of function, in format 'function', or 'class()->sub()->function'

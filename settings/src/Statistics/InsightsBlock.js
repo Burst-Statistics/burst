@@ -15,7 +15,7 @@ import {
     Legend,
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import {format, parseISO, differenceInDays} from 'date-fns'
+import {parseISO, differenceInDays} from 'date-fns'
 
 ChartJS.register(
     CategoryScale,
@@ -26,12 +26,10 @@ ChartJS.register(
     Tooltip,
     Legend
   );
-// @todo if less than 2 days, show hours
-
-
 
 const InsightsBlock  = (props) => {
     const dateRange = props.dateRange;
+    const selectedMetrics = props.insightsMetrics.metrics;
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
     const [chartData, setChartData] = useState(
@@ -53,8 +51,7 @@ const InsightsBlock  = (props) => {
             ],
           }
     );
-    
-    const [metrics, setMetrics] = useState(['visitors', 'pageviews', 'bounces', 'sessions']);
+
 
     const options = {
         responsive: true,
@@ -92,6 +89,7 @@ const InsightsBlock  = (props) => {
       };
 
     useEffect(() => {
+      console.log('useEffect in InsightsBlock');
         // if startDate and endDate are less than two days apart, show hours as interval
         const startDateObj = parseISO(startDate);
         const endDateObj = parseISO(endDate);
@@ -99,7 +97,7 @@ const InsightsBlock  = (props) => {
         const interval = diffDays < 3 ? 'hour' : 'day';
 
         let args = {
-            metrics: metrics,
+            metrics: selectedMetrics,
             interval: interval,
         }
         getInsightsData(startDate, endDate, args).then((response) => {
@@ -107,8 +105,7 @@ const InsightsBlock  = (props) => {
         }).catch((error) => {
             console.error(error);
         });
-      }, [dateRange, metrics]
-    )
+      }, [dateRange, props.insightsMetrics]);
 
     function getInsightsData(startDate, endDate, args){
         return burst_api.getData('insights', startDate, endDate, args).then( ( response ) => {

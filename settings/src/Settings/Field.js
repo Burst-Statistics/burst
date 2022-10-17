@@ -4,15 +4,20 @@ import {
     SelectControl,
     TextareaControl,
     __experimentalNumberControl as NumberControl,
-    ToggleControl, Button,
+    ToggleControl,
+    Button,
 } from '@wordpress/components';
+
 import { __ } from '@wordpress/i18n';
 import * as burst_api from "../utils/api";
 import Hyperlink from "../utils/Hyperlink";
 import ChangeStatus from "./ChangeStatus";
 import {
     Component,
+    useRef
 } from '@wordpress/element';
+
+import IpBlock from "./IpBlock";
 
 /*
  * https://react-data-table-component.netlify.app
@@ -26,9 +31,7 @@ class Field extends Component {
         this.highLightClass = this.props.highLightedField===this.props.field.id ? 'burst-field-wrap burst-highlight' : 'burst-field-wrap';
         this.onChangeHandlerDataTableStatus = this.onChangeHandlerDataTableStatus.bind(this);
         this.onChangeHandler = this.onChangeHandler.bind(this);
-        // set state for fieldValue
         this.state = {
-            value: this.props.field.value,
             warning: false,
         }
     }
@@ -73,25 +76,6 @@ class Field extends Component {
     }
     onCloseTaskHandler(){
 
-    }
-
-    onClickAddIPHandler = () => {
-        console.log(this.state.value);
-        let ip = burst_settings.current_ip;
-        // if ip already in this.state.value, do nothing
-        if (this.state.value.includes(ip)) {
-            this.setState({
-                warning: __('Your IP adress is: ', 'burst-statistics') + " '" +  ip + "'. " + __('Which is already in the list.', 'burst-statistics'),
-            });
-            return;
-        }
-        if (ip) {
-            this.state.value += "\n" + ip;
-            // set state value
-            this.setState({
-                value: this.state.value
-            });
-        }
     }
 
     render(){
@@ -239,15 +223,20 @@ class Field extends Component {
 
             return (
                 <div className={this.highLightClass}>
-                    <TextareaControl
+                    <IpBlock
+                        disabled={disabled}
+                        updateField={this.props.updateField}
+                        field={this.props.field}
+                        fieldValue={this.state.value}
+                        options={options}
+                        highLightClass={this.highLightClass}
+                        fields={fields}
                         label={ field.label }
                         help={ field.comment }
                         value= { fieldValue }
                         onChange={ ( fieldValue ) => this.onChangeHandler(fieldValue) }
                         id="ip_adress"
                     />
-                    <Button className="button button-secondary button-add-ip" onClick={this.onClickAddIPHandler}>{__('Add current IP Adress', 'burst-statistics')}</Button>
-                    {this.state.warning !== false && <div className="burst-warning">{this.state.warning}</div>}
                 </div>
 
             );

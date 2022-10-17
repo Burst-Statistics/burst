@@ -52,6 +52,9 @@ class Page extends Component {
                 'endDate': format(endOfDay(subDays(new Date(), 1)),
                     'yyyy-MM-dd'),
             },
+            insightsMetrics: {
+                metrics: ['visitors', 'pageviews']
+            },
         };
             this.getFields();
     }
@@ -135,6 +138,15 @@ class Page extends Component {
             dateRange : {
                 startDate: format(dateRange.startDate, 'yyyy-MM-dd'),
                 endDate: format(dateRange.endDate, 'yyyy-MM-dd'),
+            }
+        });
+    }
+
+    setInsightsMetrics = (metrics) => {
+        console.log(metrics);
+        this.setState({
+            insightsMetrics: {
+                metrics: metrics
             }
         });
     }
@@ -304,6 +316,7 @@ class Page extends Component {
             showModal,
             modalData,
             dateRange,
+            insightsMetrics,
             dropItemFromModal,
         } = this.state;
         return (
@@ -339,6 +352,8 @@ class Page extends Component {
                                         highLightField={this.highLightField}
                                         pageProps={pageProps}
                                         dateRange = {this.state.dateRange}
+                                        insightsMetrics = {this.state.insightsMetrics}
+                                        setInsightsMetrics = {this.setInsightsMetrics}
                                     />
                                 }
                                 { selectedMainMenuItem === 'settings' &&

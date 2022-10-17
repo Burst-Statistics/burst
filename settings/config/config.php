@@ -164,10 +164,10 @@ function burst_blocks() {
 			[
 				'id'       => 'goals',
 				'controls' => false,
-				'title'    => __( "Goals (Coming soon)", 'burst-statistics' ),
-				'content'  => [ 'type' => 'html', 'data' => '' ],
+				'title'    => __( "Goals", 'burst-statistics' ),
+				'content'  => [ 'type' => 'react', 'data' => 'GoalsBlock' ],
 				'footer'   => [ 'type' => 'html', 'data' => '' ],
-				'class'    => '',
+				'class'    => 'border-to-border',
 			],
 			[
 				'id'       => 'tips-tricks',
@@ -190,6 +190,10 @@ function burst_blocks() {
 			[
 				'id'       => 'insights',
 				'title'    => __( "Insights", 'burst-statistics' ),
+				'controls' => [
+					'type' => 'react',
+					'data' => 'InsightsHeader'
+				],
 				'content'  => [ 'type' => 'react', 'data' => 'InsightsBlock' ],
 				'footer'   => [ 'type' => 'html', 'data' => '' ],
 				'class'    => 'burst-column-2',

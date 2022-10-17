@@ -36,7 +36,7 @@ function burst_plugin_admin_scripts() {
             'networkwide_active' => !is_multisite() || burst_is_networkwide_active(),//true for single sites and network wide activated
             'nonce' => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
             'burst_nonce' => wp_create_nonce( 'burst_save' ),
-            'current_ip' => burst_get_ip_address()
+            'current_ip' => burst_get_ip_address(),
         ))
 	);
 }
@@ -46,16 +46,20 @@ function burst_add_option_menu() {
 	if ( ! burst_user_can_view() ) {
 		return;
 	}
-    // @todo improve based upon burst
-	$warnings      = BURST::$notices->get_notices_list( array('plus_ones'=>true) );
-	$warning_count = count( $warnings );
+    $menu_label = __('Statistics', 'burst-statistics');
+	$warnings      = BURST::$notices->count_plusones( array('plus_ones'=>true) );
+    $warning_count  = 1;
 	$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
-	$menu_label    = __('Statistics', 'burst-statistics') .
-		"<span class='update-plugins count-$warning_count' title='$warning_title'>
+    if ( $warning_count > 0 ) {
+        $warning_title .= ' ' . esc_attr( burst_sprintf( '(%d plus ones)', $warnings ) );
+	    $menu_label    .=
+		    "<span class='update-plugins count-$warning_count' title='$warning_title'>
 			<span class='update-count'>
 				". number_format_i18n( $warning_count ) . "
 			</span>
 		</span>";
+    }
+
 
 		$page_hook_suffix = add_submenu_page(
 			'index.php',

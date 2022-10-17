@@ -6,10 +6,12 @@ import {
 import * as burst_api from "./utils/api";
 import ProgressBlock from "./Dashboard/ProgressBlock";
 import TodayBlock from "./Dashboard/TodayBlock";
+import GoalsBlock from "./Dashboard/GoalsBlock";
 import ProgressHeader from "./Dashboard/ProgressBlockHeader";
-import CompareBlock from './Statistics/CompareBlock'; // @todo Overleggen rogier grdiblock en dsahboardpage standardiseren
-import InsightsBlock from './Statistics/InsightsBlock'; // @todo Overleggen rogier grdiblock en dsahboardpage standardiseren
-import DevicesBlock from './Statistics/DevicesBlock'; // @todo Overleggen rogier grdiblock en dsahboardpage standardiseren
+import CompareBlock from './Statistics/CompareBlock';
+import InsightsHeader from './Statistics/InsightsHeader';
+import InsightsBlock from './Statistics/InsightsBlock';
+import DevicesBlock from './Statistics/DevicesBlock';
 
 import PagesBlock from './Statistics/PagesBlock';
 import ReferrersBlock from './Statistics/ReferrersBlock';
@@ -40,8 +42,10 @@ class GridButton extends Component {
 var dynamicComponents = {
     "ProgressBlock": ProgressBlock,
     "TodayBlock": TodayBlock,
+    "GoalsBlock": GoalsBlock,
     "ProgressHeader": ProgressHeader,
     "CompareBlock": CompareBlock,
+    "InsightsHeader": InsightsHeader,
     "InsightsBlock": InsightsBlock,
     "DevicesBlock": DevicesBlock,
     "PagesBlock": PagesBlock,
@@ -167,7 +171,19 @@ class GridBlock extends Component {
         }
 
 
-        let DynamicBlockProps = { saveChangedFields: this.props.saveChangedFields, setBlockProps: this.setBlockProps, BlockProps: BlockProps, runTest: this.runTest, fields: this.props.fields, isApiLoaded: this.props.isApiLoaded, highLightField: this.highLightField, selectMainMenu: this.props.selectMainMenu, dateRange: this.props.dateRange };
+        let DynamicBlockProps = {
+            saveChangedFields: this.props.saveChangedFields,
+            setBlockProps: this.setBlockProps,
+            BlockProps: BlockProps,
+            runTest: this.runTest,
+            fields: this.props.fields,
+            isApiLoaded: this.props.isApiLoaded,
+            highLightField: this.highLightField,
+            selectMainMenu: this.props.selectMainMenu,
+            dateRange: this.props.dateRange,
+            insightsMetrics: this.props.insightsMetrics,
+            setInsightsMetrics: this.props.setInsightsMetrics,
+        };
         return (
             <div className={className}>
                 <div className="burst-grid-item-header">

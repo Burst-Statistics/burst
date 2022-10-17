@@ -287,106 +287,6 @@ if ( ! function_exists( 'burst_get_current_post_id' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_get_value' ) ) {
-
-	/**
-	 * Get value for a burst option
-	 * For usage very early in the execution order, use the $page option. This bypasses the class usage.
-	 *
-	 * @param string      $fieldname
-	 * @param bool|int    $post_id
-	 * @param bool|string $page
-	 * @param bool        $use_default
-	 * @param bool        $use_translate
-	 *
-	 * @return array|bool|mixed|string
-	 */
-
-	function burst_get_value(
-		$fieldname, $post_id = false, $page = false, $use_default = true, $use_translate = true
-	) {
-		if ( ! is_numeric( $post_id ) ) {
-			$post_id = false;
-		}
-
-		if ( ! $page && ! isset( BURST::$config->fields[ $fieldname ] ) ) {
-			return false;
-		}
-
-		//if  a post id is passed we retrieve the data from the post
-		if ( ! $page ) {
-			$page = BURST::$config->fields[ $fieldname ]['source'];
-		}
-		if ( $post_id && ( $page !== 'wizard' ) ) {
-			$value = get_post_meta( $post_id, $fieldname, true );
-		} else {
-			$fields = get_option( 'burst_options_' . $page );
-
-			$default = ( $use_default && $page && isset( BURST::$config->fields[ $fieldname ]['default'] ) )
-				? BURST::$config->fields[ $fieldname ]['default'] : '';
-			//@todo $default = apply_filters( 'burst_default_value', $default, $fieldname );
-
-			$value = isset( $fields[ $fieldname ] ) ? $fields[ $fieldname ] : $default;
-		}
-
-		/*
-		 * Translate output
-		 *
-		 * */
-		if ( $use_translate ) {
-
-			$type = isset( BURST::$config->fields[ $fieldname ]['type'] )
-				? BURST::$config->fields[ $fieldname ]['type'] : false;
-			if ( $type === 'cookies' || $type === 'thirdparties'
-			     || $type === 'processors'
-			) {
-				if ( is_array( $value ) ) {
-
-					//this is for example a cookie array, like ($item = cookie("name"=>"_ga")
-
-					foreach ( $value as $item_key => $item ) {
-						//contains the values of an item
-						foreach ( $item as $key => $key_value ) {
-							if ( function_exists( 'pll__' ) ) {
-								$value[ $item_key ][ $key ] = pll__( $item_key . '_'
-								                                     . $fieldname
-								                                     . "_" . $key );
-							}
-							if ( function_exists( 'icl_translate' ) ) {
-								$value[ $item_key ][ $key ]
-									= icl_translate( 'burst',
-									$item_key . '_' . $fieldname . "_" . $key,
-									$key_value );
-							}
-
-							$value[ $item_key ][ $key ]
-								= apply_filters( 'wpml_translate_single_string',
-								$key_value, 'burst',
-								$item_key . '_' . $fieldname . "_" . $key );
-						}
-					}
-				}
-			} else {
-				if ( isset( BURST::$config->fields[ $fieldname ]['translatable'] )
-				     && BURST::$config->fields[ $fieldname ]['translatable']
-				) {
-					if ( function_exists( 'pll__' ) ) {
-						$value = pll__( $value );
-					}
-					if ( function_exists( 'icl_translate' ) ) {
-						$value = icl_translate( 'burst', $fieldname, $value );
-					}
-
-					$value = apply_filters( 'wpml_translate_single_string', $value, 'burst-statistics', $fieldname );
-				}
-			}
-
-		}
-
-		return $value;
-	}
-}
-
 
 /**
  * Get a Really Simple SSL option by name
@@ -400,9 +300,9 @@ if ( ! function_exists( 'burst_get_value' ) ) {
 function burst_get_option( $name, $default=false ) {
 	$name = sanitize_title($name);
 	if ( is_multisite() && burst_is_networkwide_active() ) {
-		$options = get_site_option( 'burst_options', [] );
+		$options = get_site_option( 'burst_options_settings', [] );
 	} else {
-		$options = get_option( 'burst_options', [] );
+		$options = get_option( 'burst_options_settings', [] );
 	}
 
 	$value = isset($options[$name]) ? $options[$name] : false;

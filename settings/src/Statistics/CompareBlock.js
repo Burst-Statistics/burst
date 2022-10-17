@@ -26,6 +26,7 @@ const CompareBlock = (props) => {
             let data = {};
             let curr = response.current;
             let prev = response.previous;
+            console.log(response)
             for (const [key, value] of Object.entries(metrics)) {
                 let change = getChangePercentage(curr[key], prev[key]);
                 Object.assign(data, {
@@ -38,6 +39,7 @@ const CompareBlock = (props) => {
                     }
                 });
             }
+            console.log(data)
 
             // Add subtitles and change metrics
             let pageviewsPerSession = curr.pageviews / curr.sessions;
@@ -47,6 +49,8 @@ const CompareBlock = (props) => {
             data.visitors.subtitle = getPercentage(curr.first_time_visitors, curr.visitors) + ' ' + __('are new visitors', 'burst-statistics');
             data.bounced_sessions.subtitle =  curr.bounced_sessions + ' ' + __('visitors bounced', 'burst-statistics');
             data.bounced_sessions.value = getBouncePercentage(curr.bounced_sessions, curr.sessions);
+
+            console.log(data)
 
             setCompareData(data);
         }).catch((error) => {
@@ -102,8 +106,12 @@ const CompareBlock = (props) => {
         return getPercentage(bounced_sessions, sessions + bounced_sessions);
     }
 
-    function formatTime(timeInMilliSeconds) {
+    function formatTime(timeInMilliSeconds = 0) {
         let timeInSeconds = Number(timeInMilliSeconds);
+        if (isNaN(timeInSeconds)){
+            timeInSeconds = 0;
+        }
+
         let duration = intervalToDuration({ start: 0, end: timeInSeconds });
         const zeroPad = (num) => String(num).padStart(2, '0')
 

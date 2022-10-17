@@ -591,6 +591,8 @@ if ( ! class_exists( "burst_admin" ) ) {
          *
          * @return string|array
          * @since 1.0
+         *
+         * @todo: Remove I think
          */
 
         public function datatable_html($start, $end, $page, $type, $date_range)

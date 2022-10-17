@@ -1,10 +1,7 @@
-.burst-date-range-container{
-  position: relative;
-}
 #burst-date-range-picker-container {
-  display: none;
-  position: absolute;
-  right: 0;
+  //display: none;
+  //position: absolute;
+  //right: 0;
   flex: 1 1 auto;
   flex-wrap: wrap;
   gap: var(--rsp-spacing-xs);
@@ -612,5 +609,3 @@
 .rdrInputRange{
   display: flex;
 }
-
-.rdrInputRangeInput{}
