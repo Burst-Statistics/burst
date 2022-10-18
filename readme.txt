@@ -74,8 +74,6 @@ Not...yet.
 * Fix: Changed endpoint DIR to URL to prevent 404 errors on subfolder installs.
 * Improvement: Delete endpoint on uninstallation.
 
-
-== Change log ==
 = 1.2.0 =
 * Feature: Introducing defer/footer as option
 * Feature: Introducing new  improved tracking method
