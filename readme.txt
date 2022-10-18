@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.0
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,9 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.2.2 =
+* Fix: Fixed an issue where duplicating a WooCommerce product would copy the total pageviews from the original product.
+
 = 1.2.1 =
 * Fix: Fixed an issue where adding role capabilities would result in a fatal error.
 * Fix: Post and page counts did not update, this is fixed now.
