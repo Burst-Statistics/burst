@@ -717,7 +717,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             foreach ($burst_column_post_types as $post_type) {
                 $this->add_admin_column('pageviews', __('Pageviews', 'burst-statistics'), $post_type, true, function($post_id){
                     $burst_total_pageviews_count = get_post_meta( $post_id , 'burst_total_pageviews_count' , true );
-                    $count = intval($burst_total_pageviews_count) ? $burst_total_pageviews_count : 0;
+                    $count = (int) $burst_total_pageviews_count ?: 0;
                     echo $count;
                 });
             }
