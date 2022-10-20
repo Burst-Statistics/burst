@@ -57,7 +57,7 @@ Before creating a dedicated user interface we collect proposed features as MU Pl
 Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone.
 = What is Cookieless tracking? =
 Burst Statistics can be used without setting cookies or storing data in browsers. This, however, can affect accuracy; that's why a hybrid option is possible with cookies after consent. Read more about [Cookieless tracking](https://burst-statistics.com/definition/what-is-cookieless-tracking/).
-= Does it affect perfomance? =
+= Does it affect performance? =
 Burst Statistics uses an endpoint to minimize requests during sessions. For best performance you can always use our 'Turbo Mode' which loads Burst in the footer, using the defer attribute.
 = Do you mind if I give feedback about the product? =
 We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
@@ -101,7 +101,7 @@ Not...yet.
 = 1.1.1 =
 * Improvement: Added capabilities to view and/or edit burst
 * Improvement: Added new devices to recognized devices
-* Improvement: Added filters so that you can change the decimal and thousand seperator
+* Improvement: Added filters so that you can change the decimal and thousand separator
 
 = 1.1.0 =
 * Fix: better tracking script. Hits from one pageview can not be registered multiple times now
