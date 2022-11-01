@@ -2,24 +2,32 @@
 define('burst_rest_api_optimizer', true);
 if ( ! function_exists( 'burst_exclude_plugins_for_rest_api' ) ) {
 	/**
-	 * Exclude all other plugins from the active plugins list if this is a Burst Statistics rest request
+	 * Exclude all other plugins from the active plugins list if this is a Burst rest request
 	 *
 	 * @param array $plugins The active plugins.
 	 *
 	 * @return array The filtered active plugins.
 	 */
 	function burst_exclude_plugins_for_rest_api( $plugins ) {
-		// if not a burst request return all plugins
-		if ( isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'wp-json/burst/v') === false ) {
+		// if not an rsp request return all plugins
+		// but for some requests, we need to load other plugins, to ensure we can detect them.
+		if ( isset($_SERVER['REQUEST_URI']) && (
+				strpos($_SERVER['REQUEST_URI'], 'wp-json/burst/v') === false ||
+				strpos($_SERVER['REQUEST_URI'], 'otherpluginsdata') !==false  ||
+				strpos($_SERVER['REQUEST_URI'], 'plugin_actions') !==false  ||
+				strpos($_SERVER['REQUEST_URI'], 'onboarding') !==false
+			)
+		) {
 			return $plugins;
 		}
-		
+
 		//if not authenticated, return all plugins
+		require_once( ABSPATH . 'wp-includes/pluggable.php' );
 		if ( !isset($_SERVER['HTTP_X_WP_NONCE']) || !wp_verify_nonce($_SERVER['HTTP_X_WP_NONCE'], 'wp_rest') ) {
 			return $plugins;
 		}
 
-		//Only leave burst
+		//Only leave burst and premium add ons active for this request
 		foreach ( $plugins as $key => $plugin ) {
 			if ( strpos($plugin, 'burst-') !== false ){
 				continue;
