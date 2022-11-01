@@ -710,21 +710,24 @@ if ( ! class_exists( "burst_admin" ) ) {
          * @return void
          * @since 1.1
          */
-        public function add_burst_admin_columns(){
-            $burst_column_post_types  = apply_filters('burst_column_post_types',
-                array('post', 'page')
-            );
-            foreach ($burst_column_post_types as $post_type) {
-                $this->add_admin_column('pageviews', __('Pageviews', 'burst-statistics'), $post_type, true, function($post_id){
-                    $burst_total_pageviews_count = get_post_meta( $post_id , 'burst_total_pageviews_count' , true );
-                    $count = (int) $burst_total_pageviews_count ?: 0;
-                    echo $count;
-                });
-            }
-        }
+		public function add_burst_admin_columns() {
+			if ( ! burst_user_can_view() ) {
+				return;
+			}
+			$burst_column_post_types = apply_filters( 'burst_column_post_types',
+				array( 'post', 'page' )
+			);
+			foreach ( $burst_column_post_types as $post_type ) {
+				$this->add_admin_column( 'pageviews', __( 'Pageviews', 'burst-statistics' ), $post_type, true, function( $post_id ) {
+					$burst_total_pageviews_count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
+					$count                       = (int) $burst_total_pageviews_count ?: 0;
+					echo $count;
+				} );
+			}
+		}
 
         public function posts_orderby_total_pageviews( $query ) {
-            if( ! is_admin() || ! $query->is_main_query() ) {
+            if( ! is_admin() || ! $query->is_main_query() || ! burst_user_can_view() ) {
                 return;
             }
 
