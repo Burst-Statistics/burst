@@ -349,6 +349,18 @@ function burst_get_option( $name, $default=false ) {
 	return apply_filters("burst_option_$name", $value, $name);
 }
 
+/**
+ * Deprecated: Get a Burst option by name, use burst_get_option instead
+ * @deprecated 1.3.0
+ * @param $name
+ * @param $default
+ *
+ * @return mixed
+ */
+function burst_get_value( $name, $default = false ) {
+	return burst_get_option( $name, $default );
+}
+
 if ( ! function_exists( 'burst_intro' ) ) {
 
 	/**
