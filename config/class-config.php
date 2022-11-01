@@ -82,6 +82,13 @@ if ( ! class_exists( "burst_config" ) ) {
 					'include_in_progress' => true,
 					'dismissible' => true,
 				],
+				'bf_2022' => [
+					'warning_condition'  => 'burst_is_bf', // If pretty permalinks are enabled
+					'plus_one' => true,
+					'open' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ) . burst_read_more('https://burst-statistics.com/pro', '%s' . __('Learn more', 'burst-statistics') .'%s'),
+					'include_in_progress' => true,
+					'dismissible' => true,
+				],
 				'leave_feedback' => [
 					'status' => 'completed',
 					'success_conditions'  => [
