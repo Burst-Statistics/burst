@@ -40,7 +40,6 @@ if ( !function_exists('burst_admin_url')) {
 	 * @return string|null
 	 */
 	function burst_admin_url(){
-         // @todo is this correct?
 		return is_multisite() && is_network_admin() ? network_admin_url('index.php') : admin_url("index.php");
 	}
 }

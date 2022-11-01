@@ -104,12 +104,13 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 
 		public function enqueue_assets( $hook ) {
-            // @todo only load where it should load
-				$min = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-				$rtl = is_rtl() ? 'rtl/' : '';
-				$url = trailingslashit(burst_url) . "assets/css/{$rtl}admin{$min}.css";
-				$path = trailingslashit(burst_path) . "assets/css/{$rtl}admin{$min}.css";
-				wp_enqueue_style('burst-admin', $url, ['wp-components'], filemtime($path));
+            if ( $hook === 'index.php' || $hook === 'dashboard_page_burst') {
+	            $min  = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+	            $rtl  = is_rtl() ? 'rtl/' : '';
+	            $url  = trailingslashit( burst_url ) . "assets/css/{$rtl}admin{$min}.css";
+	            $path = trailingslashit( burst_path ) . "assets/css/{$rtl}admin{$min}.css";
+	            wp_enqueue_style( 'burst-admin', $url, [ 'wp-components' ], filemtime( $path ) );
+            }
 		}
 
 		/**

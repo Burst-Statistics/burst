@@ -233,7 +233,7 @@ async function burst_update_hit ( update_uid = false ){
 			data: JSON.stringify(data)
 		}).catch(error => {
 
-		}) // @todo handle error and send notice to the user
+		}) // @todo handle error and send notice to the user. If multiple errors send to backend
 	}
 }
 
