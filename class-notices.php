@@ -122,7 +122,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 					'callback' => '_true_',
 					'output' => [
 						'true' => [
-							'msg' => __( "Black Friday sale! Get 40% Off Burst Premium.", 'really-simple-ssl' ) ,
+							'msg' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ),
 							'icon' => 'premium',
 							'url' => burst_premium_url,
 							'dismissible' => true,
