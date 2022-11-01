@@ -7,7 +7,7 @@ class DashboardPage extends Component {
     }
 
     render() {
-        let blocks = burst_settings.blocks.dashboard; // @todo GridblockPage van maken met property
+        let blocks = burst_settings.blocks.dashboard;
         return (
             <>
                 {blocks.map((block, i) => <GridBlock key={i} block={block} isApiLoaded={this.props.isAPILoaded} fields={this.props.fields} highLightField={this.props.highLightField} selectMainMenu={this.props.selectMainMenu}/>)}

@@ -4,6 +4,7 @@ import {
 
 import * as burst_api from "../utils/api";
 import TaskElement from "./TaskElement";
+import { __ } from '@wordpress/i18n';
 import Placeholder from '../Placeholder/Placeholder';
 
 class ProgressBlock extends Component {
@@ -96,10 +97,22 @@ class ProgressBlock extends Component {
         });
     }
 
+
     render(){
+        let henk = false;
+        const n = 1;
         if ( !this.progressLoaded ) {
             return (
-                <Placeholder lines='9'></Placeholder>
+                <div className="burst-progress-block">
+                    <div className="burst-scroll-container">
+                        {[...Array(n)].map((e, i) =>
+                            <div key={i} className="burst-task-element">
+                                <span className={'burst-task-status burst-loading'}>{__('Loading...', 'burst-statistics')}</span>
+                                <p className="burst-task-message">{__('Loading notices...', 'burst-statistics')}</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
             );
         }
         let filter = 'all';

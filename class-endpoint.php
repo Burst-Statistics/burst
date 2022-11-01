@@ -83,16 +83,30 @@ EOT;
 		/**
 		 * Get tracking status
 		 *
+		 * @return array
+		 */
+		public function get_tracking_status_and_time(): array {
+			$status    = get_option( 'burst_tracking_status' );
+			$last_test = get_transient( 'burst_ran_test' ); // casts strings 'true' & 'false' to bool true
+			if ( ! $last_test ) {
+				$status = $this->test_tracking_status();
+				$last_test = time();
+				set_transient( 'burst_ran_test', $last_test, HOUR_IN_SECONDS );
+			}
+			return [
+				'status' => $status,
+				'last_test' => $last_test,
+			];
+		}
+
+		/**
+		 * Get tracking status
+		 *
 		 * @return string
 		 */
 		public function get_tracking_status(): string {
-			$status    = get_option( 'burst_tracking_status' );
-			$last_test = (bool) get_transient( 'burst_ran_test' ); // casts strings 'true' & 'false' to bool true
-			if ( ! $last_test ) {
-				set_transient( 'burst_ran_test', true, HOUR_IN_SECONDS );
-				return $this->test_tracking_status();
-			}
-			return $status;
+			$tracking = $this->get_tracking_status_and_time();
+			return $tracking['status'];
 		}
 
 		/**
@@ -120,7 +134,7 @@ EOT;
 		 * @return bool
 		 */
 		public function endpoint_test_request(): bool {
-			$url  = site_url( 'burst-statistics-endpoint.php' );
+			$url  = burst_get_beacon_url();
 			$data = array( 'request' => 'test' );
 
 			// use key 'http' even if you send the request to https://...
@@ -130,9 +144,13 @@ EOT;
 					'method'  => 'POST',
 					'content' => http_build_query( $data ),
 				),
+				"ssl" => array(
+					"verify_peer"=>false,
+					"verify_peer_name"=>false,
+				),
 			);
 			$context = stream_context_create( $options );
-			$result  = @file_get_contents( $url, false, $context );
+			$result  = file_get_contents( $url, false, $context );
 			if ( $result === false ) {
 				if ( WP_DEBUG ) {
 					error_log( 'Error: Endpoint does not respond with 200' );

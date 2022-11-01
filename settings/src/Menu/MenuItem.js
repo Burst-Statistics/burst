@@ -29,8 +29,8 @@ class MenuItem extends Component {
         }
 
         let menuClass = menuIsSelected ? ' burst-active' : '';
-        menuClass += this.props.menuItem.featured ? ' rsssl-featured' : '';
-        menuClass += this.props.menuItem.premium && !rsssl_settings.pro_plugin_active ? ' rsssl-premium' : '';
+        menuClass += this.props.menuItem.featured ? ' burst-featured' : '';
+        menuClass += this.props.menuItem.premium && !burst_settings.pro_plugin_active ? ' burst-premium' : '';
         let href = '#'+this.props.selectedMainMenuItem+'/'+this.props.menuItem.id;
         return (
             <>

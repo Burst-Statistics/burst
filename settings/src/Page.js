@@ -47,10 +47,11 @@ class Page extends Component {
             nextMenuItem: '',
             previousMenuItem: '',
             dateRange: {
-                'startDate': format(startOfDay(subDays(new Date(), 2)),
+                'startDate': format(startOfDay(subDays(new Date(), 7)),
                     'yyyy-MM-dd'),
                 'endDate': format(endOfDay(subDays(new Date(), 1)),
                     'yyyy-MM-dd'),
+                'range': 'last-7-days',
             },
             insightsMetrics: {
                 metrics: ['visitors', 'pageviews']
@@ -138,12 +139,12 @@ class Page extends Component {
             dateRange : {
                 startDate: format(dateRange.startDate, 'yyyy-MM-dd'),
                 endDate: format(dateRange.endDate, 'yyyy-MM-dd'),
+                range: dateRange.range,
             }
         });
     }
 
     setInsightsMetrics = (metrics) => {
-        console.log(metrics);
         this.setState({
             insightsMetrics: {
                 metrics: metrics

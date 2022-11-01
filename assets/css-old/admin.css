@@ -1509,11 +1509,11 @@ update-nag.notice {
 }
 
 .burst-grid .burst-grid-datatable table th.sorting_asc {
-    background-image: url(../images/sort_asc.png);
+    background-image: url(../img/sort_asc.png);
 }
 
 .burst-grid .burst-grid-datatable table th.sorting_desc {
-    background-image: url(../images/sort_desc.png);
+    background-image: url(../img/sort_desc.png);
 }
 
 .burst-grid .burst-grid-datatable table tbody {

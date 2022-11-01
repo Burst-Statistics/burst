@@ -23,23 +23,20 @@
 	  align-content: space-between;
 	  justify-content: space-between;
 	  gap: 10px;
-	  --rsp-other-plugins-color: var(---rsp-brand-primary);
+		--rsp-other-plugins-color: var(--rsp-grey-400);
 
-	  &.burst-rsssl {
+		&.burst-really-simple-ssl {
 		--rsp-other-plugins-color: var(--rsp-yellow);
-	  }
-
-	  &.burst-burst {
+		}
+		&.burst-burst-statistics {
 		--rsp-other-plugins-color: var(--rsp-green);
-	  }
-
-	  &.burst-complianz, &.burst-complianztc {
+		}
+		&.burst-complianz-gdpr {
 		--rsp-other-plugins-color: var(--rsp-blue);
-	  }
-
-	  &.burst-burst {
-		--rsp-other-plugins-color: var(--rsp-yellow);
-	  }
+		}
+		&.burst-complianz-terms-conditions {
+			--rsp-other-plugins-color: var(--rsp-black);
+		}
 
 	  a {
 		width: max-content;

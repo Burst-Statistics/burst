@@ -104,87 +104,12 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 
 		public function enqueue_assets( $hook ) {
-			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-			// @todo Clean up? because we now use react
-			// register css for dashboard widget and return
-			if ( strpos( $hook, 'burst') === false ) {
-				wp_enqueue_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
-				return;
-			}
-
-			if (isset($_GET['burst-page']) && $_GET['burst-page'] ==='statistics') {
-
-//				// Chart JS
-//				wp_enqueue_script( 'burst-chartjs', burst_url . "assets/chartjs/chart.min.js", array(), burst_version );
-//
-//				// Datepicker
-//				wp_enqueue_style( 'burst-datepicker' , trailingslashit(burst_url) . 'assets/datepicker/datepicker.css', "", burst_version);
-//				wp_enqueue_script('burst-moment', trailingslashit(burst_url) . 'assets/datepicker/moment.js', array("jquery"), burst_version);
-//				wp_enqueue_script('burst-datepicker', trailingslashit(burst_url) . 'assets/datepicker/datepicker.js', array("jquery", "burst-moment"), burst_version);
-//
-//				//Datatables
-//				wp_enqueue_script('burst-datatables', trailingslashit(burst_url) . 'assets/datatables/datatables.min.js', array("jquery"), burst_version);
-//
-//				//Datatables plugin to hide pagination when it isn't needed
-//				wp_enqueue_script('burst-datatables-pagination', trailingslashit(burst_url) . 'assets/datatables/dataTables.conditionalPaging.js', array("jquery"), burst_version);
-//
-//				// Statistics page script
-//				wp_enqueue_script('burst-statistics', burst_url . "assets/js/statistics$minified.js", array('burst-admin', 'burst-chartjs', 'burst-moment', 'burst-datatables', 'burst-datatables-pagination' ), burst_version, false);
-
-			} else if (isset($_GET['page']) && $_GET['page'] ==='burst') {
-//				wp_enqueue_script('burst-dashboard', burst_url . "assets/js/dashboard$minified.js", array('burst-admin'), burst_version );
-			}
-
-			//wp_enqueue_script( 'burst-admin', burst_url . "assets/js/admin$minified.js", array( 'jquery' ), burst_version );
-			wp_enqueue_style( 'burst-admin', trailingslashit( burst_url ) . "assets/css/admin$minified.css", "", burst_version );
-
-//			wp_localize_script(
-//				'burst-admin',
-//				'burst',
-//				array(
-//					'ajaxurl' => admin_url( 'admin-ajax.php' ),
-//					'strings' => array(
-//						'Today'        => __( 'Today', 'burst-statistics' ),
-//						'Yesterday'    => __( 'Yesterday', 'burst-statistics' ),
-//						'Last 7 days'  => __( 'Last 7 days', 'burst-statistics' ),
-//						'Last 30 days' => __( 'Last 30 days', 'burst-statistics' ),
-//						'Last 90 days' => __( 'Last 90 days', 'burst-statistics' ),
-//						'This Month'   => __( 'This Month', 'burst-statistics' ),
-//						'Last Month'   => __( 'Last Month', 'burst-statistics' ),
-//						'date_format'  => get_option( 'date_format' ),
-//						'Apply'        => __( "Apply", "burst-statistics" ),
-//						'Cancel'       => __( "Cancel", "burst-statistics" ),
-//						'From'         => __( "From", "burst-statistics" ),
-//						'To'           => __( "To", "burst-statistics" ),
-//						'Custom'       => __( "Custom", "burst-statistics" ),
-//						'W'            => _x( "W", "Abbreviation for week", "burst-statistics"),
-//						"Mo"           => _x( "Mo", "Abbreviation for monday", "burst-statistics" ),
-//						'Tu'           => _x( "Tu", "Abbreviation for Tuesday", "burst-statistics" ),
-//						'We'           => _x( "We", "Abbreviation for Wednesday", "burst-statistics" ),
-//						'Th'           => _x( "Th", "Abbreviation for Thursday", "burst-statistics" ),
-//						'Fr'           => _x( "Fr", "Abbreviation for Friday", "burst-statistics" ),
-//						'Sa'           => _x( "Sa", "Abbreviation for Saturday", "burst-statistics" ),
-//						'Su'           => _x( "Su", "Abbreviation for Sunday", "burst-statistics" ),
-//						'January'      => __( "January" , "burst-statistics"),
-//						'February'     => __( "February" , "burst-statistics"),
-//						'March'        => __( "March" , "burst-statistics"),
-//						'April'        => __( "April" , "burst-statistics"),
-//						'May'          => __( "May" , "burst-statistics"),
-//						'June'         => __( "June" , "burst-statistics"),
-//						'July'         => __( "July" , "burst-statistics"),
-//						'August'       => __( "August" , "burst-statistics"),
-//						'September'    => __( "September" , "burst-statistics"),
-//						'October'      => __( "October" , "burst-statistics"),
-//						'November'     => __( "November" , "burst-statistics"),
-//						'December'     => __( "December" , "burst-statistics"),
-//						'Search'       => __( "Search" , "burst-statistics"),
-//						'Pageviews'    => __( "Pageviews" , "burst-statistics"),
-//						'Unique visitors'     => __( "Unique visitors" , "burst-statistics"),
-//						'No data found'     => __( "No data found" , "burst-statistics"),
-//						'No matching records found'     => __( "No matching records found" , "burst-statistics"),
-//					),
-//				)
-//			);
+            // @todo only load where it should load
+				$min = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+				$rtl = is_rtl() ? 'rtl/' : '';
+				$url = trailingslashit(burst_url) . "assets/css/{$rtl}admin{$min}.css";
+				$path = trailingslashit(burst_path) . "assets/css/{$rtl}admin{$min}.css";
+				wp_enqueue_style('burst-admin', $url, ['wp-components'], filemtime($path));
 		}
 
 		/**
@@ -210,6 +135,8 @@ if ( ! class_exists( "burst_admin" ) ) {
                     if ( in_array($transient_name, $skip_transients) ) continue;
                     delete_transient($transient_name);
                 }
+                // delete custom transient
+                delete_option('burst_transient');
             }
         }
 
@@ -298,8 +225,8 @@ if ( ! class_exists( "burst_admin" ) ) {
         public function generate_dashboard_widget($start = false, $end = false)
         {
             ob_start();
-
-            $template = burst_get_template('wordpress/dashboard-widget.php');
+            echo 'henkie';
+            $template = burst_get_html_template('wordpress/dashboard-widget.php');
             //only use cached data on dash
 
 
@@ -370,7 +297,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                         'class' => 'column-2 no-border no-background ',
                         'type' => 'other-plugins',
                         'footer' => ' ',
-                        'controls' => '<div class="rsp-logo"><a href="https://really-simple-plugins.com/"><img src="' . trailingslashit(burst_url) . 'assets/images/really-simple-plugins.svg" alt="Really Simple Plugins" /></a></div>',
+                        'controls' => '<div class="rsp-logo"><a href="https://really-simple-plugins.com/"><img src="' . trailingslashit(burst_url) . 'assets/img/really-simple-plugins.svg" alt="Really Simple Plugins" /></a></div>',
                         'page' => 'dashboard',
                     ),
                 ),
@@ -584,67 +511,6 @@ if ( ! class_exists( "burst_admin" ) ) {
         }
 
         /**
-         * Generate the recent searches table in dashboard
-         * @param int $start
-         * @param int $end
-         * @param int $page
-         *
-         * @return string|array
-         * @since 1.0
-         *
-         * @todo: Remove I think
-         */
-
-        public function datatable_html($start, $end, $page, $type, $date_range)
-        {
-            // Start generating rows
-            $args = array(
-                'date_from' => $start,
-                'date_to' => $end,
-	            'group_by' => $type,
-                'date_range' => $date_range,//for caching purposes
-                'page' => $page, //for caching purposes
-            );
-            $hits = BURST::$statistics->get_hits_single($args);
-            if ( $page > 1 ) {
-                $output = array();
-                foreach ($hits as $hit) {
-                    $data = $hit->val_grouped;
-                    $output[] = '
-                    <tr>
-                        <td data-label="Page" class="burst-term"
-                            data-term_id="'.$hit->id.'">'.$data.'</td>
-                        <td>'.$hit->result_count.'</td>
-                        <td data-label="When">'. burst_localize_date( $hit->time ).'</td>
-                        <td data-label="When-unix">'.$hit->time.'</td>
-                    </tr>';
-                }
-                return $output;
-            } else {
-                $output = '<table id="burst-table" class="burst-table" width="100%"><thead>
-                    <tr class="burst-thead-th">
-                        <th scope="col">'.__( "Page", "burst-statistics" ).'</th>
-                        <th class="text-align-right" scope="col">'.__( "Pageviews", "burst-statistics" ).'</th>
-                    </tr>
-                    </thead>
-                    <tbody>';
-
-                foreach ( $hits as $hit ) {
-	                $data = $hit->val_grouped;
-	                $output .=
-                        '<tr>
-                            <td data-label="Page" title="'.$data.'" class="burst-term">'.$data.'</td>
-                            <td data-label="Pageviews" class="text-align-right">'.$hit->hit_count.'</td>
-                        </tr>';
-                }
-                $output .= '</tbody>
-                </table>';
-
-                return $output;
-            }
-        }
-
-        /**
          * Function to easily add a column in a WordPress post table
          * @param $column_title
          * @param $post_type
@@ -687,7 +553,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             foreach ($burst_column_post_types as $post_type) {
                 $this->add_admin_column('pageviews', __('Pageviews', 'burst-statistics'), $post_type, true, function($post_id){
                     $burst_total_pageviews_count = get_post_meta( $post_id , 'burst_total_pageviews_count' , true );
-                    $count = (int) $burst_total_pageviews_count ? $burst_total_pageviews_count : 0;
+                    $count = (int) $burst_total_pageviews_count ?: 0;
                     echo $count;
                 });
             }
@@ -703,6 +569,31 @@ if ( ! class_exists( "burst_admin" ) ) {
                 $query->set( 'meta_key', 'burst_total_pageviews_count' );
             }
         }
+
+		/**
+		 * Check if current day falls within required date range.
+		 *
+		 * @return bool
+		 */
+
+		public function is_bf(){
+			if ( defined("burst_pro_version" ) ) {
+				return false;
+			}
+			$start_day = 21;
+			$end_day = 28;
+			$current_year = date("Y");//e.g. 2021
+			$current_month = date("n");//e.g. 3
+			$current_day = date("j");//e.g. 4
+
+			if ( $current_year == 2022 && $current_month == 11 &&
+			     $current_day >=$start_day &&
+			     $current_day <= $end_day
+			) {
+				return true;
+			}
+			return false;
+		}
 
 	    /**
 	     *

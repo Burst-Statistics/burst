@@ -100,13 +100,6 @@ $rsp-break-xxl: 1599px;
   @media screen and (max-width: $rsp-break-m) {
     padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
   }
-  @media screen and (max-width: $rsp-break-s) {
-    padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
-  }
-
-  //@media screen and (max-width: $rsp-break-xs) {
-  //  padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
-  //}
 }
 
 @mixin burst-block-block-padding {
@@ -115,18 +108,12 @@ $rsp-break-xxl: 1599px;
   @media screen and (max-width: $rsp-break-m) {
     padding-block: var(--rsp-spacing-xs);
   }
-  @media screen and (max-width: $rsp-break-s) {
-    padding-block: var(--rsp-spacing-xxs);
-  }
 }
 
 @mixin burst-inline-block-padding {
   padding-inline: var(--rsp-spacing-l);
 
   @media screen and (max-width: $rsp-break-m) {
-    padding-inline: var(--rsp-spacing-m);
-  }
-  @media screen and (max-width: $rsp-break-s) {
     padding-inline: var(--rsp-spacing-s);
   }
 }

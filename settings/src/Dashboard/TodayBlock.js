@@ -9,6 +9,7 @@ import Tooltip from '@mui/material/Tooltip';
 import * as burst_api from "../utils/api";
 import Icon from '../utils/Icon';
 import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
+import {formatTime, formatNumber} from '../utils/formatting';
 
 const TodayBlock = () => {
     // const dateRange = props.dateRange;
@@ -64,11 +65,14 @@ const TodayBlock = () => {
             let data = response;
             data.live.icon = selectVisitorIcon(data.live.value);
             data.today.icon = selectVisitorIcon(data.today.value);
-
-            data.timeOnPage.value = formatTime(data.timeOnPage.value);
-
-            // @todo loop through vals formatNumber(val)
-
+            // map data formatNumber
+            for (const [key, value] of Object.entries(data)) {
+                if (key === 'timeOnPage' ) {
+                    data[key].value = formatTime(value.value);
+                } else {
+                    data[key].value = formatNumber(value.value);
+                }
+            }
             setTodayData(data);
         }).catch((error) => {
             console.error(error);
@@ -76,7 +80,7 @@ const TodayBlock = () => {
     }
 
     function getTodayData(startDate, endDate, args= []){
-        return burst_api.getData('today', startDate, endDate, args).then( ( response ) => {
+        return burst_api.getData('today', startDate, endDate, 'custom', args).then( ( response ) => {
             return response.data;
         });
     }
@@ -90,33 +94,6 @@ const TodayBlock = () => {
         } else {
             return 'visitor';
         }
-    }
-
-    function formatNumber(value, decimals = 1){
-        value = Number(value);
-        if (isNaN(value)){
-            value = 0;
-        }
-        return new Intl.NumberFormat(undefined, {
-            style: "decimal",
-            notation: "compact",
-            compactDisplay: "short",
-            maximumFractionDigits: decimals,
-        }).format(value);
-    }
-
-    function formatTime(timeInMilliSeconds) {
-        let timeInSeconds = Number(timeInMilliSeconds);
-        let duration = intervalToDuration({ start: 0, end: timeInSeconds });
-        const zeroPad = (num) => String(num).padStart(2, '0')
-
-        const formatted = [
-            duration.hours,
-            duration.minutes,
-            duration.seconds,
-        ].map(zeroPad);
-
-        return formatted.join(':');
     }
     const delayTooltip = 200;
     if (today) {

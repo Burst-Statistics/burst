@@ -34,6 +34,6 @@ if ( ! class_exists( "burst_frontend" ) ) {
                     'href' => admin_url('/index.php?page=burst'),
                 )
             );
-        }
+        } // @todo move?
     }
 }

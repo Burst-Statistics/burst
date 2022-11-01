@@ -58,7 +58,17 @@ export const runTest = (test, state, data ) => {
 	return axios.get(burst_settings.site_url+'burst/v1/tests/'+test+'?state='+state+'&data='+data, config);
 };
 
-export const getData = (type, startDate, endDate, args ) => {
+export const doAction = (action, data) => {
+	let config = {
+		headers: {
+			'X-WP-Nonce': burst_settings.nonce,
+		}
+	}
+	data.nonce = burst_settings.burst_nonce;
+	return axios.post(burst_settings.site_url+'burst/v1/do_action/'+action, data, config );
+}
+
+export const getData = (type, startDate, endDate, range, args ) => {
 	let config = {
 		headers: {
 			'X-WP-Nonce': burst_settings.nonce,
@@ -67,5 +77,5 @@ export const getData = (type, startDate, endDate, args ) => {
 	if (args) {
 		args = encodeURIComponent(JSON.stringify(args));
 	}
-	return axios.get(burst_settings.site_url+'burst/v1/data/'+type+'?date_start='+startDate+'&date_end='+endDate+'&args='+args, config);
+	return axios.get(burst_settings.site_url+'burst/v1/data/'+type+'?date_start='+startDate+'&date_end='+endDate+'&date_range='+range+'&args='+args, config);
 };

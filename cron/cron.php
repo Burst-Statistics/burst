@@ -9,18 +9,13 @@ add_action( 'plugins_loaded', 'burst_schedule_cron' );
 function burst_schedule_cron() {
 	$useCron = true;
 	if ( $useCron ) {
-//		if ( ! wp_next_scheduled( 'burst_every_day_hook' ) ) {
-//			wp_schedule_event( time(), 'burst_daily', 'burst_every_day_hook' );
-//		}
-		if ( ! wp_next_scheduled( 'burst_every_hour_hook' ) ) {
-			wp_schedule_event( time(), 'burst_hourly', 'burst_every_hour_hook' );
+		if ( ! wp_next_scheduled( 'burst_every_5_minutes' ) ) {
+			wp_schedule_event( time(), 'burst_every_5_minutes', 'burst_every_5_minutes' );
 		}
 
-		add_action( 'burst_every_hour_hook', array( BURST::$statistics, 'generate_cached_data' ) );
+		add_action( 'burst_every_5_minutes', array( BURST()->statistics, 'generate_cached_data' ) );
 	} else {
-		add_action( 'init', array( BURST::$statistics, 'generate_cached_data' ) );
-
-		//add_action( 'init', array( BURST::$experimenting, 'maybe_stop_experiment' ), 100 );
+		add_action( 'init', array( BURST()->statistics, 'generate_cached_data' ) );
 	}
 }
 
@@ -37,6 +32,10 @@ function burst_filter_cron_schedules( $schedules ) {
 	$schedules['burst_hourly']   = array(
 		'interval' => HOUR_IN_SECONDS,
 		'display'  => __( 'Once every hour' )
+	);
+	$schedules['burst_every_5_minutes']   = array(
+		'interval' => 5 * MINUTE_IN_SECONDS,
+		'display'  => __( 'Once every 5 minutes' )
 	);
 
 	return $schedules;

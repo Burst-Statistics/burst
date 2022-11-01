@@ -11,9 +11,7 @@
 .burst-progress-block {
   .burst-progress {
     overflow: hidden;
-    //height: 20px;
-    height: 7px; // @todo remove comments?
-    //border-radius: 5px;
+    height: 7px;
     background-color: #f7f7f7;
 
     .burst-bar {
@@ -24,11 +22,6 @@
         background-color: var(--rsp-color-warning);
       }
     }
-  }
-
-  .burst-progress-bar {
-    //@include burst-block-padding;
-    //padding-block: 0;
   }
 
   .burst-progress-text {
@@ -219,6 +212,9 @@
   &.burst-premium {
     background-color: var(--rsp-color-success);
     color: var(--rsp-text-color-white);
+  }
+  &.burst-loading{
+    background-color: var(--rsp-grey-200);;
   }
 }
 

@@ -6,7 +6,9 @@
   color: var(--rsp-text-color);
   font-weight: 400;
   line-height: 1.5;
-
+  @media only screen and ( max-width: $rsp-break-xs)  {
+    margin-left: -9px;
+  }
   *, *:before, *:after {
     box-sizing: inherit;
   }

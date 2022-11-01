@@ -21,7 +21,7 @@ class Help extends Component {
                         <summary>{notice.title} <Icon name='chevron-down' /></summary>
                         {/*some notices contain html, like for the htaccess notices. A title is required for those options, otherwise the text becomes the title. */}
                         <div dangerouslySetInnerHTML={{__html:notice.text}}></div>
-                        {notice.url && <div className="rsssl-help-more-info"><a target={target} href={notice.url}>{__("More info", "really-simple-ssl")}</a></div>}
+                        {notice.url && <div className="rsssl-help-more-info"><a target={target} href={notice.url}>{__("More info", "burst-statistics")}</a></div>}
                     </details>
                 }
                 { notice.title && !notice.text &&

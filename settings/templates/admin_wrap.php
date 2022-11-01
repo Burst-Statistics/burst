@@ -1,14 +1,14 @@
-<div class="burst wrap" id="burst"> // @todo remove this div
+<div class="burst wrap" id="burst"> // @todo remove this
 	<h1 class="burst-notice-hook-element"></h1>
 	<div class="burst-{page}">
         <div class="burst-header-container">
 		    <div class="burst-header">
-                <img src="<?php echo trailingslashit(burst_url)?>assets/images/burst-logo.svg">
+                <img src="<?php echo trailingslashit(burst_url)?>assets/img/burst-logo.svg">
                 <div class="burst-header-left">
                     <nav class="burst-header-menu">
                         <ul>
                             <?php
-                            $menu_items = BURST::$admin->get_burst_admin_pages();
+                            $menu_items = BURST()->admin->get_burst_admin_pages();
                             foreach($menu_items as $page => $settings){
                                 $active = false;
                                 if ($settings['show_in_menu'] === false) continue;

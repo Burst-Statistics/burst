@@ -11,6 +11,7 @@ const ReferrersBlock = (props) => {
     const dateRange = props.dateRange;
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
+    const range = dateRange.range;
     const [referrers, setReferrersData] = useState([]);
     const [metrics, setmetrics] = useState(['visitors']); // as of now we only support 1 metric
 
@@ -19,9 +20,12 @@ const ReferrersBlock = (props) => {
             metrics: metrics,
         }
         getReferrersData(startDate, endDate, args).then((response) => {
-            response.columns[0].selector = row => row.referrer; // select data for page column
-            response.columns[1].selector = row => row.count; // select data for page column
-
+            response.columns[0].selector = row => row.referrer; // select data for referrer column
+            response.columns[1].selector = row => row.count; // select data for count column
+            // foreach data convert to int
+            response.data.forEach((row, index) => {
+                row.count = parseInt(row.count);
+            });
             setReferrersData(response);
         }).catch((error) => {
             console.error(error);
@@ -30,7 +34,7 @@ const ReferrersBlock = (props) => {
     )
 
     function getReferrersData(startDate, endDate, args){
-        return burst_api.getData('referrers', startDate, endDate, args).then( ( response ) => {
+        return burst_api.getData('referrers', startDate, endDate, range, args).then( ( response ) => {
             return response.data;
         });
     }
@@ -41,15 +45,15 @@ const ReferrersBlock = (props) => {
             columns={referrers.columns}
             data={referrers.data}
             defaultSortFieldId={1}
-            striped
             pagination
-            paginationRowsPerPageOptions={[10, 25, 50, 100]}
-            // progressPending add laoding animation
-            // progressComponent
-            // highlightOnHover
-            // pointerOnHover
-            paginationComponentOptions={{ rowsPerPageText: '', rangeSeparatorText: __('of', 'burst-statistics'), noRowsPerPage: false, selectAllRowsItem: false}}
-            // paginationResetDefaultPage={resetPaginationToggle}
+            paginationRowsPerPageOptions={[10, 25, 50, 100, 200]}
+            paginationPerPage={10}
+            paginationComponentOptions={{
+                rowsPerPageText: '',
+                rangeSeparatorText: __('of', 'burst-statistics'),
+                noRowsPerPage: false,
+                selectAllRowsItem: true,
+                selectAllRowsItemText: __('All', 'burst-statistics')}}
             noDataComponent={<EmptyDataTable></EmptyDataTable>}
         />
     );

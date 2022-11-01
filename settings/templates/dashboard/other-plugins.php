@@ -39,7 +39,7 @@ $plugins = array(
                 <div class="burst-other-plugins-content"><?php echo esc_html($plugin['title'])?></div>
             </a>
             <div class="burst-other-plugin-status">
-                <?php echo wp_kses_post(BURST::$admin->get_status_link($plugin))?>
+                <?php echo wp_kses_post(BURST()->admin->get_status_link($plugin))?>
             </div>
         </div>
     <?php }?>

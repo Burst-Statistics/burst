@@ -40,7 +40,7 @@ class burst_tour {
 			wp_register_script( 'burst-shepherd-tour', burst_url . 'shepherd/js/tour.js', array( 'jquery' ), burst_version );
 			wp_enqueue_script( 'burst-shepherd-tour' );
 
-			$logo  = '<span class="burst-tour-logo"><img class="burst-tour-logo" style="width: 70px; height: 70px;" src="' . burst_url . 'assets/images/burst-logo.svg"></span>';
+			$logo  = '<span class="burst-tour-logo"><img class="burst-tour-logo" style="width: 70px; height: 70px;" src="' . burst_url . 'assets/img/burst-logo.svg"></span>';
 			$html  = '<div class="burst-tour-logo-text">' . $logo . '<span class="burst-tour-text">{content}</span></div>';
 			$steps = array(
 				array(
@@ -61,28 +61,28 @@ class burst_tour {
                     'title'  => __( 'Real time data', 'burst-statistics' ),
                     'text'   => __( "This block will show you real time visitors.", 'burst-statistics' ) . ' ' .  burst_sprintf(__( "To make sure %s is setup properly, try visiting this website on another device or open a private window.", 'burst-statistics' ), burst_plugin_name),
                     'link'   => admin_url( "index.php?page=burst" ),
-                    'attach' => '.burst-real-time',
+                    'attach' => '.burst-today',
                     'position' => 'right',
                 ),
                 array(
                     'title'  => __( 'Real time visitors', 'burst-statistics' ),
                     'text'   => __( "Did you visit your website on another device? This number should change. If that is not the case, feel free to open a support thread.", 'burst-statistics' ),
                     'link'   => admin_url( "index.php?page=burst" ),
-                    'attach' => '.burst-real-time .block__big-number__right',
+                    'attach' => '.burst-today .burst-today-select-item',
                     'position' => 'right',
                 ),
 				array(
 					'title'  => __( "Your website statistics", "burst-statistics" ),
 					'text'   => __( "This page is probably quite empty at the moment. The data from your website will show up here in a few days. So be sure to come back soon.", 'burst-statistics' ),
 					'link'   => admin_url( "index.php?page=burst&burst-page=statistics" ),
-					'attach' => '.burst-insights-chart',
+					'attach' => '.burst-insights',
 					'position' => 'right',
 				),
                 array(
                     'title'  => __( "Changing the period", "burst-statistics" ),
                     'text'   => __( "Over here you can change the date range for the data being shown. Click on two different days or click twice on a single day to show the data for that period.", 'burst-statistics' ),
                     'link'   => admin_url( "index.php?page=burst&burst-page=statistics" ),
-                    'attach' => '.burst-date-container',
+                    'attach' => '#burst-date-range-picker-open-button',
                     'position' => 'bottom',
                 ),
                 array(

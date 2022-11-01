@@ -83,7 +83,7 @@ const GoalsBlock = () => {
               <h6>{__('Contribute', 'burst-statistics')}</h6>
               <p>{__("We're building this plugin together with you, the WordPress community, to make it the best statistics plugin to date.", 'burst-statistics')}</p>
               <p>{__('Help make our product better by leaving a suggestion on the Wordpress forum.', 'burst-statistics')}</p>
-              <Button className='button button-secondary'>{__('Leave a suggestion', 'burst-statistics')}</Button>
+              <a href="https://wordpress.org/support/plugin/burst-statistics/" target="_blank" rel="noreferrer" className="button button-default">{__('Leave a suggestion', 'burst-statistics')}</a>
             </div>
 
           </div>

@@ -13,6 +13,11 @@ if ( ! function_exists( 'burst_exclude_plugins_for_rest_api' ) ) {
 		if ( isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'wp-json/burst/v') === false ) {
 			return $plugins;
 		}
+		
+		//if not authenticated, return all plugins
+		if ( !isset($_SERVER['HTTP_X_WP_NONCE']) || !wp_verify_nonce($_SERVER['HTTP_X_WP_NONCE'], 'wp_rest') ) {
+			return $plugins;
+		}
 
 		//Only leave burst
 		foreach ( $plugins as $key => $plugin ) {

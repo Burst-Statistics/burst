@@ -16,7 +16,7 @@ class PagePlaceholder extends Component {
 
             <div className="burst-header">
               <img className="burst-logo"
-                   src={plugin_url + 'assets/images/burst-logo.svg'}
+                   src={plugin_url + 'assets/img/burst-logo.svg'}
                    alt="Burst Statistics logo"/>
             </div>
           </div>

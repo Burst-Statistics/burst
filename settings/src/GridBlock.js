@@ -4,11 +4,17 @@ import {
 } from '@wordpress/element';
 
 import * as burst_api from "./utils/api";
+
+import ProgressHeader from "./Dashboard/ProgressHeader";
 import ProgressBlock from "./Dashboard/ProgressBlock";
+import ProgressFooter from "./Dashboard/ProgressFooter";
+import OtherPlugins from "./Dashboard/OtherPlugins";
+
 import TodayBlock from "./Dashboard/TodayBlock";
 import GoalsBlock from "./Dashboard/GoalsBlock";
-import ProgressHeader from "./Dashboard/ProgressBlockHeader";
+
 import CompareBlock from './Statistics/CompareBlock';
+import CompareFooter from './Statistics/CompareFooter';
 import InsightsHeader from './Statistics/InsightsHeader';
 import InsightsBlock from './Statistics/InsightsBlock';
 import DevicesBlock from './Statistics/DevicesBlock';
@@ -17,34 +23,19 @@ import PagesBlock from './Statistics/PagesBlock';
 import ReferrersBlock from './Statistics/ReferrersBlock';
 import Placeholder from './Placeholder/Placeholder';
 
-
-/**
- * using the gridbutton generates a button which will refresh the gridblock when clicked
- * The onclick action triggers the getBlockData method
- *
- */
-class GridButton extends Component {
-    constructor() {
-        super( ...arguments );
-    }
-    render(){
-        let disabled = this.props.disabled ? 'disabled' : '';
-        return (
-            <button className="button-primary" disabled={disabled} onClick={this.props.onClick}>{this.props.text}</button>
-        );
-    }
-}
-
 /**
  * Mapping of components, for use in the config array
  * @type {{SslLabs: JSX.Element}}
  */
 var dynamicComponents = {
+    "ProgressHeader": ProgressHeader,
     "ProgressBlock": ProgressBlock,
+    "ProgressFooter": ProgressFooter,
     "TodayBlock": TodayBlock,
     "GoalsBlock": GoalsBlock,
-    "ProgressHeader": ProgressHeader,
+    "OtherPlugins": OtherPlugins,
     "CompareBlock": CompareBlock,
+    "CompareFooter": CompareFooter,
     "InsightsHeader": InsightsHeader,
     "InsightsBlock": InsightsBlock,
     "DevicesBlock": DevicesBlock,
@@ -59,23 +50,15 @@ class GridBlock extends Component {
         this.getBlockData = this.getBlockData.bind(this);
         this.highLightField = this.highLightField.bind(this);
         this.setBlockProps = this.setBlockProps.bind(this);
+        let content = this.props.block.content.data;
+        let footer = this.props.block.footer.data;
         this.state = {
-            isAPILoaded: false,
-            content:'',
             testDisabled:false,
             footerHtml:this.props.block.footer.html,
-            progress:0,
-            testRunning:false,
-            BlockProps: [],
+            BlockProps:[],
+            content: content,
+            footer: footer,
         };
-        this.dynamicComponents = {
-            "getBlockData": this.getBlockData,
-        };
-        if (this.props.block.content.type==='test') {
-            this.getBlockData('initial');
-        } else {
-            this.content = this.props.block.content.data;
-        }
     }
 
     /**
@@ -198,8 +181,8 @@ class GridBlock extends Component {
                 {blockData.content.type!=='react' && <div className="burst-grid-item-content" dangerouslySetInnerHTML={{__html: content}}></div>}
                 {blockData.content.type==='react' && <div className="burst-grid-item-content">{wp.element.createElement(dynamicComponents[content], DynamicBlockProps)}</div>}
 
-                { blockData.footer.hasOwnProperty('button') && <div className="burst-grid-item-footer"><GridButton text={blockData.footer.button.text} onClick={this.getBlockData} disabled={this.testDisabled}/></div>}
                 { blockData.footer.type==='html' && <div className="burst-grid-item-footer" dangerouslySetInnerHTML={{__html: this.footerHtml}}></div>}
+                { blockData.footer.type==='react' && <div className="burst-grid-item-footer">{wp.element.createElement(dynamicComponents[footer], DynamicBlockProps)}</div>}
 
             </div>
         );

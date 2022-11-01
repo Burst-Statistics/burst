@@ -18268,8 +18268,7 @@ class DashboardPage extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Comp
   }
 
   render() {
-    let blocks = burst_settings.blocks.dashboard; // @todo GridblockPage van maken met property
-
+    let blocks = burst_settings.blocks.dashboard;
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, blocks.map((block, i) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_GridBlock__WEBPACK_IMPORTED_MODULE_1__["default"], {
       key: i,
       block: block,
@@ -18378,8 +18377,11 @@ const GoalsBlock = () => {
       className: "information-overlay"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "information-overlay-container"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h4", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Coming soon: Goals', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics.', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h6", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Contribute', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("We're building this plugin together with you, the WordPress community, to make it the best statistics plugin to date.", 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Help make our product better by leaving a suggestion on the Wordpress forum.', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
-      className: "button button-secondary"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h4", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Coming soon: Goals', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics.', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h6", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Contribute', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("We're building this plugin together with you, the WordPress community, to make it the best statistics plugin to date.", 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Help make our product better by leaving a suggestion on the Wordpress forum.', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+      href: "https://wordpress.org/support/plugin/burst-statistics/",
+      target: "_blank",
+      rel: "noreferrer",
+      className: "button button-default"
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Leave a suggestion', 'burst-statistics')))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-goals"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -18472,6 +18474,147 @@ const GoalsBlock = () => {
 
 /***/ }),
 
+/***/ "./src/Dashboard/OtherPlugins.js":
+/*!***************************************!*\
+  !*** ./src/Dashboard/OtherPlugins.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
+/* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
+
+
+
+
+
+
+const OtherPlugins = props => {
+  const [dataLoaded, setDataLoaded] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [dataUpdated, setDataUpdated] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+  const [pluginData, setPluginData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    if (!dataLoaded) {
+      _utils_api__WEBPACK_IMPORTED_MODULE_2__.runTest('otherpluginsdata').then(response => {
+        response.data.forEach(function (pluginItem, i) {
+          response.data[i].pluginActionNice = pluginActionNice(pluginItem.pluginAction);
+        });
+        setPluginData(response.data);
+        setDataLoaded(true);
+      });
+    }
+  });
+
+  const PluginActions = (slug, pluginAction, e) => {
+    if (e) e.preventDefault();
+    let data = {};
+    data.slug = slug;
+    data.pluginAction = pluginAction;
+    let pluginItem = getPluginData(slug);
+
+    if (pluginAction === 'download') {
+      pluginItem.pluginAction = "downloading";
+    } else if (pluginAction === 'activate') {
+      pluginItem.pluginAction = "activating";
+    }
+
+    pluginItem.pluginActionNice = pluginActionNice(pluginItem.pluginAction);
+    updatePluginData(slug, pluginItem);
+
+    if (pluginAction === 'installed' || pluginAction === 'upgrade-to-premium') {
+      return;
+    }
+
+    _utils_api__WEBPACK_IMPORTED_MODULE_2__.doAction('plugin_actions', data).then(response => {
+      pluginItem = response.data;
+      updatePluginData(slug, pluginItem);
+      PluginActions(slug, pluginItem.pluginAction);
+    });
+  };
+
+  const getPluginData = slug => {
+    return pluginData.filter(pluginItem => {
+      return pluginItem.slug === slug;
+    })[0];
+  };
+
+  const updatePluginData = (slug, newPluginItem) => {
+    pluginData.forEach(function (pluginItem, i) {
+      if (pluginItem.slug === slug) {
+        pluginData[i] = newPluginItem;
+      }
+    });
+    setPluginData(pluginData);
+    setDataUpdated(slug + newPluginItem.pluginAction);
+  };
+
+  const pluginActionNice = pluginAction => {
+    const statuses = {
+      'download': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Install", "burst-statistics"),
+      'activate': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Activate", "burst-statistics"),
+      'activating': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Activating...", "burst-statistics"),
+      'downloading': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Downloading...", "burst-statistics"),
+      'upgrade-to-premium': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Downloading...", "burst-statistics")
+    };
+    return statuses[pluginAction];
+  };
+
+  const otherPluginElement = (plugin, i) => {
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      key: i,
+      className: "burst-other-plugins-element burst-" + plugin.slug
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+      href: plugin.wordpress_url,
+      target: "_blank",
+      title: plugin.title
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-bullet"
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-other-plugins-content"
+    }, plugin.title)), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-other-plugin-status"
+    }, plugin.pluginAction === 'upgrade-to-premium' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+      target: "_blank",
+      href: plugin.upgrade_url
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Upgrade", "burst-statistics"))), plugin.pluginAction !== 'upgrade-to-premium' && plugin.pluginAction !== 'installed' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+      href: "#",
+      onClick: e => PluginActions(plugin.slug, plugin.pluginAction, e)
+    }, plugin.pluginActionNice)), plugin.pluginAction === 'installed' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Installed", "burst-statistics"))));
+  };
+
+  if (!dataLoaded) {
+    const n = 3;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-other-plugins-container"
+    }, [...Array(n)].map((e, i) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      key: i,
+      className: "burst-other-plugins-element"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-bullet"
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-other-plugins-content"
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Loading..', 'burst-statistics'))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-other-plugin-status"
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Activate", "burst-statistics")))));
+  }
+
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "burst-other-plugins-container"
+  }, pluginData.map((plugin, i) => otherPluginElement(plugin, i)));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (OtherPlugins);
+
+/***/ }),
+
 /***/ "./src/Dashboard/ProgressBlock.js":
 /*!****************************************!*\
   !*** ./src/Dashboard/ProgressBlock.js ***!
@@ -18487,7 +18630,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
 /* harmony import */ var _TaskElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./TaskElement */ "./src/Dashboard/TaskElement.js");
-/* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
+
 
 
 
@@ -18584,10 +18730,22 @@ class ProgressBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Comp
   }
 
   render() {
+    let henk = false;
+    const n = 1;
+
     if (!this.progressLoaded) {
-      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_3__["default"], {
-        lines: "9"
-      });
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        className: "burst-progress-block"
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        className: "burst-scroll-container"
+      }, [...Array(n)].map((e, i) => (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        key: i,
+        className: "burst-task-element"
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+        className: 'burst-task-status burst-loading'
+      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Loading...', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+        className: "burst-task-message"
+      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Loading notices...', 'burst-statistics'))))));
     }
 
     let filter = 'all';
@@ -18624,10 +18782,125 @@ class ProgressBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Comp
 
 /***/ }),
 
-/***/ "./src/Dashboard/ProgressBlockHeader.js":
-/*!**********************************************!*\
-  !*** ./src/Dashboard/ProgressBlockHeader.js ***!
-  \**********************************************/
+/***/ "./src/Dashboard/ProgressFooter.js":
+/*!*****************************************!*\
+  !*** ./src/Dashboard/ProgressFooter.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utils_Icon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/Icon */ "./src/utils/Icon.js");
+/* harmony import */ var _utils_getAnchor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/getAnchor */ "./src/utils/getAnchor.js");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _mui_material_Tooltip__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mui/material/Tooltip */ "./node_modules/@mui/material/esm/Tooltip/Tooltip.js");
+/* harmony import */ var _utils_formatting__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/formatting */ "./src/utils/formatting.js");
+
+
+
+
+
+
+
+
+
+
+const ProgressFooter = props => {
+  let [trackingType, setTrackingType] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('loading'); // loading, error, rest, endpoint, disabled
+
+  let [lastChecked, setLastChecked] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
+    _utils_api__WEBPACK_IMPORTED_MODULE_1__.runTest('tracking').then(response => {
+      if (response.status === 200) {
+        let status = response.data.status ? response.data.status : 'error';
+        let last_test = response.data.last_test ? response.data.last_test : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Just now', 'burst-statistics');
+        setTrackingType(status);
+        setLastChecked(last_test);
+      } else {
+        setTrackingType('error');
+        setLastChecked((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Just now', 'burst-statistics'));
+      }
+    });
+  }, []);
+  let trackingLastCheckedText = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Last checked:', 'burst-statistics') + ' ' + (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_6__.getRelativeTime)(new Date(lastChecked * 1000)); // times 1000 because JS uses milliseconds
+
+  let trackingTexts = {
+    'loading': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Loading tracking status...', 'burst-statistics'),
+    'error': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Error checking tracking status', 'burst-statistics'),
+    'rest': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Tracking with REST API', 'burst-statistics'),
+    'beacon': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Tracking with an endpoint', 'burst-statistics'),
+    'disabled': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Tracking is disabled', 'burst-statistics')
+  };
+  let trackingTooltipTexts = {
+    'loading': '',
+    'error': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Tracking does not seem to work. Check manually or contact support. ', 'burst-statistics'),
+    'rest': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Tracking is working. You are using the REST API to collect statistics.', 'burst-statistics'),
+    'beacon': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Tracking is working. You are using the Burst endpoint to collect statistics. This is type of tracking is accurate and lightweight.', 'burst-statistics'),
+    'disabled': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Tracking is disabled', 'burst-statistics')
+  };
+  let trackingIcons = {
+    'loading': {
+      'icon': 'loading',
+      'color': 'black'
+    },
+    'error': {
+      'icon': 'circle-times',
+      'color': 'red'
+    },
+    'rest': {
+      'icon': 'circle-check',
+      'color': 'green'
+    },
+    'beacon': {
+      'icon': 'circle-check',
+      'color': 'green'
+    },
+    'disabled': {
+      'icon': 'circle-times',
+      'color': 'red'
+    }
+  };
+  let trackingTooltipText = trackingTooltipTexts[trackingType] + ' ' + trackingLastCheckedText;
+  let trackingText = trackingTexts[trackingType];
+  let trackingIcon = trackingIcons[trackingType]['icon'];
+  let trackingIconColor = trackingIcons[trackingType]['color'];
+
+  let redirectToStatistics = e => {
+    props.selectMainMenu('statistics');
+  };
+
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    className: 'button button-default',
+    href: '#statistics'
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("View my statistics", "burst-statistics")), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_mui_material_Tooltip__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    arrow: true,
+    title: trackingTooltipText,
+    enterDelay: 200
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "burst-legend burst-flex-push-right"
+  }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_utils_Icon__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    name: trackingIcon,
+    color: trackingIconColor
+  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, trackingText))));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ProgressFooter);
+
+/***/ }),
+
+/***/ "./src/Dashboard/ProgressHeader.js":
+/*!*****************************************!*\
+  !*** ./src/Dashboard/ProgressHeader.js ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18808,10 +19081,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_material_Tooltip__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mui/material/Tooltip */ "./node_modules/@mui/material/esm/Tooltip/Tooltip.js");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
 /* harmony import */ var _utils_Icon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/Icon */ "./src/utils/Icon.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/startOfDay/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/endOfDay/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/intervalToDuration/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/startOfDay/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/endOfDay/index.js");
+/* harmony import */ var _utils_formatting__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/formatting */ "./src/utils/formatting.js");
+
 
 
 
@@ -18853,8 +19127,8 @@ const TodayBlock = () => {
       value: '-'
     }
   });
-  const startDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])(new Date()), 'yyyy-MM-dd');
-  const endDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])(new Date()), 'yyyy-MM-dd');
+  const startDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])(new Date()), 'yyyy-MM-dd');
+  const endDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date()), 'yyyy-MM-dd');
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     getData(startDate, endDate);
     const interval = setInterval(() => {
@@ -18867,8 +19141,15 @@ const TodayBlock = () => {
     getTodayData(startDate, endDate).then(response => {
       let data = response;
       data.live.icon = selectVisitorIcon(data.live.value);
-      data.today.icon = selectVisitorIcon(data.today.value);
-      data.timeOnPage.value = formatTime(data.timeOnPage.value); // @todo loop through vals formatNumber(val)
+      data.today.icon = selectVisitorIcon(data.today.value); // map data formatNumber
+
+      for (const [key, value] of Object.entries(data)) {
+        if (key === 'timeOnPage') {
+          data[key].value = (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_5__.formatTime)(value.value);
+        } else {
+          data[key].value = (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_5__.formatNumber)(value.value);
+        }
+      }
 
       setTodayData(data);
     }).catch(error => {
@@ -18878,7 +19159,7 @@ const TodayBlock = () => {
 
   function getTodayData(startDate, endDate) {
     let args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-    return _utils_api__WEBPACK_IMPORTED_MODULE_3__.getData('today', startDate, endDate, args).then(response => {
+    return _utils_api__WEBPACK_IMPORTED_MODULE_3__.getData('today', startDate, endDate, 'custom', args).then(response => {
       return response.data;
     });
   }
@@ -18893,35 +19174,6 @@ const TodayBlock = () => {
     } else {
       return 'visitor';
     }
-  }
-
-  function formatNumber(value) {
-    let decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-    value = Number(value);
-
-    if (isNaN(value)) {
-      value = 0;
-    }
-
-    return new Intl.NumberFormat(undefined, {
-      style: "decimal",
-      notation: "compact",
-      compactDisplay: "short",
-      maximumFractionDigits: decimals
-    }).format(value);
-  }
-
-  function formatTime(timeInMilliSeconds) {
-    let timeInSeconds = Number(timeInMilliSeconds);
-    let duration = (0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])({
-      start: 0,
-      end: timeInSeconds
-    });
-
-    const zeroPad = num => String(num).padStart(2, '0');
-
-    const formatted = [duration.hours, duration.minutes, duration.seconds].map(zeroPad);
-    return formatted.join(':');
   }
 
   const delayTooltip = 200;
@@ -19035,17 +19287,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/api */ "./src/utils/api.js");
-/* harmony import */ var _Dashboard_ProgressBlock__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Dashboard/ProgressBlock */ "./src/Dashboard/ProgressBlock.js");
-/* harmony import */ var _Dashboard_TodayBlock__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Dashboard/TodayBlock */ "./src/Dashboard/TodayBlock.js");
-/* harmony import */ var _Dashboard_GoalsBlock__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Dashboard/GoalsBlock */ "./src/Dashboard/GoalsBlock.js");
-/* harmony import */ var _Dashboard_ProgressBlockHeader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Dashboard/ProgressBlockHeader */ "./src/Dashboard/ProgressBlockHeader.js");
-/* harmony import */ var _Statistics_CompareBlock__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Statistics/CompareBlock */ "./src/Statistics/CompareBlock.js");
-/* harmony import */ var _Statistics_InsightsHeader__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Statistics/InsightsHeader */ "./src/Statistics/InsightsHeader.js");
-/* harmony import */ var _Statistics_InsightsBlock__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Statistics/InsightsBlock */ "./src/Statistics/InsightsBlock.js");
-/* harmony import */ var _Statistics_DevicesBlock__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Statistics/DevicesBlock */ "./src/Statistics/DevicesBlock.js");
-/* harmony import */ var _Statistics_PagesBlock__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Statistics/PagesBlock */ "./src/Statistics/PagesBlock.js");
-/* harmony import */ var _Statistics_ReferrersBlock__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Statistics/ReferrersBlock */ "./src/Statistics/ReferrersBlock.js");
-/* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
+/* harmony import */ var _Dashboard_ProgressHeader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Dashboard/ProgressHeader */ "./src/Dashboard/ProgressHeader.js");
+/* harmony import */ var _Dashboard_ProgressBlock__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Dashboard/ProgressBlock */ "./src/Dashboard/ProgressBlock.js");
+/* harmony import */ var _Dashboard_ProgressFooter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Dashboard/ProgressFooter */ "./src/Dashboard/ProgressFooter.js");
+/* harmony import */ var _Dashboard_OtherPlugins__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Dashboard/OtherPlugins */ "./src/Dashboard/OtherPlugins.js");
+/* harmony import */ var _Dashboard_TodayBlock__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Dashboard/TodayBlock */ "./src/Dashboard/TodayBlock.js");
+/* harmony import */ var _Dashboard_GoalsBlock__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Dashboard/GoalsBlock */ "./src/Dashboard/GoalsBlock.js");
+/* harmony import */ var _Statistics_CompareBlock__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Statistics/CompareBlock */ "./src/Statistics/CompareBlock.js");
+/* harmony import */ var _Statistics_CompareFooter__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Statistics/CompareFooter */ "./src/Statistics/CompareFooter.js");
+/* harmony import */ var _Statistics_InsightsHeader__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Statistics/InsightsHeader */ "./src/Statistics/InsightsHeader.js");
+/* harmony import */ var _Statistics_InsightsBlock__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Statistics/InsightsBlock */ "./src/Statistics/InsightsBlock.js");
+/* harmony import */ var _Statistics_DevicesBlock__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Statistics/DevicesBlock */ "./src/Statistics/DevicesBlock.js");
+/* harmony import */ var _Statistics_PagesBlock__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Statistics/PagesBlock */ "./src/Statistics/PagesBlock.js");
+/* harmony import */ var _Statistics_ReferrersBlock__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Statistics/ReferrersBlock */ "./src/Statistics/ReferrersBlock.js");
+/* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
 
 
 
@@ -19061,44 +19316,28 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/**
- * using the gridbutton generates a button which will refresh the gridblock when clicked
- * The onclick action triggers the getBlockData method
- *
- */
 
-class GridButton extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
-  constructor() {
-    super(...arguments);
-  }
 
-  render() {
-    let disabled = this.props.disabled ? 'disabled' : '';
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-      className: "button-primary",
-      disabled: disabled,
-      onClick: this.props.onClick
-    }, this.props.text);
-  }
 
-}
 /**
  * Mapping of components, for use in the config array
  * @type {{SslLabs: JSX.Element}}
  */
 
-
 var dynamicComponents = {
-  "ProgressBlock": _Dashboard_ProgressBlock__WEBPACK_IMPORTED_MODULE_3__["default"],
-  "TodayBlock": _Dashboard_TodayBlock__WEBPACK_IMPORTED_MODULE_4__["default"],
-  "GoalsBlock": _Dashboard_GoalsBlock__WEBPACK_IMPORTED_MODULE_5__["default"],
-  "ProgressHeader": _Dashboard_ProgressBlockHeader__WEBPACK_IMPORTED_MODULE_6__["default"],
-  "CompareBlock": _Statistics_CompareBlock__WEBPACK_IMPORTED_MODULE_7__["default"],
-  "InsightsHeader": _Statistics_InsightsHeader__WEBPACK_IMPORTED_MODULE_8__["default"],
-  "InsightsBlock": _Statistics_InsightsBlock__WEBPACK_IMPORTED_MODULE_9__["default"],
-  "DevicesBlock": _Statistics_DevicesBlock__WEBPACK_IMPORTED_MODULE_10__["default"],
-  "PagesBlock": _Statistics_PagesBlock__WEBPACK_IMPORTED_MODULE_11__["default"],
-  "ReferrersBlock": _Statistics_ReferrersBlock__WEBPACK_IMPORTED_MODULE_12__["default"]
+  "ProgressHeader": _Dashboard_ProgressHeader__WEBPACK_IMPORTED_MODULE_3__["default"],
+  "ProgressBlock": _Dashboard_ProgressBlock__WEBPACK_IMPORTED_MODULE_4__["default"],
+  "ProgressFooter": _Dashboard_ProgressFooter__WEBPACK_IMPORTED_MODULE_5__["default"],
+  "TodayBlock": _Dashboard_TodayBlock__WEBPACK_IMPORTED_MODULE_7__["default"],
+  "GoalsBlock": _Dashboard_GoalsBlock__WEBPACK_IMPORTED_MODULE_8__["default"],
+  "OtherPlugins": _Dashboard_OtherPlugins__WEBPACK_IMPORTED_MODULE_6__["default"],
+  "CompareBlock": _Statistics_CompareBlock__WEBPACK_IMPORTED_MODULE_9__["default"],
+  "CompareFooter": _Statistics_CompareFooter__WEBPACK_IMPORTED_MODULE_10__["default"],
+  "InsightsHeader": _Statistics_InsightsHeader__WEBPACK_IMPORTED_MODULE_11__["default"],
+  "InsightsBlock": _Statistics_InsightsBlock__WEBPACK_IMPORTED_MODULE_12__["default"],
+  "DevicesBlock": _Statistics_DevicesBlock__WEBPACK_IMPORTED_MODULE_13__["default"],
+  "PagesBlock": _Statistics_PagesBlock__WEBPACK_IMPORTED_MODULE_14__["default"],
+  "ReferrersBlock": _Statistics_ReferrersBlock__WEBPACK_IMPORTED_MODULE_15__["default"]
 };
 
 class GridBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
@@ -19108,24 +19347,15 @@ class GridBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Componen
     this.getBlockData = this.getBlockData.bind(this);
     this.highLightField = this.highLightField.bind(this);
     this.setBlockProps = this.setBlockProps.bind(this);
+    let content = this.props.block.content.data;
+    let footer = this.props.block.footer.data;
     this.state = {
-      isAPILoaded: false,
-      content: '',
       testDisabled: false,
       footerHtml: this.props.block.footer.html,
-      progress: 0,
-      testRunning: false,
-      BlockProps: []
+      BlockProps: [],
+      content: content,
+      footer: footer
     };
-    this.dynamicComponents = {
-      "getBlockData": this.getBlockData
-    };
-
-    if (this.props.block.content.type === 'test') {
-      this.getBlockData('initial');
-    } else {
-      this.content = this.props.block.content.data;
-    }
   }
   /**
    * Get block data for this grid block, in object format, as defined in settings/config/config.php
@@ -19256,7 +19486,7 @@ class GridBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Componen
       dangerouslySetInnerHTML: {
         __html: blockData.controls.data
       }
-    }), blockData.controls && blockData.controls.type === 'react' && wp.element.createElement(dynamicComponents[blockData.controls.data], DynamicBlockProps))), !isAPILoaded && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_13__["default"], {
+    }), blockData.controls && blockData.controls.type === 'react' && wp.element.createElement(dynamicComponents[blockData.controls.data], DynamicBlockProps))), !isAPILoaded && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_16__["default"], {
       lines: "4"
     }), blockData.content.type !== 'react' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-grid-item-content",
@@ -19265,18 +19495,14 @@ class GridBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Componen
       }
     }), blockData.content.type === 'react' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-grid-item-content"
-    }, wp.element.createElement(dynamicComponents[content], DynamicBlockProps)), blockData.footer.hasOwnProperty('button') && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "burst-grid-item-footer"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(GridButton, {
-      text: blockData.footer.button.text,
-      onClick: this.getBlockData,
-      disabled: this.testDisabled
-    })), blockData.footer.type === 'html' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    }, wp.element.createElement(dynamicComponents[content], DynamicBlockProps)), blockData.footer.type === 'html' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-grid-item-footer",
       dangerouslySetInnerHTML: {
         __html: this.footerHtml
       }
-    }));
+    }), blockData.footer.type === 'react' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-grid-item-footer"
+    }, wp.element.createElement(dynamicComponents[footer], DynamicBlockProps)));
   }
 
 }
@@ -19336,7 +19562,7 @@ class Header extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
       className: "burst-header"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
       className: "burst-logo",
-      src: plugin_url + "assets/images/burst-logo.svg",
+      src: plugin_url + "assets/img/burst-logo.svg",
       alt: "Really Simple SSL logo"
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-header-left"
@@ -19429,13 +19655,7 @@ class Menu extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
       selectedMenuItem: this.props.selectedMenuItem,
       selectedMainMenuItem: this.props.selectedMainMenuItem,
       getPreviousAndNextMenuItems: this.props.getPreviousAndNextMenuItems
-    })), hasPremiumItems && !rsssl_settings.pro_plugin_active && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "rsssl-premium-menu-item"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-      target: "_blank",
-      href: rsssl_settings.upgrade_link,
-      className: "button button-black"
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Go Pro', 'really-simple-ssl')))))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    })))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-grid-item-footer"
     }));
   }
@@ -19493,8 +19713,8 @@ class MenuItem extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component
     }
 
     let menuClass = menuIsSelected ? ' burst-active' : '';
-    menuClass += this.props.menuItem.featured ? ' rsssl-featured' : '';
-    menuClass += this.props.menuItem.premium && !rsssl_settings.pro_plugin_active ? ' rsssl-premium' : '';
+    menuClass += this.props.menuItem.featured ? ' burst-featured' : '';
+    menuClass += this.props.menuItem.premium && !burst_settings.pro_plugin_active ? ' burst-premium' : '';
     let href = '#' + this.props.selectedMainMenuItem + '/' + this.props.menuItem.id;
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, this.props.menuItem.visible && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-menu-item" + menuClass
@@ -19700,13 +19920,13 @@ class Page extends _wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Component {
       this.setState({
         dateRange: {
           startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_11__["default"])(dateRange.startDate, 'yyyy-MM-dd'),
-          endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_11__["default"])(dateRange.endDate, 'yyyy-MM-dd')
+          endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_11__["default"])(dateRange.endDate, 'yyyy-MM-dd'),
+          range: dateRange.range
         }
       });
     });
 
     (0,_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__["default"])(this, "setInsightsMetrics", metrics => {
-      console.log(metrics);
       this.setState({
         insightsMetrics: {
           metrics: metrics
@@ -19747,8 +19967,9 @@ class Page extends _wordpress_element__WEBPACK_IMPORTED_MODULE_1__.Component {
       nextMenuItem: '',
       previousMenuItem: '',
       dateRange: {
-        'startDate': (0,date_fns__WEBPACK_IMPORTED_MODULE_11__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_12__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_13__["default"])(new Date(), 2)), 'yyyy-MM-dd'),
-        'endDate': (0,date_fns__WEBPACK_IMPORTED_MODULE_11__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_14__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_13__["default"])(new Date(), 1)), 'yyyy-MM-dd')
+        'startDate': (0,date_fns__WEBPACK_IMPORTED_MODULE_11__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_12__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_13__["default"])(new Date(), 7)), 'yyyy-MM-dd'),
+        'endDate': (0,date_fns__WEBPACK_IMPORTED_MODULE_11__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_14__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_13__["default"])(new Date(), 1)), 'yyyy-MM-dd'),
+        'range': 'last-7-days'
       },
       insightsMetrics: {
         metrics: ['visitors', 'pageviews']
@@ -20101,7 +20322,7 @@ class PagePlaceholder extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Co
       className: "burst-header"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
       className: "burst-logo",
-      src: plugin_url + 'assets/images/burst-logo.svg',
+      src: plugin_url + 'assets/img/burst-logo.svg',
       alt: "Burst Statistics logo"
     }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-content-area burst-grid burst-dashboard burst-page-placeholder"
@@ -20162,45 +20383,6 @@ class Placeholder extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Compon
 
 /***/ }),
 
-/***/ "./src/Settings/ChangeStatus.js":
-/*!**************************************!*\
-  !*** ./src/Settings/ChangeStatus.js ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
-
-
-
-
-class ChangeStatus extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
-  constructor() {
-    super(...arguments);
-  }
-
-  render() {
-    let statusClass = this.props.item.status == 1 ? 'button button-primary burst-status-allowed' : 'button button-default burst-status-revoked';
-    let label = this.props.item.status == 1 ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Revoke", "burst-statistics") : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Allow", "burst-statistics");
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
-      onClick: () => this.props.onChangeHandlerDataTable(!this.props.item.status, this.props.item, 'status'),
-      className: statusClass
-    }, label);
-  }
-
-}
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChangeStatus);
-
-/***/ }),
-
 /***/ "./src/Settings/Field.js":
 /*!*******************************!*\
   !*** ./src/Settings/Field.js ***!
@@ -20220,8 +20402,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
 /* harmony import */ var _utils_Hyperlink__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/Hyperlink */ "./src/utils/Hyperlink.js");
-/* harmony import */ var _ChangeStatus__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ChangeStatus */ "./src/Settings/ChangeStatus.js");
-/* harmony import */ var _IpBlock__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./IpBlock */ "./src/Settings/IpBlock.js");
+/* harmony import */ var _IpBlock__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./IpBlock */ "./src/Settings/IpBlock.js");
+/* harmony import */ var _UserRoleBlock__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./UserRoleBlock */ "./src/Settings/UserRoleBlock.js");
 /* harmony import */ var react_data_table_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-data-table-component */ "./node_modules/react-data-table-component/dist/index.cjs.js");
 
 
@@ -20286,7 +20468,8 @@ class Field extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
     let saveFields = [];
     saveFields.push(field);
     this.props.updateField(field.id, field.value);
-    _utils_api__WEBPACK_IMPORTED_MODULE_3__.setFields(saveFields).then(response => {//this.props.showSavedSettingsNotice();
+    _utils_api__WEBPACK_IMPORTED_MODULE_3__.setFields(saveFields).then(response => {
+      this.props.showSavedSettingsNotice();
     });
   }
 
@@ -20431,19 +20614,28 @@ class Field extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
     if (field.type === 'ip_blocklist') {
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         className: this.highLightClass
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_IpBlock__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_IpBlock__WEBPACK_IMPORTED_MODULE_5__["default"], {
         disabled: disabled,
-        updateField: this.props.updateField,
         field: this.props.field,
-        fieldValue: this.state.value,
-        options: options,
-        highLightClass: this.highLightClass,
-        fields: fields,
         label: field.label,
         help: field.comment,
         value: fieldValue,
-        onChange: fieldValue => this.onChangeHandler(fieldValue),
+        onChangeHandler: this.onChangeHandler,
         id: "ip_adress"
+      }));
+    }
+
+    if (field.type === 'user_role_blocklist') {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+        className: this.highLightClass
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_UserRoleBlock__WEBPACK_IMPORTED_MODULE_6__["default"], {
+        disabled: disabled,
+        field: this.props.field,
+        label: field.label,
+        help: field.comment,
+        value: fieldValue,
+        onChangeHandler: this.onChangeHandler,
+        id: "user_role_block"
       }));
     }
 
@@ -20505,7 +20697,7 @@ class Help extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
       target: target,
       href: notice.url
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("More info", "really-simple-ssl")))), notice.title && !notice.text && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("More info", "burst-statistics")))), notice.title && !notice.text && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-wizard-help-notice  burst-" + notice.label.toLowerCase()
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, notice.title)));
   }
@@ -20538,57 +20730,67 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const IpBlock = props => {
-  console.log(props);
-  const inputRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)(null); // set state warning
+class IpBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
+  constructor(props) {
+    super(props); // set state warning
 
-  const [warning, setWarning] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-  const {
-    disabled,
-    field,
-    fields,
-    fieldValue,
-    help,
-    id,
-    label,
-    onChangeHandler,
-    value
-  } = props;
+    this.onClickAddIPHandler = this.onClickAddIPHandler.bind(this);
+    this.state = {
+      warning: false
+    };
+  }
 
-  const onClickAddIPHandler = e => {
+  onClickAddIPHandler(e) {
+    console.log(e);
     let input = document.getElementById('ip_address');
     let inputValue = input.value;
     let ip = burst_settings.current_ip;
 
     if (inputValue.includes(ip)) {
-      setWarning((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Your IP adress is: ', 'burst-statistics') + " '" + ip + "'. " + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Which is already in the list.', 'burst-statistics'));
+      this.setState({
+        warning: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Your IP adress is: ', 'burst-statistics') + " '" + ip + "'. " + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Which is already in the list.', 'burst-statistics')
+      }); // set time out and remove warning
+
+      setTimeout(() => {
+        this.setState({
+          warning: false
+        });
+      }, 5000);
       return;
     }
 
     if (ip) {
       if (inputValue) {
         // update value for input
-        input.value = inputValue += "\n" + ip;
+        inputValue += "\n" + ip;
       } else {
-        input.value = ip;
+        inputValue = ip;
       }
     }
-  };
 
-  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextareaControl, {
-    innerRef: inputRef,
-    label: field.label,
-    help: field.comment,
-    value: fieldValue // onChange={(fieldValue) => onChangeHandler(fieldValue)}
-    ,
-    id: "ip_address"
-  }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-    className: "button button-secondary button-add-ip",
-    onClick: onClickAddIPHandler
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Add current IP Adress', 'burst-statistics')), warning !== false && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: "burst-warning"
-  }, warning));
-};
+    input.value = inputValue;
+    this.props.onChangeHandler(inputValue);
+  }
+
+  render() {
+    let field = this.props.field;
+    let fieldValue = field.value;
+    let fields = this.props.fields;
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextareaControl, {
+      label: field.label,
+      help: field.comment,
+      value: fieldValue,
+      onChange: fieldValue => this.props.onChangeHandler(fieldValue),
+      id: "ip_address"
+    }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+      className: "button button-secondary button-add-ip",
+      onClick: this.onClickAddIPHandler
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Add current IP Adress', 'burst-statistics')), this.state.warning !== false && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-warning"
+    }, this.state.warning));
+  }
+
+}
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (IpBlock);
 
@@ -20944,7 +21146,7 @@ class SettingsGroup extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Comp
     this.upgrade = activeGroup.upgrade ? activeGroup.upgrade : this.upgrade;
     let helplinkText = activeGroup.helpLink_text ? activeGroup.helpLink_text : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Instructions manual", "burst-statistics");
     let anchor = (0,_utils_getAnchor__WEBPACK_IMPORTED_MODULE_4__["default"])('main');
-    let disabledClass = disabled || networkwide_error ? 'rsssl-disabled' : '';
+    let disabledClass = disabled || networkwide_error ? 'burst-disabled' : '';
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "burst-grid-item burst-" + activeGroup.id + ' ' + disabledClass
     }, activeGroup.title && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -21389,6 +21591,86 @@ class SettingsPage extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Compo
 
 /***/ }),
 
+/***/ "./src/Settings/UserRoleBlock.js":
+/*!***************************************!*\
+  !*** ./src/Settings/UserRoleBlock.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+
+
+class UserRoleBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      radioValue: 'block-selected'
+    };
+    this.onChangeCheckboxHandler = this.onChangeCheckboxHandler.bind(this);
+  }
+
+  onChangeCheckboxHandler(e) {
+    let value = e.target.value;
+    let checked = e.target.checked;
+    let fieldValue = this.props.field.value;
+    let index = fieldValue.indexOf(value);
+
+    if (checked) {
+      if (index === -1) {
+        fieldValue.push(value);
+      }
+    } else {
+      if (index > -1) {
+        fieldValue.splice(index, 1);
+      }
+    }
+
+    this.props.onChangeHandler(fieldValue);
+  }
+
+  render() {
+    let field = this.props.field;
+    let fieldValue = field.value;
+    let fields = this.props.fields;
+    let userRoles = burst_settings.user_roles ? burst_settings.user_roles : [];
+    let selectedUserRoles = fieldValue ? fieldValue : ['administrator'];
+    let radioValue = this.state.radioValue;
+    console.log(selectedUserRoles);
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", null, field.label), radioValue === 'block-selected' && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-user-role-checkbox-blocklist"
+    }, Object.keys(userRoles).map((key, index) => {
+      return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("label", {
+        key: key
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
+        onChange: this.onChangeCheckboxHandler,
+        checked: selectedUserRoles.includes(key),
+        type: 'checkbox',
+        id: key,
+        name: 'user-role-block',
+        value: key
+      }), userRoles[key]);
+    })));
+  }
+
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UserRoleBlock);
+
+/***/ }),
+
 /***/ "./src/Statistics/CompareBlock.js":
 /*!****************************************!*\
   !*** ./src/Statistics/CompareBlock.js ***!
@@ -21405,8 +21687,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/intervalToDuration/index.js");
-/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
+/* harmony import */ var _utils_formatting__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/formatting */ "./src/utils/formatting.js");
+/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
+
 
 
 
@@ -21418,130 +21701,63 @@ const CompareBlock = props => {
   const dateRange = props.dateRange;
   const startDate = dateRange.startDate;
   const endDate = dateRange.endDate;
-  const [compare, setCompareData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const range = dateRange.range;
   const metrics = {
     'pageviews': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Pageviews', 'burst-statistics'),
     'sessions': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Sessions', 'burst-statistics'),
     'visitors': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Visitors', 'burst-statistics'),
     'bounced_sessions': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Bounce Rate', 'burst-statistics')
   };
+  let defaultData = {}; // loop through metrics and set default values
+
+  Object.keys(metrics).forEach(function (key) {
+    defaultData[key] = {
+      'title': metrics[key],
+      'subtitle': '-',
+      'value': '-',
+      'change': '-',
+      'changeStatus': ''
+    };
+  });
+  const [compare, setCompareData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(defaultData);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    getCompareData(startDate, endDate).then(response => {
+    getCompareData(startDate, endDate, range).then(response => {
       // loop through object metrics and place and edit data to be ready for display
       let data = {};
       let curr = response.current;
       let prev = response.previous;
-      console.log(response);
 
       for (const [key, value] of Object.entries(metrics)) {
-        let change = getChangePercentage(curr[key], prev[key]);
+        let change = (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_3__.getChangePercentage)(curr[key], prev[key]);
         Object.assign(data, {
           [key]: {
             'title': value,
             'subtitle': '',
-            'value': formatNumber(curr[key], 1),
+            'value': (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_3__.formatNumber)(curr[key], 1),
             'change': change.val,
             'changeStatus': change.status
           }
         });
-      }
+      } // Add subtitles and change metrics
 
-      console.log(data); // Add subtitles and change metrics
 
       let pageviewsPerSession = curr.pageviews / curr.sessions;
       let timePerSession = pageviewsPerSession * curr.avg_time_on_page;
-      data.pageviews.subtitle = formatNumber(pageviewsPerSession) + ' ' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('pageviews per session', 'burst-statistics');
-      data.sessions.subtitle = formatTime(timePerSession) + ' ' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('per session', 'burst-statistics');
-      data.visitors.subtitle = getPercentage(curr.first_time_visitors, curr.visitors) + ' ' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('are new visitors', 'burst-statistics');
+      data.pageviews.subtitle = (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_3__.formatNumber)(pageviewsPerSession) + ' ' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('pageviews per session', 'burst-statistics');
+      data.sessions.subtitle = (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_3__.formatTime)(timePerSession) + ' ' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('per session', 'burst-statistics');
+      data.visitors.subtitle = (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_3__.getPercentage)(curr.first_time_visitors, curr.visitors) + ' ' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('are new visitors', 'burst-statistics');
       data.bounced_sessions.subtitle = curr.bounced_sessions + ' ' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('visitors bounced', 'burst-statistics');
-      data.bounced_sessions.value = getBouncePercentage(curr.bounced_sessions, curr.sessions);
-      console.log(data);
+      data.bounced_sessions.value = (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_3__.getBouncePercentage)(curr.bounced_sessions, curr.sessions);
       setCompareData(data);
     }).catch(error => {
       console.error(error);
     });
   }, [startDate, endDate]);
 
-  function getCompareData(startDate, endDate, args) {
-    return _utils_api__WEBPACK_IMPORTED_MODULE_3__.getData('compare', startDate, endDate, args).then(response => {
+  function getCompareData(startDate, endDate, range, args) {
+    return _utils_api__WEBPACK_IMPORTED_MODULE_4__.getData('compare', startDate, endDate, range, args).then(response => {
       return response.data;
     });
-  } // @todo move to utils
-
-
-  function getPercentage(val, total) {
-    val = Number(val);
-    total = Number(total);
-    let percentage = val / total;
-
-    if (isNaN(percentage)) {
-      percentage = 0;
-    }
-
-    return new Intl.NumberFormat(undefined, {
-      style: 'percent',
-      maximumFractionDigits: 1
-    }).format(percentage);
-  }
-
-  function getChangePercentage(currValue, prevValue) {
-    currValue = Number(currValue);
-    prevValue = Number(prevValue);
-    let change = {};
-    let percentage = (currValue - prevValue) / prevValue;
-
-    if (isNaN(percentage)) {
-      percentage = 0;
-    }
-
-    change.val = new Intl.NumberFormat(undefined, {
-      style: 'percent',
-      maximumFractionDigits: 1,
-      signDisplay: "exceptZero"
-    }).format(percentage);
-    change.status = percentage > 0 ? 'positive' : 'negative';
-    return change;
-  }
-
-  function getBouncePercentage(bounced_sessions, sessions) {
-    bounced_sessions = Number(bounced_sessions);
-    sessions = Number(sessions);
-    return getPercentage(bounced_sessions, sessions + bounced_sessions);
-  }
-
-  function formatTime() {
-    let timeInMilliSeconds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-    let timeInSeconds = Number(timeInMilliSeconds);
-
-    if (isNaN(timeInSeconds)) {
-      timeInSeconds = 0;
-    }
-
-    let duration = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__["default"])({
-      start: 0,
-      end: timeInSeconds
-    });
-
-    const zeroPad = num => String(num).padStart(2, '0');
-
-    const formatted = [duration.hours, duration.minutes, duration.seconds].map(zeroPad);
-    return formatted.join(':');
-  }
-
-  function formatNumber(value) {
-    let decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-    value = Number(value);
-
-    if (isNaN(value)) {
-      value = 0;
-    }
-
-    return new Intl.NumberFormat(undefined, {
-      style: "decimal",
-      notation: "compact",
-      compactDisplay: "short",
-      maximumFractionDigits: decimals
-    }).format(value);
   }
 
   if (compare) {
@@ -21573,6 +21789,45 @@ const CompareBlock = props => {
 
 /***/ }),
 
+/***/ "./src/Statistics/CompareFooter.js":
+/*!*****************************************!*\
+  !*** ./src/Statistics/CompareFooter.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/differenceInDays/index.js");
+
+
+
+
+const CompareFooter = props => {
+  const dateRange = props.dateRange;
+  const startDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_2__["default"])(dateRange.startDate);
+  const endDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_2__["default"])(dateRange.endDate); // get amount of days between start and end date with date-fns
+
+  const days = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__["default"])(endDate, startDate) + 1;
+  const text = days === 1 ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('vs. previous day', 'burst-statistics') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('vs. previous %s days', 'burst-statistics'); // replace %s with days
+
+  const textWithDays = text.replace('%s', days);
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+    className: "burst-small-text"
+  }, textWithDays));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CompareFooter);
+
+/***/ }),
+
 /***/ "./src/Statistics/DateRange/DateRange.js":
 /*!***********************************************!*\
   !*** ./src/Statistics/DateRange/DateRange.js ***!
@@ -21586,16 +21841,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mui/material */ "./node_modules/@mui/material/esm/Popover/Popover.js");
+/* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @mui/material */ "./node_modules/@mui/material/esm/Popover/Popover.js");
 /* harmony import */ var react_date_range__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-date-range */ "./node_modules/react-date-range/dist/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/startOfDay/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/endOfDay/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/startOfMonth/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMonths/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/endOfMonth/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/startOfYear/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/isSameDay/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
 /* harmony import */ var _utils_Icon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/Icon */ "./src/utils/Icon.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_4__);
 
 
  // date range picker and date fns
+
 
 
 
@@ -21606,11 +21872,79 @@ const DateRange = props => {
   const [anchorEl, setAnchorEl] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(null);
   const open = Boolean(anchorEl);
   const [selectionRange, setSelectionRange] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
-    startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_4__["default"])(props.dateRange.startDate),
-    endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_4__["default"])(props.dateRange.endDate),
+    startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(props.dateRange.startDate),
+    endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(props.dateRange.endDate),
     key: 'selection'
   });
-  let countClicks = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)(0);
+  const countClicks = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)(0); // select date ranges from settings
+
+  const selectedRanges = burst_settings.date_ranges;
+  const availableRanges = {
+    'today': {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Today', 'burst-statistics'),
+      range: () => ({
+        startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])(new Date()),
+        endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])(new Date())
+      })
+    },
+    'yesterday': {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Yesterday', 'burst-statistics'),
+      range: () => ({
+        startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date(), -1)),
+        endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date(), -1))
+      })
+    },
+    'last-7-days': {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Last 7 days', 'burst-statistics'),
+      range: () => ({
+        startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date(), -7)),
+        endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date(), -1))
+      })
+    },
+    'last-30-days': {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Last 30 days', 'burst-statistics'),
+      range: () => ({
+        startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date(), -30)),
+        endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date(), -1))
+      })
+    },
+    'last-90-days': {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Last 90 days', 'burst-statistics'),
+      range: () => ({
+        startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date(), -90)),
+        endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_8__["default"])(new Date(), -1))
+      })
+    },
+    'last-month': {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Last month', 'burst-statistics'),
+      range: () => ({
+        startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_9__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_10__["default"])(new Date(), -1)),
+        endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_11__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_10__["default"])(new Date(), -1))
+      })
+    },
+    'year-to-date': {
+      label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Year to date', 'burst-statistics'),
+      range: () => ({
+        startDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_12__["default"])(new Date()),
+        endDate: (0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])(new Date())
+      })
+    }
+  };
+
+  function isSelected(range) {
+    const definedRange = this.range();
+    return (0,date_fns__WEBPACK_IMPORTED_MODULE_13__["default"])(range.startDate, definedRange.startDate) && (0,date_fns__WEBPACK_IMPORTED_MODULE_13__["default"])(range.endDate, definedRange.endDate);
+  } // for all selected ranges add daterange and isSelected function
+
+
+  const dateRanges = [];
+
+  for (const [key, value] of Object.entries(selectedRanges)) {
+    if (value) {
+      dateRanges.push(availableRanges[value]);
+      dateRanges[dateRanges.length - 1].isSelected = isSelected;
+    }
+  }
 
   const handleClick = e => {
     setAnchorEl(e.currentTarget);
@@ -21623,22 +21957,33 @@ const DateRange = props => {
   const updateDateRange = ranges => {
     countClicks.current++;
     setSelectionRange(ranges.selection);
-    let startStr = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(ranges.selection.startDate, 'yyyy-MM-dd');
-    let endStr = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(ranges.selection.endDate, 'yyyy-MM-dd');
+    let startStr = (0,date_fns__WEBPACK_IMPORTED_MODULE_14__["default"])(ranges.selection.startDate, 'yyyy-MM-dd');
+    let endStr = (0,date_fns__WEBPACK_IMPORTED_MODULE_14__["default"])(ranges.selection.endDate, 'yyyy-MM-dd');
+    let range = 'custom'; // loop through availableRanges and check if the selected range is one of them
 
-    if (countClicks.current === 2 || startStr !== endStr) {
+    for (const [key, value] of Object.entries(availableRanges)) {
+      if (value.isSelected(ranges.selection)) {
+        range = key;
+      }
+    }
+
+    let dateRange = {
+      startDate: ranges.selection.startDate,
+      endDate: ranges.selection.endDate,
+      range: range
+    };
+
+    if (countClicks.current === 2 || startStr !== endStr || range !== 'custom') {
       countClicks.current = 0;
-      props.setDateRange(ranges.selection);
+      props.setDateRange(dateRange);
       handleClose();
     }
   };
 
-  const updateInsightsMetrics = e => {};
-
   const formatString = 'MMMM d, yyyy';
   const display = {
-    startDate: props.dateRange.startDate ? (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(new Date(props.dateRange.startDate), formatString) : (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(defaultStart, formatString),
-    endDate: props.dateRange.endDate ? (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(new Date(props.dateRange.endDate), formatString) : (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(defaultEnd, formatString)
+    startDate: props.dateRange.startDate ? (0,date_fns__WEBPACK_IMPORTED_MODULE_14__["default"])(new Date(props.dateRange.startDate), formatString) : (0,date_fns__WEBPACK_IMPORTED_MODULE_14__["default"])(defaultStart, formatString),
+    endDate: props.dateRange.endDate ? (0,date_fns__WEBPACK_IMPORTED_MODULE_14__["default"])(new Date(props.dateRange.endDate), formatString) : (0,date_fns__WEBPACK_IMPORTED_MODULE_14__["default"])(defaultEnd, formatString)
   };
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "burst-date-range-container"
@@ -21650,7 +21995,7 @@ const DateRange = props => {
     name: "calendar"
   }), display.startDate, " - ", display.endDate, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_utils_Icon__WEBPACK_IMPORTED_MODULE_2__["default"], {
     name: "chevron-down"
-  })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_mui_material__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_mui_material__WEBPACK_IMPORTED_MODULE_15__["default"], {
     anchorEl: anchorEl,
     anchorOrigin: {
       vertical: 'bottom',
@@ -21680,7 +22025,8 @@ const DateRange = props => {
     months: 2,
     direction: "horizontal",
     minDate: new Date(2022, 0, 1),
-    maxDate: new Date()
+    maxDate: new Date(),
+    staticRanges: dateRanges
   }))));
 };
 
@@ -21705,6 +22051,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
+/* harmony import */ var _utils_formatting__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/formatting */ "./src/utils/formatting.js");
+
 
 
 
@@ -21715,13 +22063,23 @@ const DevicesBlock = props => {
   const dateRange = props.dateRange;
   const startDate = dateRange.startDate;
   const endDate = dateRange.endDate;
-  const [devices, setDevicesData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const range = dateRange.range;
   const deviceNames = {
     'desktop': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Desktop', 'burst-statistics'),
     'tablet': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Tablet', 'burst-statistics'),
     'mobile': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Mobile', 'burst-statistics'),
     'other': (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Other', 'burst-statistics')
   };
+  let defaultData = {}; // loop through metrics and set default values
+
+  Object.keys(deviceNames).forEach(function (key) {
+    defaultData[key] = {
+      'title': deviceNames[key],
+      'subtitle': '-',
+      'value': '-%'
+    };
+  });
+  const [devices, setDevicesData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(defaultData);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     getDevicesData(startDate, endDate).then(response => {
       // loop through object deviceNames and place and edit data to be ready for display
@@ -21734,7 +22092,7 @@ const DevicesBlock = props => {
           [key]: {
             'title': value,
             'subtitle': os + ' / ' + browser,
-            'value': getPercentage(response[key].count, response['all'].count)
+            'value': (0,_utils_formatting__WEBPACK_IMPORTED_MODULE_4__.getPercentage)(response[key].count, response['all'].count)
           }
         });
       }
@@ -21746,24 +22104,9 @@ const DevicesBlock = props => {
   }, [startDate, endDate]);
 
   function getDevicesData(startDate, endDate, args) {
-    return _utils_api__WEBPACK_IMPORTED_MODULE_3__.getData('devices', startDate, endDate, args).then(response => {
+    return _utils_api__WEBPACK_IMPORTED_MODULE_3__.getData('devices', startDate, endDate, range, args).then(response => {
       return response.data;
     });
-  }
-
-  function getPercentage(val, total) {
-    val = Number(val);
-    total = Number(total);
-    let percentage = val / total;
-
-    if (isNaN(percentage) || !isFinite(percentage)) {
-      percentage = 0;
-    }
-
-    return new Intl.NumberFormat(undefined, {
-      style: 'percent',
-      maximumFractionDigits: 1
-    }).format(percentage);
   }
 
   if (devices) {
@@ -21876,7 +22219,11 @@ __webpack_require__.r(__webpack_exports__);
 
 class EmptyDataTable extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
   render() {
-    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h1", null, "No results");
+    return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "burst-empty-data-table"
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", {
+      className: "burst-small-text"
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('No data available in table', 'burst-statistics')));
   }
 
 }
@@ -21904,7 +22251,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/chart.mjs");
 /* harmony import */ var react_chartjs_2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-chartjs-2 */ "./node_modules/react-chartjs-2/dist/index.js");
 /* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/differenceInDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/differenceInCalendarDays/index.js");
 
 
 
@@ -21919,6 +22266,7 @@ const InsightsBlock = props => {
   const selectedMetrics = props.insightsMetrics.metrics;
   const startDate = dateRange.startDate;
   const endDate = dateRange.endDate;
+  const range = dateRange.range;
   const [chartData, setChartData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({
     labels: ['', '', '', '', '', '', ''],
     datasets: [{
@@ -21953,7 +22301,7 @@ const InsightsBlock = props => {
       y: {
         ticks: {
           beginAtZero: true,
-          stepSize: 1,
+          stepSize: 20,
           maxTicksLimit: 6
         }
       },
@@ -21968,12 +22316,16 @@ const InsightsBlock = props => {
     }
   };
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    console.log('useEffect in InsightsBlock'); // if startDate and endDate are less than two days apart, show hours as interval
-
+    // if startDate and endDate are less than two days apart, show hours as interval
     const startDateObj = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__["default"])(startDate);
     const endDateObj = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__["default"])(endDate);
-    const diffDays = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(endDateObj, startDateObj);
-    const interval = diffDays < 3 ? 'hour' : 'day';
+    const diffDays = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(endDateObj, startDateObj) + 1;
+    let interval = 'hour';
+
+    if (diffDays >= 3) {
+      interval = 'day';
+    }
+
     let args = {
       metrics: selectedMetrics,
       interval: interval
@@ -21986,7 +22338,7 @@ const InsightsBlock = props => {
   }, [dateRange, props.insightsMetrics]);
 
   function getInsightsData(startDate, endDate, args) {
-    return _utils_api__WEBPACK_IMPORTED_MODULE_2__.getData('insights', startDate, endDate, args).then(response => {
+    return _utils_api__WEBPACK_IMPORTED_MODULE_2__.getData('insights', startDate, endDate, range, args).then(response => {
       return response.data;
     });
   }
@@ -22030,7 +22382,6 @@ __webpack_require__.r(__webpack_exports__);
 const InsightsHeader = props => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const selectedMetrics = props.insightsMetrics.metrics;
-  console.log('selectedMetrics', selectedMetrics);
   const setInsightsMetrics = props.setInsightsMetrics;
   const refMetrics = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useRef)(selectedMetrics);
   const availableMetrics = ['visitors', 'pageviews', 'bounces', 'sessions'];
@@ -22043,7 +22394,6 @@ const InsightsHeader = props => {
   const open = Boolean(anchorEl);
 
   const handleClick = e => {
-    console.log('click');
     setAnchorEl(e.currentTarget);
   };
 
@@ -22260,8 +22610,9 @@ const PagesBlock = props => {
   const dateRange = props.dateRange;
   const startDate = dateRange.startDate;
   const endDate = dateRange.endDate;
+  const range = dateRange.range;
   const [pages, setPagesData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-  const [metrics, setmetrics] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(['visitors']); // as of now we only support 1 metric
+  const [metrics, setmetrics] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(['pageviews']); // as of now we only support 1 metric
 
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     let args = {
@@ -22276,6 +22627,12 @@ const PagesBlock = props => {
         if (index > 0) {
           column.selector = row => row[metrics[index - 1]];
         }
+      }); // foreach data convert to int
+
+      response.data.forEach((row, index) => {
+        metrics.forEach((metric, index) => {
+          row[metric] = parseInt(row[metric]);
+        });
       });
       setPagesData(response);
     }).catch(error => {
@@ -22284,7 +22641,7 @@ const PagesBlock = props => {
   }, [startDate, endDate, metrics]);
 
   function getPagesData(startDate, endDate, args) {
-    return _utils_api__WEBPACK_IMPORTED_MODULE_4__.getData('pages', startDate, endDate, args).then(response => {
+    return _utils_api__WEBPACK_IMPORTED_MODULE_4__.getData('pages', startDate, endDate, range, args).then(response => {
       return response.data;
     });
   }
@@ -22293,20 +22650,16 @@ const PagesBlock = props => {
     columns: pages.columns,
     data: pages.data,
     defaultSortFieldId: 1,
-    striped: true,
     pagination: true,
-    paginationRowsPerPageOptions: [10, 25, 50, 100] // progressPending add laoding animation
-    // progressComponent
-    // highlightOnHover
-    // pointerOnHover
-    ,
+    paginationRowsPerPageOptions: [10, 25, 50, 100, 200],
+    paginationPerPage: 10,
     paginationComponentOptions: {
       rowsPerPageText: '',
       rangeSeparatorText: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('of', 'burst-statistics'),
       noRowsPerPage: false,
-      selectAllRowsItem: false
-    } // paginationResetDefaultPage={resetPaginationToggle}
-    ,
+      selectAllRowsItem: true,
+      selectAllRowsItemText: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('All', 'burst-statistics')
+    },
     noDataComponent: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_EmptyDataTable__WEBPACK_IMPORTED_MODULE_3__["default"], null)
   });
 };
@@ -22344,6 +22697,7 @@ const ReferrersBlock = props => {
   const dateRange = props.dateRange;
   const startDate = dateRange.startDate;
   const endDate = dateRange.endDate;
+  const range = dateRange.range;
   const [referrers, setReferrersData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   const [metrics, setmetrics] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(['visitors']); // as of now we only support 1 metric
 
@@ -22352,12 +22706,16 @@ const ReferrersBlock = props => {
       metrics: metrics
     };
     getReferrersData(startDate, endDate, args).then(response => {
-      response.columns[0].selector = row => row.referrer; // select data for page column
+      response.columns[0].selector = row => row.referrer; // select data for referrer column
 
 
-      response.columns[1].selector = row => row.count; // select data for page column
+      response.columns[1].selector = row => row.count; // select data for count column
+      // foreach data convert to int
 
 
+      response.data.forEach((row, index) => {
+        row.count = parseInt(row.count);
+      });
       setReferrersData(response);
     }).catch(error => {
       console.error(error);
@@ -22365,7 +22723,7 @@ const ReferrersBlock = props => {
   }, [startDate, endDate, metrics]);
 
   function getReferrersData(startDate, endDate, args) {
-    return _utils_api__WEBPACK_IMPORTED_MODULE_4__.getData('referrers', startDate, endDate, args).then(response => {
+    return _utils_api__WEBPACK_IMPORTED_MODULE_4__.getData('referrers', startDate, endDate, range, args).then(response => {
       return response.data;
     });
   }
@@ -22374,20 +22732,16 @@ const ReferrersBlock = props => {
     columns: referrers.columns,
     data: referrers.data,
     defaultSortFieldId: 1,
-    striped: true,
     pagination: true,
-    paginationRowsPerPageOptions: [10, 25, 50, 100] // progressPending add laoding animation
-    // progressComponent
-    // highlightOnHover
-    // pointerOnHover
-    ,
+    paginationRowsPerPageOptions: [10, 25, 50, 100, 200],
+    paginationPerPage: 10,
     paginationComponentOptions: {
       rowsPerPageText: '',
       rangeSeparatorText: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('of', 'burst-statistics'),
       noRowsPerPage: false,
-      selectAllRowsItem: false
-    } // paginationResetDefaultPage={resetPaginationToggle}
-    ,
+      selectAllRowsItem: true,
+      selectAllRowsItemText: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('All', 'burst-statistics')
+    },
     noDataComponent: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_EmptyDataTable__WEBPACK_IMPORTED_MODULE_3__["default"], null)
   });
 };
@@ -23101,6 +23455,22 @@ const Icon = props => {
     };
   }
 
+  if (iconName === 'loading') {
+    renderedIcon = {
+      html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+        "aria-hidden": "true",
+        focusable: "false",
+        role: "img",
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 512 512",
+        height: iconSize
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+        fill: iconColors[iconColor],
+        d: "M207.4 20.36C209.8 28.88 204.8 37.69 196.3 40.04C101.5 66.19 32 152.1 32 255.1C32 379.7 132.3 479.1 256 479.1C379.7 479.1 480 379.7 480 255.1C480 152.1 410.5 66.19 315.7 40.04C307.2 37.69 302.2 28.88 304.6 20.36C306.9 11.85 315.7 6.847 324.3 9.198C432.5 39.07 512 138.2 512 255.1C512 397.4 397.4 511.1 256 511.1C114.6 511.1 0 397.4 0 255.1C0 138.2 79.51 39.07 187.7 9.198C196.3 6.847 205.1 11.85 207.4 20.36V20.36z"
+      }))
+    };
+  }
+
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: 'burst-icon burst-icon-' + iconName
   }, renderedIcon.html);
@@ -23119,6 +23489,7 @@ const Icon = props => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "doAction": () => (/* binding */ doAction),
 /* harmony export */   "getBlock": () => (/* binding */ getBlock),
 /* harmony export */   "getData": () => (/* binding */ getData),
 /* harmony export */   "getFields": () => (/* binding */ getFields),
@@ -23185,7 +23556,16 @@ const runTest = (test, state, data) => {
 
   return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/tests/' + test + '?state=' + state + '&data=' + data, config);
 };
-const getData = (type, startDate, endDate, args) => {
+const doAction = (action, data) => {
+  let config = {
+    headers: {
+      'X-WP-Nonce': burst_settings.nonce
+    }
+  };
+  data.nonce = burst_settings.burst_nonce;
+  return axios__WEBPACK_IMPORTED_MODULE_0___default().post(burst_settings.site_url + 'burst/v1/do_action/' + action, data, config);
+};
+const getData = (type, startDate, endDate, range, args) => {
   let config = {
     headers: {
       'X-WP-Nonce': burst_settings.nonce
@@ -23196,8 +23576,128 @@ const getData = (type, startDate, endDate, args) => {
     args = encodeURIComponent(JSON.stringify(args));
   }
 
-  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/data/' + type + '?date_start=' + startDate + '&date_end=' + endDate + '&args=' + args, config);
+  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/data/' + type + '?date_start=' + startDate + '&date_end=' + endDate + '&date_range=' + range + '&args=' + args, config);
 };
+
+/***/ }),
+
+/***/ "./src/utils/formatting.js":
+/*!*********************************!*\
+  !*** ./src/utils/formatting.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "formatNumber": () => (/* binding */ formatNumber),
+/* harmony export */   "formatTime": () => (/* binding */ formatTime),
+/* harmony export */   "getBouncePercentage": () => (/* binding */ getBouncePercentage),
+/* harmony export */   "getChangePercentage": () => (/* binding */ getChangePercentage),
+/* harmony export */   "getPercentage": () => (/* binding */ getPercentage),
+/* harmony export */   "getRelativeTime": () => (/* binding */ getRelativeTime)
+/* harmony export */ });
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/intervalToDuration/index.js");
+
+
+const getRelativeTime = function (relativeDate) {
+  let date = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Date();
+  let units = {
+    year: 24 * 60 * 60 * 1000 * 365,
+    month: 24 * 60 * 60 * 1000 * 365 / 12,
+    day: 24 * 60 * 60 * 1000,
+    hour: 60 * 60 * 1000,
+    minute: 60 * 1000,
+    second: 1000
+  };
+  let rtf = new Intl.RelativeTimeFormat('en', {
+    numeric: 'auto'
+  });
+  let elapsed = relativeDate - date; // "Math.abs" accounts for both "past" & "future" scenarios
+
+  for (let u in units) {
+    if (Math.abs(elapsed) > units[u] || u === 'second') {
+      return rtf.format(Math.round(elapsed / units[u]), u);
+    }
+  }
+};
+
+const getPercentage = (val, total) => {
+  val = Number(val);
+  total = Number(total);
+  let percentage = val / total;
+
+  if (isNaN(percentage)) {
+    percentage = 0;
+  }
+
+  return new Intl.NumberFormat(undefined, {
+    style: 'percent',
+    maximumFractionDigits: 1
+  }).format(percentage);
+};
+
+function getChangePercentage(currValue, prevValue) {
+  currValue = Number(currValue);
+  prevValue = Number(prevValue);
+  let change = {};
+  let percentage = (currValue - prevValue) / prevValue;
+
+  if (isNaN(percentage)) {
+    percentage = 0;
+  }
+
+  change.val = new Intl.NumberFormat(undefined, {
+    style: 'percent',
+    maximumFractionDigits: 1,
+    signDisplay: "exceptZero"
+  }).format(percentage);
+  change.status = percentage > 0 ? 'positive' : 'negative';
+  return change;
+}
+
+function getBouncePercentage(bounced_sessions, sessions) {
+  bounced_sessions = Number(bounced_sessions);
+  sessions = Number(sessions);
+  return getPercentage(bounced_sessions, sessions + bounced_sessions);
+}
+
+function formatTime() {
+  let timeInMilliSeconds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  let timeInSeconds = Number(timeInMilliSeconds);
+
+  if (isNaN(timeInSeconds)) {
+    timeInSeconds = 0;
+  }
+
+  let duration = (0,date_fns__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    start: 0,
+    end: timeInSeconds
+  });
+
+  const zeroPad = num => String(num).padStart(2, '0');
+
+  const formatted = [duration.hours, duration.minutes, duration.seconds].map(zeroPad);
+  return formatted.join(':');
+}
+
+function formatNumber(value) {
+  let decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+  value = Number(value);
+
+  if (isNaN(value)) {
+    value = 0;
+  }
+
+  return new Intl.NumberFormat(undefined, {
+    style: "decimal",
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: decimals
+  }).format(value);
+}
+
+
 
 /***/ }),
 
@@ -32200,6 +32700,51 @@ function startOfWeek(dirtyDate, options) {
   var day = date.getDay();
   var diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
   date.setDate(date.getDate() - diff);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/startOfYear/index.js":
+/*!********************************************************!*\
+  !*** ./node_modules/date-fns/esm/startOfYear/index.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ startOfYear)
+/* harmony export */ });
+/* harmony import */ var _toDate_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../toDate/index.js */ "./node_modules/date-fns/esm/toDate/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+/**
+ * @name startOfYear
+ * @category Year Helpers
+ * @summary Return the start of a year for the given date.
+ *
+ * @description
+ * Return the start of a year for the given date.
+ * The result will be in the local timezone.
+ *
+ * @param {Date|Number} date - the original date
+ * @returns {Date} the start of a year
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // The start of a year for 2 September 2014 11:55:00:
+ * const result = startOfYear(new Date(2014, 8, 2, 11, 55, 00))
+ * //=> Wed Jan 01 2014 00:00:00
+ */
+
+function startOfYear(dirtyDate) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__["default"])(1, arguments);
+  var cleanDate = (0,_toDate_index_js__WEBPACK_IMPORTED_MODULE_1__["default"])(dirtyDate);
+  var date = new Date(0);
+  date.setFullYear(cleanDate.getFullYear(), 0, 1);
   date.setHours(0, 0, 0, 0);
   return date;
 }

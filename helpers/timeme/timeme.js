@@ -244,10 +244,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 }
                 TimeMe.startTimer();
             },
-            // TODO - we are muddying the waters in between
-            // 'user left page' and 'user gone idle'. Really should be
-            // two separate concepts entirely. Need to break this into smaller  functions
-            // for either scenario.
+
             triggerUserHasLeftPageOrGoneIdle: () => {
                 if (TimeMe.isUserCurrentlyOnPage) {
                     TimeMe.isUserCurrentlyOnPage = false;
@@ -428,9 +425,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 TimeMe.setCurrentPageName(currentPageName)
                 TimeMe.setUpWebsocket(websocketOptions)
                 TimeMe.listenForVisibilityEvents(trackWhenUserLeavesPage, trackWhenUserGoesIdle);
-
-                // TODO - only do this if page currently visible.
-
                 TimeMe.startTimer(undefined, initialStartTime);
             }
         };

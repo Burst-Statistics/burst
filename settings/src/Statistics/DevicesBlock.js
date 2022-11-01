@@ -6,18 +6,30 @@ import {
 import Placeholder from '../Placeholder/Placeholder';
 
 import * as burst_api from "../utils/api";
+import { getPercentage} from '../utils/formatting';
 
 const DevicesBlock = (props) => {
     const dateRange = props.dateRange;
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
-    const [devices, setDevicesData] = useState(false);
+    const range = dateRange.range;
     const deviceNames = {
         'desktop': __('Desktop', 'burst-statistics'),
         'tablet': __('Tablet', 'burst-statistics'),
         'mobile': __('Mobile', 'burst-statistics'),
         'other': __('Other', 'burst-statistics'),
     };
+    let defaultData = {};
+    // loop through metrics and set default values
+    Object.keys(deviceNames).forEach(function (key) {
+        defaultData[key] = {
+            'title': deviceNames[key],
+            'subtitle': '-',
+            'value': '-%',
+        };
+    })
+    const [devices, setDevicesData] = useState(defaultData);
+
 
     useEffect(() => {
             getDevicesData(startDate, endDate).then((response) => {
@@ -44,24 +56,9 @@ const DevicesBlock = (props) => {
     )
 
     function getDevicesData(startDate, endDate, args){
-        return burst_api.getData('devices', startDate, endDate, args).then( ( response ) => {
+        return burst_api.getData('devices', startDate, endDate, range, args).then( ( response ) => {
             return response.data;
         });
-    }
-
-    function getPercentage(val, total){
-        val = Number(val);
-        total = Number(total);
-        let percentage =  val / total;
-        if (isNaN(percentage) || !isFinite(percentage)) {
-            percentage = 0;
-        }
-        return new Intl.NumberFormat(
-            undefined,
-            {
-                style: 'percent',
-                maximumFractionDigits: 1,
-            }).format(percentage);
     }
 
     if (devices) {

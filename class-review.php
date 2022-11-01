@@ -87,7 +87,7 @@ if ( ! class_exists( "burst_review" ) ) {
 			     style="border-left:4px solid var(--rsp-green, #2e8a37)">
 				<div class="burst-container">
 					<div class="burst-review-image"><img width="80px"
-					                                     src="<?php echo esc_url_raw(burst_url) ?>/assets/images/burst-logo.svg"
+					                                     src="<?php echo esc_url_raw(burst_url) ?>/assets/img/burst-logo.svg"
 					                                     alt="review-logo">
 					</div>
 					<div style="margin-left:30px">

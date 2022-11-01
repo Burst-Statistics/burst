@@ -138,6 +138,48 @@ if ( ! function_exists( 'burst_display_date' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_get_html_template' ) ) {
+	/**
+	 * Get a template based on filename, overridable in theme dir
+	 *
+	 * @param $filename
+	 *
+	 * @return string
+	 */
+
+	function burst_get_html_template( $filename, $args = array() ) {
+
+		$file       = trailingslashit( burst_path ) . 'settings/templates/' . $filename;
+		$theme_file = trailingslashit( get_stylesheet_directory() )
+		              . trailingslashit( basename( burst_path ) )
+		              . 'templates/' . $filename;
+
+		if ( file_exists( $theme_file ) ) {
+			$file = $theme_file;
+		}
+
+		if ( ! file_exists( $file ) ) {
+			return false;
+		}
+
+		if ( strpos( $file, '.php' ) !== false ) {
+			ob_start();
+			require $file;
+			$contents = ob_get_clean();
+		} else {
+			$contents = file_get_contents( $file );
+		}
+
+		if ( ! empty( $args ) && is_array( $args ) ) {
+			foreach ( $args as $fieldname => $value ) {
+				$contents = str_replace( '{' . $fieldname . '}', $value, $contents );
+			}
+		}
+
+		return $contents;
+	}
+}
+
 if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
 	/**
 	 * Format milliseconds to readable time
@@ -161,10 +203,8 @@ if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
 }
 
 /*
- * Function to get the current page URL
  * @return string
  * @since 1.0.0
- * @todo maybe remove after react?
  */
 if ( ! function_exists( 'burst_offset_utc_time_to_gtm_offset' ) ) {
 	function burst_offset_utc_time_to_gtm_offset( $utc_time ): int {
@@ -289,7 +329,7 @@ if ( ! function_exists( 'burst_get_current_post_id' ) ) {
 
 
 /**
- * Get a Really Simple SSL option by name
+ * Get a Burst option by name
  *
  * @param string $name
  * @param mixed $default
@@ -299,11 +339,8 @@ if ( ! function_exists( 'burst_get_current_post_id' ) ) {
 
 function burst_get_option( $name, $default=false ) {
 	$name = sanitize_title($name);
-	if ( is_multisite() && burst_is_networkwide_active() ) {
-		$options = get_site_option( 'burst_options_settings', [] );
-	} else {
-		$options = get_option( 'burst_options_settings', [] );
-	}
+    $options = get_option( 'burst_options_settings', [] );
+
 
 	$value = isset($options[$name]) ? $options[$name] : false;
 	if ( $value===false && $default!==false ) {
@@ -357,41 +394,6 @@ if ( ! function_exists( 'burst_notice' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_sidebar_notice' ) ) {
-	/**
-	 * @param string     $msg
-	 * @param string     $type notice | warning | success
-	 * @param bool|array $condition
-	 *
-	 * @return string|void
-	 */
-
-	function burst_sidebar_notice( $msg, $type = 'notice', $condition = false ) {
-		if ( $msg == '' ) {
-			return;
-		}
-
-		// Condition
-		$condition_check    = "";
-		$condition_question = "";
-		$condition_answer   = "";
-		$burst_hidden       = "";
-		if ( $condition ) {
-			//get first
-			$questions          = array_keys( $condition );
-			$question           = reset( $questions );
-			$answer             = reset( $condition );
-			$condition_check    = "condition-check-1";
-			$condition_question = "data-condition-question-1='{$question}'";
-			$condition_answer   = "data-condition-answer-1='{$answer}'";
-			$args               = array( 'condition' => $condition );
-			$burst_hidden       = burst_field::this()->condition_applies( $args ) ? "" : "burst-hidden";;
-		}
-
-		echo esc_html( "<div class='burst-help-modal burst-notice burst-{$type} {$burst_hidden} {$condition_check}' {$condition_question} {$condition_answer}>{$msg}</div>" );
-	}
-}
-
 if ( ! function_exists( 'burst_admin_notice' ) ) {
 	/**
 	 * @param $msg
@@ -413,7 +415,7 @@ if ( ! function_exists( 'burst_admin_notice' ) ) {
              style="border-left:4px solid #333">
             <div class="burst-admin-notice-container">
                 <div class="burst-logo"><img width=80px"
-                                             src="<?php echo esc_url( burst_url ) ?>assets/images/icon-logo.svg"
+                                             src="<?php echo esc_url( burst_url ) ?>assets/img/icon-logo.svg"
                                              alt="logo">
                 </div>
                 <div style="margin-left:30px">
@@ -477,7 +479,7 @@ if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
 	function burst_get_anon_ip_address(): string {
 		$ip = burst_get_ip_address();
 
-		return BURST::$anonymize_IP->anonymizeIp( $ip );
+		return BURST()->anonymize_IP->anonymizeIp( $ip );
 	}
 }
 
@@ -532,12 +534,13 @@ if ( ! function_exists( 'burst_printf' ) ) {
 if ( ! function_exists( 'burst_get_date_ranges' ) ) {
 	function burst_get_date_ranges() {
 		return apply_filters( 'burst_date_ranges', array(
+			'today',
 			'yesterday',
 			'last-7-days',
 			'last-30-days',
 			'last-90-days',
 			'last-month',
-			'custom',
+            'year-to-date',
 		) );
 	}
 }
@@ -561,8 +564,14 @@ if ( ! function_exists( 'burst_tracking_status_error' ) ) {
 	 * @return bool
 	 */
 	function burst_tracking_status_error() {
-		return BURST::$endpoint->get_tracking_status() === 'error';
+		return BURST()->endpoint->get_tracking_status() === 'error';
 	}
+}
+
+if ( ! function_exists( 'burst_get_tracking_status' ) ) {
+    function burst_get_tracking_status() {
+        return BURST()->endpoint->get_tracking_status();
+    }
 }
 
 if ( ! function_exists( 'burst_tracking_status_rest_api' ) ) {
@@ -572,7 +581,7 @@ if ( ! function_exists( 'burst_tracking_status_rest_api' ) ) {
 	 * @return bool
 	 */
 	function burst_tracking_status_rest_api() {
-		return BURST::$endpoint->get_tracking_status() === 'rest';
+		return BURST()->endpoint->get_tracking_status() === 'rest';
 	}
 }
 
@@ -583,6 +592,19 @@ if ( ! function_exists( 'burst_tracking_status_beacon' ) ) {
 	 * @return bool
 	 */
 	function burst_tracking_status_beacon() {
-		return BURST::$endpoint->get_tracking_status() === 'beacon';
+		return BURST()->endpoint->get_tracking_status() === 'beacon';
 	}
+}
+
+if ( ! function_exists( 'burst_get_beacon_url' ) ) {
+    /**
+     * Get beacon directory
+     *
+     * @return string
+     */
+    function burst_get_beacon_url() {
+        $wp_dir = get_site_url();
+        return trailingslashit( $wp_dir ) . 'burst-statistics-endpoint.php';
+
+    }
 }

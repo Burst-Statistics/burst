@@ -11,8 +11,9 @@ const PagesBlock = (props) => {
     const dateRange = props.dateRange;
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
+    const range = dateRange.range;
     const [pages, setPagesData] = useState([]);
-    const [metrics, setmetrics] = useState(['visitors']); // as of now we only support 1 metric
+    const [metrics, setmetrics] = useState(['pageviews']); // as of now we only support 1 metric
 
     useEffect(() => {
         let args = {
@@ -27,7 +28,12 @@ const PagesBlock = (props) => {
                     column.selector = row => row[metrics[index - 1]];
                 }
             });
-
+            // foreach data convert to int
+            response.data.forEach((row, index) => {
+                metrics.forEach((metric, index) => {
+                    row[metric] = parseInt(row[metric]);
+                });
+            });
             setPagesData(response);
         }).catch((error) => {
             console.error(error);
@@ -36,26 +42,25 @@ const PagesBlock = (props) => {
     )
 
     function getPagesData(startDate, endDate, args){
-        return burst_api.getData('pages', startDate, endDate, args).then( ( response ) => {
+        return burst_api.getData('pages', startDate, endDate, range, args).then( ( response ) => {
             return response.data;
         });
     }
-
 
     return(
         <DataTable
             columns={pages.columns}
             data={pages.data}
             defaultSortFieldId={1}
-            striped
             pagination
-            paginationRowsPerPageOptions={[10, 25, 50, 100]}
-            // progressPending add laoding animation
-            // progressComponent
-            // highlightOnHover
-            // pointerOnHover
-            paginationComponentOptions={{ rowsPerPageText: '', rangeSeparatorText: __('of', 'burst-statistics'), noRowsPerPage: false, selectAllRowsItem: false}}
-            // paginationResetDefaultPage={resetPaginationToggle}
+            paginationRowsPerPageOptions={[10, 25, 50, 100, 200]}
+            paginationPerPage={10}
+            paginationComponentOptions={{
+                rowsPerPageText: '',
+                rangeSeparatorText: __('of', 'burst-statistics'),
+                noRowsPerPage: false,
+                selectAllRowsItem: true,
+                selectAllRowsItemText: __('All', 'burst-statistics')}}
             noDataComponent={<EmptyDataTable></EmptyDataTable>}
         />
     );

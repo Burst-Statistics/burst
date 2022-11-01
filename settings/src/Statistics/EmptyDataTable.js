@@ -6,7 +6,9 @@ import {
 class EmptyDataTable extends Component {
     render(){
         return(
-            <h1>No results</h1>
+            <div className="burst-empty-data-table">
+                <p className={"burst-small-text"}>{__('No data available in table', 'burst-statistics')}</p>
+            </div>
         );
     }
 }

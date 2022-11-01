@@ -15,7 +15,7 @@ import {
     Legend,
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import {parseISO, differenceInDays} from 'date-fns'
+import {parseISO, differenceInCalendarDays} from 'date-fns'
 
 ChartJS.register(
     CategoryScale,
@@ -32,6 +32,7 @@ const InsightsBlock  = (props) => {
     const selectedMetrics = props.insightsMetrics.metrics;
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
+    const range = dateRange.range;
     const [chartData, setChartData] = useState(
         {
             labels: ['', '', '', '', '', '', ''],
@@ -73,7 +74,7 @@ const InsightsBlock  = (props) => {
             y: {
                 ticks: {
                     beginAtZero: true,
-                    stepSize: 1,
+                    stepSize: 20,
                     maxTicksLimit: 6,
                 }
             },
@@ -89,12 +90,15 @@ const InsightsBlock  = (props) => {
       };
 
     useEffect(() => {
-      console.log('useEffect in InsightsBlock');
         // if startDate and endDate are less than two days apart, show hours as interval
         const startDateObj = parseISO(startDate);
         const endDateObj = parseISO(endDate);
-        const diffDays = differenceInDays(endDateObj, startDateObj);
-        const interval = diffDays < 3 ? 'hour' : 'day';
+        const diffDays = differenceInCalendarDays(endDateObj, startDateObj) + 1;
+        let interval = 'hour';
+        if (diffDays >= 3) {
+            interval = 'day';
+        }
+
 
         let args = {
             metrics: selectedMetrics,
@@ -108,7 +112,7 @@ const InsightsBlock  = (props) => {
       }, [dateRange, props.insightsMetrics]);
 
     function getInsightsData(startDate, endDate, args){
-        return burst_api.getData('insights', startDate, endDate, args).then( ( response ) => {
+        return burst_api.getData('insights', startDate, endDate, range, args).then( ( response ) => {
             return response.data;
         });
     }

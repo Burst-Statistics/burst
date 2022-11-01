@@ -5,28 +5,40 @@ import {
 } from '@wordpress/element';
 import Placeholder from '../Placeholder/Placeholder';
 import { intervalToDuration } from 'date-fns'
-
+import {getChangePercentage, formatNumber, getPercentage, getBouncePercentage, formatTime} from '../utils/formatting';
 import * as burst_api from "../utils/api";
 
 const CompareBlock = (props) => {
     const dateRange = props.dateRange;
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
-    const [compare, setCompareData] = useState(false);
+    const range = dateRange.range;
     const metrics = {
         'pageviews': __('Pageviews', 'burst-statistics'),
         'sessions': __('Sessions', 'burst-statistics'),
         'visitors': __('Visitors', 'burst-statistics'),
         'bounced_sessions': __('Bounce Rate', 'burst-statistics'),
     };
+    let defaultData = {};
+    // loop through metrics and set default values
+    Object.keys(metrics).forEach(function (key) {
+        defaultData[key] = {
+            'title': metrics[key],
+            'subtitle': '-',
+            'value': '-',
+            'change': '-',
+            'changeStatus': '',
+        };
+    })
+    const [compare, setCompareData] = useState(defaultData);
+
 
     useEffect(() => {
-        getCompareData(startDate, endDate).then((response) => {
+        getCompareData(startDate, endDate, range).then((response) => {
             // loop through object metrics and place and edit data to be ready for display
             let data = {};
             let curr = response.current;
             let prev = response.previous;
-            console.log(response)
             for (const [key, value] of Object.entries(metrics)) {
                 let change = getChangePercentage(curr[key], prev[key]);
                 Object.assign(data, {
@@ -39,7 +51,6 @@ const CompareBlock = (props) => {
                     }
                 });
             }
-            console.log(data)
 
             // Add subtitles and change metrics
             let pageviewsPerSession = curr.pageviews / curr.sessions;
@@ -50,8 +61,6 @@ const CompareBlock = (props) => {
             data.bounced_sessions.subtitle =  curr.bounced_sessions + ' ' + __('visitors bounced', 'burst-statistics');
             data.bounced_sessions.value = getBouncePercentage(curr.bounced_sessions, curr.sessions);
 
-            console.log(data)
-
             setCompareData(data);
         }).catch((error) => {
             console.error(error);
@@ -59,83 +68,12 @@ const CompareBlock = (props) => {
       }, [startDate, endDate]
     )
 
-    function getCompareData(startDate, endDate, args){
-        return burst_api.getData('compare', startDate, endDate, args).then( ( response ) => {
+    function getCompareData(startDate, endDate, range, args){
+        return burst_api.getData('compare', startDate, endDate, range, args).then( ( response ) => {
             return response.data;
         });
     }
-    // @todo move to utils
-    function getPercentage(val, total){
-        val = Number(val);
-        total = Number(total);
-        let percentage = val / total;
-        if (isNaN(percentage)){
-            percentage = 0;
-        }
-        return new Intl.NumberFormat(
-            undefined,
-            {
-                style: 'percent',
-                maximumFractionDigits: 1,
-            }).format(percentage);
-    }
 
-    function getChangePercentage(currValue, prevValue){
-        currValue = Number(currValue);
-        prevValue = Number(prevValue);
-        let change = {}
-        let percentage = (currValue - prevValue) / prevValue;
-        if (isNaN(percentage)){
-            percentage = 0;
-        }
-        change.val = new Intl.NumberFormat(
-            undefined,
-            {
-                style: 'percent',
-                maximumFractionDigits: 1,
-                signDisplay: "exceptZero",
-            }).format(percentage);
-        change.status = (percentage > 0) ? 'positive' : 'negative';
-
-        return change;
-    }
-
-    function getBouncePercentage(bounced_sessions, sessions){
-        bounced_sessions = Number(bounced_sessions);
-        sessions = Number(sessions);
-        return getPercentage(bounced_sessions, sessions + bounced_sessions);
-    }
-
-    function formatTime(timeInMilliSeconds = 0) {
-        let timeInSeconds = Number(timeInMilliSeconds);
-        if (isNaN(timeInSeconds)){
-            timeInSeconds = 0;
-        }
-
-        let duration = intervalToDuration({ start: 0, end: timeInSeconds });
-        const zeroPad = (num) => String(num).padStart(2, '0')
-
-        const formatted = [
-            duration.hours,
-            duration.minutes,
-            duration.seconds,
-        ].map(zeroPad);
-
-        return formatted.join(':');
-    }
-
-    function formatNumber(value, decimals = 1){
-        value = Number(value);
-        if (isNaN(value)){
-            value = 0;
-        }
-        return new Intl.NumberFormat(undefined, {
-            style: "decimal",
-            notation: "compact",
-            compactDisplay: "short",
-            maximumFractionDigits: decimals,
-        }).format(value);
-    }
     if (compare) {
         return(
                 <>

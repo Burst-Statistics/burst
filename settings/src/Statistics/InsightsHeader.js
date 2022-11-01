@@ -10,7 +10,6 @@ import {Popover} from '@mui/material';
 const InsightsHeader = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const selectedMetrics = props.insightsMetrics.metrics;
-  console.log('selectedMetrics', selectedMetrics);
   const setInsightsMetrics = props.setInsightsMetrics;
   const refMetrics = useRef(selectedMetrics);
   const availableMetrics = ['visitors', 'pageviews', 'bounces', 'sessions']
@@ -23,7 +22,6 @@ const InsightsHeader = (props) => {
   const open = Boolean(anchorEl);
 
   const handleClick = (e) => {
-    console.log('click');
     setAnchorEl(e.currentTarget);
   };
 

@@ -7,17 +7,15 @@ import {
     ToggleControl,
     Button,
 } from '@wordpress/components';
-
 import { __ } from '@wordpress/i18n';
 import * as burst_api from "../utils/api";
 import Hyperlink from "../utils/Hyperlink";
-import ChangeStatus from "./ChangeStatus";
 import {
     Component,
     useRef
 } from '@wordpress/element';
-
 import IpBlock from "./IpBlock";
+import UserRoleBlock from "./UserRoleBlock";
 
 /*
  * https://react-data-table-component.netlify.app
@@ -71,7 +69,7 @@ class Field extends Component {
         saveFields.push(field);
         this.props.updateField(field.id, field.value);
         burst_api.setFields(saveFields).then(( response ) => {
-            //this.props.showSavedSettingsNotice();
+            this.props.showSavedSettingsNotice();
         });
     }
     onCloseTaskHandler(){
@@ -79,7 +77,6 @@ class Field extends Component {
     }
 
     render(){
-
         let field = this.props.field;
         let fieldValue = this.state.value;
         let fields = this.props.fields;
@@ -225,17 +222,30 @@ class Field extends Component {
                 <div className={this.highLightClass}>
                     <IpBlock
                         disabled={disabled}
-                        updateField={this.props.updateField}
                         field={this.props.field}
-                        fieldValue={this.state.value}
-                        options={options}
-                        highLightClass={this.highLightClass}
-                        fields={fields}
                         label={ field.label }
                         help={ field.comment }
                         value= { fieldValue }
-                        onChange={ ( fieldValue ) => this.onChangeHandler(fieldValue) }
+                        onChangeHandler={this.onChangeHandler}
                         id="ip_adress"
+                    />
+                </div>
+
+            );
+        }
+
+        if ( field.type==='user_role_blocklist' ){
+
+            return (
+                <div className={this.highLightClass}>
+                    <UserRoleBlock
+                        disabled={disabled}
+                        field={this.props.field}
+                        label={ field.label }
+                        help={ field.comment }
+                        value= { fieldValue }
+                        onChangeHandler={this.onChangeHandler}
+                        id="user_role_block"
                     />
                 </div>
 

@@ -3,17 +3,21 @@ defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 
 global $burst_integrations_list;
 $burst_integrations_list = apply_filters( 'burst_integrations', array(
+	'complianz' => array(
+		'constant_or_function' => 'cmplz_version',
+		'label'                => 'Complianz GDPR/CCPA',
+	),
 	'elementor' => array(
 			'constant_or_function' => 'ELEMENTOR_VERSION',
 			'label'                => 'Elementor Website Builder',
 	),
+	'woocommerce' => array(
+		'constant_or_function' => 'WC_VERSION',
+		'label'                => 'WooCommerce',
+	),
 	'wp-rocket' => array(
 		'constant_or_function' => 'WP_ROCKET_VERSION',
 		'label'                => 'WP Rocket',
-	),
-	'complianz' => array(
-		'constant_or_function' => 'cmplz_version',
-		'label'                => 'Complianz GDPR/CCPA',
 	),
 ));
 

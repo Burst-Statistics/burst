@@ -47,9 +47,6 @@ class Menu extends Component {
                     />,
                 )
               }
-              { hasPremiumItems && !rsssl_settings.pro_plugin_active &&
-                  <div className="rsssl-premium-menu-item"><div><a target="_blank" href={rsssl_settings.upgrade_link} className='button button-black'>{__('Go Pro', 'really-simple-ssl')}</a></div></div>
-              }
             </div>
           </div>
           <div className="burst-grid-item-footer">

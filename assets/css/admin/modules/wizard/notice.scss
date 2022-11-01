@@ -11,13 +11,12 @@
       margin-top: 12px;
     }
     summary {
-
       display: grid;
       grid-template-columns: 1fr auto;
       justify-content: space-between;
       font-size: var(--rsp-fs-300);
-      font-weight: 600;
-      cursor:pointer;
+      font-weight: 500;
+      cursor: pointer;
       &::-webkit-details-marker {
         display:none;
       }
@@ -51,7 +50,8 @@
     display:flex;
     padding:10px;
     .burst-help-title{
-      font-size:18px;
+      font-size: var(--rsp-fs-400);
+      font-weight: 500;
     }
     .burst-help-control {
       margin-left:auto;

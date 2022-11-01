@@ -82,7 +82,7 @@ class SettingsGroup extends Component {
         this.upgrade = activeGroup.upgrade ? activeGroup.upgrade : this.upgrade;
         let helplinkText = activeGroup.helpLink_text ? activeGroup.helpLink_text : __("Instructions manual","burst-statistics");
         let anchor = getAnchor('main');
-        let disabledClass = disabled || networkwide_error ? 'rsssl-disabled' : '';
+        let disabledClass = disabled || networkwide_error ? 'burst-disabled' : '';
 
         return (
             <div className={"burst-grid-item burst-"+activeGroup.id + ' ' +  disabledClass}>

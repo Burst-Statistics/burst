@@ -25,7 +25,7 @@ class Header extends Component {
         return (
             <div className="burst-header-container">
                 <div className="burst-header">
-                    <img className="burst-logo" src={plugin_url+"assets/images/burst-logo.svg"} alt="Really Simple SSL logo" />
+                    <img className="burst-logo" src={plugin_url+"assets/img/burst-logo.svg"} alt="Really Simple SSL logo" />
                     <div className="burst-header-left">
                         <nav className="burst-header-menu">
                             <ul>

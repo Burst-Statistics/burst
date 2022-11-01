@@ -1,10 +1,18 @@
-.burst-status-allowed{
-  background-color:red;
-}
-.burst-status-revoked{
-  background-color:green;
-}
-
-.burst-csp-revoked >div:nth-child(-n+3) {
-  opacity:0.3;
+.burst {
+  .burst-status-allowed{
+    background-color:red;
+  }
+  .burst-status-revoked{
+    background-color:green;
+  }
+  .rdt_TableHeadRow, .rdt_TableRow{
+    @include burst-inline-block-padding;
+  }
+  .rdt_TableCol, .rdt_TableCell{
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .burst-csp-revoked >div:nth-child(-n+3) {
+    opacity:0.3;
+  }
 }

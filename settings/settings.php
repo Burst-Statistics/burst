@@ -37,6 +37,8 @@ function burst_plugin_admin_scripts() {
             'nonce' => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
             'burst_nonce' => wp_create_nonce( 'burst_save' ),
             'current_ip' => burst_get_ip_address(),
+            'user_roles' => burst_get_user_roles(),
+            'date_ranges' => burst_get_date_ranges(),
         ))
 	);
 }
@@ -47,15 +49,14 @@ function burst_add_option_menu() {
 		return;
 	}
     $menu_label = __('Statistics', 'burst-statistics');
-	$warnings      = BURST::$notices->count_plusones( array('plus_ones'=>true) );
-    $warning_count  = 1;
-	$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warning_count ) );
-    if ( $warning_count > 0 ) {
+	$warnings      = BURST()->notices->count_plusones( array('plus_ones'=>true) );
+	$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warnings ) );
+    if ( $warnings > 0 ) {
         $warning_title .= ' ' . esc_attr( burst_sprintf( '(%d plus ones)', $warnings ) );
 	    $menu_label    .=
-		    "<span class='update-plugins count-$warning_count' title='$warning_title'>
+		    "<span class='update-plugins count-$warnings' title='$warning_title'>
 			<span class='update-count'>
-				". number_format_i18n( $warning_count ) . "
+				". number_format_i18n( $warnings ) . "
 			</span>
 		</span>";
     }
@@ -144,6 +145,14 @@ function burst_settings_rest_route() {
 			return burst_user_can_view();
 		}
 	) );
+
+	register_rest_route( 'burst/v1', 'do_action/(?P<action>[a-z\_\-]+)', array(
+		'methods'  => 'POST',
+		'callback' => 'burst_do_action',
+		'permission_callback' => function () {
+			return burst_user_can_view();
+		}
+	) );
 }
 
 /**
@@ -161,10 +170,16 @@ function burst_run_test($request){
 	$state =  $state !== 'undefined' ? $state : false;
 	switch($test){
 		case 'progressdata':
-			$data = BURST::$progress->get();
+			$data = BURST()->notices->get();
 			break;
 		case 'dismiss_task':
-			$data = BURST::$progress->dismiss_task($state);
+			$data = BURST()->notices->dismiss_notice($state);
+			break;
+		case 'otherpluginsdata':
+			$data = burst_other_plugins_data();
+			break;
+		case 'tracking':
+			$data = BURST()->endpoint->get_tracking_status_and_time();
 			break;
 		default:
 			$data = apply_filters("burst_run_test", [], $test, $request);
@@ -173,6 +188,126 @@ function burst_run_test($request){
 	header( "Content-Type: application/json" );
 	echo $response;
 	exit;
+}
+
+
+/**
+ * @param WP_REST_Request $request
+ *
+ * @return void
+ */
+function burst_do_action($request){
+	if ( !burst_user_can_manage() ) {
+		return;
+	}
+
+    error_log("burst_do_action");
+	$action = sanitize_title($request->get_param('action'));
+	$data = $request->get_params();
+	$nonce = $data['nonce'];
+	error_log("do_action: $action");
+	error_log(print_r($data, true));
+	if ( !wp_verify_nonce($nonce, 'burst_save') ) {
+		return;
+	}
+
+	switch( $action ){
+		case 'plugin_actions':
+			$data = burst_plugin_actions($request);
+			break;
+		default:
+			$data = apply_filters("burst_do_action", [], $action, $request);
+	}
+	$response = json_encode( $data );
+	header( "Content-Type: application/json" );
+	echo $response;
+	exit;
+}
+
+/**
+ * Process plugin installation or activation actions
+ *
+ * @param WP_REST_Request $request
+ *
+ * @return array
+ */
+
+function burst_plugin_actions($request){
+	if ( !burst_user_can_manage() ) {
+		return [];
+	}
+	$data = $request->get_params();
+	$slug = sanitize_title($data['slug']);
+	$action = sanitize_title($data['pluginAction']);
+	$installer = new burst_installer($slug);
+	if ($action==='download') {
+		$installer->download_plugin();
+	} else if ( $action === 'activate' ) {
+		$installer->activate_plugin();
+	}
+	return burst_other_plugins_data($slug);
+}
+
+/**
+ * Get plugin data for other plugin section
+ * @param string $slug
+ * @return array
+ */
+function burst_other_plugins_data($slug=false){
+	if ( !burst_user_can_view() ) {
+		return [];
+	}
+	$plugins = array(
+		[
+			'slug' => 'burst-statistics',
+			'constant_free' => 'burst_version',
+			'wordpress_url' => 'https://wordpress.org/plugins/burst-statistics/',
+			'upgrade_url' => 'https://burst-statistics.com/?src=burst-plugin',
+			'title' => 'Burst Statistics - '. __("Self-hosted, Privacy-friendly analytics tool.", "burst-statistics"),
+		],
+		[
+			'slug' => 'complianz-gdpr',
+			'constant_free' => 'cmplz_plugin',
+			'constant_premium' => 'cmplz_premium',
+			'wordpress_url' => 'https://wordpress.org/plugins/complianz-gdpr/',
+			'upgrade_url' => 'https://complianz.io/pricing?src=burst-plugin',
+			'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst-statistics" ),
+		],
+		[
+			'slug' => 'complianz-terms-conditions',
+			'constant_free' => 'cmplz_tc_version',
+			'wordpress_url' => 'https://wordpress.org/plugins/complianz-terms-conditions/',
+			'upgrade_url' => 'https://complianz.io?src=burst-plugin',
+			'title' => 'Complianz - '. __("Terms and Conditions", "burst-statistics"),
+		],
+	);
+
+	foreach ($plugins as $index => $plugin ){
+		$installer = new burst_installer($plugin['slug']);
+		if ( isset($plugin['constant_premium']) && defined($plugin['constant_premium']) ) {
+			$plugins[ $index ]['pluginAction'] = 'installed';
+		} else if ( !$installer->plugin_is_downloaded() && !$installer->plugin_is_activated() ) {
+			$plugins[$index]['pluginAction'] = 'download';
+		} else if ( $installer->plugin_is_downloaded() && !$installer->plugin_is_activated() ) {
+			$plugins[ $index ]['pluginAction'] = 'activate';
+		} else {
+			if (isset($plugin['constant_premium']) ) {
+				$plugins[$index]['pluginAction'] = 'upgrade-to-premium';
+			} else {
+				$plugins[ $index ]['pluginAction'] = 'installed';
+			}
+		}
+	}
+
+	if ( $slug ) {
+		foreach ($plugins as $key=> $plugin) {
+			if ($plugin['slug']===$slug){
+				return $plugin;
+			}
+		}
+	}
+	return $plugins;
+
 }
 
 /**
@@ -184,37 +319,37 @@ function burst_get_data($request){
 	if ( ! burst_user_can_view() ) {
 		return;
 	}
-	error_log(print_r($request->get_params(), true));
 	$type = sanitize_title($request->get_param('type'));
     $args = [
-            'date_start' => BURST::$statistics->convert_date_to_utc( $request->get_param('date_start') . ' 00:00:00'), // add 00:00:00 to date,
-            'date_end' => BURST::$statistics->convert_date_to_utc($request->get_param('date_end') . ' 23:59:59'), // add 23:59:59 to date
+            'date_start' => BURST()->statistics->convert_date_to_utc( $request->get_param('date_start') . ' 00:00:00'), // add 00:00:00 to date,
+            'date_end' => BURST()->statistics->convert_date_to_utc($request->get_param('date_end') . ' 23:59:59'), // add 23:59:59 to date
+            'date_range' => burst_sanitize_date_range($request->get_param('date_range')),
     ];
     $request_args = json_decode($request->get_param('args'), true);
 	$args['metrics'] = $request_args['metrics'] ?? [];
 	switch($type){
 		case 'live':
-			$data = BURST::$statistics->get_live_data($args);
+			$data = BURST()->statistics->get_live_data($args);
 			break;
 		case 'today':
-			$data = BURST::$statistics->get_today_data($args);
+			$data = BURST()->statistics->get_today_data($args);
 			break;
 		case 'insights':
             $args['interval'] = sanitize_title($request_args['interval']);
-			$data = BURST::$statistics->get_insights_data($args);
+			$data = BURST()->statistics->get_insights_data($args);
 			break;
 		case 'pages':
-			$data = BURST::$statistics->get_pages_data($args);
+			$data = BURST()->statistics->get_pages_data($args);
 			break;
 
 		case 'referrers':
-			$data = BURST::$statistics->get_referrers_data($args);
+			$data = BURST()->statistics->get_referrers_data($args);
 			break;
 		case 'compare':
-			$data = BURST::$statistics->get_compare_data($args);
+			$data = BURST()->statistics->get_compare_data($args);
 			break;
 		case 'devices':
-			$data = BURST::$statistics->get_devices_data($args);
+			$data = BURST()->statistics->get_devices_data($args);
 			break;
 		default:
 			$data = apply_filters("burst_get_data", [], $type, $request);
@@ -243,6 +378,8 @@ function burst_sanitize_field_type( $type ) {
 		'number',
 		'email',
 		'select',
+        'ip_blocklist',
+        'user_role_blocklist',
 	];
 	if ( in_array( $type, $types ) ) {
 		return $type;
@@ -301,11 +438,8 @@ function burst_rest_api_fields_set( $request ) {
 		$fields[$index] = $field;
 	}
 
-	if ( is_multisite() && burst_is_networkwide_active() ) {
-		$options = get_site_option( 'burst_options_settings', [] );
-	} else {
-		$options = get_option( 'burst_options_settings', [] );
-	}
+    $options = get_option( 'burst_options_settings', [] );
+
 
 	//build a new options array
 	foreach ( $fields as $field ) {
@@ -328,7 +462,7 @@ function burst_rest_api_fields_set( $request ) {
 	do_action('burst_after_saved_fields', $fields );
 	$output   = [
 		'success' => true,
-		'progress' => BURST::$progress->get(),
+		'progress' => BURST()->notices->get(),
 		'fields' => burst_fields(true),
 	];
 	$response = json_encode( $output );
@@ -364,11 +498,7 @@ function burst_update_option( $name, $value ) {
 		error_log("exiting ".$name." has not existing type ");
 		return;
 	}
-	if ( is_multisite() && burst_is_networkwide_active() ) {
-		$options = get_site_option( 'burst_options_settings', [] );
-	} else {
-		$options = get_option( 'burst_options_settings', [] );
-	}
+    $options = get_option( 'burst_options_settings', [] );
 	if ( !is_array($options) ) $options = [];
 	$prev_value = $options[ $name ] ?? false;
 	$name = sanitize_text_field($name);
@@ -427,7 +557,7 @@ function burst_rest_api_fields_get() {
 
 	$output['fields'] = $fields;
 	$output['menu'] = $menu;
-	$output['progress'] = BURST::$progress->get();
+	$output['progress'] = BURST()->notices->get();
 
 	$output = apply_filters('burst_rest_api_fields_get', $output);
 	$response = json_encode( $output );
@@ -509,6 +639,7 @@ function burst_sanitize_field( $value, $type, $id ) {
 		case 'textarea':
 			return sanitize_text_field( $value );
 		case 'multicheckbox':
+        case 'user_role_blocklist':
 			if ( ! is_array( $value ) ) {
 				$value = array( $value );
 			}
@@ -519,11 +650,25 @@ function burst_sanitize_field( $value, $type, $id ) {
 			return esc_url_raw( $value );
 		case 'number':
 			return intval( $value );
+		case 'ip_blocklist':
+			return burst_sanitize_ip_field( $value );
 		default:
 			return sanitize_text_field( $value );
 	}
 }
 
+function burst_sanitize_ip_field( $value ) {
+    if ( ! burst_user_can_manage() ) {
+        return false;
+    }
+
+    $ips = explode( PHP_EOL, $value );
+    $ips = array_map( 'trim', $ips ); // remove whitespace
+    $ips = array_filter( $ips ); // remove empty lines
+    $ips = array_unique( $ips ); // remove duplicates
+    $ips = array_map( 'sanitize_text_field', $ips ); // sanitize each ip
+    return implode( PHP_EOL, $ips );
+}
 //function burst_sanitize_datatable( $value, $type, $field_name ) {
 //	$possible_keys = apply_filters( "burst_datatable_datatypes_$type", [
 //		'id'     => 'string',
@@ -578,3 +723,8 @@ function burst_sanitize_field( $value, $type, $id ) {
 //
 //	return $value;
 //}
+
+function burst_get_user_roles(){
+    global $wp_roles;
+    return $wp_roles->get_names();
+}
