@@ -724,7 +724,6 @@ if( ! function_exists( 'burst_is_bf' ) ) {
 	 */
 
 	function burst_is_bf() {
-        return true;
 		if ( defined( "burst_pro_version" ) ) {
 			return false;
 		}
