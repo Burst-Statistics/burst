@@ -319,7 +319,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 			}
 
 			$warnings      = BURST::$notices->get_notices( array('plus_ones'=>true) );
-			$warning_count = (int) count( $warnings );
+			$warning_count = count( $warnings ) > 0 ? count( $warnings ) : 0;
 			$warning_title = esc_attr( burst_sprintf( '%s plugin warnings', $warning_count ) );
 			$menu_label    = __('Statistics', 'burst-statistics') .
 				"<span class='update-plugins count-$warning_count' title='$warning_title'>
