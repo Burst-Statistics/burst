@@ -22282,13 +22282,13 @@ const InsightsBlock = props => {
     datasets: [{
       label: '',
       data: [0, 0, 0, 0, 0, 0, 0],
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)'
+      borderColor: 'rgba(41, 182, 246, 1)',
+      backgroundColor: 'rgba(41, 182, 246, 0.2)'
     }, {
       label: '',
       data: [0, 0, 0, 0, 0, 0, 0],
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)'
+      borderColor: 'rgba(244, 191, 62, 1)',
+      backgroundColor: 'rgba(244, 191, 62, 0.2)'
     }]
   });
   const options = {

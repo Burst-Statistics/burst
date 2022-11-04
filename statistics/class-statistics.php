@@ -332,8 +332,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$hits = $this->get_chart_data_by_metric( $args );
 				$datasets[] = array(
 					'data' => $hits,
-					'backgroundColor' => $this->get_graph_color($metric, 'background'),
-					'borderColor' => $this->get_graph_color($metric, 'border'),
+					'backgroundColor' => $this->get_metric_color($metric, 'background'),
+					'borderColor' => $this->get_metric_color($metric, 'border'),
 					'label' => $title,
 					'fill' => 'false',
 				);
@@ -775,27 +775,23 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 * @return string
 		 */
 
-		private function get_graph_color( $metric = 'visitors', $type = 'default' ) {
+		private function get_metric_color( $metric = 'visitors', $type = 'default' ) {
 			$colors = array(
 				'visitors' => array(
 					'background' => 'rgba(41, 182, 246, 0.2)',
 					'border'     => 'rgba(41, 182, 246, 1)',
-					'default'    => 'rgba(41, 182, 246, 1)',
 				),
 				'pageviews' => array(
 					'background' => 'rgba(244, 191, 62, 0.2)',
 					'border'     => 'rgba(244, 191, 62, 1)',
-					'default'    => 'rgba(244, 191, 62, 1)',
 				),
 				'bounces' => array(
 					'background' => 'rgba(215, 38, 61, 0.2)',
 					'border'     => 'rgba(215, 38, 61, 1)',
-					'default'    => 'rgba(215, 38, 61, 1)',
 				),
 				'sessions' => array(
 					'background' => 'rgba(46, 138, 55, 0.2)',
 					'border'     => 'rgba(46, 138, 55, 1)',
-					'default'    => 'rgba(46, 138, 55, 1)',
 				),
 			);
 			if ( ! isset( $colors[ $metric ] ) ) {
