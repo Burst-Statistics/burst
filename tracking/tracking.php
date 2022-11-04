@@ -581,8 +581,8 @@ if ( ! function_exists('burst_get_blocked_ips') ) {
 		$name = 'ip_blocklist';
 		$options = get_option( 'burst_options_settings', [] );
 		$value = isset($options[$name]) ? $options[$name] : false;
-		if ( $value===false && $default!==false ) {
-			$value = $default;
+		if ( $value===false ) {
+			$value = [];
 		}
 		return $value;
 	}

@@ -19,29 +19,36 @@ const getRelativeTime = (relativeDate, date = new Date()) => {
   }
 }
 
-const getPercentage = (val, total) => {
+const getPercentage = (val, total, format = true) => {
   val = Number(val);
   total = Number(total);
   let percentage = val / total;
   if (isNaN(percentage)){
     percentage = 0;
   }
-  return new Intl.NumberFormat(
+  return format ? new Intl.NumberFormat(
       undefined,
       {
         style: 'percent',
         maximumFractionDigits: 1,
-      }).format(percentage);
+      }).format(percentage) : percentage;
 }
 
 function getChangePercentage(currValue, prevValue){
+  console.log(currValue)
+  console.log(prevValue)
   currValue = Number(currValue);
   prevValue = Number(prevValue);
+  console.log('after:')
+  console.log(currValue)
+  console.log(prevValue)
+
   let change = {}
   let percentage = (currValue - prevValue) / prevValue;
   if (isNaN(percentage)){
     percentage = 0;
   }
+  console.log(percentage)
   change.val = new Intl.NumberFormat(
       undefined,
       {
@@ -54,10 +61,10 @@ function getChangePercentage(currValue, prevValue){
   return change;
 }
 
-function getBouncePercentage(bounced_sessions, sessions){
+function getBouncePercentage(bounced_sessions, sessions, format = true){
   bounced_sessions = Number(bounced_sessions);
   sessions = Number(sessions);
-  return getPercentage(bounced_sessions, sessions + bounced_sessions);
+  return getPercentage(bounced_sessions, sessions + bounced_sessions, format);
 }
 
 function formatTime(timeInMilliSeconds = 0) {

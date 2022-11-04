@@ -224,10 +224,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						FROM $table as t
 						WHERE t.time > $start
 						  AND t.time < $end
+						  AND referrer NOT LIKE '%$site_url%'
+						  AND referrer NOT LIKE ''
 						GROUP BY title
 						ORDER BY value DESC
 					";
-
 
 				$data['referrer'] = $wpdb->get_row( $sql, ARRAY_A );
 
@@ -360,7 +361,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	        $end_diff   = $end - $diff;
 			$date_range = $args['date_range'];
 
-	        $results = $clear_cache || $date_range === 'custom' ? false : $this->get_transient('burst_compare_data_'.$date_range );
+	        $results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_compare_data_'.$date_range );
 	        if ( ! $results ) {
 		        // get current data for each metric
 		        $select  = $this->get_sql_select_for_metrics( [
@@ -437,7 +438,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		        $data['previous']['bounced_sessions'] = $prev_bounces;
 
 				$results = wp_parse_args($data, $default_data);
-		        if ($date_range !=='custom' ) $this->set_transient('burst_compare_data_'.$date_range, $results, DAY_IN_SECONDS);
+		        if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_compare_data_'.$date_range, $results, DAY_IN_SECONDS);
 	        }
 
 	        return $results;
@@ -455,7 +456,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$devices = [];
 			$date_range = $args['date_range'];
 
-			$results = $clear_cache || $date_range === 'custom' ? false : $this->get_transient('burst_devices_data_'.$date_range );
+			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_devices_data_'.$date_range );
 			if ( ! $results ) {
 
 				$from          = $this->get_sql_table();
@@ -523,7 +524,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				];
 
 				$results = wp_parse_args($devices, $default_data);
-				if ($date_range !=='custom' ) $this->set_transient('burst_devices_data_'.$date_range, $results, DAY_IN_SECONDS);
+				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_devices_data_'.$date_range, $results, DAY_IN_SECONDS);
 			}
 			return $results;
 		}
@@ -543,7 +544,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$date_end = $args['date_end'];
 			$date_range = $args['date_range'];
 
-			$results = $clear_cache || $date_range === 'custom' ? false : $this->get_transient('burst_pages_data_'.$date_range );
+			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_pages_data_'.$date_range );
 			if ( ! $results ) {
 
 				// generate columns for each metric
@@ -585,7 +586,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					"columns" => $columns,
 					"data"    => $data,
 				];
-				if ($date_range !=='custom' ) $this->set_transient('burst_pages_data_'.$date_range, $results, DAY_IN_SECONDS);
+				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_pages_data_'.$date_range, $results, DAY_IN_SECONDS);
 			}
 			return $results;
 		}
@@ -625,7 +626,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$args = wp_parse_args($args, $defaults);
 			$date_range = $args['date_range'];
 
-			$results = $clear_cache || $date_range === 'custom' ? false : $this->get_transient('burst_referrer_data_'.$date_range );
+			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_referrer_data_'.$date_range );
 
 			if ( ! $results ) {
 				$columns = [
@@ -665,7 +666,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					"columns" => $columns,
 					"data"    => $data,
 				];
-				if ($date_range !=='custom' ) $this->set_transient('burst_referrer_data_'.$date_range, $results, DAY_IN_SECONDS);
+				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_referrer_data_'.$date_range, $results, DAY_IN_SECONDS);
 			}
 
 			return $results;
@@ -723,10 +724,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
                         WHERE time > $start AND time < $end 
                         GROUP BY period order by period";
 
-			$results = $clear_cache || $date_range === 'custom' ? false: $this->get_transient('burst_insights_'.$metric.'_'.$date_range );
+			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false: $this->get_transient('burst_insights_'.$metric.'_'.$date_range );
 			if ( ! $results ) {
 				$results = $wpdb->get_results($sql);
-				if ($date_range !=='custom' ) $this->set_transient('burst_insights_'.$metric.'_'.$date_range, $results, DAY_IN_SECONDS);
+				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_insights_'.$metric.'_'.$date_range, $results, DAY_IN_SECONDS);
 			}
 
             // match results to periods
@@ -1026,7 +1027,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 'most_visited' => '',
                 'most_visited_pageviews' => '',
             );
-            $dashboard_widget = $clear_cache || $date_range === 'custom' ? false : $this->get_transient('burst_dashboard_widget_'.$date_range);
+            $dashboard_widget = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_dashboard_widget_'.$date_range);
             if ( !$dashboard_widget ) {
                 $result['visitors'] = $this->get_single_statistic('visitors', $date_start, $date_end);
                 $visitors_prev = $this->get_single_statistic('visitors', $date_start_diff, $date_end_diff);

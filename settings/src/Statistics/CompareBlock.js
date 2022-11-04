@@ -50,6 +50,19 @@ const CompareBlock = (props) => {
                         'changeStatus': change.status,
                     }
                 });
+                // Bounce rate is a bit different
+                if (key === 'bounced_sessions') {
+                    // get unformatted percentage and calculate uplift
+                    let bouncePercentage = getBouncePercentage(curr[key], curr['sessions'], false);
+                    let bouncePercentagePrev = getBouncePercentage(prev[key], prev['sessions'], false);
+                    change = getChangePercentage(bouncePercentage, bouncePercentagePrev);
+
+                    data[key].value = getBouncePercentage(curr[key], curr['sessions']);
+                    data[key].change = change.val;
+                    data[key].changeStatus = change.status;
+                    data[key].subtitle =  curr.bounced_sessions + ' ' + __('visitors bounced', 'burst-statistics');
+                    data[key].value = getBouncePercentage(curr.bounced_sessions, curr.sessions);
+                }
             }
 
             // Add subtitles and change metrics
@@ -58,8 +71,8 @@ const CompareBlock = (props) => {
             data.pageviews.subtitle = formatNumber(pageviewsPerSession) + ' ' + __('pageviews per session', 'burst-statistics');
             data.sessions.subtitle = formatTime(timePerSession) + ' ' + __('per session', 'burst-statistics');
             data.visitors.subtitle = getPercentage(curr.first_time_visitors, curr.visitors) + ' ' + __('are new visitors', 'burst-statistics');
-            data.bounced_sessions.subtitle =  curr.bounced_sessions + ' ' + __('visitors bounced', 'burst-statistics');
-            data.bounced_sessions.value = getBouncePercentage(curr.bounced_sessions, curr.sessions);
+
+
 
             setCompareData(data);
         }).catch((error) => {
