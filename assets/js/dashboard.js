@@ -26,7 +26,7 @@ jQuery(document).ready(function ($) {
     });
 
     var intervalUpdateRealTime = window.setInterval(function(){
-        // updateRealTimeVisits();
+        updateRealTimeVisits();
     }, 2000);
 
     let realTimeNumber = $('.burst-real-time').find('.block__big-number__right h1');
@@ -47,7 +47,7 @@ jQuery(document).ready(function ($) {
     }
 
     var intervalUpdateToday = window.setInterval(function(){
-        // updateTodayStatistics();
+        updateTodayStatistics();
     }, 10000);
 
     let todayBlock = $('.burst-real-time').find('.burst-grid-content');
