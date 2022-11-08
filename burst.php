@@ -66,7 +66,6 @@ class BURST {
 	public $wizard;
 	public $review;
 	public $config;
-	public $tour;
 	public $notices;
 
 	private function __construct() {
@@ -88,7 +87,6 @@ class BURST {
 			if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() ) {
 				self::$instance->admin   = new burst_admin();
 				self::$instance->review  = new burst_review();
-				self::$instance->tour    = new burst_tour();
 				self::$instance->notices = new burst_notices();
 			}
 			self::$instance->hooks();
@@ -148,7 +146,6 @@ class BURST {
 			require_once( burst_path . '/class-admin.php' );
 			require_once( burst_path . 'settings/settings.php' );
 			require_once( burst_path . '/class-review.php' );
-			require_once( burst_path . '/shepherd/tour.php' );
 			require_once( burst_path . '/class-notices.php' );
 			require_once( burst_path . 'class-installer.php');
 			if ( isset($_GET['install_pro'])) {
@@ -190,19 +187,6 @@ if ( ! function_exists( 'burst_set_activation_time_stamp' ) ) {
 	}
 
 	register_activation_hook( __FILE__, 'burst_set_activation_time_stamp' );
-}
-
-if ( ! function_exists( 'burst_start_tour' ) ) {
-	/**
-	 * Start the tour of the plugin on activation
-	 */
-	function burst_start_tour() {
-		if ( ! get_site_option( 'burst_tour_shown_once' ) ) {
-			update_site_option( 'burst_tour_started', true );
-		}
-	}
-
-	register_activation_hook( __FILE__, 'burst_start_tour' );
 }
 
 if ( !function_exists( 'burst_clear_scheduled_hooks' )) {
