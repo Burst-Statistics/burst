@@ -63,22 +63,6 @@ if ( !class_exists('burst_installer') ){
         }
 
         /**
-         * Cancel shepherd tour
-         * @return void
-         */
-        public function cancel_tour(){
-            $prefixes = [
-                'burst-statistics' => 'burst',
-                'complianz-gdpr' => 'cmplz',
-                'complianz-terms-conditions' => 'cmplz_tc',
-            ];
-            $prefix = $prefixes[$this->slug];
-            update_site_option( $prefix.'_tour_started', false );
-            update_site_option( $prefix.'_tour_shown_once', true );
-	        delete_transient($prefix.'_redirect_to_settings');
-        }
-
-        /**
          * Download the plugin
          * @return bool
          */

@@ -806,7 +806,6 @@ if ( ! class_exists( "burst_admin" ) ) {
                 'burst_activation_time',
                 'burst-current-version',
                 'burst_review_notice_shown',
-                'burst_tour_shown_once',
                 'burst_stats_db_version',
                 'burst_sessions_db_version',
                 'burst_goals_db_version',
