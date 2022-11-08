@@ -120,7 +120,6 @@ class ProgressBlock extends Component {
             filter = this.props.BlockProps.filterStatus;
         }
         let notices = this.notices;
-        console.log(notices);
         if ( filter==='remaining' ) {
             notices = notices.filter(function (notice) {
                 return notice.output.status==='open';

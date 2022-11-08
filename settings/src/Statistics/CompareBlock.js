@@ -19,6 +19,7 @@ const CompareBlock = (props) => {
         'visitors': __('Visitors', 'burst-statistics'),
         'bounced_sessions': __('Bounce Rate', 'burst-statistics'),
     };
+    let [loading, setLoading] = useState(true);
     let defaultData = {};
     // loop through metrics and set default values
     Object.keys(metrics).forEach(function (key) {
@@ -72,8 +73,6 @@ const CompareBlock = (props) => {
             data.sessions.subtitle = formatTime(timePerSession) + ' ' + __('per session', 'burst-statistics');
             data.visitors.subtitle = getPercentage(curr.first_time_visitors, curr.visitors) + ' ' + __('are new visitors', 'burst-statistics');
 
-
-
             setCompareData(data);
         }).catch((error) => {
             console.error(error);
@@ -82,35 +81,36 @@ const CompareBlock = (props) => {
     )
 
     function getCompareData(startDate, endDate, range, args){
+        setLoading(true);
         return burst_api.getData('compare', startDate, endDate, range, args).then( ( response ) => {
+            setLoading(false);
             return response.data;
         });
     }
 
+    let loadingClass = loading ? 'burst-loading' : '';
     if (compare) {
         return(
                 <>
-                 {Object.keys(compare).map((key, i) => {
-                    let m = compare[key];
-                    return <div className="block__explanation-and-stats" key={i}>
-                        <div className="block__explanation-and-stats__left">
-                            <h3 className="burst-h5">{m.title}</h3>
-                            <p>{m.subtitle}</p>
-                        </div>
-                        <div className="block__explanation-and-stats__right">
-                            <span className="burst-h4">{m.value}</span>
-                            <p className={'uplift ' + m.changeStatus}>
-                                {m.change}
-                            </p>
-                        </div>
+                    <div className={"burst-loading-container " + loadingClass}>
+                        {Object.keys(compare).map((key, i) => {
+                            let m = compare[key];
+                            return <div className="block__explanation-and-stats" key={i}>
+                                <div className="block__explanation-and-stats__left">
+                                    <h3 className="burst-h5">{m.title}</h3>
+                                    <p>{m.subtitle}</p>
+                                </div>
+                                <div className="block__explanation-and-stats__right">
+                                    <span className="burst-h4">{m.value}</span>
+                                    <p className={'uplift ' + m.changeStatus}>
+                                        {m.change}
+                                    </p>
+                                </div>
+                            </div>
+                        })}
                     </div>
-                 })}
                 </>
         );
-    } else {
-        return (
-            <Placeholder lines = '10'/>
-        )
     }
 }
 

@@ -35,20 +35,14 @@ const getPercentage = (val, total, format = true) => {
 }
 
 function getChangePercentage(currValue, prevValue){
-  console.log(currValue)
-  console.log(prevValue)
   currValue = Number(currValue);
   prevValue = Number(prevValue);
-  console.log('after:')
-  console.log(currValue)
-  console.log(prevValue)
 
   let change = {}
   let percentage = (currValue - prevValue) / prevValue;
   if (isNaN(percentage)){
     percentage = 0;
   }
-  console.log(percentage)
   change.val = new Intl.NumberFormat(
       undefined,
       {

@@ -20,7 +20,6 @@ class IpBlock extends Component {
 
 
   onClickAddIPHandler(e) {
-    console.log(e);
     let input = document.getElementById('ip_address');
     let inputValue = input.value;
     let ip = burst_settings.current_ip;

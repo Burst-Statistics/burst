@@ -12,9 +12,6 @@ import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
 import {formatTime, formatNumber} from '../utils/formatting';
 
 const TodayBlock = () => {
-    // const dateRange = props.dateRange;
-    // const startDate = dateRange.startDate;
-    // const endDate = dateRange.endDate;
     const [today, setTodayData] = useState(
         {
             live: {

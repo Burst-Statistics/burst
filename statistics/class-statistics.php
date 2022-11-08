@@ -161,7 +161,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			$start = $args['date_start'];
 			$end   = $args['date_end'];
-			$table = $this->get_sql_table();
+			$table = $this->get_sql_table($start, $end);
 
 			// get real time visitors
 			$db_name               = $wpdb->prefix . 'burst_statistics';
@@ -190,9 +190,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'avg_time_on_page',
 				] );
 				$sql                         = "SELECT $select
-						FROM $table as t
-						WHERE t.time > $start
-						  AND t.time < $end";
+						FROM $table as t";
 				$results                     = $wpdb->get_results( $sql );
 				$data['today']['value']      = $results[0]->visitors > 0 ? $results[0]->visitors : 0;
 				$data['pageviews']['value']  = $results[0]->pageviews > 0 ? $results[0]->pageviews : 0;
@@ -202,8 +200,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				// get most visited page
 				$sql                = "SELECT page_url as title, count(*) as value
 						FROM $table as t
-						WHERE t.time > $start
-						  AND t.time < $end
 						GROUP BY title
 						ORDER BY value DESC
 					";
@@ -212,23 +208,20 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$direct_text = "'" . __( "Direct", "burst-statistics" ) . "'";
 				$remove      = array( "http://www.", "https://www.", "http://", "https://" );
 				$site_url    = str_replace( $remove, "", site_url() );
-
-
 				// get top referrer
 				$sql = "SELECT count(referrer) as value,
-							 CASE
-	                            WHEN referrer = '/' THEN $direct_text
-							     WHEN referrer = '' THEN $direct_text
-	                            ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3)) 
-	                        END as title
-						FROM $table as t
-						WHERE t.time > $start
-						  AND t.time < $end
-						  AND referrer NOT LIKE '%$site_url%'
-						  AND referrer NOT LIKE ''
-						GROUP BY title
-						ORDER BY value DESC
-					";
+                            CASE
+                                WHEN referrer = '/' THEN $direct_text
+                                WHEN referrer = '' THEN $direct_text
+                                ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3))
+                            END as title
+                        FROM $table as t
+                        WHERE referrer IS NOT NULL 
+                          AND referrer <> ''
+                          AND referrer NOT LIKE '%$site_url%'
+                        GROUP BY referrer
+                        ORDER BY value DESC
+                        LIMIT 1";
 
 				$data['referrer'] = $wpdb->get_row( $sql, ARRAY_A );
 
@@ -371,10 +364,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			        'first_time_visitors',
 			        'avg_time_on_page',
 		        ] );
-		        $from    = $this->get_sql_table();
+		        $from    = $this->get_sql_table($start, $end);
 		        $sql     = "SELECT $select
-									FROM $from as stats
-									WHERE time > $start AND time < $end";
+									FROM $from as stats";
 		        $current = $wpdb->get_results( $sql, 'ARRAY_A' );
 		        $current = $current[0];
 		        // loop through array and convert to ints
@@ -383,10 +375,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		        }
 
 		        // get current data for bounces
-		        $from         = $this->get_sql_table_bounces();
+		        $from         = $this->get_sql_table_bounces($start, $end);
 		        $sql          = "SELECT count(*) as bounced_sessions
-									FROM $from as stats
-									WHERE time > $start AND time < $end";
+									FROM $from as stats";
 		        $curr_bounces = (int) $wpdb->get_var( $sql );
 
 		        // get previous data for each metric
@@ -395,10 +386,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			        'pageviews',
 			        'sessions',
 		        ] );
-		        $from     = $this->get_sql_table();
+		        $from     = $this->get_sql_table($start_diff, $end_diff);
 		        $sql      = "SELECT $select
-									FROM $from as stats
-									WHERE time > $start_diff AND time < $end_diff";
+									FROM $from as stats";
 		        $previous = $wpdb->get_results( $sql, 'ARRAY_A' );
 		        $previous = $previous[0];
 
@@ -407,10 +397,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		        }
 
 		        // get previous data for bounces
-		        $from         = $this->get_sql_table_bounces();
+		        $from         = $this->get_sql_table_bounces($start_diff, $end_diff);
 		        $sql          = "SELECT count(*) as bounced_sessions
-									FROM $from as stats
-									WHERE time > $start_diff AND time < $end_diff";
+									FROM $from as stats";
 		        $prev_bounces = (int) $wpdb->get_var( $sql );
 
 		        // setup defaults
@@ -458,12 +447,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_devices_data_'.$date_range );
 			if ( ! $results ) {
-
-				$from          = $this->get_sql_table();
+				$from          = $this->get_sql_table($start, $end);
 				$sql           = "SELECT device,
 	                    COUNT(device) AS count
 	                    FROM $from as stats
-						WHERE time > $start AND time < $end AND device IS NOT NULL AND device <> ''
+						WHERE device IS NOT NULL AND device <> ''
 	                    GROUP BY device";
 				$devicesResult = $wpdb->get_results( $sql, ARRAY_A );
 
@@ -471,15 +459,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				// loop through results and add count to array
 				foreach ( $devicesResult as $key => $data ) {
 					$name = $data['device'];
-					//
 					$device_sql = " device='$name' ";
 					$sql        = "SELECT browser from (SELECT browser, COUNT(*) as count, device
-	                        FROM ($from) as without_bounces where (time > $start AND time < $end) OR device IS NOT NULL AND device <> '' AND browser is not null
+	                        FROM ($from) as without_bounces WHERE device IS NOT NULL AND device <> '' AND browser is not null
 	                        GROUP BY browser, device ) as grouped_devices where $device_sql order by count desc limit 1";
 					$browser    = $wpdb->get_var( $sql );
 
 					$sql = "SELECT platform from (SELECT platform, COUNT(*) as count, device
-	                        FROM ($from) as without_bounces where (time > $start AND time < $end) OR device IS NOT NULL AND device <> '' AND platform is not null
+	                        FROM ($from) as without_bounces where device IS NOT NULL AND device <> '' AND platform is not null
 	                        GROUP BY platform, device ) as grouped_devices where $device_sql order by count desc limit 1";
 					$os  = $wpdb->get_var( $sql );
 
@@ -604,13 +591,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $end        	= (int) $args['date_end'];
 			$metric     	= $this->sanitize_metric($args['metric']);
 
-
 			$select 	    = $this->get_sql_select_for_metric($metric);
-			$from 			= $this->get_sql_table();
+			$from 			= $this->get_sql_table($start, $end);
 			$sql 			= "SELECT $select as $metric,
 								page_url as page
 								FROM $from as stats
-								WHERE time > $start AND time < $end 
 								GROUP BY page order by $metric desc";
 
 			return $wpdb->get_results($sql);
@@ -652,14 +637,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$remove      = array( "http://www.", "https://www.", "http://", "https://" );
 				$site_url    = str_replace( $remove, "", site_url() );
 
-				$table = $this->get_sql_table();
+				$table = $this->get_sql_table($start, $end);
 				$sql   = "SELECT count(referrer) as count,
 									 CASE
 	                                    WHEN referrer = '/' THEN $direct_text
 	                                    ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3)) 
 	                                END as referrer
 									FROM $table as stats
-									WHERE time > $start AND time < $end AND referrer NOT LIKE '%$site_url%' AND referrer NOT LIKE ''
+									WHERE referrer NOT LIKE '%$site_url%' AND referrer NOT LIKE ''
 									GROUP BY referrer order by count desc";
 				$data  = $wpdb->get_results( $sql );
 				$results = [
@@ -712,16 +697,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $sqlperiod = "DATE_FORMAT(FROM_UNIXTIME(time), '" . $sqlformat . "')";
             if ( $metric === 'bounces' ) {
                 $select = 'count(*)';
-			    $from = $this->get_sql_table_bounces();
+			    $from = $this->get_sql_table_bounces($start, $end);
             } else {
                 $select= $this->get_sql_select_for_metric($metric);
-			    $from = $this->get_sql_table();
-            }
-
+			    $from = $this->get_sql_table($start, $end);
+			}
             $sql = "SELECT $select as hit_count,
                         $sqlperiod as period
                         FROM $from as stats
-                        WHERE time > $start AND time < $end 
                         GROUP BY period order by period";
 
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false: $this->get_transient('burst_insights_'.$metric.'_'.$date_range );
@@ -814,51 +797,50 @@ if ( ! class_exists( "burst_statistics" ) ) {
         public function get_single_statistic($statistic = 'pageviews' , $date_start = 0, $date_end = 0, $column = false, $column_value = false){
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
-            $statistics_without_bounces = $this->get_sql_table();
+	        $start = (int) $date_start;
+	        $end = (int )$date_end;
+            $statistics_without_bounces = $this->get_sql_table($start, $end);
             $table_name = "($statistics_without_bounces) as without_bounces";
-            $where_page_url = $column && $column_value ? "and " . $column . " = '" . $column_value . "'" : "";
+            $where_page_url = $column && $column_value ? "WHERE " . $column . " = '" . $column_value . "'" : "";
             if ($column == 'referrer' && $column_value && $column_value !== '/'){
-                $where_page_url = "and " . $column . " like '%" . $column_value . "%'";
+                $where_page_url = "WHERE " . $column . " like '%" . $column_value . "%'";
             }
             $response = [ 'val' => 0 ];
-	        $date_start = intval($date_start);
-			$date_end = intval($date_end);
             switch ($statistic) {
                 case 'visitors':
                     $sql = "SELECT COUNT( DISTINCT( uid ) ) AS visitors  
                             FROM $table_name
-                            WHERE time > $date_start AND time < $date_end $where_page_url";
+                            $where_page_url";
                     $response = $wpdb->get_var( $sql );
                     break;
                 case 'time_total':
                     $sql = "SELECT SUM( time_on_page ) AS time_on_page
                             FROM $table_name
-                            WHERE time > $date_start AND time < $date_end $where_page_url";
+                          	$where_page_url";
                     $response = $wpdb->get_var( $sql );
                     break;
                 case 'time_per_session':
                     $sql = "SELECT COUNT( DISTINCT( session_id ) ) AS sessions,
                             COUNT( ID ) as pageviews,
                             AVG( time_on_page ) AS time_on_page
-                            FROM $table_name
-                            WHERE time > $date_start AND time < $date_end";
+                            FROM $table_name";
                     $response = $wpdb->get_row( $sql, ARRAY_A );
                     $response = is_array($response) ? $this->calculate_time_per_session($response['pageviews'], $response['sessions'], $response['time_on_page']) : 0;
                     break;
                 case 'referrer':
                     $direct_text =  "'". __("Direct", "burst-statistics")."'";
-                    $sql = $wpdb->prepare("SELECT 
+                    $sql = "SELECT 
                                 CASE
                                     WHEN referrer = '/' THEN $direct_text
                                     ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3))
                                 END as val,
                                 COUNT(referrer) AS referrer_count
                             FROM $table_name
-                            WHERE time>%s AND time<%s AND referrer IS NOT NULL AND referrer <> '' $where_page_url
+                            WHERE referrer IS NOT NULL AND referrer <> '' $where_page_url
                             GROUP BY referrer
                             ORDER BY referrer_count DESC
                             LIMIT 1
-                            ", $date_start, $date_end);
+                            ";
 
                     $response = $wpdb->get_var( $sql );
                     if (!$response) {
@@ -867,18 +849,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     break;
                 case 'page_url':
                     $homepage_text =  "'". __("Homepage", "burst-statistics")."'";
-                    $sql = $wpdb->prepare("SELECT 
+                    $sql = "SELECT 
                                  CASE 
                                     WHEN page_url = '/' THEN $homepage_text
                                     ELSE page_url
                                 END as val,
                                 COUNT(page_url) AS page_url_count
                             FROM $table_name
-                            WHERE time>%s AND time<%s AND page_url IS NOT NULL AND page_url <> ''
+                            WHERE page_url IS NOT NULL AND page_url <> ''
                             GROUP BY page_url
                             ORDER BY page_url_count DESC
-                            LIMIT 1
-                            ", $date_start, $date_end);
+                            LIMIT 1";
 
                     $response = $wpdb->get_var( $sql );
                     if (!$response) {
@@ -889,7 +870,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     $sql = "SELECT
                             COUNT( ID ) as pageviews
                             FROM $table_name
-                            WHERE time > $date_start AND time < $date_end $where_page_url";
+                         	$where_page_url";
                     $response = $wpdb->get_var( $sql );
                     break;
             } // switch closure
@@ -1037,7 +1018,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
                 $result['top_referrer'] = $this->get_single_statistic('referrer', $date_start, $date_end);
                 if ( !$result['top_referrer'] ) $result['top_referrer'] = __('No referrers', 'burst-statistics');
-                if( $result['top_referrer'] === __("Direct", "burst-statistics") ) {
+                if( $result['top_referrer'] === __("Direct", "burst-statistics") || $result['top_referrer'] === __('No referrers', 'burst-statistics') ) {
                     $result['top_referrer_pageviews'] = $this->get_single_statistic('pageviews', $date_start, $date_end, 'referrer', '/');
                 } else {
                     $result['top_referrer_pageviews'] = $this->get_single_statistic('pageviews', $date_start, $date_end, 'referrer', $result['top_referrer']);
@@ -1083,16 +1064,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
          *
          * @return string
          */
-        function get_sql_table() {
+        function get_sql_table($start, $end) {
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
             $time_bounce = apply_filters('burst_bounce_time', 5000);
 	        $bounce = "select session_id
 						from $table_name
+						WHERE time > $start AND time < $end
 						GROUP BY session_id
 						having count(*) = 1
 						   and sum(time_on_page) < $time_bounce";
-            $statistics_without_bounces = "(SELECT * FROM $table_name WHERE session_id NOT IN ($bounce))";
+            $statistics_without_bounces = "(SELECT * FROM $table_name WHERE session_id NOT IN ($bounce) and time > $start AND time < $end)";
             return $statistics_without_bounces;
         }
 
@@ -1101,16 +1083,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 *
 		 * @return string
 		 */
-		function get_sql_table_bounces() {
+		function get_sql_table_bounces($start, $end) {
             global $wpdb;
             $table_name = $wpdb->prefix . 'burst_statistics';
 			$time_bounce = apply_filters('burst_bounce_time', 5000);
 			$bounce = "select session_id
 						from $table_name
+						WHERE time > $start AND time < $end
 						GROUP BY session_id
 						having count(*) = 1
 						   and sum(time_on_page) < $time_bounce";
-			$statistics_without_bounces = "(SELECT * FROM $table_name WHERE session_id IN ($bounce))";
+			$statistics_without_bounces = "(SELECT * FROM $table_name WHERE session_id IN ($bounce) and time > $start AND time < $end)";
 			return $statistics_without_bounces;
 		}
 

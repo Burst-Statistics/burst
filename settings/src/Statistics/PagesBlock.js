@@ -14,7 +14,7 @@ const PagesBlock = (props) => {
     const range = dateRange.range;
     const [pages, setPagesData] = useState([]);
     const [metrics, setmetrics] = useState(['pageviews']); // as of now we only support 1 metric
-
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         let args = {
             metrics: metrics,
@@ -42,27 +42,32 @@ const PagesBlock = (props) => {
     )
 
     function getPagesData(startDate, endDate, args){
+        setLoading(true);
         return burst_api.getData('pages', startDate, endDate, range, args).then( ( response ) => {
+            setLoading(false);
             return response.data;
         });
     }
 
+    let loadingClass = loading ? 'burst-loading' : '';
     return(
-        <DataTable
-            columns={pages.columns}
-            data={pages.data}
-            defaultSortFieldId={1}
-            pagination
-            paginationRowsPerPageOptions={[10, 25, 50, 100, 200]}
-            paginationPerPage={10}
-            paginationComponentOptions={{
-                rowsPerPageText: '',
-                rangeSeparatorText: __('of', 'burst-statistics'),
-                noRowsPerPage: false,
-                selectAllRowsItem: true,
-                selectAllRowsItemText: __('All', 'burst-statistics')}}
-            noDataComponent={<EmptyDataTable></EmptyDataTable>}
-        />
+        <div className={"burst-loading-container " + loadingClass}>
+            <DataTable
+                columns={pages.columns}
+                data={pages.data}
+                defaultSortFieldId={1}
+                pagination
+                paginationRowsPerPageOptions={[10, 25, 50, 100, 200]}
+                paginationPerPage={10}
+                paginationComponentOptions={{
+                    rowsPerPageText: '',
+                    rangeSeparatorText: __('of', 'burst-statistics'),
+                    noRowsPerPage: false,
+                    selectAllRowsItem: true,
+                    selectAllRowsItemText: __('All', 'burst-statistics')}}
+                noDataComponent={<EmptyDataTable></EmptyDataTable>}
+            />
+        </div>
     );
     
 }

@@ -7,6 +7,7 @@ import SettingsPage from "./Settings/SettingsPage";
 import Modal from "./Modal/Modal";
 import PagePlaceholder from './Placeholder/PagePlaceholder';
 import getAnchor from "./utils/getAnchor";
+import Tour from "./Tour";
 import {__} from "@wordpress/i18n";
 import {format, subDays, addDays, startOfDay, endOfDay, getUnixTime, parse} from 'date-fns'
 
@@ -336,6 +337,7 @@ class Page extends Component {
                                 setDateRange = {this.setDateRange}
                                 fields={fields} />
                             <div className={"burst-content-area burst-grid burst-" + selectedMainMenuItem}>
+                                { ! burst_settings.tour_shown && <Tour /> }
                                 { selectedMainMenuItem === 'dashboard' &&
                                     <DashboardPage
                                         isAPILoaded={isAPILoaded}

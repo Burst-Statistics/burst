@@ -1,0 +1,51 @@
+.burst-shepherd{
+  background: var(--rsp-background-block-color);
+  box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%);
+  width: min(45ch, 100%);
+  border-radius: var(--rsp-border-radius-input);
+  z-index: 999;
+
+  .shepherd-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 30px;
+    padding-inline: var(--rsp-spacing-s);
+    padding-block: var(--rsp-spacing-xs);
+    .shepherd-title{
+        margin: 0;
+    }
+    button.shepherd-cancel-icon{
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      color: var(--rsp-color-text);
+      font-size: 20px;
+      &:hover{
+        color: var(--rsp-color-text-hover);
+      }
+    }
+  }
+  .shepherd-text{
+    padding-inline: var(--rsp-spacing-s);
+    padding-block: var(--rsp-spacing-xxs);
+    p {
+      margin: 0;
+      margin-top: var(--rsp-spacing-xxs);
+      color: var(--rsp-text-color);
+      &:first-of-type{
+        margin-top: 0;
+      }
+    }
+  }
+  .shepherd-footer{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 30px;
+    gap: var(--rsp-spacing-xs);
+    padding-inline: var(--rsp-spacing-s);
+    padding-block: var(--rsp-spacing-xs);
+  }
+}

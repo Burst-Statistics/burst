@@ -33,18 +33,19 @@ const InsightsBlock  = (props) => {
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
     const range = dateRange.range;
+    const [loading, setLoading] = useState(true);
     const [chartData, setChartData] = useState(
         {
             labels: ['', '', '', '', '', '', ''],
             datasets: [
               {
-                label: '',
+                label: __('Unique visitors', 'burst-statistics'),
                 data: [0, 0, 0, 0, 0, 0, 0],
                 borderColor: 'rgba(41, 182, 246, 1)',
                 backgroundColor: 'rgba(41, 182, 246, 0.2)',
               },
               {
-                label: '',
+                label: __('Pageviews', 'burst-statistics'),
                 data: [0, 0, 0, 0, 0, 0, 0],
                 borderColor: 'rgba(244, 191, 62, 1)',
                 backgroundColor: 'rgba(244, 191, 62, 0.2)',
@@ -112,14 +113,16 @@ const InsightsBlock  = (props) => {
       }, [dateRange, props.insightsMetrics]);
 
     function getInsightsData(startDate, endDate, args){
+      setLoading(true);
         return burst_api.getData('insights', startDate, endDate, range, args).then( ( response ) => {
+            setLoading(false);
             return response.data;
         });
     }
     
-
+    let loadingClass = loading ? 'burst-loading' : '';
     return(
-        <Line options={options} data={chartData} />
+          <Line className={"burst-loading-container " + loadingClass} options={options} data={chartData} />
     );
 }
 

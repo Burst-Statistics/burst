@@ -163,7 +163,7 @@ class SettingsPage extends Component {
     showSavedSettingsNotice(){
         const notice = dispatch('core/notices').createNotice(
             'success',
-            __( 'Settings Saved', 'burst-statistics' ),
+            __( 'Settings saved', 'burst-statistics' ),
             {
                 __unstableHTML: true,
                 id: 'burst_settings_saved',
@@ -185,7 +185,7 @@ class SettingsPage extends Component {
                 saveFields.push(field);
             }
         }
-
+        console.log(saveFields);
         burst_api.setFields(saveFields).then(( response ) => {
             this.changedFields = [];
             this.setState({
@@ -216,7 +216,6 @@ class SettingsPage extends Component {
                     thisConditionApplies = this.validateConditions(subConditionsArray, fields)
                 } else {
                     for (let conditionField in subConditionsArray) {
-                        console.log("index of ! "+conditionField.indexOf('!'));
                         let invert = conditionField.indexOf('!')===0;
                         if ( subConditionsArray.hasOwnProperty(conditionField) ) {
                             let conditionValue = subConditionsArray[conditionField];

@@ -12,6 +12,7 @@ const ReferrersBlock = (props) => {
     const startDate = dateRange.startDate;
     const endDate = dateRange.endDate;
     const range = dateRange.range;
+    let [loading, setLoading] = useState(true);
     const [referrers, setReferrersData] = useState([]);
     const [metrics, setmetrics] = useState(['visitors']); // as of now we only support 1 metric
 
@@ -34,28 +35,32 @@ const ReferrersBlock = (props) => {
     )
 
     function getReferrersData(startDate, endDate, args){
+        setLoading(true);
         return burst_api.getData('referrers', startDate, endDate, range, args).then( ( response ) => {
+            setLoading(false);
             return response.data;
         });
     }
 
-
+    let loadingClass = loading ? 'burst-loading' : '';
     return(
-        <DataTable
-            columns={referrers.columns}
-            data={referrers.data}
-            defaultSortFieldId={1}
-            pagination
-            paginationRowsPerPageOptions={[10, 25, 50, 100, 200]}
-            paginationPerPage={10}
-            paginationComponentOptions={{
-                rowsPerPageText: '',
-                rangeSeparatorText: __('of', 'burst-statistics'),
-                noRowsPerPage: false,
-                selectAllRowsItem: true,
-                selectAllRowsItemText: __('All', 'burst-statistics')}}
-            noDataComponent={<EmptyDataTable></EmptyDataTable>}
-        />
+        <div className={"burst-loading-container " + loadingClass}>
+            <DataTable
+                columns={referrers.columns}
+                data={referrers.data}
+                defaultSortFieldId={1}
+                pagination
+                paginationRowsPerPageOptions={[10, 25, 50, 100, 200]}
+                paginationPerPage={10}
+                paginationComponentOptions={{
+                    rowsPerPageText: '',
+                    rangeSeparatorText: __('of', 'burst-statistics'),
+                    noRowsPerPage: false,
+                    selectAllRowsItem: true,
+                    selectAllRowsItemText: __('All', 'burst-statistics')}}
+                noDataComponent={<EmptyDataTable></EmptyDataTable>}
+            />
+        </div>
     );
     
 }

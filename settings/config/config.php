@@ -76,6 +76,15 @@ function burst_fields( $load_values = true ) {
 			'default'  => false,
 		],
 		[
+			'id'       => 'burst_tour_shown_once',
+			'menu_id'  => 'general',
+			'group_id' => 'general',
+			'type'     => 'hidden',
+			'label'    => '',
+			'disabled' => false,
+			'default'  => false,
+		],
+		[
 			'id'       => 'enable_turbo_mode',
 			'menu_id'  => 'general',
 			'group_id' => 'general',

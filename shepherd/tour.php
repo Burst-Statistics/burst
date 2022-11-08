@@ -52,7 +52,7 @@ class burst_tour {
 				),
 				array(
 					'title'  => __( 'Your dashboard', 'burst-statistics' ),
-					'text'   => __( "This is your Dashboard. This will give you an overview of notices, real time data, and settings", 'burst-statistics' ),
+					'text'   => __( "This is your Dashboard. This will give you an overview of notices, real time data, and goals", 'burst-statistics' ),
 					'link'   => admin_url( "index.php?page=burst" ),
 					'attach' => '.burst-progress',
 					'position' => 'right',

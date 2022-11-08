@@ -39,8 +39,6 @@ class UserRoleBlock extends Component {
     let userRoles = burst_settings.user_roles ? burst_settings.user_roles : [];
     let selectedUserRoles = fieldValue ? fieldValue : ['administrator'];
     let radioValue = this.state.radioValue;
-
-    console.log(selectedUserRoles)
     return (
         <>
           <label>{field.label}</label>

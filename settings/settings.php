@@ -39,6 +39,7 @@ function burst_plugin_admin_scripts() {
             'current_ip' => burst_get_ip_address(),
             'user_roles' => burst_get_user_roles(),
             'date_ranges' => burst_get_date_ranges(),
+            'tour_shown' => burst_get_option('burst_tour_shown_once'),
         ))
 	);
 }

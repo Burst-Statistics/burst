@@ -19,6 +19,7 @@ const DevicesBlock = (props) => {
         'mobile': __('Mobile', 'burst-statistics'),
         'other': __('Other', 'burst-statistics'),
     };
+    let [loading, setLoading] = useState(true);
     let defaultData = {};
     // loop through metrics and set default values
     Object.keys(deviceNames).forEach(function (key) {
@@ -56,14 +57,17 @@ const DevicesBlock = (props) => {
     )
 
     function getDevicesData(startDate, endDate, args){
+        setLoading(true);
         return burst_api.getData('devices', startDate, endDate, range, args).then( ( response ) => {
+            setLoading(false);
             return response.data;
         });
     }
 
+    let loadingClass = loading ? 'burst-loading' : '';
     if (devices) {
         return(
-            <>
+            <div className={"burst-loading-container " + loadingClass}>
                 {Object.keys(devices).map((key, i) => {
                     let m = devices[key];
                     return <div className="block__explanation-and-stats" key={i}>
@@ -79,7 +83,7 @@ const DevicesBlock = (props) => {
                         </div>
                     </div>
                 })}
-            </>
+            </div>
         );
     } else {
         return (
