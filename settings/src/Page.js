@@ -321,6 +321,7 @@ class Page extends Component {
             insightsMetrics,
             dropItemFromModal,
         } = this.state;
+
         return (
     
             <div className="burst-wrapper">
@@ -337,7 +338,7 @@ class Page extends Component {
                                 setDateRange = {this.setDateRange}
                                 fields={fields} />
                             <div className={"burst-content-area burst-grid burst-" + selectedMainMenuItem}>
-                                { ! burst_settings.tour_shown && <Tour /> }
+                                { ( ! burst_settings.tour_shown || ( getAnchor() === 'dashboard' && getAnchor('menu') === 'tour') ) &&  <Tour /> }
                                 { selectedMainMenuItem === 'dashboard' &&
                                     <DashboardPage
                                         isAPILoaded={isAPILoaded}

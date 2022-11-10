@@ -227,7 +227,7 @@ class Field extends Component {
                         help={ field.comment }
                         value= { fieldValue }
                         onChangeHandler={this.onChangeHandler}
-                        id="ip_adress"
+                        id="ip_address"
                     />
                 </div>
 

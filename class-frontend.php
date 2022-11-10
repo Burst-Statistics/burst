@@ -31,7 +31,7 @@ if ( ! class_exists( "burst_frontend" ) ) {
                     'parent' => 'site-name',
                     'id' => 'burst-statistics',
                     'title' => __('Statistics', 'burst-statistics'),
-                    'href' => admin_url('/index.php?page=burst'),
+                    'href' => burst_dashboard_url,
                 )
             );
         }

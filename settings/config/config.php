@@ -4,20 +4,20 @@ defined( 'ABSPATH' ) or die();
 function burst_menu() {
 	$menu_items = [
 		[
-			"id"    => "dashboard",
-			"title" => __( "Dashboard", 'burst-statistics' ),
+			'id'    => 'dashboard',
+			'title' => __( 'Dashboard', 'burst-statistics' ),
 			'default_hidden' => false,
 			'menu_items' => [],
 		],
 		[
-			"id"    => "statistics",
-			"title" => __( "Statistics", 'burst-statistics' ),
+			'id'    => 'statistics',
+			'title' => __( 'Statistics', 'burst-statistics' ),
 			'default_hidden' => false,
 			'menu_items' => [],
 		],
 		[
-			"id"         => "settings",
-			"title"      => __( "Settings", 'burst-statistics' ),
+			'id'         => 'settings',
+			'title'      => __( 'Settings', 'burst-statistics' ),
 			'default_hidden' => false,
 			'menu_items' => [
 				[
@@ -89,10 +89,10 @@ function burst_fields( $load_values = true ) {
 			'menu_id'  => 'general',
 			'group_id' => 'general',
 			'type'     => 'checkbox',
-			'label'    => __( "Enable Turbo mode", 'burst-statistics' ),
+			'label'    => __( 'Enable Turbo mode', 'burst-statistics' ),
 			'help'     => [
 				'label' => 'default',
-				'title' => __( "What is Turbo mode?", 'burst-statistics' ),
+				'title' => __( 'What is Turbo mode?', 'burst-statistics' ),
 				'text'  => __( 'Turbo mode improves pagespeed. When enabled, the script is no longer loaded in the header asynchronously, but is loaded in the footer and deferred. You could lose data from visitors who leave before the page has fully loaded.', 'burst-statistics' ),
 			],
 			'disabled' => false,
@@ -103,14 +103,25 @@ function burst_fields( $load_values = true ) {
 			'menu_id'  => 'general',
 			'group_id' => 'general',
 			'type'     => 'checkbox',
-			'label'    => __( "Enable Cookieless tracking", 'burst-statistics' ),
+			'label'    => __( 'Enable Cookieless tracking', 'burst-statistics' ),
 			'help'     => [
 				'label' => 'default',
-				'title' => __( "What is Cookieless tracking?", 'burst-statistics' ),
+				'title' => __( 'What is Cookieless tracking?', 'burst-statistics' ),
 				'text'  => __( '...', 'burst-statistics' ),
 			],
 			'disabled' => false,
 			'default'  => false,
+		],
+		[
+			'id'          => 'restart_tour',
+			'menu_id'     => 'general',
+			'group_id'    => 'general',
+			'type'        => 'button',
+			'url'         => burst_dashboard_url . '#dashboard/tour',
+			'button_text' => __( 'Restart', 'burst-statistics' ),
+			'label'       => __( 'Restart plugin tour', 'burst-statistics' ),
+			'disabled'    => false,
+			'default'     => false,
 		],
 		[
 			'id'       => 'user_role_blocklist',
@@ -163,7 +174,7 @@ function burst_blocks() {
 		'dashboard' => [
 			[
 				'id'       => 'progress',
-				'title'    => __( "Progress", 'burst-statistics' ),
+				'title'    => __( 'Progress', 'burst-statistics' ),
 				'controls' => [
 					'type' => 'react',
 					'data' => 'ProgressHeader',
@@ -174,7 +185,7 @@ function burst_blocks() {
 			],
 			[
 				'id'      => 'today',
-				'title'   => __( "Today", 'burst-statistics' ),
+				'title'   => __( 'Today', 'burst-statistics' ),
 				'content'  => [ 'type' => 'react', 'data' => 'TodayBlock' ],
 				'footer'  => [ 'type' => 'html', 'data' => '' ],
 				'class'   => 'border-to-border',
@@ -182,7 +193,7 @@ function burst_blocks() {
 			[
 				'id'       => 'goals',
 				'controls' => false,
-				'title'    => __( "Goals", 'burst-statistics' ),
+				'title'    => __( 'Goals', 'burst-statistics' ),
 				'content'  => [ 'type' => 'react', 'data' => 'GoalsBlock' ],
 				'footer'   => [ 'type' => 'html', 'data' => '' ],
 				'class'    => 'border-to-border',
@@ -190,7 +201,7 @@ function burst_blocks() {
 			[
 				'id'       => 'tips-tricks',
 				'controls' => false,
-				'title'    => __( "Tips & Tricks", 'burst-statistics' ),
+				'title'    => __( 'Tips & Tricks', 'burst-statistics' ),
 				'content'  => [ 'type' => 'template', 'data' => 'dashboard/tips-tricks.php' ],
 				'footer'   => [ 'type' => 'template', 'data' => 'dashboard/tips-tricks-footer.php' ],
 				'class'    => 'burst-column-2',
@@ -198,7 +209,7 @@ function burst_blocks() {
 			[
 				'id'       => 'other-plugins',
 				'controls'  => ['type' => 'html', 'data' => '<a class="rsp-logo" href="https://really-simple-plugins.com/"><img src="'.burst_url.'assets/img/really-simple-plugins.svg" alt="Really Simple Plugins" /></a>'],
-				'title'    => __( "Other Plugins", 'burst-statistics' ),
+				'title'    => __( 'Other Plugins', 'burst-statistics' ),
 				'content'  => [ 'type' => 'react', 'data' => 'OtherPlugins' ],
 				'footer'   => [ 'type' => 'html', 'data' => '' ],
 				'class'    => 'burst-column-2 no-border no-background',
@@ -207,7 +218,7 @@ function burst_blocks() {
 		'statistics' => [
 			[
 				'id'       => 'insights',
-				'title'    => __( "Insights", 'burst-statistics' ),
+				'title'    => __( 'Insights', 'burst-statistics' ),
 				'controls' => [
 					'type' => 'react',
 					'data' => 'InsightsHeader'
@@ -218,28 +229,28 @@ function burst_blocks() {
 			],
 			[
 				'id'       => 'compare',
-				'title'    => __( "Compare", 'burst-statistics' ),
+				'title'    => __( 'Compare', 'burst-statistics' ),
 				'content'  => [ 'type' => 'react', 'data' => 'CompareBlock' ],
 				'footer'  => [ 'type' => 'react', 'data' => 'CompareFooter' ],
 				'class'    => '',
 			],
 			[
 				'id'       => 'devices',
-				'title'    => __( "Devices", 'burst-statistics' ),
+				'title'    => __( 'Devices', 'burst-statistics' ),
 				'content'  => [ 'type' => 'react', 'data' => 'DevicesBlock' ],
 				'footer'   => [ 'type' => 'html', 'data' => '' ],
 				'class'    => '',
 			],
 			[
 				'id'       => 'pages',
-				'title'    => __( "Per page", 'burst-statistics' ),
+				'title'    => __( 'Per page', 'burst-statistics' ),
 				'content'  => [ 'type' => 'react', 'data' => 'PagesBlock' ],
 				'footer'   => [ 'type' => 'html', 'data' => '' ],
 				'class'    => ' burst-column-2 border-to-border datatable',
 			],
 			[
 				'id'       => 'referrers',
-				'title'    => __( "Referrers", 'burst-statistics' ),
+				'title'    => __( 'Referrers', 'burst-statistics' ),
 				'content'  => [ 'type' => 'react', 'data' => 'ReferrersBlock' ],
 				'footer'   => [ 'type' => 'html', 'data' => '' ],
 				'class'    => ' burst-column-2 border-to-border datatable',

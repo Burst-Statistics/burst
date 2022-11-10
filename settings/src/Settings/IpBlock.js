@@ -25,7 +25,7 @@ class IpBlock extends Component {
     let ip = burst_settings.current_ip;
 
     if (inputValue.includes(ip)) {
-      this.setState({warning: __('Your IP adress is: ', 'burst-statistics') + " '" +  ip + "'. " + __('Which is already in the list.', 'burst-statistics')});
+      this.setState({warning: __('Your IP address is: ', 'burst-statistics') + " '" +  ip + "'. " + __('Which is already in the list.', 'burst-statistics')});
       // set time out and remove warning
       setTimeout(() => {
         this.setState({warning: false});
@@ -60,7 +60,7 @@ class IpBlock extends Component {
               id="ip_address"
           />
           <Button className="button button-secondary button-add-ip"
-                  onClick={this.onClickAddIPHandler}>{__('Add current IP Adress',
+                  onClick={this.onClickAddIPHandler}>{__('Add current IP address',
               'burst-statistics')}</Button>
           { this.state.warning !== false && <div className="burst-warning">{this.state.warning}</div> }
           </>

@@ -102,6 +102,7 @@ class BURST {
 	private function setup_constants() {
 		define( 'burst_free', true );
 		define( 'burst_url', plugin_dir_url( __FILE__ ) );
+		define( 'burst_dashboard_url', admin_url('index.php?page=burst'));
 		define( 'burst_path', plugin_dir_path( __FILE__ ) );
 		define( 'burst_plugin', plugin_basename( __FILE__ ) );
 		define( 'burst_plugin_name', 'Burst Statistics' );

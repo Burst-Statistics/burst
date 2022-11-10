@@ -13,7 +13,7 @@ const PagesBlock = (props) => {
     const endDate = dateRange.endDate;
     const range = dateRange.range;
     const [pages, setPagesData] = useState([]);
-    const [metrics, setmetrics] = useState(['pageviews']); // as of now we only support 1 metric
+    const [metrics, setMetrics] = useState(['pageviews']); // as of now we only support 1 metric
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         let args = {

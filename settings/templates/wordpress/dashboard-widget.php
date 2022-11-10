@@ -50,8 +50,8 @@ $date_start = $date_range_unix['start'];
         ?>
     </div>
     <div class="burst-dashboard-widget__footer">
-        <a href="<?php echo admin_url('index.php?page=burst') ?>"><?php _e("Dashboard", "burst-statistics") ?></a> |
-        <a href="<?php echo admin_url('index.php?page=burst&burst-page=statistics') ?>"><?php _e("Statistics", "burst-statistics") ?></a>
+        <a href="<?php echo burst_dashboard_url ?>"><?php _e("Dashboard", "burst-statistics") ?></a> |
+        <a href="<?php echo burst_dashboard_url . '#statistics' ?>"><?php _e("Statistics", "burst-statistics") ?></a>
         <p class="burst-dashboard-widget__selected-date">
             <i>
                 <?php echo date_i18n( 'j F', $date_start )  . ' - ' . date_i18n( 'j F', $date_end );  ?>

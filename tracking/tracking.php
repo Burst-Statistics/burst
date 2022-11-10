@@ -597,16 +597,16 @@ if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
 	function burst_is_ip_blocked(): bool {
 		$ip           = burst_get_ip_address();
 		$blocked_ips  = preg_split('/\r\n|\r|\n/', burst_get_blocked_ips()); // split by line break
-		$blocked_ips_array  = array_map( 'trim', $blocked_ips );
-		$ip_blocklist = apply_filters( 'burst_ip_blocklist', $blocked_ips_array );
-		if ( in_array( $ip, $ip_blocklist ) ) {
-			if ( WP_DEBUG ) {
-				error_log( 'IP ' . $ip . ' is blocked for tracking' );
+		if ( is_array( $blocked_ips ) ) {
+			$blocked_ips_array  = array_map( 'trim', $blocked_ips );
+			$ip_blocklist = apply_filters( 'burst_ip_blocklist', $blocked_ips_array );
+			if ( in_array( $ip, $ip_blocklist ) ) {
+				if ( WP_DEBUG ) {
+					error_log( 'IP ' . $ip . ' is blocked for tracking' );
+				}
+				return true;
 			}
-
-			return true;
 		}
-
 		return false;
 	}
 }
