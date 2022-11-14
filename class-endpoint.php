@@ -12,7 +12,7 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 			self::$_this = $this;
 			// actions and filters
 			add_action( 'plugins_loaded', array( $this, 'install' ) );
-
+			add_action( 'plugins_loaded', array( $this, 'setup_defaults' ) );
 		}
 
 		/**
@@ -29,6 +29,22 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 					update_option( 'burst_endpoint_status', $endpoint_status, false );
 				}
 			}
+		}
+
+		/**
+		 * Setup default settings used for tracking
+		 * @return void
+		 */
+
+		public function setup_defaults(): void {
+			$setup_defaults = get_option( 'burst_setup_defaults');
+			if ($setup_defaults) return;
+			$exclude_roles = burst_get_option('user_role_blocklist');
+			if ( ! $exclude_roles ) {
+				$defaults = ['administrator'];
+				burst_update_option('user_role_blocklist', $defaults);
+			}
+			update_option( 'burst_setup_defaults', true, false );
 		}
 
 		/**
@@ -150,7 +166,7 @@ EOT;
 				),
 			);
 			$context = stream_context_create( $options );
-			$result  = file_get_contents( $url, false, $context );
+			$result  = @file_get_contents( $url, false, $context );
 			if ( $result === false ) {
 				if ( WP_DEBUG ) {
 					error_log( 'Error: Endpoint does not respond with 200' );

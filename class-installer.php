@@ -98,12 +98,11 @@ if ( !class_exists('burst_installer') ){
 				return false;
             }
 			$slug = $this->get_activation_slug();
-	        $networkwide = is_multisite() && burst_is_networkwide_active();
+	        $networkwide = is_multisite();
             $result = activate_plugin( $slug, '', $networkwide );
 			if (is_wp_error($result)){
 				return false;
 			}
-            $this->cancel_tour();
 			return true;
         }
 

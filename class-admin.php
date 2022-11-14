@@ -92,6 +92,29 @@ if ( ! class_exists( "burst_admin" ) ) {
                 burst_add_manage_capability();
 			}
 
+			if ( $prev_version
+                 && version_compare( $prev_version, '1.3.0', '<' ) ) {
+				error_log('Burst: Upgrading from 1.3.0');
+
+				$tour_shown = get_site_option('burst_tour_shown_once', false);
+				error_log('Burst: Tour shown: ' . $tour_shown);
+				if ($tour_shown) {
+					burst_update_option('burst_tour_shown_once', $tour_shown);
+				}
+				$settings = get_site_option('burst_settings', false);
+				$cookieless = $settings['enable_cookieless_tracking'];
+				$turbo_mode = $settings['enable_turbo_mode'];
+				error_log(print_r($settings, true));
+				if ($cookieless) {
+					burst_update_option('burst_cookieless_tracking', $cookieless);
+				}
+				if ($turbo_mode) {
+					burst_update_option('burst_turbo_mode', $turbo_mode);
+				}
+
+				delete_option( 'burst_options' );
+			}
+
 			do_action( 'burst_upgrade', $prev_version );
 
 			update_option( 'burst-current-version', burst_version, false );

@@ -7,6 +7,7 @@ import Placeholder from '../Placeholder/Placeholder';
 
 import * as burst_api from "../utils/api";
 import { getPercentage} from '../utils/formatting';
+import Icon from '../utils/Icon';
 
 const DevicesBlock = (props) => {
     const dateRange = props.dateRange;
@@ -71,6 +72,7 @@ const DevicesBlock = (props) => {
                 {Object.keys(devices).map((key, i) => {
                     let m = devices[key];
                     return <div className="block__explanation-and-stats" key={i}>
+                        <Icon name={key} />
                         <div className="block__explanation-and-stats__left">
                             <h3 className="burst-h5">{m.title}</h3>
                             <p>{m.subtitle}</p>

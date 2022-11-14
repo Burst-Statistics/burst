@@ -7,6 +7,7 @@ import Placeholder from '../Placeholder/Placeholder';
 import { intervalToDuration } from 'date-fns'
 import {getChangePercentage, formatNumber, getPercentage, getBouncePercentage, formatTime} from '../utils/formatting';
 import * as burst_api from "../utils/api";
+import Icon from "../utils/Icon";
 
 const CompareBlock = (props) => {
     const dateRange = props.dateRange;
@@ -96,6 +97,7 @@ const CompareBlock = (props) => {
                         {Object.keys(compare).map((key, i) => {
                             let m = compare[key];
                             return <div className="block__explanation-and-stats" key={i}>
+                                <Icon name={key} />
                                 <div className="block__explanation-and-stats__left">
                                     <h3 className="burst-h5">{m.title}</h3>
                                     <p>{m.subtitle}</p>

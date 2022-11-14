@@ -17,7 +17,8 @@ export const getFields = () => {
 			'X-WP-Nonce': burst_settings.nonce,
 		}
 	}
-    return axios.get(burst_settings.site_url+'burst/v1/fields/get?'+anchor, config);
+	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
+	return axios.get(burst_settings.site_url+'burst/v1/fields/get'+glue+anchor+'&nonce='+burst_settings.burst_nonce, config);
 };
 
 /*
@@ -31,10 +32,13 @@ export const setFields = (data) => {
 	let config = {
 		headers: {
 			'X-WP-Nonce': burst_settings.nonce,
+			'burst-nonce': burst_settings.nonce,
 		}
 	}
-	return axios.post(burst_settings.site_url + 'burst/v1/fields/set?' + anchor,
-			data, config);
+	let nonce = {'nonce':burst_settings.burst_nonce};
+	data.push(nonce);
+	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
+	return axios.post(burst_settings.site_url+'burst/v1/fields/set'+glue+anchor, data, config );
 }
 
 export const getBlock = (block) => {
@@ -43,7 +47,8 @@ export const getBlock = (block) => {
 			'X-WP-Nonce': burst_settings.nonce,
 		}
 	}
-	return axios.get(burst_settings.site_url+'burst/v1/block/'+block, config);
+	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
+	return axios.get(burst_settings.site_url+'burst/v1/block/'+block+glue+'nonce='+burst_settings.burst_nonce, config);
 };
 
 export const runTest = (test, state, data ) => {
@@ -55,7 +60,8 @@ export const runTest = (test, state, data ) => {
 	if (data) {
 		data = encodeURIComponent(JSON.stringify(data));
 	}
-	return axios.get(burst_settings.site_url+'burst/v1/tests/'+test+'?state='+state+'&data='+data, config);
+	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
+	return axios.get(burst_settings.site_url+'burst/v1/tests/'+test+glue+'state='+state+'&data='+data, config);
 };
 
 export const doAction = (action, data) => {
@@ -77,5 +83,6 @@ export const getData = (type, startDate, endDate, range, args ) => {
 	if (args) {
 		args = encodeURIComponent(JSON.stringify(args));
 	}
-	return axios.get(burst_settings.site_url+'burst/v1/data/'+type+'?date_start='+startDate+'&date_end='+endDate+'&date_range='+range+'&args='+args, config);
+	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
+	return axios.get(burst_settings.site_url+'burst/v1/data/'+type+glue+'date_start='+startDate+'&date_end='+endDate+'&date_range='+range+'&args='+args, config);
 };

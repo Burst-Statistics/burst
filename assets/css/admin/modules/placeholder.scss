@@ -92,6 +92,6 @@ $animation-duration: 1.6s;
   transition: opacity 0.2s ease-in-out, filter 0.2s ease-in-out;
   &.burst-loading {
     opacity: 0.3;
-    filter: blur(1px);
+    //filter: blur(1px);
   }
 }

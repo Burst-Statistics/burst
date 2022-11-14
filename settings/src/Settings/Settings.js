@@ -17,7 +17,7 @@ class Settings extends Component {
         super( ...arguments );
         this.save = this.save.bind(this)
         this.state = {
-            noticesExpanded:false,
+            noticesExpanded: true,
         };
     }
 

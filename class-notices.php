@@ -25,7 +25,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 		}
 
 		public function notices(){
-			error_log("notices");
 			$notices = BURST()->notices->get_notices_list(array( 'status' => 'all' ));
 			$out = [];
 			foreach ($notices as $id => $notice ) {

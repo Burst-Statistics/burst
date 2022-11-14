@@ -97,7 +97,7 @@ const newSteps = [
     // attachTo: { element: '.burst-today', on: 'right' },
   },
   {
-    title: __( 'Changing the period', 'burst-statistics' ),
+    title: __( 'Changing the date range', 'burst-statistics' ),
     text: '<p>' + __( 'Over here you can change the date range for the data being shown. Click on two different days or click twice on a single day to show the data for that period.', 'burst-statistics' ) + '</p>',
     classes: 'burst-shepherd',
     buttons: [
@@ -182,7 +182,9 @@ const tourOptions = {
     cancelIcon: {
       enabled: true
     },
+    keyboardNavigation: false
   },
+  margin: 15,
 };
 
 function TourInstance() {

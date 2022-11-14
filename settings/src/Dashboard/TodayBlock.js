@@ -102,7 +102,7 @@ const TodayBlock = () => {
                             <div className="burst-today-select-item">
                                 <Icon name={today.live.icon} size='23' />
                                 <h2>{today.live.value}</h2>
-                                <span><Icon name='live' size='13' color={'green'} /> Live</span>
+                                <span><Icon name='live' size='12' color={'red'} /> Live</span>
                             </div>
                         </Tooltip>
                         <Tooltip arrow title={today.today.tooltip} enterDelay={delayTooltip}>

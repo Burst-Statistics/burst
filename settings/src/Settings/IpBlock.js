@@ -55,6 +55,7 @@ class IpBlock extends Component {
           <TextareaControl
               label={field.label}
               help={field.comment}
+              placeholder={"127.0.0.1\n192.168.0.1"}
               value={fieldValue}
               onChange={(fieldValue) => this.props.onChangeHandler(fieldValue)}
               id="ip_address"

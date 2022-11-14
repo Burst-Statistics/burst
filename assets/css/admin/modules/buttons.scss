@@ -27,9 +27,6 @@
       }
     }
   }
-}
-
-.burst {
   a.burst-button-small, button.burst-button-small, input.burst-button-small {
     font-size: var(--rsp-fs-100);
     font-weight: 300;
@@ -47,4 +44,31 @@
 
 .shortcode {
   cursor: pointer;
+}
+
+button.shepherd-button{
+  &.button-primary{
+    background: var(--rsp-white);
+    color: var(--rsp-black);
+    border: 1px solid var(--rsp-white);
+    &:hover, &:focus, &:active{
+      background: var(--rsp-white);
+      color: var(--rsp-black);
+      border-color: var(--rsp-white);
+      outline-offset: 2px;
+      outline: 1px solid var(--rsp-white);
+    }
+  }
+  &.button-secondary{
+    background: transparent;
+    color: var(--rsp-white);
+    border-color: var(--rsp-white);
+    &:hover, &:focus, &:active{
+      background: transparent;
+      color: var(--rsp-white);
+      border-color: var(--rsp-white);
+      outline-offset: 2px;
+      outline: 1px solid var(--rsp-white);
+    }
+  }
 }

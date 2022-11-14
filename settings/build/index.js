@@ -18321,12 +18321,12 @@ const GoalsBlock = () => {
     live: {
       title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Live', 'burst-statistics'),
       value: '-',
-      icon: 'document-check'
+      icon: 'goals'
     },
     goals: {
       title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Total', 'burst-statistics'),
       value: '-',
-      icon: 'document-check'
+      icon: 'goals'
     },
     mostViewed: {
       title: '-',
@@ -18377,7 +18377,7 @@ const GoalsBlock = () => {
       className: "information-overlay"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "information-overlay-container"
-    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h4", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Coming soon: Goals', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics.', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h6", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Contribute', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("We're building this plugin together with you, the WordPress community, to make it the best statistics plugin to date.", 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Help make our product better by leaving a suggestion on the Wordpress forum.', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h4", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Coming soon: Goals', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("p", null, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics.', 'burst-statistics')), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
       href: "https://wordpress.org/support/plugin/burst-statistics/",
       target: "_blank",
       rel: "noreferrer",
@@ -19190,8 +19190,8 @@ const TodayBlock = () => {
       size: "23"
     }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, today.live.value), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_utils_Icon__WEBPACK_IMPORTED_MODULE_4__["default"], {
       name: "live",
-      size: "13",
-      color: 'green'
+      size: "12",
+      color: 'red'
     }), " Live"))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_mui_material_Tooltip__WEBPACK_IMPORTED_MODULE_9__["default"], {
       arrow: true,
       title: today.today.tooltip,
@@ -20691,7 +20691,7 @@ class Help extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component {
         __html: notice.text
       }
     }), notice.url && (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "rsssl-help-more-info"
+      className: "burst-help-more-info"
     }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
       target: target,
       href: notice.url
@@ -20776,6 +20776,7 @@ class IpBlock extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component 
     return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextareaControl, {
       label: field.label,
       help: field.comment,
+      placeholder: "127.0.0.1\n192.168.0.1",
       value: fieldValue,
       onChange: fieldValue => this.props.onChangeHandler(fieldValue),
       id: "ip_address"
@@ -20876,7 +20877,7 @@ class Settings extends _wordpress_element__WEBPACK_IMPORTED_MODULE_0__.Component
     super(...arguments);
     this.save = this.save.bind(this);
     this.state = {
-      noticesExpanded: false
+      noticesExpanded: true
     };
   }
 
@@ -21685,6 +21686,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
 /* harmony import */ var _utils_formatting__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/formatting */ "./src/utils/formatting.js");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
+/* harmony import */ var _utils_Icon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/Icon */ "./src/utils/Icon.js");
+
 
 
 
@@ -21779,7 +21782,9 @@ const CompareBlock = props => {
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         className: "block__explanation-and-stats",
         key: i
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_utils_Icon__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        name: key
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         className: "block__explanation-and-stats__left"
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", {
         className: "burst-h5"
@@ -22061,6 +22066,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Placeholder_Placeholder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Placeholder/Placeholder */ "./src/Placeholder/Placeholder.js");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.js");
 /* harmony import */ var _utils_formatting__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/formatting */ "./src/utils/formatting.js");
+/* harmony import */ var _utils_Icon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/Icon */ "./src/utils/Icon.js");
+
 
 
 
@@ -22131,7 +22138,9 @@ const DevicesBlock = props => {
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         className: "block__explanation-and-stats",
         key: i
-      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_utils_Icon__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        name: key
+      }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
         className: "block__explanation-and-stats__left"
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("h3", {
         className: "burst-h5"
@@ -22948,7 +22957,7 @@ const newSteps = [{
   }] // attachTo: { element: '.burst-today', on: 'right' },
 
 }, {
-  title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Changing the period', 'burst-statistics'),
+  title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Changing the date range', 'burst-statistics'),
   text: '<p>' + (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)('Over here you can change the date range for the data being shown. Click on two different days or click twice on a single day to show the data for that period.', 'burst-statistics') + '</p>',
   classes: 'burst-shepherd',
   buttons: [{
@@ -23040,8 +23049,10 @@ const tourOptions = {
   defaultStepOptions: {
     cancelIcon: {
       enabled: true
-    }
-  }
+    },
+    keyboardNavigation: false
+  },
+  margin: 15
 };
 
 function TourInstance() {
@@ -23627,6 +23638,38 @@ const Icon = props => {
     };
   }
 
+  if (iconName === 'sessions') {
+    renderedIcon = {
+      html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+        "aria-hidden": "true",
+        focusable: "false",
+        role: "img",
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 576 512",
+        height: iconSize
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+        fill: iconColors[iconColor],
+        d: "M464 448H96c-35.35 0-64-28.65-64-64V112C32 103.2 24.84 96 16 96S0 103.2 0 112V384c0 53.02 42.98 96 96 96h368c8.836 0 16-7.164 16-16S472.8 448 464 448zM512 32H160C124.7 32 96 60.65 96 96v224c0 35.35 28.65 64 64 64h352c35.35 0 64-28.65 64-64V96C576 60.65 547.3 32 512 32zM416 352H256v-16C256 309.5 277.5 288 304 288h64c26.51 0 48 21.49 48 48V352zM544 320c0 17.64-14.36 32-32 32h-64v-16C448 291.8 412.2 256 368 256h-64C259.8 256 224 291.8 224 336V352H160c-17.64 0-32-14.36-32-32V96c0-17.64 14.36-32 32-32h352c17.64 0 32 14.36 32 32V320zM336 96c-35.35 0-64 28.65-64 64s28.65 64 64 64s64-28.65 64-64S371.4 96 336 96zM336 192c-17.64 0-32-14.36-32-32s14.36-32 32-32s32 14.36 32 32S353.6 192 336 192z"
+      }))
+    };
+  }
+
+  if (iconName === 'bounces' || iconName === 'bounced_sessions') {
+    renderedIcon = {
+      html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+        "aria-hidden": "true",
+        focusable: "false",
+        role: "img",
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 576 512",
+        height: iconSize
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+        fill: iconColors[iconColor],
+        d: "M560 448h-40.81l-109.9-123.6l131.5-71.91C562.5 240.8 576 218.3 576 193.6c0-26.84-15.94-51-40.56-61.53c-30.63-13.12-59.45-22.2-88.24-28.06C443.1 63.63 409.4 32 368 32c-38.95 0-71.32 27.86-78.46 64.73C128.7 104.4 0 237.3 0 400C0 444.1 35.88 480 80 480h288c8.844 0 16-7.156 16-16S376.8 448 368 448h-288C53.53 448 32 426.5 32 400c0-145.2 114.5-263.8 257.8-271.3C297.5 164.9 329.6 192 368 192c35.81 0 65.76-23.68 75.96-56.12c25.68 5.471 51.47 13.86 78.88 25.62C535.7 167 544 179.6 544 193.6c0 12.84-7.031 24.62-18.47 30.78l-149.2 81.59c-4.25 2.344-7.25 6.5-8.062 11.28c-.8438 4.812 .5625 9.75 3.781 13.38l128 144C503.1 478 507.4 480 512 480h48c8.844 0 16-7.156 16-16S568.8 448 560 448zM368 128c15.06 0 29.67 1.078 44.15 2.801C404.8 147.9 387.8 160 368 160C341.5 160 320 138.5 320 112S341.5 64 368 64c21.82 0 40.08 14.73 45.89 34.71C398.9 97 383.7 96 368 96c-8.844 0-16 7.156-16 16S359.2 128 368 128zM281.3 365.5l-34.16 22.75c-7.344 4.906-9.344 14.81-4.438 22.19C245.8 415.1 250.8 417.6 256 417.6c3.062 0 6.156-.875 8.875-2.688l34.16-22.75c18.44-12.31 31-31.06 35.34-52.81s-.0313-43.91-12.34-62.34s-31.06-31-52.78-35.34C247.3 237.3 225.3 241.7 206.9 253.1L175.8 274.7C168.5 279.6 166.5 289.5 171.4 296.9s14.88 9.281 22.19 4.438l31.09-20.72C236 273 249.6 270.3 262.1 273c13.34 2.656 24.88 10.38 32.44 21.72s10.28 24.97 7.594 38.34C300.3 346.4 292.6 357.9 281.3 365.5z"
+      }))
+    };
+  }
+
   if (iconName === 'winner') {
     renderedIcon = {
       html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
@@ -23691,18 +23734,18 @@ const Icon = props => {
     };
   }
 
-  if (iconName === 'document-check') {
+  if (iconName === 'goals') {
     renderedIcon = {
       html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
         "aria-hidden": "true",
         focusable: "false",
         role: "img",
         xmlns: "http://www.w3.org/2000/svg",
-        viewBox: "0 0 576 512",
+        viewBox: "0 0 512 512",
         height: iconSize
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
         fill: iconColors[iconColor],
-        d: "M64 480H296.2C305.1 491.8 317.3 502.3 329.7 511.3C326.6 511.7 323.3 512 320 512H64C28.65 512 0 483.3 0 448V64C0 28.65 28.65 0 64 0H220.1C232.8 0 245.1 5.057 254.1 14.06L369.9 129.9C378.9 138.9 384 151.2 384 163.9V198.6C372.8 201.8 362.1 206 352 211.2V192H240C213.5 192 192 170.5 192 144V32H64C46.33 32 32 46.33 32 64V448C32 465.7 46.33 480 64 480V480zM347.3 152.6L231.4 36.69C229.4 34.62 226.8 33.18 224 32.48V144C224 152.8 231.2 160 240 160H351.5C350.8 157.2 349.4 154.6 347.3 152.6zM499.3 324.7C505.6 330.9 505.6 341.1 499.3 347.3L427.3 419.3C421.1 425.6 410.9 425.6 404.7 419.3L364.7 379.3C358.4 373.1 358.4 362.9 364.7 356.7C370.9 350.4 381.1 350.4 387.3 356.7L416 385.4L476.7 324.7C482.9 318.4 493.1 318.4 499.3 324.7H499.3zM288 368C288 288.5 352.5 224 432 224C511.5 224 576 288.5 576 368C576 447.5 511.5 512 432 512C352.5 512 288 447.5 288 368zM432 480C493.9 480 544 429.9 544 368C544 306.1 493.9 256 432 256C370.1 256 320 306.1 320 368C320 429.9 370.1 480 432 480z"
+        d: "M300.9 32.58C299.8 33.64 298.6 34.73 297.5 35.84C284.1 33.32 270.2 32 256 32C132.3 32 32 132.3 32 256C32 379.7 132.3 480 256 480C379.7 480 480 379.7 480 256C480 241.8 478.7 227.9 476.2 214.5C477.3 213.4 478.4 212.2 479.4 211.1L502.2 185.7C508.6 208 512 231.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C280.4 0 303.1 3.406 326.3 9.768L300.9 32.58zM275.5 105.2L279.7 130.2C272 128.8 264.1 127.1 255.1 127.1C185.3 127.1 127.1 185.3 127.1 255.1C127.1 326.7 185.3 384 255.1 384C326.7 384 384 326.7 384 255.1C384 247.9 383.2 239.1 381.8 232.3L406.8 236.5C409.5 236.9 412.2 237.2 414.9 237.4C415.6 243.5 416 249.7 416 255.1C416 344.4 344.4 416 256 416C167.6 416 96 344.4 96 255.1C96 167.6 167.6 95.1 256 95.1C262.3 95.1 268.5 96.36 274.6 97.07C274.8 99.78 275.1 102.5 275.5 105.2H275.5zM341.5 193.1L267.3 267.3C261.1 273.6 250.9 273.6 244.7 267.3C238.4 261.1 238.4 250.9 244.7 244.7L318.9 170.5L307.1 100.1C304.4 83.79 310.2 67.26 322.6 56.3L371.1 12.37C385.1 .7184 405.9 6.611 410.9 23.42L428.8 83.15L488.6 101.1C505.4 106.1 511.3 126.9 499.6 140L455.7 189.4C444.7 201.8 428.2 207.6 411.9 204.9L341.5 193.1zM369.3 165.3L417.2 173.3C422.6 174.2 428.1 172.3 431.8 168.2L467.4 128.1L420.6 114.1L369.3 165.3zM397.9 91.44L383.9 44.62L343.8 80.22C339.7 83.87 337.8 89.38 338.7 94.8L346.7 142.7L397.9 91.44z"
       }))
     };
   }
@@ -23735,6 +23778,70 @@ const Icon = props => {
       }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
         fill: iconColors[iconColor],
         d: "M207.4 20.36C209.8 28.88 204.8 37.69 196.3 40.04C101.5 66.19 32 152.1 32 255.1C32 379.7 132.3 479.1 256 479.1C379.7 479.1 480 379.7 480 255.1C480 152.1 410.5 66.19 315.7 40.04C307.2 37.69 302.2 28.88 304.6 20.36C306.9 11.85 315.7 6.847 324.3 9.198C432.5 39.07 512 138.2 512 255.1C512 397.4 397.4 511.1 256 511.1C114.6 511.1 0 397.4 0 255.1C0 138.2 79.51 39.07 187.7 9.198C196.3 6.847 205.1 11.85 207.4 20.36V20.36z"
+      }))
+    };
+  }
+
+  if (iconName === 'desktop') {
+    renderedIcon = {
+      html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+        "aria-hidden": "true",
+        focusable: "false",
+        role: "img",
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 576 512",
+        height: iconSize
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+        fill: iconColors[iconColor],
+        d: "M512 0H64C28.65 0 0 28.65 0 64v288c0 35.35 28.65 64 64 64h149.7l-19.2 64H144C135.2 480 128 487.2 128 496S135.2 512 144 512h288c8.836 0 16-7.164 16-16S440.8 480 432 480h-50.49l-19.2-64H512c35.35 0 64-28.65 64-64V64C576 28.65 547.3 0 512 0zM227.9 480l19.2-64h81.79l19.2 64H227.9zM544 352c0 17.64-14.36 32-32 32H64c-17.64 0-32-14.36-32-32V288h512V352zM544 256H32V64c0-17.64 14.36-32 32-32h448c17.64 0 32 14.36 32 32V256z"
+      }))
+    };
+  }
+
+  if (iconName === 'tablet') {
+    renderedIcon = {
+      html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+        "aria-hidden": "true",
+        focusable: "false",
+        role: "img",
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 448 512",
+        height: iconSize
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+        fill: iconColors[iconColor],
+        d: "M384 0H64C28.65 0 0 28.65 0 64v384c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V64C448 28.65 419.3 0 384 0zM416 448c0 17.64-14.36 32-32 32H64c-17.64 0-32-14.36-32-32V64c0-17.64 14.36-32 32-32h320c17.64 0 32 14.36 32 32V448zM256 400H192c-8.836 0-16 7.162-16 16c0 8.836 7.164 16 16 16h64c8.836 0 16-7.164 16-16C272 407.2 264.8 400 256 400z"
+      }))
+    };
+  }
+
+  if (iconName === 'mobile') {
+    renderedIcon = {
+      html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+        "aria-hidden": "true",
+        focusable: "false",
+        role: "img",
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 384 512",
+        height: iconSize
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+        fill: iconColors[iconColor],
+        d: "M288 0H96C60.65 0 32 28.65 32 64v384c0 35.35 28.65 64 64 64h192c35.35 0 64-28.65 64-64V64C352 28.65 323.3 0 288 0zM320 448c0 17.64-14.36 32-32 32H96c-17.64 0-32-14.36-32-32V64c0-17.64 14.36-32 32-32h192c17.64 0 32 14.36 32 32V448zM224 400H160c-8.836 0-16 7.162-16 16c0 8.836 7.164 16 16 16h64c8.836 0 16-7.164 16-16C240 407.2 232.8 400 224 400z"
+      }))
+    };
+  }
+
+  if (iconName === 'other') {
+    renderedIcon = {
+      html: (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+        "aria-hidden": "true",
+        focusable: "false",
+        role: "img",
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 384 512",
+        height: iconSize
+      }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("path", {
+        fill: iconColors[iconColor],
+        d: "M232 384c13.25 0 24-10.75 24-24s-10.75-24-24-24s-24 10.75-24 24S218.8 384 232 384zM296 336c13.25 0 24-10.75 24-24s-10.75-24-24-24s-24 10.75-24 24S282.8 336 296 336zM320 0H64C28.8 0 0 28.8 0 64l.0001 352c0 52.8 43.2 96 96 96h192c53.02 0 96-42.98 96-96L384 63.1C384 28.8 355.2 0 320 0zM352 416c0 35.35-28.65 64-64 64H96c-35.35 0-64-28.65-64-64V224h320V416zM352 192H32V64c0-17.67 14.33-32 32-32h256c17.67 0 32 14.33 32 32V192zM80 352h15.1l0 16C96 376.8 103.2 384 112 384s15.1-7.201 15.1-16V352h16c8.801 0 16-7.201 16-16c0-8.801-7.199-16-16-16h-16V304c0-8.801-7.199-16-15.1-16S96 295.2 96 303.1L96 320H80c-8.801 0-15.1 7.199-15.1 16C64 344.8 71.2 352 80 352z"
       }))
     };
   }
@@ -23785,7 +23892,8 @@ const getFields = () => {
       'X-WP-Nonce': burst_settings.nonce
     }
   };
-  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/fields/get?' + anchor, config);
+  let glue = burst_settings.site_url.indexOf('?') !== -1 ? '&' : '?';
+  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/fields/get' + glue + anchor + '&nonce=' + burst_settings.burst_nonce, config);
 };
 /*
  * Post our data to the back-end
@@ -23798,10 +23906,16 @@ const setFields = data => {
   let anchor = (0,_getAnchor__WEBPACK_IMPORTED_MODULE_1__["default"])('main');
   let config = {
     headers: {
-      'X-WP-Nonce': burst_settings.nonce
+      'X-WP-Nonce': burst_settings.nonce,
+      'burst-nonce': burst_settings.nonce
     }
   };
-  return axios__WEBPACK_IMPORTED_MODULE_0___default().post(burst_settings.site_url + 'burst/v1/fields/set?' + anchor, data, config);
+  let nonce = {
+    'nonce': burst_settings.burst_nonce
+  };
+  data.push(nonce);
+  let glue = burst_settings.site_url.indexOf('?') !== -1 ? '&' : '?';
+  return axios__WEBPACK_IMPORTED_MODULE_0___default().post(burst_settings.site_url + 'burst/v1/fields/set' + glue + anchor, data, config);
 };
 const getBlock = block => {
   let config = {
@@ -23809,7 +23923,8 @@ const getBlock = block => {
       'X-WP-Nonce': burst_settings.nonce
     }
   };
-  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/block/' + block, config);
+  let glue = burst_settings.site_url.indexOf('?') !== -1 ? '&' : '?';
+  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/block/' + block + glue + 'nonce=' + burst_settings.burst_nonce, config);
 };
 const runTest = (test, state, data) => {
   let config = {
@@ -23822,7 +23937,8 @@ const runTest = (test, state, data) => {
     data = encodeURIComponent(JSON.stringify(data));
   }
 
-  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/tests/' + test + '?state=' + state + '&data=' + data, config);
+  let glue = burst_settings.site_url.indexOf('?') !== -1 ? '&' : '?';
+  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/tests/' + test + glue + 'state=' + state + '&data=' + data, config);
 };
 const doAction = (action, data) => {
   let config = {
@@ -23844,7 +23960,8 @@ const getData = (type, startDate, endDate, range, args) => {
     args = encodeURIComponent(JSON.stringify(args));
   }
 
-  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/data/' + type + '?date_start=' + startDate + '&date_end=' + endDate + '&date_range=' + range + '&args=' + args, config);
+  let glue = burst_settings.site_url.indexOf('?') !== -1 ? '&' : '?';
+  return axios__WEBPACK_IMPORTED_MODULE_0___default().get(burst_settings.site_url + 'burst/v1/data/' + type + glue + 'date_start=' + startDate + '&date_end=' + endDate + '&date_range=' + range + '&args=' + args, config);
 };
 
 /***/ }),

@@ -154,6 +154,8 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 	 * @return WP_REST_Response
 	 */
 	function burst_rest_track_hit( WP_REST_Request $request ): WP_REST_Response {
+		error_log( 'burst_rest_track_hit' );
+		error_log(print_r( $request, true ));
 		if ( burst_is_ip_blocked() ) {
 			return new WP_REST_Response( array( 'error' => 'ip_blocked' ), 403 );
 		}
@@ -292,7 +294,7 @@ if ( ! function_exists( 'burst_sanitize_user_agent' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_user_agent( $user_agent ): string {
-		return filter_var( $user_agent, FILTER_SANITIZE_STRING );
+		return filter_var( $user_agent, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW );
 	}
 }
 
@@ -305,7 +307,7 @@ if ( ! function_exists( 'burst_sanitize_device_resolution' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_device_resolution( $device_resolution ): string {
-		return filter_var( $device_resolution, FILTER_SANITIZE_STRING );
+		return filter_var( $device_resolution, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW );
 	}
 }
 
@@ -648,6 +650,7 @@ if ( ! function_exists( 'burst_get_ip_address' ) ) {
 			$current_ip = $ips[0];
 		}
 
+		error_log( 'IP: ' . $current_ip );
 		return apply_filters( "burst_visitor_ip", $current_ip );
 	}
 }

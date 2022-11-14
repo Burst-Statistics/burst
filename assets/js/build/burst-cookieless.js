@@ -1061,7 +1061,6 @@ var FontDetector = function() {
 
 })(window);
 // TimeMe.js should be loaded and running to track time as soon as it is loaded.
-const burst_token = '?token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 7);
 let burst_track_hit_running = false;
 let burst_initial_track_hit = false;
 let burst_cookieless_option = burst.options.enable_cookieless_tracking; // User cookieless option
@@ -1238,6 +1237,9 @@ let burst_is_user_agent = () => {
  * @returns {Promise<unknown>}
  */
 let burst_api_request = obj => {
+	// generate a new token every request
+	let glue = burst.url.indexOf('?')!==-1 ? '&' : '?';
+	let burst_token = glue + 'token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 7);
 	return new Promise((resolve, reject) => {
 		// if browser supports sendBeacon use it
 		if (window.navigator.sendBeacon && burst.options.beacon_enabled) {
@@ -1245,8 +1247,8 @@ let burst_api_request = obj => {
 			window.navigator.sendBeacon(burst.beacon_url, JSON.stringify( obj.data) );
 			resolve('ok');
 		} else {
-			obj.url = burst.url + 'track' + burst_token;
-			// browser supports fetch keepalive
+			obj.url = burst.url + 'burst/v1/track' + burst_token;
+			// if browser supports fetch keepalive, it will use it. Otherwise, it will use a normal XMLHttpRequest
 			fetch(obj.url, {
 				keepalive: true,
 				method: 'POST',

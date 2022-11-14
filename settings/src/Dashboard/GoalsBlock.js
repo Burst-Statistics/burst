@@ -17,12 +17,12 @@ const GoalsBlock = () => {
         live: {
           title: __('Live', 'burst-statistics'),
           value: '-',
-          icon: 'document-check',
+          icon: 'goals',
         },
         goals: {
           title: __('Total', 'burst-statistics'),
           value: '-',
-          icon: 'document-check',
+          icon: 'goals',
         },
         mostViewed: {
           title: '-',
@@ -80,9 +80,9 @@ const GoalsBlock = () => {
               <h4>{__('Coming soon: Goals', 'burst-statistics')}</h4>
               <p>{__('Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics.', 'burst-statistics')}</p>
 
-              <h6>{__('Contribute', 'burst-statistics')}</h6>
-              <p>{__("We're building this plugin together with you, the WordPress community, to make it the best statistics plugin to date.", 'burst-statistics')}</p>
-              <p>{__('Help make our product better by leaving a suggestion on the Wordpress forum.', 'burst-statistics')}</p>
+              {/*<h6>{__('Contribute', 'burst-statistics')}</h6>*/}
+              {/*<p>{__("We're building this plugin together with you, the WordPress community, to make it the best statistics plugin to date.", 'burst-statistics')}</p>*/}
+              {/*<p>{__('Help make our product better by leaving a suggestion on the Wordpress forum.', 'burst-statistics')}</p>*/}
               <a href="https://wordpress.org/support/plugin/burst-statistics/" target="_blank" rel="noreferrer" className="button button-default">{__('Leave a suggestion', 'burst-statistics')}</a>
             </div>
 

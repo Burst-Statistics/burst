@@ -10,20 +10,26 @@
   }
 
   .block__explanation-and-stats{
-	  display: flex;
-	  justify-content: space-between;
-	  align-items: stretch;
+	  display: grid;
+	  grid-auto-columns: 16px 1fr 1fr;
 	  gap: var(--rsp-spacing-xs);
-
+	  grid-auto-flow: column;
 	  &__right {
 		  text-align: right;
 	  }
 	  .uplift{
 		margin-right: 3px;
 	  }
+	  .burst-h5{
+		  font-weight: 500;
+	  }
 
 	  p{
 		  font-size: var(--rsp-fs-200);
+	  }
+	  .burst-icon{
+		  align-items: flex-start;
+		  margin-top: 3px;
 	  }
   }
 	.burst-statistics-container {

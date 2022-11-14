@@ -10,6 +10,27 @@ defined( 'ABSPATH' ) or die();
 require_once( burst_path . 'settings/config/config.php' );
 require_once( burst_path . 'settings/rest-api-optimizer/rest-api-optimizer.php' );
 
+/**
+ * Fix for WPML issue where WPML breaks the rest api by adding a language locale in the url
+ *
+ * @param $url
+ * @param $path
+ * @param $blog_id
+ * @param $scheme
+ *
+ * @return string
+ */
+function burst_fix_rest_url_for_wpml( $url, $path, $blog_id, $scheme)  {
+	if ( function_exists( 'icl_register_string' ) ) {
+		$current_language = apply_filters( 'wpml_current_language', null );
+		if ( strpos($url, '/'.$current_language.'/wp-json/') ) {
+			$url = str_replace( '/'.$current_language.'/wp-json/', '/wp-json/', $url);
+		}
+	}
+	return $url;
+}
+add_filter( 'rest_url', 'burst_fix_rest_url_for_wpml', 10, 4 );
+
 function burst_plugin_admin_scripts() {
 	$script_asset_path = __DIR__ . "/build/index.asset.php";
 	$script_asset      = require( $script_asset_path );
@@ -33,9 +54,9 @@ function burst_plugin_admin_scripts() {
             'network_link' => network_site_url('plugins.php'),
             'blocks' => burst_blocks(),
             'pro_plugin_active' => defined('burst_pro_version'),
-            'networkwide_active' => !is_multisite() || burst_is_networkwide_active(),//true for single sites and network wide activated
+            'networkwide_active' => ! is_multisite(),//true for single sites and network wide activated
             'nonce' => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
-            'burst_nonce' => wp_create_nonce( 'burst_save' ),
+            'burst_nonce' => wp_create_nonce( 'burst_nonce' ),
             'current_ip' => burst_get_ip_address(),
             'user_roles' => burst_get_user_roles(),
             'date_ranges' => burst_get_date_ranges(),
@@ -45,10 +66,10 @@ function burst_plugin_admin_scripts() {
 }
 
 function burst_add_option_menu() {
-
 	if ( ! burst_user_can_view() ) {
 		return;
 	}
+
     $menu_label = __('Statistics', 'burst-statistics');
 	$warnings      = BURST()->notices->count_plusones( array('plus_ones'=>true) );
 	$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warnings ) );
@@ -85,21 +106,24 @@ function burst_dashboard() {
 	if ( ! burst_user_can_view() ) {
 		return;
 	}
-	if ( !get_option('permalink_structure') ){
-        $permalinks_url = admin_url('options-permalink.php');
-        ?>
-            <div class="burst-permalinks-warning notice notice-error settings-error is-dismissible">
-                <h1><?php _e("Pretty permalinks not enabled", "burst-statistics")?></h1>
-                <p><?php _e("Pretty permalinks are not enabled on your site. This prevents the REST API from working, which is required for the settings page.", "burst-statistics")?></p>
-                <p><?php printf(__('To resolve, please go to the <a href="%s">permalinks settings</a>, and set to anything but plain.', "burst-statistics"), $permalinks_url)?></p>
+    ?>
+    <div id="burst-statistics" class="burst">
+        <div class="burst-header-container">
+            <div class="burst-header">
+                <img class="burst-logo"
+                     src="<?php echo burst_url . 'assets/img/burst-logo.svg' ?>"
+                     alt="Burst Statistics logo"/>
             </div>
-        <?php
-    } else {
-        ?>
-        <div id="burst-statistics" class="burst"></div>
-        <div id="burst-statistics-modal"></div>
-        <?php
-    }
+        </div>
+        <div class="burst-content-area burst-grid burst-dashboard burst-page-placeholder">
+            <div class="burst-grid-item  burst-column-2 burst-row-2 "></div>
+            <div class="burst-grid-item burst-row-2"></div>
+            <div class="burst-grid-item burst-row-2"></div>
+            <div class="burst-grid-item  burst-column-2"></div>
+        </div>
+    </div>
+    <div id="burst-statistics-modal"></div>
+    <?php
 }
 
 add_action( 'rest_api_init', 'burst_settings_rest_route', 1 );
@@ -202,13 +226,10 @@ function burst_do_action($request){
 		return;
 	}
 
-    error_log("burst_do_action");
 	$action = sanitize_title($request->get_param('action'));
 	$data = $request->get_params();
 	$nonce = $data['nonce'];
-	error_log("do_action: $action");
-	error_log(print_r($data, true));
-	if ( !wp_verify_nonce($nonce, 'burst_save') ) {
+	if ( !wp_verify_nonce($nonce, 'burst_nonce') ) {
 		return;
 	}
 
@@ -399,7 +420,21 @@ function burst_rest_api_fields_set( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return;
 	}
+
 	$fields = $request->get_json_params();
+	//get the nonce
+	$nonce = false;
+	foreach ( $fields as $index => $field ){
+		if ( isset($field['nonce']) ) {
+			$nonce = $field['nonce'];
+			unset($fields[$index]);
+		}
+	}
+
+	if ( !wp_verify_nonce($nonce, 'burst_nonce') ) {
+		return;
+	}
+
 	$config_fields = burst_fields(false);
 	$config_ids = array_column($config_fields, 'id');
 	foreach ( $fields as $index => $field ) {
@@ -450,7 +485,7 @@ function burst_rest_api_fields_set( $request ) {
 	}
 
 	if ( ! empty( $options ) ) {
-		if ( is_multisite() && burst_is_networkwide_active() ) {
+		if ( is_multisite() ) {
 			update_site_option( 'burst_options_settings', $options );
 		} else {
 			update_option( 'burst_options_settings', $options );

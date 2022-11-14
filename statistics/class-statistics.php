@@ -40,7 +40,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				//set some defaults;
 				$localize_args = apply_filters( 'burst_tracking_options',
 					array(
-						'url'                       => get_rest_url() . 'burst/v1/',
+						'url'                       => get_rest_url(),
 						'page_id'                   => isset($post->ID) ? $post->ID : 0,
 						'cookie_retention_days'     => 30,
 						'beacon_url'                => burst_get_beacon_url(),

@@ -36,6 +36,7 @@
   .block__explanation-and-stats{
     width: 100%;
     padding: var(--rsp-spacing-xs);
+    grid-template-columns: 1fr 1fr;
     .uplift{
       margin-right: 0;
     }

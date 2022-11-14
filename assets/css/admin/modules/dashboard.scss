@@ -171,7 +171,7 @@
     position: relative;
 
     .burst-goals {
-      filter: blur(1px);
+      //filter: blur(1px);
 
       &-select {
         background: var(--rsp-grey-300);
@@ -179,7 +179,7 @@
     }
 
     .information-overlay {
-  background: rgba(47, 47, 47, 0.15);
+      background: rgba(47, 47, 47, 0.15);
       overflow: hidden;
       position: absolute;
       top: 0;
@@ -199,7 +199,7 @@
         padding: var(--rsp-spacing-s);
         padding-left: var(--rsp-spacing-m);
         padding-right: var(--rsp-spacing-m);
-        border-radius: var(--rsp-border-radius);
+        border-radius: var(--rsp-border-radius-input);
         margin: var(--rsp-spacing-s) 40px;
 
         h4, p {
