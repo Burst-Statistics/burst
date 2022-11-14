@@ -144,7 +144,6 @@ class BURST {
 		require_once( burst_path . 'cron/cron.php');
 
 		if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() ) {
-			require_once( burst_path . 'upgrade.php');
 			require_once( burst_path . 'class-admin.php' );
 			require_once( burst_path . 'settings/settings.php' );
 			require_once( burst_path . 'class-review.php' );
