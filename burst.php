@@ -133,21 +133,22 @@ class BURST {
 	private function includes() {
 		require_once( burst_path . 'functions.php' );
 		require_once( burst_path . 'integrations/integrations.php');
-		require_once( burst_path . '/class-endpoint.php' );
-		require_once( burst_path . '/tracking/tracking.php' );
-		require_once( burst_path . '/class-frontend.php' );
-		require_once( burst_path . '/helpers/anonymize-ip.php' );
-		require_once( burst_path . '/helpers/php-user-agent/UserAgentParser.php' );
-		require_once( burst_path . '/statistics/class-statistics.php' );
-		require_once( burst_path . '/sessions/class-sessions.php' );
-		require_once( burst_path . '/goals/class-goals.php' );
-		require_once( burst_path . '/cron/cron.php');
+		require_once( burst_path . 'class-endpoint.php' );
+		require_once( burst_path . 'tracking/tracking.php' );
+		require_once( burst_path . 'class-frontend.php' );
+		require_once( burst_path . 'helpers/anonymize-ip.php' );
+		require_once( burst_path . 'helpers/php-user-agent/UserAgentParser.php' );
+		require_once( burst_path . 'statistics/class-statistics.php' );
+		require_once( burst_path . 'sessions/class-sessions.php' );
+		require_once( burst_path . 'goals/class-goals.php' );
+		require_once( burst_path . 'cron/cron.php');
 
 		if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() ) {
-			require_once( burst_path . '/class-admin.php' );
+			require_once( burst_path . 'upgrade.php');
+			require_once( burst_path . 'class-admin.php' );
 			require_once( burst_path . 'settings/settings.php' );
-			require_once( burst_path . '/class-review.php' );
-			require_once( burst_path . '/class-notices.php' );
+			require_once( burst_path . 'class-review.php' );
+			require_once( burst_path . 'class-notices.php' );
 			require_once( burst_path . 'class-installer.php');
 			if ( isset($_GET['install_pro'])) {
 				require_once( burst_path . 'upgrade/upgrade-to-pro.php' );
