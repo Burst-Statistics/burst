@@ -485,11 +485,7 @@ function burst_rest_api_fields_set( $request ) {
 	}
 
 	if ( ! empty( $options ) ) {
-		if ( is_multisite() ) {
-			update_site_option( 'burst_options_settings', $options );
-		} else {
 			update_option( 'burst_options_settings', $options );
-		}
 	}
 
 	foreach ( $fields as $field ) {
@@ -542,11 +538,7 @@ function burst_update_option( $name, $value ) {
 	$value = burst_sanitize_field( $value, $type, $name );
 	$value = apply_filters("burst_fieldvalue", $value, sanitize_text_field($name), $type);
 	$options[$name] = $value;
-	if ( is_multisite() && burst_is_networkwide_active() ) {
-		update_site_option( 'burst_options_settings', $options );
-	} else {
-		update_option( 'burst_options_settings', $options );
-	}
+    update_option( 'burst_options_settings', $options );
 	do_action( "burst_after_save_field", $name, $value, $prev_value, $type );
 }
 /**

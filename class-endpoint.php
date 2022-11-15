@@ -104,7 +104,7 @@ EOT;
 		public function get_tracking_status_and_time(): array {
 			$status    = get_option( 'burst_tracking_status' );
 			$last_test = get_transient( 'burst_ran_test' ); // casts strings 'true' & 'false' to bool true
-			if ( ! $last_test ) {
+			if ( $last_test < 1 || $last_test === false ) {
 				$status = $this->test_tracking_status();
 				$last_test = time();
 				set_transient( 'burst_ran_test', $last_test, HOUR_IN_SECONDS );
