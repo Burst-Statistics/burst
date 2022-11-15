@@ -131,16 +131,18 @@ if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
 	function burst_beacon_track_hit() {
 		$request = (string) file_get_contents( 'php://input' );
 		if ( $request === 'request=test' ) {
+			http_response_code(200);
 			return 'success';
 		}
 
 		if ( burst_is_ip_blocked() ) {
+			http_response_code(401);
 			return false;
 		}
 
 		$data = json_decode( json_decode( $request, true ), true ); // The data is encoded in JSON and decoded twice to get the array.
 		burst_track_hit( $data );
-
+		http_response_code(200);
 		return 'success';
 	}
 }

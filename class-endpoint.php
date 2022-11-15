@@ -166,12 +166,16 @@ EOT;
 				),
 			);
 			$context = stream_context_create( $options );
-			$result  = @file_get_contents( $url, false, $context );
-			if ( $result === false ) {
-				if ( WP_DEBUG ) {
-					error_log( 'Error: Endpoint does not respond with 200' );
-				}
+			@file_get_contents( $url, false, $context );
+			$http_response_header = $http_response_header ?? [];
+			$status_line = $http_response_header[0];
+			preg_match('{HTTP\/\S*\s(\d{3})}', $status_line, $match);
+			$status = $match[1];
 
+			if ( $status !== "200") {
+				if ( WP_DEBUG ) {
+					error_log( 'Error: Endpoint does not respond with 200. Response givem: ' . $status );
+				}
 				return false;
 			}
 			return true;
