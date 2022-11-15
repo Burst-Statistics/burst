@@ -182,7 +182,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// if the live value didn't change we don't update the other stats. This is to avoid unnecessary queries. The transient expires every 60 seconds.
 			$cached_data = $this->get_transient( 'burst_today_data' );
 			if (  ! $cached_data || (int) $this->get_transient('burst_live_value') !== (int) $live_value){
-				set_transient('burst_live_value', $live_value);
+				$this->set_transient('burst_live_value', $live_value);
 
 				$select                      = $this->get_sql_select_for_metrics( [
 					'visitors',
