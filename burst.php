@@ -106,6 +106,10 @@ class BURST {
 		define( 'burst_path', plugin_dir_path( __FILE__ ) );
 		define( 'burst_plugin', plugin_basename( __FILE__ ) );
 		define( 'burst_plugin_name', 'Burst Statistics' );
+		$burst_plugin = explode( '/', burst_plugin );
+		array_pop( $burst_plugin );
+		$burst_plugin = implode( '/', $burst_plugin );
+		define( 'burst_plugin_folder', $burst_plugin );
 		$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
 		define( 'burst_version', '1.3.0' . $debug );
 		define( 'burst_plugin_file', __FILE__ );

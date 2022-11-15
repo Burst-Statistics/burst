@@ -77,8 +77,8 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		 * @return string
 		 */
 		public function get_endpoint_file_contents(): string {
-			$tracking_filename  = burst_path . '/tracking/tracking.php';
-			$ua_parser_filename = burst_path . '/helpers/php-user-agent/UserAgentParser.php';
+			$tracking_filename  =  'plugins/' . trailingslashit(burst_plugin_folder) . 'tracking/tracking.php';
+			$ua_parser_filename =  'plugins/' . trailingslashit(burst_plugin_folder) . 'helpers/php-user-agent/UserAgentParser.php';
 
 			// Indentation is important here for PHP 7.2 compatibility: https://wiki.php.net/rfc/flexible_heredoc_nowdoc_syntaxes
 			return <<<EOT
@@ -88,8 +88,8 @@ if ( ! class_exists( "burst_endpoint" ) ) {
  */
 define( 'SHORTINIT', true );
 require_once __DIR__ . '/wp-load.php';
-require_once '$ua_parser_filename';
-require_once '$tracking_filename';
+require_once trailingslashit(WP_CONTENT_DIR) . '$ua_parser_filename';
+require_once trailingslashit(WP_CONTENT_DIR) . '$tracking_filename';
 
 burst_beacon_track_hit();
 EOT;

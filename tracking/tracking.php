@@ -129,13 +129,13 @@ if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
 	 * Burst Statistics beacon endpoint for collecting hits
 	 */
 	function burst_beacon_track_hit() {
-		if ( burst_is_ip_blocked() ) {
-			return false;
-		}
-
 		$request = (string) file_get_contents( 'php://input' );
 		if ( $request === 'request=test' ) {
 			return 'success';
+		}
+
+		if ( burst_is_ip_blocked() ) {
+			return false;
 		}
 
 		$data = json_decode( json_decode( $request, true ), true ); // The data is encoded in JSON and decoded twice to get the array.
@@ -576,7 +576,7 @@ if ( ! function_exists('burst_get_blocked_ips') ) {
 	 * @param string $name
 	 * @param mixed $default
 	 *
-	 * @return mixed
+	 * @return string
 	 */
 
 	function burst_get_blocked_ips() {
@@ -584,7 +584,7 @@ if ( ! function_exists('burst_get_blocked_ips') ) {
 		$options = get_option( 'burst_options_settings', [] );
 		$value = isset($options[$name]) ? $options[$name] : false;
 		if ( $value===false ) {
-			$value = [];
+			$value = '';
 		}
 		return $value;
 	}
