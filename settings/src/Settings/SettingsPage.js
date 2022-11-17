@@ -185,7 +185,6 @@ class SettingsPage extends Component {
                 saveFields.push(field);
             }
         }
-        console.log(saveFields);
         burst_api.setFields(saveFields).then(( response ) => {
             this.changedFields = [];
             this.setState({
@@ -239,7 +238,6 @@ class SettingsPage extends Component {
                         }
 
                         if ( invert ){
-                            console.log("invert condition");
                             thisConditionApplies = !thisConditionApplies;
                         }
 
