@@ -209,10 +209,8 @@ function burst_run_test($request){
 		default:
 			$data = apply_filters("burst_run_test", [], $test, $request);
 	}
-	$response = json_encode( $data );
-	header( "Content-Type: application/json" );
-	echo $response;
-	exit;
+
+    return $data;
 }
 
 
@@ -240,10 +238,7 @@ function burst_do_action($request){
 		default:
 			$data = apply_filters("burst_do_action", [], $action, $request);
 	}
-	$response = json_encode( $data );
-	header( "Content-Type: application/json" );
-	echo $response;
-	exit;
+	return $data;
 }
 
 /**
@@ -376,10 +371,7 @@ function burst_get_data($request){
 		default:
 			$data = apply_filters("burst_get_data", [], $type, $request);
 	}
-	$response = json_encode( $data );
-	header( "Content-Type: application/json" );
-	echo $response;
-	exit;
+	return $data;
 }
 
 /**
@@ -492,15 +484,12 @@ function burst_rest_api_fields_set( $request ) {
 		do_action( "burst_after_save_field", $field['id'], $field['value'], $prev_value, $field['type'] );
 	}
 	do_action('burst_after_saved_fields', $fields );
-	$output   = [
+
+	return [
 		'success' => true,
 		'progress' => BURST()->notices->get(),
 		'fields' => burst_fields(true),
 	];
-	$response = json_encode( $output );
-	header( "Content-Type: application/json" );
-	echo $response;
-	exit;
 }
 
 /**
@@ -587,11 +576,7 @@ function burst_rest_api_fields_get() {
 	$output['menu'] = $menu;
 	$output['progress'] = BURST()->notices->get();
 
-	$output = apply_filters('burst_rest_api_fields_get', $output);
-	$response = json_encode( $output );
-	header( "Content-Type: application/json" );
-	echo $response;
-	exit;
+	return apply_filters('rsssl_rest_api_fields_get', $output);
 }
 
 /**
@@ -634,11 +619,9 @@ function burst_rest_api_block_get( $request ) {
 	}
 	$block    = $request->get_param( 'block' );
 	$blocks   = burst_blocks();
-	$out      = isset( $blocks[ $block ] ) ? $blocks[ $block ] : [];
-	$response = json_encode( $out );
-	header( "Content-Type: application/json" );
-	echo $response;
-	exit;
+
+	return isset( $blocks[ $block ] ) ? $blocks[ $block ] : [];
+
 }
 
 /**
@@ -697,60 +680,6 @@ function burst_sanitize_ip_field( $value ) {
     $ips = array_map( 'sanitize_text_field', $ips ); // sanitize each ip
     return implode( PHP_EOL, $ips );
 }
-//function burst_sanitize_datatable( $value, $type, $field_name ) {
-//	$possible_keys = apply_filters( "burst_datatable_datatypes_$type", [
-//		'id'     => 'string',
-//		'title'  => 'string',
-//		'status' => 'boolean',
-//	] );
-//
-//	if ( ! is_array( $value ) ) {
-//		return false;
-//	} else {
-//		foreach ( $value as $row_index => $row ) {
-//			//check if we have invalid values
-//			if ( is_array( $row ) ) {
-//				foreach ( $row as $column_index => $row_value ) {
-//					if ( $column_index === 'id' && $row_value === false ) {
-//						unset( $value[ $column_index ] );
-//					}
-//				}
-//			}
-//
-//			//has to be an array.
-//			if ( ! is_array( $row ) ) {
-//				unset( $value[ $row_index ] );
-//			}
-//
-//			foreach ( $row as $col_index => $col_value ) {
-//				if ( ! isset( $possible_keys[ $col_index ] ) ) {
-//					unset( $value[ $row_index ][ $col_index ] );
-//				} else {
-//					$datatype = $possible_keys[ $col_index ];
-//					switch ( $datatype ) {
-//						case 'string':
-//							$value[ $row_index ][ $col_index ] = sanitize_text_field( $col_value );
-//							break;
-//						case 'int':
-//						case 'boolean':
-//						default:
-//							$value[ $row_index ][ $col_index ] = intval( $col_value );
-//							break;
-//					}
-//				}
-//			}
-//
-//			//Ensure that all required keys are set with at least an empty value
-//			foreach ( $possible_keys as $key => $data_type ) {
-//				if ( ! isset( $value[ $row_index ][ $key ] ) ) {
-//					$value[ $row_index ][ $key ] = false;
-//				}
-//			}
-//		}
-//	}
-//
-//	return $value;
-//}
 
 function burst_get_user_roles(){
     global $wp_roles;
