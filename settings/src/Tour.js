@@ -26,7 +26,7 @@ const newSteps = [
   },
   {
     title: __( 'Your dashboard', 'burst-statistics' ),
-    text: '<p>' + __( 'This is your Dashboard. This will give you an overview of notices, real time data, and settings.', 'burst-statistics' ) + '</p><p>' + __( 'You can also see the latest notices and real time data here.', 'burst-statistics' ) + '</p>',
+    text: '<p>' + __( 'This is your Dashboard. This will give you an overview of notices, real time data, and settings.', 'burst-statistics' ) + '</p>',
     classes: 'burst-shepherd',
     buttons: [
       {
@@ -184,6 +184,7 @@ const tourOptions = {
     },
     keyboardNavigation: false
   },
+  useModalOverlay: false,
   margin: 15,
 };
 

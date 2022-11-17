@@ -11,7 +11,7 @@
 
   .block__explanation-and-stats{
 	  display: grid;
-	  grid-auto-columns: 16px 1fr 1fr;
+	  grid-auto-columns: 16px 4fr 1fr;
 	  gap: var(--rsp-spacing-xs);
 	  grid-auto-flow: column;
 	  &__right {
