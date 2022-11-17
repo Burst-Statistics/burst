@@ -398,7 +398,6 @@ function burst_sanitize_field_type( $type ) {
 	if ( in_array( $type, $types ) ) {
 		return $type;
 	}
-	error_log( "TYPE NOT FOUND" );
 
 	return 'checkbox';
 }
@@ -434,7 +433,7 @@ function burst_rest_api_fields_set( $request ) {
 		$config_field_index = array_search($field['id'], $config_ids);
 		$config_field = $config_fields[$config_field_index];
 		if ( !$config_field_index ){
-			error_log("unsetting ".$field['id']." as not existing field in BURST ");
+			error_log("Burst Statistics: unsetting ".$field['id']." as not existing field in BURST ");
 			unset($fields[$index]);
 			continue;
 		}
@@ -510,13 +509,13 @@ function burst_update_option( $name, $value ) {
 	$config_field_index = array_search($name, $config_ids);
 	$config_field = $config_fields[$config_field_index];
 	if ( $config_field_index === false ){
-		error_log("exiting ".$name." as not existing field in burst ");
+		error_log("Burst Statistics: exiting ".$name." as not existing field in burst ");
 		return;
 	}
 
 	$type = isset( $config_field['type'] ) ? $config_field['type'] : false;
 	if ( !$type ) {
-		error_log("exiting ".$name." has not existing type ");
+		error_log("Burst Statistics: exiting ".$name." has not existing type ");
 		return;
 	}
     $options = get_option( 'burst_options_settings', [] );

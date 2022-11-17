@@ -45,7 +45,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 
 		public function dismiss_notice($id)
 		{
-			error_log("dismiss task $id");
 			if ( !empty($id) ) {
 
 				$id = sanitize_title( $id );

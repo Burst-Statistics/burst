@@ -156,8 +156,6 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 	 * @return WP_REST_Response
 	 */
 	function burst_rest_track_hit( WP_REST_Request $request ): WP_REST_Response {
-		error_log( 'burst_rest_track_hit' );
-		error_log(print_r( $request, true ));
 		if ( burst_is_ip_blocked() ) {
 			return new WP_REST_Response( array( 'error' => 'ip_blocked' ), 403 );
 		}
@@ -606,7 +604,7 @@ if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
 			$ip_blocklist = apply_filters( 'burst_ip_blocklist', $blocked_ips_array );
 			if ( in_array( $ip, $ip_blocklist ) ) {
 				if ( WP_DEBUG ) {
-					error_log( 'IP ' . $ip . ' is blocked for tracking' );
+					error_log( 'Burst Statistics: IP ' . $ip . ' is blocked for tracking' );
 				}
 				return true;
 			}
@@ -651,8 +649,6 @@ if ( ! function_exists( 'burst_get_ip_address' ) ) {
 			$ips        = explode( ',', $current_ip );
 			$current_ip = $ips[0];
 		}
-
-		error_log( 'IP: ' . $current_ip );
 		return apply_filters( "burst_visitor_ip", $current_ip );
 	}
 }

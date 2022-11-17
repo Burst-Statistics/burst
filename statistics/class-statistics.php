@@ -936,11 +936,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 				} else {
 					// if everything all uncached date ranges are cached, clear option and save last generated date
-					error_log( 'Burst: All date ranges are cached' );
+					if ( WP_DEBUG ) {
+						error_log( 'Burst Statistics:  All date ranges are cached' );
+					}
+
 					update_option( 'burst_cached_date_ranges', [], false );
 					update_option( 'burst_last_generated', $date, false );
 				}
-				error_log( 'Burst Statistics: Cached data for ' . $date_range . ' in ' . ( microtime( true ) - $time ) . ' seconds' );
+				if ( WP_DEBUG ) {
+					error_log( 'Burst Statistics: Cached data for ' . $date_range . ' in ' . ( microtime( true ) - $time ) . ' seconds' );
+				}
 			}
 		}
 

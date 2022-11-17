@@ -174,7 +174,7 @@ EOT;
 
 			if ( $status !== "200") {
 				if ( WP_DEBUG ) {
-					error_log( 'Error: Endpoint does not respond with 200. Response givem: ' . $status );
+					error_log( 'Burst Statistics: Endpoint error, does not respond with 200. Response given: ' . $status );
 				}
 				return false;
 			}
