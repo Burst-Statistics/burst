@@ -239,7 +239,11 @@ if ( ! function_exists('burst_add_manage_capability')){
 
 if ( ! function_exists( 'burst_is_logged_in_rest' ) ) {
 	function burst_is_logged_in_rest() {
-		$is_settings_page = isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], 'wp-json/burst/v1/' ) !== false;
-		return $is_settings_page && isset( $_SERVER['HTTP_X_WP_NONCE'] ) && wp_verify_nonce( $_SERVER['HTTP_X_WP_NONCE'], 'wp_rest' );
+		$valid_request = isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], '/burst/v1/' ) !== false;
+		if ( ! $valid_request ) {
+			return false;
+		}
+
+		return is_user_logged_in();
 	}
 }
