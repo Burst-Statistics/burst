@@ -17,6 +17,7 @@
         aspect-ratio: 1/1;
         transition: background-color 0.2s ease-in-out;
         cursor: pointer;
+        margin-top: 12px;
         &:hover, &.active{
           background: var(--rsp-grey-300);
         }

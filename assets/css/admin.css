@@ -1363,55 +1363,55 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(1) {
-    width: 73%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(2) {
-    width: 79%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(3) {
-    width: 77%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(4) {
-    width: 83%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(5) {
-    width: 77%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(6) {
-    width: 92%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
-    width: 74%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
-    width: 61%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
     width: 71%;
 }
 
-.burst-placeholder .burst-placeholder-line:nth-of-type(10) {
+.burst-placeholder .burst-placeholder-line:nth-of-type(2) {
+    width: 69%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(3) {
+    width: 85%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(4) {
+    width: 78%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(5) {
+    width: 86%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(6) {
     width: 74%;
 }
 
+.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
+    width: 95%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
+    width: 85%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
+    width: 91%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(10) {
+    width: 85%;
+}
+
 .burst-placeholder .burst-placeholder-line:nth-of-type(11) {
-    width: 81%;
+    width: 84%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(12) {
-    width: 75%;
+    width: 79%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(13) {
-    width: 96%;
+    width: 95%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(14) {
@@ -1419,27 +1419,27 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(15) {
-    width: 85%;
+    width: 62%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(16) {
-    width: 83%;
+    width: 69%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(17) {
-    width: 82%;
+    width: 96%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(18) {
-    width: 94%;
+    width: 85%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(19) {
-    width: 72%;
+    width: 73%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(20) {
-    width: 92%;
+    width: 76%;
 }
 
 .burst-placeholder .burst-placeholder-line ~ .burst-placeholder-line {
@@ -2095,6 +2095,7 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
     aspect-ratio: 1/1;
     transition: background-color 0.2s ease-in-out;
     cursor: pointer;
+    margin-top: 12px;
 }
 
 .burst .burst-insights .burst-grid-item-controls .burst-filter-button:hover, .burst .burst-insights .burst-grid-item-controls .burst-filter-button.active {
@@ -2727,6 +2728,19 @@ Admin notice
     opacity: 0.3;
 }
 
+.burst .rdt_Pagination select + svg {
+    display: none;
+}
+
+.burst .burst-empty-data-table {
+    text-align: center;
+    padding: var(--rsp-spacing-xl);
+}
+
+.burst .burst-grid-item.datatable .burst-loading-container > div {
+    width: 100%;
+}
+
 .burst-shepherd {
     --rsp-black: #333;
     background: var(--rsp-black);
@@ -2792,6 +2806,8 @@ Admin notice
     cursor: pointer;
     color: var(--rsp-color-text);
     font-size: 20px;
+    position: relative;
+    top: -2px;
 }
 
 .burst-shepherd .shepherd-header button.shepherd-cancel-icon:hover {

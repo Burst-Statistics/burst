@@ -61,6 +61,8 @@
       cursor: pointer;
       color: var(--rsp-color-text);
       font-size: 20px;
+      position: relative;
+      top: -2px;
 
       &:hover {
         color: var(--rsp-color-text-hover);

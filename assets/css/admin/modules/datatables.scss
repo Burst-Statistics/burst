@@ -15,4 +15,20 @@
   .burst-csp-revoked >div:nth-child(-n+3) {
     opacity:0.3;
   }
+  .rdt_Pagination{
+    select + svg{
+      display: none;
+    }
+  }
+  .burst-empty-data-table{
+    text-align: center;
+    padding: var(--rsp-spacing-xl);
+  }
+  .burst-grid-item.datatable{
+    .burst-loading-container{
+      & > div{
+        width: 100%;
+      }
+    }
+  }
 }
