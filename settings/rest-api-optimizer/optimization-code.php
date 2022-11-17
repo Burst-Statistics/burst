@@ -9,9 +9,15 @@ if ( ! function_exists( 'burst_exclude_plugins_for_rest_api' ) ) {
 	 * @return array The filtered active plugins.
 	 */
 	function burst_exclude_plugins_for_rest_api( $plugins ) {
-		// If this is a burst data request we just activate the Burst plugin, to minimize the load on the server
-		if ( isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'burst/v1/data/') === false ) {
-			// if not a burst request return all plugins
+		// if not an rsp request return all plugins
+		// but for some requests, we need to load other plugins, to ensure we can detect them.
+		if ( isset( $_SERVER['REQUEST_URI'] ) && (
+				strpos( $_SERVER['REQUEST_URI'], 'burst/v1' ) === false ||
+				strpos( $_SERVER['REQUEST_URI'], 'otherpluginsdata' ) !== false ||
+				strpos( $_SERVER['REQUEST_URI'], 'plugin_actions' ) !== false ||
+				strpos( $_SERVER['REQUEST_URI'], 'fields/set' ) !== false
+			)
+		) {
 			return $plugins;
 		}
 
