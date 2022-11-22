@@ -15,12 +15,12 @@ Get detailed insights into visitors' behaviour with Burst Statistics, the privac
 
 == Features ==
 
-* Essential Metrics: Pageviews, Visitors, Sessions, Time on Page, Referrers etc
-* Privacy-friendly: Locally hosted, and anonymized data in collaboration with Complianz
+* Essential Metrics: Pageviews, Visitors, Sessions, Time on Page and Referrers.
+* Privacy-friendly: Locally hosted, and anonymized data in collaboration with Complianz.
 * Cookieless Tracking: Get data based on anonymous parameters without storing data in browsers.
 * Optimized: Built for performance and data minimization.
 * Flexibility: Have your own idea how Bounce Rate should be measured? Configure your own metrics.
-* Open-Source: We see our users as collaborators, so please feel free to use the below links to help us out building the best analytics tool for WordPress
+* Open-Source: We see our users as collaborators, so please feel free to use the below links to help us out building the best analytics tool for WordPress.
 
 == Useful Links ==
 
@@ -36,7 +36,7 @@ Burst Statistics offers full support on the WordPress.org [Forum](https://wordpr
 
 == About Really Simple Plugins ==
 
-Check out other plugins developed by Really Simple Plugins as well: [Really Simple SSL](https://wordpress.org/plugins/really-simple-ssl/) and [Complianz](https://wordpress.org/plugins/complianz-gdpr/)
+Check out other plugins developed by Really Simple Plugins as well: [Really Simple SSL](https://wordpress.org/plugins/really-simple-ssl/) and [Complianz](https://wordpress.org/plugins/complianz-gdpr/).
 
 We're on [GitHub](https://github.com/Really-Simple-Plugins/burst) as well!
 
@@ -50,13 +50,13 @@ We're on [GitHub](https://github.com/Really-Simple-Plugins/burst) as well!
 
 == Frequently Asked Questions ==
 = Knowledgebase =
-Burst will maintain and a grow a knowledgebase about Burst Statistics and other products to assist, while using Burst Statistics [burst-statistics.com](https://burst-statistics.com)
+Burst will maintain and grow a knowledgebase about Burst Statistics and other products to assist, while using Burst Statistics [burst-statistics.com](https://burst-statistics.com)
 = Can I block IP Addresses?
-Before creating a dedicated user interface we collect proposed features as MU Plugins at [Github - Burst Integrations](https://github.com/Really-Simple-Plugins/burst-integrations)
+Yes, you can block IP addresses in the Burst Statistics settings. You can also exclude User Roles from being tracked.
 = Why is Burst Statistics Privacy-friendly? =
 Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone.
 = What is Cookieless tracking? =
-Burst Statistics can be used without setting cookies or storing data in browsers. This, however, can affect accuracy; that's why a hybrid option is possible with cookies after consent. Read more about [Cookieless tracking](https://burst-statistics.com/definition/what-is-cookieless-tracking/).
+Burst Statistics can be used without setting cookies or storing data in browsers. However, this can affect accuracy; that's why a hybrid option is possible with cookies after consent. Read more about [Cookieless tracking](https://burst-statistics.com/definition/what-is-cookieless-tracking/).
 = Does it affect performance? =
 Burst Statistics uses an endpoint to minimize requests during sessions. For best performance you can always use our 'Turbo Mode' which loads Burst in the footer, using the defer attribute.
 = Do you mind if I give feedback about the product? =
