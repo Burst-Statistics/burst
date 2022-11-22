@@ -351,9 +351,6 @@ function burst_get_data($request){
 		case 'today':
 			$data = BURST()->statistics->get_today_data($args);
 			break;
-		case 'goals':
-			$data = BURST()->statistics->get_today_data($args);
-			break;
 		case 'insights':
             $args['interval'] = sanitize_title($request_args['interval']);
 			$data = BURST()->statistics->get_insights_data($args);
@@ -361,6 +358,7 @@ function burst_get_data($request){
 		case 'pages':
 			$data = BURST()->statistics->get_pages_data($args);
 			break;
+
 		case 'referrers':
 			$data = BURST()->statistics->get_referrers_data($args);
 			break;
