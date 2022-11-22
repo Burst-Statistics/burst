@@ -65,7 +65,19 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
-= 1.2.2 =
+= 1.3.0 =
+* Improvement: React dashboard & settings page. This helps us speed up development and improve the user experience.
+* Improvement: Settings for blocking IP addresses & user roles from tracking. Props @lowym
+* Improvement: Improved endpoint path. Path is now dynamic with WP_CONTENT_DIR. Props @HubertGL
+* Improvement: Improved performance because of REST API optimizer for the dashboard.
+* Improvement: Show all results in the datatables. Props @alfanova
+* Improvement: Added RTL support.
+* Improvement: Added 'plain' permalinks support.
+* Feature: Change metrics for insights chart.
+* Feature: Show hourly stats in the insights chart. Props @perties
+* Feature: Show data for today in the 'Statistics' tab. Props @perties
+
+= 1.2.3 =
 * Fix: Fixed an issue with a translatable string
 * Tested up to WordPress 6.1
 
