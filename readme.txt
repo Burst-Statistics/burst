@@ -5,7 +5,7 @@ Tags: statistics, analytics, privacy, analytics alternative
 Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.2
-Tested up to: 6.0
+Tested up to: 6.1
 Stable tag: 1.3.0
 
 Self-hosted and privacy-friendly analytics tool. 
@@ -57,7 +57,7 @@ Before creating a dedicated user interface we collect proposed features as MU Pl
 Burst Statistics provides an Analytics Dashboard with anonymized data that is yours, and yours alone.
 = What is Cookieless tracking? =
 Burst Statistics can be used without setting cookies or storing data in browsers. This, however, can affect accuracy; that's why a hybrid option is possible with cookies after consent. Read more about [Cookieless tracking](https://burst-statistics.com/definition/what-is-cookieless-tracking/).
-= Does it affect perfomance? =
+= Does it affect performance? =
 Burst Statistics uses an endpoint to minimize requests during sessions. For best performance you can always use our 'Turbo Mode' which loads Burst in the footer, using the defer attribute.
 = Do you mind if I give feedback about the product? =
 We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
@@ -65,14 +65,19 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.2.2 =
+* Fix: Fixed an issue with a translatable string
+* Tested up to WordPress 6.1
+
+= 1.2.2 =
+* Fix: Fixed an issue where duplicating a WooCommerce product would copy the total pageviews from the original product.
+
 = 1.2.1 =
 * Fix: Fixed an issue where adding role capabilities would result in a fatal error.
 * Fix: Post and page counts did not update, this is fixed now.
 * Fix: Changed endpoint DIR to URL to prevent 404 errors on subfolder installs.
 * Improvement: Delete endpoint on uninstallation.
 
-
-== Change log ==
 = 1.2.0 =
 * Feature: Introducing defer/footer as option
 * Feature: Introducing new  improved tracking method
@@ -100,7 +105,7 @@ Not...yet.
 = 1.1.1 =
 * Improvement: Added capabilities to view and/or edit burst
 * Improvement: Added new devices to recognized devices
-* Improvement: Added filters so that you can change the decimal and thousand seperator
+* Improvement: Added filters so that you can change the decimal and thousand separator
 
 = 1.1.0 =
 * Fix: better tracking script. Hits from one pageview can not be registered multiple times now

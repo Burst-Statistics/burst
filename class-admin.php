@@ -264,7 +264,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 	        return ob_get_clean();
         }
 
-
 		/**
 		 * Initialize the grid
 		 */

@@ -26,7 +26,6 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 		 *
 		 */
 		public function __construct() {
-
 			if ( isset($_GET['license']) ) {
 				$this->license = sanitize_title($_GET['license']);
 			}
