@@ -702,13 +702,12 @@ if ( ! class_exists( "burst_admin" ) ) {
                 }
 
                 .burst-deactivate-notice-content h3, .burst-deactivate-notice-content ul{
-                    font-size:14px!important;
                 }
 
                 .burst-deactivate-notice-footer {
                     display: flex;
                     gap:10px;
-                    padding: 20px 10px;
+                    padding: 15px 10px 0 10px;
                 }
 
                 .burst-deactivation-popup ul {
@@ -716,10 +715,8 @@ if ( ! class_exists( "burst_admin" ) ) {
                     padding-left: 20px;
                 }
                 .burst-deactivate-notice-footer .button {
-                    padding: 10px;
                     min-width: fit-content;
                     white-space: nowrap;
-                    border-radius: 6px;
                     cursor: pointer;
                     text-decoration: none;
                     text-align: center;
@@ -744,9 +741,9 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 	        <div id="deactivate_and_delete_data" style="display: none;">
 	                <div class="burst-deactivate-notice-content">
-	                    <h3 style="margin:0 0 20px 0; text-align: left;">
-	                        <?php _e("To deactivate the plugin correctly, please select if you want to:", "burst-statistics" ) ?></h3>
-	                    <ul style="text-align: left; font-size: 1.2em;">
+	                    <h4 style="margin:0 0 20px 0; text-align: left; font-size: 1.1em;">
+	                        <?php _e("To deactivate the plugin correctly, please select if you want to:", "burst-statistics" ) ?></h4>
+	                    <ul style="text-align: left;">
 
 	                        <li><?php _e("Deactivate", "burst-statistics" ) ?></li>
 	                        <li>

@@ -1,314 +1,225 @@
-#, fuzzy
+# Copyright (C) 2022 Really Simple Plugins
+# This file is distributed under the same license as the Burst Statistics Premium plugin.
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"Project-Id-Version: Burst Statistics Premium\n"
-"POT-Creation-Date: 2022-03-01 15:41+0100\n"
-"PO-Revision-Date: 2022-03-01 15:41+0100\n"
-"Last-Translator: Rogier Lankhorst <rogierlankhorst@gmail.com>\n"
-"Language-Team: Rogier Lankhorst <rogierlankhorst@gmail.com>\n"
+"Project-Id-Version: Burst Statistics Premium 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/burst-premium\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.1\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
-"X-Poedit-WPHeader: burst-premium.php\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
-"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
-"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: *.js\n"
+"POT-Creation-Date: 2022-11-18T13:53:38+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.7.1\n"
+"X-Domain: burst-statistics\n"
+
+#. Plugin Name of the plugin
+msgid "Burst Statistics Premium"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://www.wordpress.org/plugins/burst-statistics"
+msgstr ""
+
+#. Description of the plugin
+msgid "Privacy-friendly Statistics for WordPress"
+msgstr ""
+
+#. Author of the plugin
+msgid "Really Simple Plugins"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://www.burst-statistics.com"
+msgstr ""
 
 #: burst-premium.php:41
-msgid "Burst cannot be activated. The plugin requires PHP 5.6 or higher"
+msgid "Burst cannot be activated. The plugin requires PHP 7.2 or higher"
 msgstr ""
 
 #: burst-premium.php:48
 msgid "Burst cannot be activated. The plugin requires WordPress 5.0 or higher"
 msgstr ""
 
-#: class-admin.php:129 class-admin.php:310
-msgid "Today"
+#: class-admin.php:69
+msgid "This website uses Burst Statistics, a Privacy-Friendly Statistics Tool to analyze visitor behavior. For this functionality we (this website) collect anonymized data, stored locally without sharing it with other parties. For more information, please read the %s Privacy Statement %s from Burst."
 msgstr ""
 
-#: class-admin.php:130
-msgid "Yesterday"
-msgstr ""
-
-#: class-admin.php:131
-msgid "Last 7 days"
-msgstr ""
-
-#: class-admin.php:132
-msgid "Last 30 days"
-msgstr ""
-
-#: class-admin.php:133
-msgid "Last 90 days"
-msgstr ""
-
-#: class-admin.php:134
-msgid "This Month"
-msgstr ""
-
-#: class-admin.php:135
-msgid "Last Month"
-msgstr ""
-
-#: class-admin.php:137
-msgid "Apply"
-msgstr ""
-
-#: class-admin.php:138 class-admin.php:742 upgrade/upgrade-to-pro.php:363
-msgid "Cancel"
-msgstr ""
-
-#: class-admin.php:139
-msgid "From"
-msgstr ""
-
-#: class-admin.php:140
-msgid "To"
-msgstr ""
-
-#: class-admin.php:141
-msgid "Custom"
-msgstr ""
-
-#: class-admin.php:142
-msgctxt "Abbreviation for week"
-msgid "W"
-msgstr ""
-
-#: class-admin.php:143
-msgctxt "Abbreviation for monday"
-msgid "Mo"
-msgstr ""
-
-#: class-admin.php:144
-msgctxt "Abbreviation for Tuesday"
-msgid "Tu"
-msgstr ""
-
-#: class-admin.php:145
-msgctxt "Abbreviation for Wednesday"
-msgid "We"
-msgstr ""
-
-#: class-admin.php:146
-msgctxt "Abbreviation for Thursday"
-msgid "Th"
-msgstr ""
-
-#: class-admin.php:147
-msgctxt "Abbreviation for Friday"
-msgid "Fr"
-msgstr ""
-
-#: class-admin.php:148
-msgctxt "Abbreviation for Saturday"
-msgid "Sa"
-msgstr ""
-
-#: class-admin.php:149
-msgctxt "Abbreviation for Sunday"
-msgid "Su"
-msgstr ""
-
-#: class-admin.php:150
-msgid "January"
-msgstr ""
-
-#: class-admin.php:151
-msgid "February"
-msgstr ""
-
-#: class-admin.php:152
-msgid "March"
-msgstr ""
-
-#: class-admin.php:153
-msgid "April"
-msgstr ""
-
-#: class-admin.php:154
-msgid "May"
-msgstr ""
-
-#: class-admin.php:155
-msgid "June"
-msgstr ""
-
-#: class-admin.php:156
-msgid "July"
-msgstr ""
-
-#: class-admin.php:157
-msgid "August"
-msgstr ""
-
-#: class-admin.php:158
-msgid "September"
-msgstr ""
-
-#: class-admin.php:159
-msgid "October"
-msgstr ""
-
-#: class-admin.php:160
-msgid "November"
-msgstr ""
-
-#: class-admin.php:161
-msgid "December"
-msgstr ""
-
-#: class-admin.php:162 pro/class-admin.php:223
-msgid "Search"
-msgstr ""
-
-#: class-admin.php:163 class-admin.php:585 statistics/class-statistics.php:90
-#: statistics/class-statistics.php:848
-msgid "Pageviews"
-msgstr ""
-
-#: class-admin.php:164 statistics/class-statistics.php:89
-#: statistics/class-statistics.php:864
-msgid "Unique visitors"
-msgstr ""
-
-#: class-admin.php:165 class-admin.php:502
-msgid "No data found"
-msgstr ""
-
-#: class-admin.php:166
-msgid "No matching records found"
-msgstr ""
-
-#: class-admin.php:187 class-admin.php:317
+#: class-admin.php:171
+#: class-admin.php:298
+#: settings/config/config.php:20
 msgid "Settings"
 msgstr ""
 
-#: class-admin.php:194 shepherd/tour.php:89 templates/admin_wrap.php:31
+#: class-admin.php:178
+#: settings/build/index.js:19582
+#: settings/src/Header.js:42
+#: settings/build/index.js:15490
 msgid "Support"
 msgstr ""
 
-#: class-admin.php:232 class-admin.php:462
-msgid "Statistics"
-msgstr ""
-
-#: class-admin.php:252 pro/class-statistics.php:29
-msgid "Conversion percentages"
-msgstr ""
-
-#: class-admin.php:253 pro/class-statistics.php:30
-#: pro/templates/experiments/objective.php:47
-#: pro/templates/experiments/objective.php:62
-msgid "Conversions"
-msgstr ""
-
-#: class-admin.php:254 pro/class-statistics.php:31
-msgid "Visits"
-msgstr ""
-
-#: class-admin.php:303
+#: class-admin.php:284
 msgid "Your notices"
 msgstr ""
 
-#: class-admin.php:323
+#: class-admin.php:291
+#: settings/config/config.php:196
+#: settings/build/index.js:21896
+#: settings/src/Statistics/DateRange/DateRange.js:30
+#: settings/build/index.js:17441
+msgid "Today"
+msgstr ""
+
+#: class-admin.php:304
+#: settings/config/config.php:212
 msgid "Tips & Tricks"
 msgstr ""
 
-#: class-admin.php:329
+#: class-admin.php:310
+#: settings/config/config.php:220
 msgid "Other Plugins"
 msgstr ""
 
-#: class-admin.php:339
+#: class-admin.php:320
+#: settings/config/config.php:229
 msgid "Insights"
 msgstr ""
 
-#: class-admin.php:346
+#: class-admin.php:327
+#: settings/config/config.php:240
 msgid "Compare"
 msgstr ""
 
-#: class-admin.php:357
+#: class-admin.php:338
+#: settings/config/config.php:247
 msgid "Devices"
 msgstr ""
 
-#: class-admin.php:365
+#: class-admin.php:346
 msgid "Most visited"
 msgstr ""
 
-#: class-admin.php:373
+#: class-admin.php:354
 msgid "Top referrers"
 msgstr ""
 
-#: class-admin.php:457 pro/class-admin.php:51
+#: class-admin.php:438
+#: settings/config/config.php:8
+#: settings/templates/wordpress/dashboard-widget.php:53
 msgid "Dashboard"
 msgstr ""
 
-#: class-admin.php:485 upgrade/upgrade-to-pro.php:182
+#: class-admin.php:443
+#: class-frontend.php:33
+#: settings/config/config.php:14
+#: settings/settings.php:73
+#: settings/templates/wordpress/dashboard-widget.php:54
+msgid "Statistics"
+msgstr ""
+
+#: class-admin.php:466
+#: upgrade/upgrade-to-pro.php:182
+#: settings/build/index.js:18590
+#: settings/src/Dashboard/OtherPlugins.js:88
+#: settings/build/index.js:14737
 msgid "Installed"
 msgstr ""
 
-#: class-admin.php:488
+#: class-admin.php:469
 msgid "Upgrade to pro"
 msgstr ""
 
-#: class-admin.php:492 upgrade/upgrade-to-pro.php:139
-#: upgrade/upgrade-to-pro.php:152 upgrade/upgrade-to-pro.php:169
+#: class-admin.php:473
+#: upgrade/upgrade-to-pro.php:139
+#: upgrade/upgrade-to-pro.php:152
+#: upgrade/upgrade-to-pro.php:169
+#: settings/build/index.js:18561
+#: settings/src/Dashboard/OtherPlugins.js:67
+#: settings/build/index.js:14716
 msgid "Install"
 msgstr ""
 
-#: class-admin.php:584
-msgid "Page"
+#: class-admin.php:483
+msgid "No data found"
 msgstr ""
 
-#: class-admin.php:726
+#: class-admin.php:571
+#: settings/templates/wordpress/dashboard-widget.php:34
+#: settings/templates/wordpress/dashboard-widget.php:44
+#: statistics/class-statistics.php:133
+#: settings/build/index.js:21703
+#: settings/build/index.js:22302
+#: settings/build/index.js:22418
+#: settings/src/Statistics/CompareBlock.js:18
+#: settings/src/Statistics/InsightsBlock.js:48
+#: settings/src/Statistics/InsightsHeader.js:18
+#: settings/build/index.js:17284
+#: settings/build/index.js:17817
+#: settings/build/index.js:17918
+msgid "Pageviews"
+msgstr ""
+
+#: class-admin.php:748
 msgid "To deactivate the plugin correctly, please select if you want to:"
 msgstr ""
 
-#: class-admin.php:729 class-admin.php:743
+#: class-admin.php:751
+#: class-admin.php:765
 msgid "Deactivate"
 msgstr ""
 
-#: class-admin.php:731
+#: class-admin.php:753
 msgid "Deactivate, and remove all statistics, experiments and settings."
 msgstr ""
 
-#: class-admin.php:732
+#: class-admin.php:754
 msgid "The data will be gone forever."
 msgstr ""
 
-#: class-admin.php:744
+#: class-admin.php:764
+#: upgrade/upgrade-to-pro.php:363
+msgid "Cancel"
+msgstr ""
+
+#: class-admin.php:766
 msgid "Deactivate and delete all data"
 msgstr ""
 
-#: class-field.php:267
-msgid "This field is required. Please complete the question before continuing"
+#: class-notices.php:69
+msgid "Completed"
 msgstr ""
 
-#: class-field.php:572
-msgid "No options found"
+#: class-notices.php:70
+msgid "New!"
 msgstr ""
 
-#: class-field.php:880
-msgid "Copy"
+#: class-notices.php:71
+msgid "Warning"
 msgstr ""
 
-#: class-field.php:882
-msgid "Copied!"
+#: class-notices.php:72
+msgid "Error"
 msgstr ""
 
-#: class-field.php:1056 class-field.php:1106 class-field.php:1152
-#: class-field.php:1198
-msgid "Choose an option"
+#: class-notices.php:73
+msgid "Open"
 msgstr ""
 
-#: class-field.php:1340 pro/class-wizard.php:532
-msgid "Save"
+#: class-notices.php:74
+msgid "Premium"
+msgstr ""
+
+#: class-notices.php:109
+msgid "Due to your server or website configuration it is not possible to track statistics."
+msgstr ""
+
+#: class-notices.php:123
+msgid "Black Friday sale! Get 40% Off Burst Pro."
+msgstr ""
+
+#: class-notices.php:138
+msgid "If you have any suggestions to improve our plugin, feel free to %sopen a support thread%s."
 msgstr ""
 
 #: class-review.php:96
@@ -316,14 +227,11 @@ msgid "Hi, you have been using Burst for more than a month now, awesome!"
 msgstr ""
 
 #: class-review.php:98
-#, php-format
 msgid "If you have any questions or feedback, leave us a %smessage%s."
 msgstr ""
 
 #: class-review.php:101
-msgid ""
-"If you have a moment, please consider leaving a review on WordPress.org to "
-"spread the word. We greatly appreciate it!"
+msgid "If you have a moment, please consider leaving a review on WordPress.org to spread the word. We greatly appreciate it!"
 msgstr ""
 
 #: class-review.php:106
@@ -338,720 +246,215 @@ msgstr ""
 msgid "Don't show again"
 msgstr ""
 
-#: config/class-config.php:26 pro/config/class-config.php:28
-#: pro/templates/experiments/objective.php:117
-msgid "Yes"
-msgstr ""
-
-#: config/class-config.php:27 pro/config/class-config.php:29
-#: pro/templates/experiments/objective.php:119
-msgid "No"
-msgstr ""
-
-#: config/notices.php:190 pro/experiments/class-experiment-table.php:114
-#: pro/functions.php:341 templates/dashboard/progress.php:42
-msgid "Completed"
-msgstr ""
-
-#: config/notices.php:193 templates/dashboard/progress.php:45
-msgid "Open"
-msgstr ""
-
-#: config/notices.php:196 templates/dashboard/progress.php:48
-msgid "Urgent"
-msgstr ""
-
-#: cron/cron.php:31
-msgid "Once every week"
-msgstr ""
-
-#: cron/cron.php:35
-msgid "Once every day"
-msgstr ""
-
-#: cron/cron.php:39
-msgid "Once every hour"
-msgstr ""
-
-#: functions.php:48
-#, php-format
+#: functions.php:64
 msgid "For more information on this subject, please read this %sarticle%s"
 msgstr ""
 
-#: pro/class-admin.php:34
-#, php-format
-msgid "%s active experiments"
+#: settings/config/config.php:26
+#: settings/config/config.php:31
+msgid "General"
 msgstr ""
 
-#: pro/class-admin.php:60
-msgid "Active experiments"
+#: settings/config/config.php:38
+msgid "Advanced"
 msgstr ""
 
-#: pro/class-admin.php:79 pro/class-admin.php:101 pro/class-admin.php:102
-#: pro/class-admin.php:215 pro/experiments/class-experiment.php:78
-msgid "New experiment"
+#: settings/config/config.php:43
+msgid "Tracking"
 msgstr ""
 
-#: pro/class-admin.php:93 pro/class-admin.php:94 pro/class-admin.php:212
-msgid "Experiments"
+#: settings/config/config.php:92
+msgid "Enable Turbo mode"
 msgstr ""
 
-#: pro/class-admin.php:132
-msgid "Experiment completed on"
+#: settings/config/config.php:95
+msgid "What is Turbo mode?"
 msgstr ""
 
-#: pro/class-admin.php:258
-msgid "Create experiment"
+#: settings/config/config.php:96
+msgid "Turbo mode improves pagespeed. When enabled, the script is no longer loaded in the header asynchronously, but is loaded in the footer and deferred. You could lose data from visitors who leave before the page has fully loaded."
 msgstr ""
 
-#: pro/class-admin.php:258
-msgid "Edit experiment"
+#: settings/config/config.php:107
+msgid "Enable Cookieless tracking"
 msgstr ""
 
-#: pro/class-statistics.php:28
-msgid "Count"
+#: settings/config/config.php:110
+msgid "What is Cookieless tracking?"
 msgstr ""
 
-#: pro/class-statistics.php:122 statistics/class-statistics.php:163
-msgid "No data for this selection"
+#: settings/config/config.php:111
+msgid "With cookieless tracking enabled, Burst will not use cookies to match tracking data with users. It will use contextual data, like browser version and device, also called 'fingerprinting'. The latter could be less reliable for some users."
 msgstr ""
 
-#: pro/class-statistics.php:138 pro/experiments/experimenting.php:383
-#: pro/experiments/experimenting.php:395 pro/experiments/experimenting.php:409
-#: pro/experiments/experimenting.php:417
-msgid "Experiment"
+#: settings/config/config.php:123
+msgid "Restart"
 msgstr ""
 
-#: pro/class-wizard.php:39
-msgid ""
-"Great, the main wizard is completed. This means the general data is already "
-"in the system, and you can continue with the next question. This will start "
-"a new, empty document."
+#: settings/config/config.php:124
+msgid "Restart plugin tour"
 msgstr ""
 
-#: pro/class-wizard.php:44
-#, php-format
-msgid ""
-"The wizard isn't completed yet. If you have answered all required questions, "
-"you just need to click 'finish' to complete it. In the wizard some general "
-"data is entered which is needed for this document. %sPlease complete the "
-"wizard first%s."
+#: settings/config/config.php:133
+msgid "Exclude user roles from being tracked"
 msgstr ""
 
-#: pro/class-wizard.php:90
-msgid ""
-"Not all required fields are completed yet. Please check the steps to "
-"complete all required questions before you can start the experiment."
+#: settings/config/config.php:136
+msgid "Excluding visitors"
 msgstr ""
 
-#: pro/class-wizard.php:100
-msgid "Start your experiment"
+#: settings/config/config.php:137
+msgid "You can exclude visitors by user role and IP address. This will affect new data only."
 msgstr ""
 
-#: pro/class-wizard.php:115 pro/class-wizard.php:136 pro/class-wizard.php:156
-#: pro/experiments/class-experiment-table.php:296
-#: pro/templates/experiments/experiment-setup.php:20
-msgid "Goal"
+#: settings/config/config.php:148
+msgid "Exclude IP address from tracking, separate with a line break"
 msgstr ""
 
-#: pro/class-wizard.php:116 pro/class-wizard.php:137 pro/class-wizard.php:157
-#: pro/templates/experiments/objective.php:106
-msgid "Significance"
+#: settings/config/config.php:185
+msgid "Progress"
 msgstr ""
 
-#: pro/class-wizard.php:121
-msgid "Your experiment is active"
+#: settings/config/config.php:204
+msgid "Goals"
 msgstr ""
 
-#: pro/class-wizard.php:143
-msgid "Your experiment is completed"
+#: settings/config/config.php:254
+msgid "Per page"
 msgstr ""
 
-#: pro/class-wizard.php:158
-msgid "Started on"
+#: settings/config/config.php:261
+msgid "Referrers"
 msgstr ""
 
-#: pro/class-wizard.php:159
-msgid "Ended on"
+#: settings/settings.php:283
+msgid "Self-hosted, Privacy-friendly analytics tool."
 msgstr ""
 
-#: pro/class-wizard.php:350
-#, php-format
-msgid "The wizard is currently being edited by %s"
-msgstr ""
-
-#: pro/class-wizard.php:351
-#, php-format
-msgid "If this user stops editing, the lock will expire after %s minutes."
-msgstr ""
-
-#: pro/class-wizard.php:435
-msgid "The Wizard"
-msgstr ""
-
-#: pro/class-wizard.php:522 shepherd/tour.php:104
-msgid "Previous"
-msgstr ""
-
-#: pro/class-wizard.php:526 pro/class-wizard.php:535
-msgid "Save and continue"
-msgstr ""
-
-#: pro/class-wizard.php:528 pro/class-wizard.php:541
-msgid "Start experiment"
-msgstr ""
-
-#: pro/class-wizard.php:543 pro/templates/experiments/statistics-footer.php:11
-msgid "Stop experiment"
-msgstr ""
-
-#: pro/class-wizard.php:544 pro/class-wizard.php:546
-#: pro/experiments/class-experiment-table.php:276
-msgid "View report"
-msgstr ""
-
-#: pro/config/class-config.php:33
-#, php-format
-msgid ""
-"If you want to run a/b testing to track which banner gets the highest "
-"acceptance ratio, %sget premium%s."
-msgstr ""
-
-#: pro/config/experiment-settings.php:10
-msgid "Experiment name"
-msgstr ""
-
-#: pro/config/experiment-settings.php:11
-msgid "For example: Red vs green buttons"
-msgstr ""
-
-#: pro/config/experiment-settings.php:12
-msgid ""
-"This name is for internal use only. Try to give the experiment a clear name, "
-"so you can find this test again."
-msgstr ""
-
-#: pro/config/experiment-settings.php:20
-msgid "Which page do you want to improve?"
-msgstr ""
-
-#: pro/config/experiment-settings.php:27
-msgid ""
-"The Control is the page you want to improve (or compare with another page)."
-msgstr ""
-
-#: pro/config/experiment-settings.php:35
-msgid "Which page do you want to use as the variant?"
-msgstr ""
-
-#: pro/config/experiment-settings.php:42
-msgid "The Variant is the page you think will do better than the control."
-msgstr ""
-
-#: pro/config/experiment-settings.php:52
-msgid "Page visit"
-msgstr ""
-
-#: pro/config/experiment-settings.php:53
-msgid "Click on element"
-msgstr ""
-
-#: pro/config/experiment-settings.php:54
-msgid "Woocommerce sale"
-msgstr ""
-
-#: pro/config/experiment-settings.php:56
-msgid "Select which metric you want to improve"
-msgstr ""
-
-#: pro/config/experiment-settings.php:58
-msgid ""
-"Select what metric you want to improve. For example a click on a button or a "
-"visit on a checkout page."
-msgstr ""
-
-#: pro/config/experiment-settings.php:66
-msgid "Add as a class to the button(s) you want to track"
-msgstr ""
-
-#: pro/config/experiment-settings.php:69
-msgid ".class or #id"
-msgstr ""
-
-#: pro/config/experiment-settings.php:80
-msgid "Which page do you want as a goal?"
-msgstr ""
-
-#: pro/config/experiment-settings.php:97
-msgid "Any Woocommerce sale"
-msgstr ""
-
-#: pro/config/experiment-settings.php:98
-msgid "Specific Woocommerce product"
-msgstr ""
-
-#: pro/config/experiment-settings.php:100
-msgid "Which Woocommerce sales do you want to track? "
-msgstr ""
-
-#: pro/config/experiment-settings.php:111
-msgid "Select the product"
-msgstr ""
-
-#: pro/config/experiment-settings.php:128
-msgid "What is most important for your experiment?"
-msgstr ""
-
-#: pro/config/experiment-settings.php:130
-msgid "Fast results"
-msgstr ""
-
-#: pro/config/experiment-settings.php:131
-msgid "Accurate data"
-msgstr ""
-
-#: pro/config/experiment-settings.php:132
-msgid "A fine balance of accuracy and speed"
-msgstr ""
-
-#: pro/config/experiment-settings.php:136
-msgid ""
-"Gathering accurate data is time consuming. When you do not have a lot of "
-"visitors, it is recommend to choose fast results. If you do have a lot of "
-"visitors choose whichever you want."
-msgstr ""
-
-#: pro/config/experiment-settings.php:145
-msgid "When should the experiment end?"
-msgstr ""
-
-#: pro/config/experiment-settings.php:146
-msgid ""
-"Burst will automatically determine when an experiment is finished. Leave "
-"blank if you do not need an explicit end date."
-msgstr ""
-
-#: pro/config/experiment-steps.php:8
-msgid "Create"
-msgstr ""
-
-#: pro/config/experiment-steps.php:12
-msgid "Metrics"
-msgstr ""
-
-#: pro/config/experiment-steps.php:16
-msgid "Define goals"
-msgstr ""
-
-#: pro/config/experiment-steps.php:19
-msgid "Duration and significance"
-msgstr ""
-
-#: pro/config/experiment-steps.php:20
-msgid ""
-"Burst will help you find the best settings for your experiment. When we "
-"gather enough data we will recommend the best settings for the experiments "
-"you create."
-msgstr ""
-
-#: pro/config/experiment-steps.php:26
-msgid "Start"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:65
-msgid "experiment"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:66
-msgid "experiments"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:113
-msgid "All"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:115 pro/functions.php:338
-msgid "Active"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:116 pro/functions.php:350
-msgid "Draft"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:117 pro/functions.php:333
-msgid "Archived"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:133
-#: pro/experiments/class-experiment-table.php:293
-msgid "Name"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:167
-#: pro/experiments/class-experiment-table.php:226
-msgid "Delete"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:209
-#: pro/experiments/experimenting.php:192
-msgid "Unnamed experiment"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:221
-#: pro/templates/wizard/conclusion.php:12
-#: pro/templates/wizard/conclusion.php:20
-msgid "Edit"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:223
-msgid "Archive"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:240
-msgid "No KPI selected"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:249
-msgid "No control ID"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:254
-msgid "Edit control post"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:266
-msgid "Edit variant post"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:294
-msgid "Control"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:295
-msgid "Variant"
-msgstr ""
-
-#: pro/experiments/class-experiment-table.php:297
-msgid "Status"
-msgstr ""
-
-#: pro/experiments/experimenting.php:127
-msgid "Variant:"
-msgstr ""
-
-#: pro/experiments/experimenting.php:402
-#, php-format
-msgid "Experiment <span class=\"count\">(%s)</span>"
-msgid_plural "Experiments <span class=\"count\">(%s)</span>"
-msgstr[0] ""
-msgstr[1] ""
-
-#: pro/filters-actions.php:17
-msgid "Your experiment"
-msgstr ""
-
-#: pro/filters-actions.php:25
-msgid "Objective"
-msgstr ""
-
-#: pro/filters-actions.php:34
-msgid "Setup"
-msgstr ""
-
-#: pro/functions.php:26
-msgid ""
-"You have installed Complianz Privacy Suite. We have deactivated the free "
-"plugin, it can be safely removed."
-msgstr ""
-
-#: pro/functions.php:345
-msgid "Loading..."
-msgstr ""
-
-#: pro/templates/experiments/experiment-setup.php:12
-msgid "Test period"
-msgstr ""
-
-#: pro/templates/experiments/experiment-setup.php:16
-msgid "Confidence (Significance)"
-msgstr ""
-
-#: pro/templates/experiments/objective.php:51
-#: pro/templates/experiments/objective.php:66
-msgid "Conversion rate"
-msgstr ""
-
-#: pro/templates/experiments/objective.php:70
-msgid "Uplift"
-msgstr ""
-
-#: pro/templates/experiments/objective.php:107
-msgid "(Significant)"
-msgstr ""
-
-#: pro/templates/experiments/objective.php:107
-msgid "(Not significant)"
-msgstr ""
-
-#: pro/templates/experiments/objective.php:110
-msgid "Margin of error"
-msgstr ""
-
-#: pro/templates/experiments/objective.php:114
-msgid "Sample size reached"
-msgstr ""
-
-#: pro/templates/experiments/statistics-footer.php:10
-msgid "Pause"
-msgstr ""
-
-#: pro/templates/experiments/statistics.php:24
-msgid "Show experiment data for:"
-msgstr ""
-
-#: pro/templates/experiments/statistics.php:26
-msgid "Select an experiment"
-msgstr ""
-
-#: pro/templates/wizard/conclusion.php:4
-msgid "Versus"
-msgstr ""
-
-#: pro/templates/wizard/conclusion.php:23
-msgid "Experiment settings"
-msgstr ""
-
-#: pro/templates/wizard/content.php:20
-msgid "Notifications"
-msgstr ""
-
-#: shepherd/tour.php:47
-#, php-format
-msgid "Welcome to %s"
-msgstr ""
-
-#: shepherd/tour.php:48
-#, php-format
-msgid "%s is now active."
-msgstr ""
-
-#: shepherd/tour.php:48
-msgid "Follow a quick tour and make sure everything works."
-msgstr ""
-
-#: shepherd/tour.php:54
-msgid "Your dashboard"
-msgstr ""
-
-#: shepherd/tour.php:55
-msgid ""
-"This is your Dashboard. This will give you an overview of notices, real time "
-"data, and settings"
-msgstr ""
-
-#: shepherd/tour.php:61
-msgid "Real time data"
-msgstr ""
-
-#: shepherd/tour.php:62
-msgid "This block will show you real time visitors."
-msgstr ""
-
-#: shepherd/tour.php:62
-#, php-format
-msgid ""
-"To make sure %s is setup properly, try visiting this website on another "
-"device or open a private window."
-msgstr ""
-
-#: shepherd/tour.php:68
-msgid "Real time visitors"
-msgstr ""
-
-#: shepherd/tour.php:69
-msgid ""
-"Did you visit your website on another device? This number should change. If "
-"that is not the case, feel free to open a support thread."
-msgstr ""
-
-#: shepherd/tour.php:75
-msgid "Your website statistics"
-msgstr ""
-
-#: shepherd/tour.php:76
-msgid ""
-"This page is probably quite empty at the moment. The data from your website "
-"will show up here in a few days. So be sure to come back soon."
-msgstr ""
-
-#: shepherd/tour.php:82
-msgid "Changing the period"
-msgstr ""
-
-#: shepherd/tour.php:83
-msgid ""
-"Over here you can change the date range for the data being shown. Click on "
-"to different days or click twice on a single day to show the data for that "
-"period."
-msgstr ""
-
-#: shepherd/tour.php:90
-msgid ""
-"Feel free to post your questions or feedback on the WordPress forums. We are "
-"happy to help!"
-msgstr ""
-
-#: shepherd/tour.php:103
-msgid "Next"
-msgstr ""
-
-#: shepherd/tour.php:105
-msgid "Skip tour"
-msgstr ""
-
-#: shepherd/tour.php:107
-msgid "Start tour"
-msgstr ""
-
-#: shepherd/tour.php:108
-msgid "End tour"
-msgstr ""
-
-#: statistics/class-statistics.php:402 statistics/class-statistics.php:522
-msgid "Direct"
-msgstr ""
-
-#: statistics/class-statistics.php:414 statistics/class-statistics.php:544
-msgid "Homepage"
-msgstr ""
-
-#: statistics/class-statistics.php:540
-msgid "No referrers today"
-msgstr ""
-
-#: statistics/class-statistics.php:562
-msgid "No pages visited today"
-msgstr ""
-
-#: statistics/class-statistics.php:849
-msgid "pageviews per session"
-msgstr ""
-
-#: statistics/class-statistics.php:856
-msgid "Sessions"
-msgstr ""
-
-#: statistics/class-statistics.php:857
-msgid "per session"
-msgstr ""
-
-#: statistics/class-statistics.php:865
-msgid "are new visitors"
-msgstr ""
-
-#: statistics/class-statistics.php:877
-msgid "Bounce rate"
-msgstr ""
-
-#: statistics/class-statistics.php:878
-msgid "visitors bounced"
-msgstr ""
-
-#: templates/admin_wrap.php:45
-msgid "Changes saved successfully"
-msgstr ""
-
-#: templates/dashboard/other-plugins.php:12
-msgid "Easily migrate your website to SSL"
-msgstr ""
-
-#: templates/dashboard/other-plugins.php:20
+#: settings/settings.php:291
+#: settings/templates/dashboard/other-plugins.php:20
 msgid "Complianz Privacy Suite - Cookie Consent Management as it should be "
 msgstr ""
 
-#: templates/dashboard/other-plugins.php:28
+#: settings/settings.php:298
+msgid "Terms and Conditions"
+msgstr ""
+
+#: settings/templates/dashboard/other-plugins.php:12
+msgid "Easily migrate your website to SSL"
+msgstr ""
+
+#: settings/templates/dashboard/other-plugins.php:28
 msgid "Privacy Friendly Statistics"
 msgstr ""
 
-#: templates/dashboard/progress-footer.php:3
-msgid "View my statistics"
-msgstr ""
-
-#: templates/dashboard/progress.php:20
-#, php-format
-msgid ""
-"You have no new notices! Have a look at our %sdocumentation%s and see all "
-"the possibilities %s has to offer."
-msgstr ""
-
-#: templates/dashboard/progress.php:30
-#, php-format
-msgid ""
-"If you have any suggestions to improve our plugin, feel free to %sopen a "
-"support thread%s."
-msgstr ""
-
-#: templates/dashboard/progress.php:51
-msgid "Premium"
-msgstr ""
-
-#: templates/dashboard/real-time.php:17
-msgid "visitors"
-msgstr ""
-
-#: templates/dashboard/real-time.php:18
-msgid "pageviews"
-msgstr ""
-
-#: templates/dashboard/real-time.php:19
-msgid "time"
-msgstr ""
-
-#: templates/dashboard/real-time.php:29
-msgid "online right now"
-msgstr ""
-
-#: templates/dashboard/real-time.php:36
-msgid "Top referrer"
-msgstr ""
-
-#: templates/dashboard/real-time.php:47
-msgid "Most visited page"
-msgstr ""
-
-#: templates/dashboard/settings.php:6
-msgid ""
-"We aim to give the user a really simple experience, that is why we don't "
-"have any settings yet."
-msgstr ""
-
-#: templates/dashboard/settings.php:8
-msgid "Feature request?"
-msgstr ""
-
-#: templates/dashboard/tipstricks-footer.php:3
+#: settings/templates/dashboard/tips-tricks-footer.php:3
 msgid "View all"
 msgstr ""
 
-#: templates/statistics/compare-footer.php:3
-#, php-format
-msgid "vs. the previous %s days"
+#: settings/templates/wordpress/dashboard-widget.php:13
+#: statistics/class-statistics.php:132
+#: settings/build/index.js:22297
+#: settings/build/index.js:22417
+#: settings/src/Statistics/InsightsBlock.js:42
+#: settings/src/Statistics/InsightsHeader.js:17
+#: settings/build/index.js:17811
+#: settings/build/index.js:17917
+msgid "Unique visitors"
 msgstr ""
 
-#: templates/statistics/devices.php:12
-msgid "Desktop"
+#: settings/templates/wordpress/dashboard-widget.php:22
+msgid "Avg. time per session"
 msgstr ""
 
-#: templates/statistics/devices.php:22
-msgid "Tablet"
+#: settings/templates/wordpress/dashboard-widget.php:31
+msgid "Top referrer"
 msgstr ""
 
-#: templates/statistics/devices.php:32
-msgid "Mobile"
+#: settings/templates/wordpress/dashboard-widget.php:41
+msgid "Most visited page"
 msgstr ""
 
-#: templates/statistics/devices.php:42
-msgid "Other"
+#: statistics/class-statistics.php:134
+#: settings/build/index.js:21704
+#: settings/build/index.js:22420
+#: settings/src/Statistics/CompareBlock.js:19
+#: settings/src/Statistics/InsightsHeader.js:20
+#: settings/build/index.js:17285
+#: settings/build/index.js:17920
+msgid "Sessions"
+msgstr ""
+
+#: statistics/class-statistics.php:135
+#: settings/build/index.js:22419
+#: settings/src/Statistics/InsightsHeader.js:19
+#: settings/build/index.js:17919
+msgid "Bounces"
+msgstr ""
+
+#: statistics/class-statistics.php:208
+#: statistics/class-statistics.php:636
+#: statistics/class-statistics.php:831
+#: statistics/class-statistics.php:1026
+msgid "Direct"
+msgstr ""
+
+#: statistics/class-statistics.php:231
+msgid "Live visitors"
+msgstr ""
+
+#: statistics/class-statistics.php:233
+msgid "The amount of people using your website right now. The data updates every 5 seconds."
+msgstr ""
+
+#: statistics/class-statistics.php:236
+msgid "Today visitors"
+msgstr ""
+
+#: statistics/class-statistics.php:238
+msgid "This is the total amount of unique visitors for today."
+msgstr ""
+
+#: statistics/class-statistics.php:243
+msgid "This is your most viewed page for today."
+msgstr ""
+
+#: statistics/class-statistics.php:248
+msgid "This website referred the most amount of visitors."
+msgstr ""
+
+#: statistics/class-statistics.php:251
+msgid "Total pageviews"
+msgstr ""
+
+#: statistics/class-statistics.php:256
+msgid "Average time on page"
+msgstr ""
+
+#: statistics/class-statistics.php:540
+msgid "Page"
+msgstr ""
+
+#: statistics/class-statistics.php:619
+msgid "Referrer"
+msgstr ""
+
+#: statistics/class-statistics.php:624
+msgid "Count"
+msgstr ""
+
+#: statistics/class-statistics.php:851
+#: statistics/class-statistics.php:1034
+msgid "Homepage"
+msgstr ""
+
+#: statistics/class-statistics.php:1025
+#: statistics/class-statistics.php:1026
+msgid "No referrers"
+msgstr ""
+
+#: statistics/class-statistics.php:1033
+msgid "No pageviews"
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:72
@@ -1119,9 +522,7 @@ msgid "Self-hosted and privacy-friendly analytics tool."
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:141
-msgid ""
-"Get detailed insights into visitors' behaviour with Burst Statistics, the "
-"privacy-friendly analytics dashboard from Really Simple Plugins."
+msgid "Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins."
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:150
@@ -1129,10 +530,7 @@ msgid "GDPR/CCPA Privacy Suite"
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:154
-msgid ""
-"Configure your Cookie Notice, Cookie Consent and Cookie Policy with our "
-"Wizard and Cookie Scan. Supports GDPR, DSGVO, TTDSG, LGPD, POPIA, RGPD, CCPA "
-"and PIPEDA."
+msgid "Configure your Cookie Notice, Cookie Consent and Cookie Policy with our Wizard and Cookie Scan. Supports GDPR, DSGVO, TTDSG, LGPD, POPIA, RGPD, CCPA and PIPEDA."
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:167
@@ -1140,10 +538,7 @@ msgid "One click SSL optimization"
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:171
-msgid ""
-"Really Simple SSL automatically detects your settings and configures your "
-"website to run over HTTPS. To keep it lightweight, we kept the options to a "
-"minimum. Your website will move to SSL with one click."
+msgid "Really Simple SSL automatically detects your settings and configures your website to run over HTTPS. To keep it lightweight, we kept the options to a minimum. Your website will move to SSL with one click."
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:225
@@ -1162,17 +557,16 @@ msgstr ""
 msgid "Visit Dashboard"
 msgstr ""
 
-#: upgrade/upgrade-to-pro.php:365 upgrade/upgrade-to-pro.php:366
+#: upgrade/upgrade-to-pro.php:365
+#: upgrade/upgrade-to-pro.php:366
 msgid "An Error Occurred:"
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:365
-#, php-format
 msgid "Install %sManually%s."
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:366
-#, php-format
 msgid "Check your %slicense%s."
 msgstr ""
 
@@ -1180,12 +574,12 @@ msgstr ""
 msgid "Plugin already installed!"
 msgstr ""
 
-#: upgrade/upgrade-to-pro.php:522 upgrade/upgrade-to-pro.php:554
+#: upgrade/upgrade-to-pro.php:522
+#: upgrade/upgrade-to-pro.php:554
 msgid "An error occurred, please try again."
 msgstr ""
 
 #: upgrade/upgrade-to-pro.php:530
-#, php-format
 msgid "Your license key expired on %s."
 msgstr ""
 
@@ -1213,22 +607,628 @@ msgstr ""
 msgid "Your license key has reached its activation limit."
 msgstr ""
 
-#. Plugin Name of the plugin/theme
-msgid "Burst Statistics Premium"
+#: settings/build/index.js:18322
+#: settings/build/index.js:19100
+#: settings/src/Dashboard/GoalsBlock.js:18
+#: settings/src/Dashboard/TodayBlock.js:18
+#: settings/build/index.js:14521
+#: settings/build/index.js:15119
+msgid "Live"
 msgstr ""
 
-#. Plugin URI of the plugin/theme
-msgid "https://www.wordpress.org/plugins/burst-statistics"
+#: settings/build/index.js:18327
+#: settings/build/index.js:19105
+#: settings/src/Dashboard/GoalsBlock.js:23
+#: settings/src/Dashboard/TodayBlock.js:23
+#: settings/build/index.js:14526
+#: settings/build/index.js:15124
+msgid "Total"
 msgstr ""
 
-#. Description of the plugin/theme
-msgid "Privacy-friendly Statistics for WordPress"
+#: settings/build/index.js:18380
+#: settings/src/Dashboard/GoalsBlock.js:80
+#: settings/build/index.js:14583
+msgid "Coming soon: Goals"
 msgstr ""
 
-#. Author of the plugin/theme
-msgid "Really Simple Plugins"
+#: settings/build/index.js:18380
+#: settings/src/Dashboard/GoalsBlock.js:81
+#: settings/build/index.js:14584
+msgid "Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics."
 msgstr ""
 
-#. Author URI of the plugin/theme
-msgid "https://www.burst-statistics.com"
+#: settings/build/index.js:18385
+#: settings/src/Dashboard/GoalsBlock.js:86
+#: settings/build/index.js:14589
+msgid "Leave a suggestion"
+msgstr ""
+
+#: settings/build/index.js:18562
+#: settings/build/index.js:18606
+#: settings/src/Dashboard/OtherPlugins.js:68
+#: settings/src/Dashboard/OtherPlugins.js:103
+#: settings/build/index.js:14717
+#: settings/build/index.js:14752
+msgid "Activate"
+msgstr ""
+
+#: settings/build/index.js:18563
+#: settings/src/Dashboard/OtherPlugins.js:69
+#: settings/build/index.js:14718
+msgid "Activating..."
+msgstr ""
+
+#: settings/build/index.js:18564
+#: settings/build/index.js:18565
+#: settings/src/Dashboard/OtherPlugins.js:70
+#: settings/src/Dashboard/OtherPlugins.js:71
+#: settings/build/index.js:14719
+#: settings/build/index.js:14720
+msgid "Downloading..."
+msgstr ""
+
+#: settings/build/index.js:18587
+#: settings/build/index.js:21199
+#: settings/src/Dashboard/OtherPlugins.js:85
+#: settings/src/Settings/SettingsGroup.js:123
+#: settings/build/index.js:14734
+#: settings/build/index.js:16863
+msgid "Upgrade"
+msgstr ""
+
+#: settings/build/index.js:18604
+#: settings/src/Dashboard/OtherPlugins.js:101
+#: settings/build/index.js:14750
+msgid "Loading.."
+msgstr ""
+
+#: settings/build/index.js:18746
+#: settings/src/Dashboard/ProgressBlock.js:110
+#: settings/build/index.js:14877
+msgid "Loading..."
+msgstr ""
+
+#: settings/build/index.js:18748
+#: settings/src/Dashboard/ProgressBlock.js:111
+#: settings/build/index.js:14878
+msgid "Loading notices..."
+msgstr ""
+
+#: settings/build/index.js:18824
+#: settings/build/index.js:18829
+#: settings/src/Dashboard/ProgressFooter.js:17
+#: settings/src/Dashboard/ProgressFooter.js:22
+#: settings/build/index.js:14923
+#: settings/build/index.js:14928
+msgid "Just now"
+msgstr ""
+
+#: settings/build/index.js:18833
+#: settings/src/Dashboard/ProgressFooter.js:27
+#: settings/build/index.js:14933
+msgid "Last checked:"
+msgstr ""
+
+#: settings/build/index.js:18836
+#: settings/src/Dashboard/ProgressFooter.js:29
+#: settings/build/index.js:14935
+msgid "Loading tracking status..."
+msgstr ""
+
+#: settings/build/index.js:18837
+#: settings/src/Dashboard/ProgressFooter.js:30
+#: settings/build/index.js:14936
+msgid "Error checking tracking status"
+msgstr ""
+
+#: settings/build/index.js:18838
+#: settings/src/Dashboard/ProgressFooter.js:31
+#: settings/build/index.js:14937
+msgid "Tracking with REST API"
+msgstr ""
+
+#: settings/build/index.js:18839
+#: settings/src/Dashboard/ProgressFooter.js:32
+#: settings/build/index.js:14938
+msgid "Tracking with an endpoint"
+msgstr ""
+
+#: settings/build/index.js:18840
+#: settings/build/index.js:18847
+#: settings/src/Dashboard/ProgressFooter.js:33
+#: settings/src/Dashboard/ProgressFooter.js:40
+#: settings/build/index.js:14939
+#: settings/build/index.js:14946
+msgid "Tracking is disabled"
+msgstr ""
+
+#: settings/build/index.js:18844
+#: settings/src/Dashboard/ProgressFooter.js:37
+#: settings/build/index.js:14943
+msgid "Tracking does not seem to work. Check manually or contact support. "
+msgstr ""
+
+#: settings/build/index.js:18845
+#: settings/src/Dashboard/ProgressFooter.js:38
+#: settings/build/index.js:14944
+msgid "Tracking is working. You are using the REST API to collect statistics."
+msgstr ""
+
+#: settings/build/index.js:18846
+#: settings/src/Dashboard/ProgressFooter.js:39
+#: settings/build/index.js:14945
+msgid "Tracking is working. You are using the Burst endpoint to collect statistics. This is type of tracking is accurate and lightweight."
+msgstr ""
+
+#: settings/build/index.js:18883
+#: settings/src/Dashboard/ProgressFooter.js:74
+#: settings/build/index.js:14980
+msgid "View my statistics"
+msgstr ""
+
+#: settings/build/index.js:18969
+#: settings/src/Dashboard/ProgressHeader.js:51
+#: settings/build/index.js:15043
+msgid "All tasks"
+msgstr ""
+
+#: settings/build/index.js:18976
+#: settings/src/Dashboard/ProgressHeader.js:55
+#: settings/build/index.js:15047
+msgid "Remaining tasks"
+msgstr ""
+
+#: settings/build/index.js:19033
+#: settings/build/index.js:20698
+#: settings/src/Dashboard/TaskElement.js:26
+#: settings/src/Settings/Help.js:24
+#: settings/build/index.js:15081
+#: settings/build/index.js:16439
+msgid "More info"
+msgstr ""
+
+#: settings/build/index.js:19036
+#: settings/build/index.js:19860
+#: settings/src/Dashboard/TaskElement.js:27
+#: settings/src/Modal/Modal.js:77
+#: settings/build/index.js:15082
+#: settings/build/index.js:15690
+msgid "Fix"
+msgstr ""
+
+#: settings/build/index.js:19480
+#: settings/src/GridBlock.js:175
+#: settings/build/index.js:15431
+msgid "Instructions"
+msgstr ""
+
+#: settings/build/index.js:19848
+#: settings/src/Modal/Modal.js:74
+#: settings/build/index.js:15687
+msgid "Edit"
+msgstr ""
+
+#: settings/build/index.js:19852
+#: settings/src/Modal/Modal.js:75
+#: settings/build/index.js:15688
+msgid "Help"
+msgstr ""
+
+#: settings/build/index.js:19856
+#: settings/src/Modal/Modal.js:76
+#: settings/build/index.js:15689
+msgid "Ignore"
+msgstr ""
+
+#: settings/build/index.js:20497
+#: settings/build/index.js:21212
+#: settings/src/Settings/Field.js:99
+#: settings/src/Settings/SettingsGroup.js:133
+#: settings/build/index.js:16253
+#: settings/build/index.js:16873
+msgid "This feature is only available networkwide."
+msgstr ""
+
+#: settings/build/index.js:20499
+#: settings/build/index.js:21214
+#: settings/src/Settings/Field.js:99
+#: settings/src/Settings/SettingsGroup.js:133
+#: settings/build/index.js:16253
+#: settings/build/index.js:16873
+msgid "Network settings"
+msgstr ""
+
+#: settings/build/index.js:20748
+#: settings/src/Settings/IpBlock.js:28
+#: settings/build/index.js:16479
+msgid "Your IP address is: "
+msgstr ""
+
+#: settings/build/index.js:20748
+#: settings/src/Settings/IpBlock.js:28
+#: settings/build/index.js:16479
+msgid "Which is already in the list."
+msgstr ""
+
+#: settings/build/index.js:20786
+#: settings/src/Settings/IpBlock.js:64
+#: settings/build/index.js:16515
+msgid "Add current IP address"
+msgstr ""
+
+#: settings/build/index.js:20936
+#: settings/src/Settings/Settings.js:75
+#: settings/build/index.js:16629
+msgid "Save"
+msgstr ""
+
+#: settings/build/index.js:20940
+#: settings/src/Settings/Settings.js:78
+#: settings/build/index.js:16632
+msgid "Refresh"
+msgstr ""
+
+#: settings/build/index.js:21009
+#: settings/build/index.js:22885
+#: settings/build/index.js:22912
+#: settings/build/index.js:22939
+#: settings/build/index.js:22963
+#: settings/build/index.js:22990
+#: settings/build/index.js:23017
+#: settings/src/Settings/Settings.js:147
+#: settings/src/Tour.js:34
+#: settings/src/Tour.js:58
+#: settings/src/Tour.js:82
+#: settings/src/Tour.js:106
+#: settings/src/Tour.js:130
+#: settings/src/Tour.js:154
+#: settings/build/index.js:16701
+#: settings/build/index.js:18311
+#: settings/build/index.js:18335
+#: settings/build/index.js:18359
+#: settings/build/index.js:18383
+#: settings/build/index.js:18407
+#: settings/build/index.js:18431
+msgid "Previous"
+msgstr ""
+
+#: settings/build/index.js:21017
+#: settings/src/Settings/Settings.js:159
+#: settings/build/index.js:16713
+msgid "Save and Continue"
+msgstr ""
+
+#: settings/build/index.js:21023
+#: settings/src/Settings/Settings.js:169
+#: settings/build/index.js:16723
+msgid "Notifications"
+msgstr ""
+
+#: settings/build/index.js:21026
+#: settings/src/Settings/Settings.js:174
+#: settings/build/index.js:16728
+msgid "Expand all"
+msgstr ""
+
+#: settings/build/index.js:21026
+#: settings/src/Settings/Settings.js:176
+#: settings/build/index.js:16730
+msgid "Collapse all"
+msgstr ""
+
+#: settings/build/index.js:21129
+#: settings/src/Settings/SettingsGroup.js:69
+#: settings/build/index.js:16809
+msgid "Learn more about %sPremium%s"
+msgstr ""
+
+#: settings/build/index.js:21145
+#: settings/src/Settings/SettingsGroup.js:83
+#: settings/build/index.js:16823
+msgid "Instructions manual"
+msgstr ""
+
+#: settings/build/index.js:21167
+#: settings/src/Settings/SettingsGroup.js:93
+#: settings/build/index.js:16833
+msgid "Reset Let's Encrypt"
+msgstr ""
+
+#: settings/build/index.js:21202
+#: settings/src/Settings/SettingsGroup.js:125
+#: settings/build/index.js:16865
+msgid "Check license"
+msgstr ""
+
+#: settings/build/index.js:21212
+#: settings/src/Settings/SettingsGroup.js:132
+#: settings/build/index.js:16872
+msgid "Network feature"
+msgstr ""
+
+#: settings/build/index.js:21424
+#: settings/src/Settings/SettingsPage.js:166
+#: settings/build/index.js:17048
+msgid "Settings saved"
+msgstr ""
+
+#: settings/build/index.js:21705
+#: settings/src/Statistics/CompareBlock.js:20
+#: settings/build/index.js:17286
+msgid "Visitors"
+msgstr ""
+
+#: settings/build/index.js:21706
+#: settings/src/Statistics/CompareBlock.js:21
+#: settings/build/index.js:17287
+msgid "Bounce Rate"
+msgstr ""
+
+#: settings/build/index.js:21748
+#: settings/src/Statistics/CompareBlock.js:65
+#: settings/build/index.js:17331
+msgid "visitors bounced"
+msgstr ""
+
+#: settings/build/index.js:21756
+#: settings/src/Statistics/CompareBlock.js:73
+#: settings/build/index.js:17339
+msgid "pageviews per session"
+msgstr ""
+
+#: settings/build/index.js:21757
+#: settings/src/Statistics/CompareBlock.js:74
+#: settings/build/index.js:17340
+msgid "per session"
+msgstr ""
+
+#: settings/build/index.js:21758
+#: settings/src/Statistics/CompareBlock.js:75
+#: settings/build/index.js:17341
+msgid "are new visitors"
+msgstr ""
+
+#: settings/build/index.js:21831
+#: settings/src/Statistics/CompareFooter.js:10
+#: settings/build/index.js:17398
+msgid "vs. previous day"
+msgstr ""
+
+#: settings/build/index.js:21831
+#: settings/src/Statistics/CompareFooter.js:10
+#: settings/build/index.js:17398
+msgid "vs. previous %s days"
+msgstr ""
+
+#: settings/build/index.js:21903
+#: settings/src/Statistics/DateRange/DateRange.js:37
+#: settings/build/index.js:17448
+msgid "Yesterday"
+msgstr ""
+
+#: settings/build/index.js:21910
+#: settings/src/Statistics/DateRange/DateRange.js:44
+#: settings/build/index.js:17455
+msgid "Last 7 days"
+msgstr ""
+
+#: settings/build/index.js:21917
+#: settings/src/Statistics/DateRange/DateRange.js:51
+#: settings/build/index.js:17462
+msgid "Last 30 days"
+msgstr ""
+
+#: settings/build/index.js:21924
+#: settings/src/Statistics/DateRange/DateRange.js:58
+#: settings/build/index.js:17469
+msgid "Last 90 days"
+msgstr ""
+
+#: settings/build/index.js:21931
+#: settings/src/Statistics/DateRange/DateRange.js:65
+#: settings/build/index.js:17476
+msgid "Last month"
+msgstr ""
+
+#: settings/build/index.js:21938
+#: settings/src/Statistics/DateRange/DateRange.js:72
+#: settings/build/index.js:17483
+msgid "Year to date"
+msgstr ""
+
+#: settings/build/index.js:22082
+#: settings/src/Statistics/DevicesBlock.js:18
+#: settings/build/index.js:17605
+msgid "Desktop"
+msgstr ""
+
+#: settings/build/index.js:22083
+#: settings/src/Statistics/DevicesBlock.js:19
+#: settings/build/index.js:17606
+msgid "Tablet"
+msgstr ""
+
+#: settings/build/index.js:22084
+#: settings/src/Statistics/DevicesBlock.js:20
+#: settings/build/index.js:17607
+msgid "Mobile"
+msgstr ""
+
+#: settings/build/index.js:22085
+#: settings/src/Statistics/DevicesBlock.js:21
+#: settings/build/index.js:17608
+msgid "Other"
+msgstr ""
+
+#: settings/build/index.js:22249
+#: settings/src/Statistics/EmptyDataTable.js:10
+#: settings/build/index.js:17761
+msgid "No data available in table"
+msgstr ""
+
+#: settings/build/index.js:22475
+#: settings/src/Statistics/InsightsHeader.js:71
+#: settings/build/index.js:17971
+msgid "Select metrics"
+msgstr ""
+
+#: settings/build/index.js:22496
+#: settings/src/Statistics/InsightsHeader.js:82
+#: settings/build/index.js:17982
+msgid "Apply"
+msgstr ""
+
+#: settings/build/index.js:22692
+#: settings/build/index.js:22780
+#: settings/src/Statistics/PagesBlock.js:64
+#: settings/src/Statistics/ReferrersBlock.js:57
+#: settings/build/index.js:18165
+#: settings/build/index.js:18235
+msgid "of"
+msgstr ""
+
+#: settings/build/index.js:22695
+#: settings/build/index.js:22783
+#: settings/src/Statistics/PagesBlock.js:67
+#: settings/src/Statistics/ReferrersBlock.js:60
+#: settings/build/index.js:18168
+#: settings/build/index.js:18238
+msgid "All"
+msgstr ""
+
+#: settings/build/index.js:22862
+#: settings/src/Tour.js:8
+#: settings/build/index.js:18285
+msgid "Welcome to Burst Statistics"
+msgstr ""
+
+#: settings/build/index.js:22863
+#: settings/src/Tour.js:9
+#: settings/build/index.js:18286
+msgid "The plugin is now active."
+msgstr ""
+
+#: settings/build/index.js:22863
+#: settings/src/Tour.js:9
+#: settings/build/index.js:18286
+msgid "Follow a quick tour and make sure everything works."
+msgstr ""
+
+#: settings/build/index.js:22868
+#: settings/build/index.js:23027
+#: settings/src/Tour.js:15
+#: settings/src/Tour.js:163
+#: settings/build/index.js:18292
+#: settings/build/index.js:18440
+msgid "Exit tour"
+msgstr ""
+
+#: settings/build/index.js:22871
+#: settings/src/Tour.js:19
+#: settings/build/index.js:18296
+msgid "Start tour"
+msgstr ""
+
+#: settings/build/index.js:22880
+#: settings/src/Tour.js:28
+#: settings/build/index.js:18305
+msgid "Your dashboard"
+msgstr ""
+
+#: settings/build/index.js:22881
+#: settings/src/Tour.js:29
+#: settings/build/index.js:18306
+msgid "This is your Dashboard. This will give you an overview of notices, real time data, and settings."
+msgstr ""
+
+#: settings/build/index.js:22894
+#: settings/build/index.js:22921
+#: settings/build/index.js:22948
+#: settings/build/index.js:22972
+#: settings/build/index.js:22999
+#: settings/src/Tour.js:42
+#: settings/src/Tour.js:66
+#: settings/src/Tour.js:90
+#: settings/src/Tour.js:114
+#: settings/src/Tour.js:138
+#: settings/build/index.js:18319
+#: settings/build/index.js:18343
+#: settings/build/index.js:18367
+#: settings/build/index.js:18391
+#: settings/build/index.js:18415
+msgid "Next"
+msgstr ""
+
+#: settings/build/index.js:22907
+#: settings/src/Tour.js:52
+#: settings/build/index.js:18329
+msgid "Real time data"
+msgstr ""
+
+#: settings/build/index.js:22908
+#: settings/src/Tour.js:53
+#: settings/build/index.js:18330
+msgid "This block will show you real time visitors."
+msgstr ""
+
+#: settings/build/index.js:22908
+#: settings/src/Tour.js:53
+#: settings/build/index.js:18330
+msgid "To make sure Burst Statistics is setup properly, try visiting this website on another device or open a private window."
+msgstr ""
+
+#: settings/build/index.js:22934
+#: settings/src/Tour.js:76
+#: settings/build/index.js:18353
+msgid "Your website statistics"
+msgstr ""
+
+#: settings/build/index.js:22935
+#: settings/src/Tour.js:77
+#: settings/build/index.js:18354
+msgid "This page is probably quite empty at the moment. The data from your website will show up here in a few days. So be sure to come back soon."
+msgstr ""
+
+#: settings/build/index.js:22958
+#: settings/src/Tour.js:100
+#: settings/build/index.js:18377
+msgid "Changing the date range"
+msgstr ""
+
+#: settings/build/index.js:22959
+#: settings/src/Tour.js:101
+#: settings/build/index.js:18378
+msgid "Over here you can change the date range for the data being shown. Click on two different days or click twice on a single day to show the data for that period."
+msgstr ""
+
+#: settings/build/index.js:22985
+#: settings/src/Tour.js:124
+#: settings/build/index.js:18401
+msgid "Your configuration"
+msgstr ""
+
+#: settings/build/index.js:22986
+#: settings/src/Tour.js:125
+#: settings/build/index.js:18402
+msgid "You can customize Burst to your liking. Change settings to meet your needs."
+msgstr ""
+
+#: settings/build/index.js:23012
+#: settings/src/Tour.js:148
+#: settings/build/index.js:18425
+msgid "Support & feedback"
+msgstr ""
+
+#: settings/build/index.js:23013
+#: settings/src/Tour.js:149
+#: settings/build/index.js:18426
+msgid "Feel free to post your questions or feedback on the WordPress forums. We are happy to help!"
+msgstr ""
+
+#: settings/src/Settings/ChangeStatus.js:12
+msgid "Revoke"
+msgstr ""
+
+#: settings/src/Settings/ChangeStatus.js:12
+msgid "Allow"
 msgstr ""
