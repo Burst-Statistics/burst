@@ -37,13 +37,16 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		 */
 
 		public function setup_defaults(): void {
+			if ( !is_admin() && !wp_doing_cron() ) return;
+
 			$setup_defaults = get_option( 'burst_setup_defaults');
 			if ($setup_defaults) return;
 			$exclude_roles = burst_get_option('user_role_blocklist');
 			if ( ! $exclude_roles ) {
-				$defaults = ['administrator'];
-				burst_update_option('user_role_blocklist', $defaults);
+				$defaults = [ 'administrator' ];
+				burst_update_option( 'user_role_blocklist', $defaults );
 			}
+
 			update_option( 'burst_setup_defaults', true, false );
 		}
 
