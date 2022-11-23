@@ -26,6 +26,8 @@
   }
   .burst-grid-item.datatable{
     .burst-loading-container{
+      align-content: space-between;
+      height: 100%;
       & > div{
         width: 100%;
       }

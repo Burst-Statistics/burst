@@ -245,7 +245,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'referrer'   => [
 						'title'   => '-',
 						'value'   => '0',
-						'tooltip' => __( 'This website referred the most amount of visitors.', 'burst-statistics' ),
+						'tooltip' => __( 'This website referred the most visitors.', 'burst-statistics' ),
 					],
 					'pageviews'  => [
 						'title'   => __( 'Total pageviews', 'burst-statistics' ),
