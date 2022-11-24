@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.1
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,9 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.3.1 =
+* Fix: auto updates causing critical error because a required function is only loaded for logged in users
+
 = 1.3.0 =
 * Improvement: React dashboard & settings page. This helps us speed up development and improve the user experience.
 * Improvement: Settings for blocking IP addresses & user roles from tracking. Props @lowym
