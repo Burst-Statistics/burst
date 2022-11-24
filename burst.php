@@ -3,7 +3,7 @@
  * Plugin Name: Burst Statistics - Privacy-Friendly Analytics for WordPress
  * Plugin URI: https://www.wordpress.org/plugins/burst-statistics
  * Description: Get detailed insights into visitors’ behavior with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.
- * Version: 1.3.1
+ * Version: 1.3.0
  * Text Domain: burst-statistics
  * Domain Path: /languages
  * Author: Really Simple Plugins
@@ -43,9 +43,9 @@ if ( ! function_exists( 'burst_activation_check' ) ) {
 		}
 
 		global $wp_version;
-		if ( version_compare( $wp_version, '5.7', '<' ) ) {
+		if ( version_compare( $wp_version, '5.0', '<' ) ) {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
-			wp_die( __( 'Burst cannot be activated. The plugin requires WordPress 5.7 or higher',
+			wp_die( __( 'Burst cannot be activated. The plugin requires WordPress 5.0 or higher',
 				'burst' ) );
 		}
 	}
@@ -111,7 +111,7 @@ class BURST {
 		$burst_plugin = implode( '/', $burst_plugin );
 		define( 'burst_plugin_folder', $burst_plugin );
 		$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
-		define( 'burst_version', '1.3.1' . $debug );
+		define( 'burst_version', '1.3.0' . $debug );
 		define( 'burst_plugin_file', __FILE__ );
 		define( 'burst_main_menu_position', 100 );
 		define( 'burst_premium_url', 'https://burst-statistics.com/premium?src=burst-plugin' );
@@ -147,7 +147,7 @@ class BURST {
 		require_once( burst_path . 'goals/class-goals.php' );
 		require_once( burst_path . 'cron/cron.php');
 
-		if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() ) {
+		if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() ) {
 			require_once( burst_path . 'class-admin.php' );
 			require_once( burst_path . 'settings/settings.php' );
 			require_once( burst_path . 'class-review.php' );
@@ -175,7 +175,7 @@ class BURST {
 function BURST()
 {
 	global $wp_version;
-	if ( version_compare($wp_version, '5.7', '>=') && version_compare(PHP_VERSION, '7.2', '>=')) {
+	if ( version_compare($wp_version, '4.9', '>=') && version_compare(PHP_VERSION, '7.2', '>=')) {
 		return BURST::instance();
 	}
 }
