@@ -1,4 +1,46 @@
 <?php defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
+if ( ! function_exists( 'burst_is_logged_in_rest' ) ) {
+	function burst_is_logged_in_rest() {
+		$valid_request = isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], '/burst/v1/' ) !== false;
+		if ( ! $valid_request ) {
+			return false;
+		}
+
+		return is_user_logged_in();
+	}
+}
+
+if ( ! function_exists('burst_add_view_capability')){
+	/**
+	 * Add a user capability to WordPress and add to admin and editor role
+	 */
+	function burst_add_view_capability(){
+		$capability = 'view_burst_statistics';
+		$roles = apply_filters('burst_burst_add_view_capability', array('administrator', 'editor') );
+		foreach( $roles as $role ){
+			$role = get_role( $role );
+			if( $role && !$role->has_cap( $capability ) ){
+				$role->add_cap( $capability );
+			}
+		}
+	}
+}
+
+if ( ! function_exists('burst_add_manage_capability')){
+	/**
+	 * Add a user capability to WordPress and add to admin and editor role
+	 */
+	function burst_add_manage_capability(){
+		$capability = 'manage_burst_statistics';
+		$roles = apply_filters('burst_burst_add_manage_capability', array('administrator', 'editor') );
+		foreach( $roles as $role ){
+			$role = get_role( $role );
+			if( $role && !$role->has_cap( $capability ) ){
+				$role->add_cap( $capability );
+			}
+		}
+	}
+}
 
 if ( ! function_exists( 'burst_user_can_view' ) ) {
 	/**

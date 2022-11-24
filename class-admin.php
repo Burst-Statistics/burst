@@ -34,7 +34,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			//multisite
 			add_filter( "network_admin_plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
-			add_action( 'plugins_loaded', array( $this, 'check_upgrade' ), 10, 2 );
 			add_action( 'admin_init', array($this, 'init_grid') );
             add_action( 'wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable') );
 
@@ -74,42 +73,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 				wp_kses_post(wpautop($content, false))
 			);
 		}
-
-		/**
-		 * Do upgrade on plugin update. Hooked to plugins_loaded because
-         * capabilities need to be added before registering the burst menu items.
-		 */
-
-		public function check_upgrade() {
-            $prev_version = get_option( 'burst-current-version', false );
-            if ( $prev_version === burst_version ) return; // no upgrade
-
-            // add burst capabilities
-			if ( $prev_version
-			     && version_compare( $prev_version, '1.1.1', '<' )
-			) {
-                burst_add_view_capability();
-                burst_add_manage_capability();
-			}
-
-			if ( $prev_version
-			     && version_compare( $prev_version, '1.3.0', '<' ) ) {
-				if (is_multisite()) {
-					$tour_shown = get_site_option('burst_tour_shown_once', false);
-				} else {
-					$tour_shown = get_option('burst_tour_shown_once', false);
-				}
-
-				if ($tour_shown) {
-					burst_update_option('burst_tour_shown_once', $tour_shown);
-				}
-			}
-
-			do_action( 'burst_upgrade', $prev_version );
-
-			update_option( 'burst-current-version', burst_version, false );
-		}
-
 		/**
 		 * enqueue some assets
 		 * @param $hook
@@ -124,6 +87,27 @@ if ( ! class_exists( "burst_admin" ) ) {
 	            $path = trailingslashit( burst_path ) . "assets/css/{$rtl}admin{$min}.css";
 	            wp_enqueue_style( 'burst-admin', $url, [ 'wp-components' ], filemtime( $path ) );
             }
+		}
+
+		/**
+		 * Setup default settings used for tracking
+		 * @return void
+		 */
+
+		public function setup_defaults(): void {
+			update_option( 'burst_activation_time', time(), false );
+			burst_add_view_capability();
+			burst_add_manage_capability();
+
+			$setup_defaults = get_option( 'burst_setup_defaults');
+			if ($setup_defaults) return;
+			$exclude_roles = burst_get_option('user_role_blocklist');
+			if ( ! $exclude_roles ) {
+				$defaults = [ 'administrator' ];
+				burst_update_option( 'user_role_blocklist', $defaults );
+			}
+
+			update_option( 'burst_setup_defaults', true, false );
 		}
 
 		/**

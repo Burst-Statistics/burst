@@ -500,7 +500,8 @@ function burst_rest_api_fields_set( $request ) {
  */
 
 function burst_update_option( $name, $value ) {
-	if ( !burst_user_can_manage() ) {
+    //also on cron, to allow auto updates to upgrade
+	if ( !burst_user_can_manage() && !wp_doing_cron() ) {
 		return;
 	}
 

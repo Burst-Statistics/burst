@@ -137,7 +137,6 @@ class BURST {
 	private function includes() {
 		require_once( burst_path . 'functions.php' );
 		require_once( burst_path . 'integrations/integrations.php');
-		require_once( burst_path . 'class-endpoint.php' );
 		require_once( burst_path . 'tracking/tracking.php' );
 		require_once( burst_path . 'class-frontend.php' );
 		require_once( burst_path . 'helpers/anonymize-ip.php' );
@@ -146,8 +145,10 @@ class BURST {
 		require_once( burst_path . 'sessions/class-sessions.php' );
 		require_once( burst_path . 'goals/class-goals.php' );
 		require_once( burst_path . 'cron/cron.php');
+		require_once( burst_path . 'upgrade.php');
 
 		if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() ) {
+			require_once( burst_path . 'class-endpoint.php' );
 			require_once( burst_path . 'class-admin.php' );
 			require_once( burst_path . 'settings/settings.php' );
 			require_once( burst_path . 'class-review.php' );
@@ -157,8 +158,6 @@ class BURST {
 				require_once( burst_path . 'upgrade/upgrade-to-pro.php' );
 			}
 		}
-
-
 		// require_once( burst_path . '/pro/includes.php' );
 	}
 
@@ -187,11 +186,11 @@ if ( ! function_exists( 'burst_set_activation_time_stamp' ) ) {
 	 *
 	 * @param $networkwide
 	 */
-	function burst_set_activation_time_stamp( $networkwide ) {
-		update_option( 'burst_activation_time', time(), false );
+	function burst_set_defaults( $networkwide ) {
+		BURST()->admin->setup_defaults();
 	}
 
-	register_activation_hook( __FILE__, 'burst_set_activation_time_stamp' );
+	register_activation_hook( __FILE__, 'burst_set_defaults' );
 }
 
 if ( !function_exists( 'burst_clear_scheduled_hooks' )) {
@@ -199,51 +198,5 @@ if ( !function_exists( 'burst_clear_scheduled_hooks' )) {
 	function burst_clear_scheduled_hooks() {
 		wp_clear_scheduled_hook( 'burst_every_week_hook' );
 		wp_clear_scheduled_hook( 'burst_every_day_hook' );
-	}
-}
-if ( ! function_exists('burst_add_view_capability')){
-	/**
-	 * Add a user capability to WordPress and add to admin and editor role
-	 */
-	function burst_add_view_capability(){
-		$capability = 'view_burst_statistics';
-		$roles = apply_filters('burst_burst_add_view_capability', array('administrator', 'editor') );
-		foreach( $roles as $role ){
-			$role = get_role( $role );
-			if( $role && !$role->has_cap( $capability ) ){
-				$role->add_cap( $capability );
-			}
-		}
-	}
-
-	register_activation_hook( __FILE__, 'burst_add_view_capability' );
-}
-
-if ( ! function_exists('burst_add_manage_capability')){
-	/**
-	 * Add a user capability to WordPress and add to admin and editor role
-	 */
-	function burst_add_manage_capability(){
-		$capability = 'manage_burst_statistics';
-		$roles = apply_filters('burst_burst_add_manage_capability', array('administrator', 'editor') );
-		foreach( $roles as $role ){
-			$role = get_role( $role );
-			if( $role && !$role->has_cap( $capability ) ){
-				$role->add_cap( $capability );
-			}
-		}
-	}
-
-	register_activation_hook( __FILE__, 'burst_add_manage_capability' );
-}
-
-if ( ! function_exists( 'burst_is_logged_in_rest' ) ) {
-	function burst_is_logged_in_rest() {
-		$valid_request = isset( $_SERVER['REQUEST_URI'] ) && strpos( $_SERVER['REQUEST_URI'], '/burst/v1/' ) !== false;
-		if ( ! $valid_request ) {
-			return false;
-		}
-
-		return is_user_logged_in();
 	}
 }
