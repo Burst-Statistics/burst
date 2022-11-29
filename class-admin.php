@@ -73,6 +73,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 				wp_kses_post(wpautop($content, false))
 			);
 		}
+
 		/**
 		 * enqueue some assets
 		 * @param $hook
