@@ -158,7 +158,6 @@ class BURST {
 				require_once( burst_path . 'upgrade/upgrade-to-pro.php' );
 			}
 		}
-		// require_once( burst_path . '/pro/includes.php' );
 	}
 
 	private function hooks() {
@@ -196,7 +195,6 @@ if ( ! function_exists( 'burst_set_activation_time_stamp' ) ) {
 if ( !function_exists( 'burst_clear_scheduled_hooks' )) {
 	register_deactivation_hook( __FILE__, 'burst_clear_scheduled_hooks' );
 	function burst_clear_scheduled_hooks() {
-		wp_clear_scheduled_hook( 'burst_every_week_hook' );
-		wp_clear_scheduled_hook( 'burst_every_day_hook' );
+		wp_clear_scheduled_hook( 'burst_every_5_minutes' );
 	}
 }
