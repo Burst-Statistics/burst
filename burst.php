@@ -135,6 +135,7 @@ class BURST {
 	}
 
 	private function includes() {
+		require_once( burst_path . 'class-endpoint.php' );
 		require_once( burst_path . 'functions.php' );
 		require_once( burst_path . 'integrations/integrations.php');
 		require_once( burst_path . 'tracking/tracking.php' );
@@ -148,7 +149,6 @@ class BURST {
 		require_once( burst_path . 'upgrade.php');
 
 		if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() ) {
-			require_once( burst_path . 'class-endpoint.php' );
 			require_once( burst_path . 'class-admin.php' );
 			require_once( burst_path . 'settings/settings.php' );
 			require_once( burst_path . 'class-review.php' );
