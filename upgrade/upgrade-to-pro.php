@@ -20,6 +20,8 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 		private $steps;
 		private $prefix;
 		private $dashboard_url;
+		private $instructions;
+		private $account_url;
 
 		/**
 		 * Class constructor.
@@ -46,6 +48,8 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 						$this->prefix = "rsssl_";
 						$this->api_url = "https://really-simple-ssl.com";
 						$this->dashboard_url = add_query_arg(["page" => "really-simple-security"], $rsssl_admin_url );
+                        $this->account_url = 'https://really-simple-ssl.com/account';
+                        $this->instructions = 'https://really-simple-ssl.com/knowledge-base/install-really-simple-ssl-pro';
 						break;
 					case "brst_pro":
 						$this->slug = "burst";
@@ -54,6 +58,9 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 						$this->prefix = "burst_";
 						$this->api_url = "https://burst-statistics.com";
 						$this->dashboard_url = add_query_arg(["page" => "burst"], admin_url( "admin.php" ));
+						$this->account_url = 'https://burst-statistics.com/account';
+						$this->instructions = 'https://burst-statistics.com/how-to-install-burst-premium';
+
 						break;
 					case "cmplz_pro":
 					default:
@@ -63,44 +70,46 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 						$this->prefix = "cmplz_";
 						$this->api_url = "https://complianz.io";
 						$this->dashboard_url = add_query_arg(["page" => "complianz"], admin_url("admin.php") );
-						break;
+					    $this->account_url = 'https://complianz.io/account';
+					    $this->instructions = 'https://complianz.io/how-to-install-complianz-gdpr-premium-plugin';
+					break;
 				}
 			}
 
 			$this->steps = array(
 				array(
 					'action' => 'rsp_upgrade_destination_clear',
-					'doing' => __("Checking if plugin folder exists...", "really-simple-ssl"),
-					'success' => __("Able to create destination folder", "really-simple-ssl"),
-					'error' => __("Destination folder already exists", "really-simple-ssl"),
+					'doing' => __("Checking if plugin folder exists...", "burst-statistics"),
+					'success' => __("Able to create destination folder", "burst-statistics"),
+					'error' => __("Destination folder already exists", "burst-statistics"),
 					'type' => 'folder',
 				),
 				array(
 					'action' => 'rsp_upgrade_activate_license',
-					'doing' => __("Validating license...", "really-simple-ssl"),
-					'success' => __("License valid", "really-simple-ssl"),
-					'error' => __("License invalid", "really-simple-ssl"),
+					'doing' => __("Validating license...", "burst-statistics"),
+					'success' => __("License valid", "burst-statistics"),
+					'error' => __("License invalid", "burst-statistics"),
 					'type' => 'license',
 				),
 				array(
 					'action' => 'rsp_upgrade_package_information',
-					'doing' => __("Retrieving package information...", "really-simple-ssl"),
-					'success' => __("Package information retrieved", "really-simple-ssl"),
-					'error' => __("Failed to gather package information", "really-simple-ssl"),
+					'doing' => __("Retrieving package information...", "burst-statistics"),
+					'success' => __("Package information retrieved", "burst-statistics"),
+					'error' => __("Failed to gather package information", "burst-statistics"),
 					'type' => 'package',
 				),
 				array(
 					'action' => 'rsp_upgrade_install_plugin',
-					'doing' => __("Installing plugin...", "really-simple-ssl"),
-					'success' => __("Plugin installed", "really-simple-ssl"),
-					'error' => __("Failed to install plugin", "really-simple-ssl"),
+					'doing' => __("Installing plugin...", "burst-statistics"),
+					'success' => __("Plugin installed", "burst-statistics"),
+					'error' => __("Failed to install plugin", "burst-statistics"),
 					'type' => 'install',
 				),
 				array(
 					'action' => 'rsp_upgrade_activate_plugin',
-					'doing' => __("Activating plugin...", "really-simple-ssl"),
-					'success' => __("Plugin activated", "really-simple-ssl"),
-					'error' => __("Failed to activate plugin", "really-simple-ssl"),
+					'doing' => __("Activating plugin...", "burst-statistics"),
+					'success' => __("Plugin activated", "burst-statistics"),
+					'error' => __("Failed to activate plugin", "burst-statistics"),
 					'type' => 'activate',
 				)
 			);
@@ -133,11 +142,11 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 				'icon_url' => $dir_url.'burst.png',
 				'constant' => 'burst_version',
 				'title' => 'Burst – Privacy Friendly Statistics',
-				'description_short' => __('Self-hosted and privacy-friendly analytics tool.', "really-simple-ssl"),
+				'description_short' => __('Self-hosted and privacy-friendly analytics tool.', "burst-statistics"),
 				'disabled' => '',
-				'button_text' => __("Install", "really-simple-ssl"),
+				'button_text' => __("Install", "burst-statistics"),
 				'slug' => 'burst-statistics',
-				'description' => __("Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.", "really-simple-ssl"),
+				'description' => __("Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.", "burst-statistics"),
 				'install_url' => 'burst%20statistics%20hesseldejong%20%20burst-statistics.com&tab=search&type=term',
 			];
 
@@ -146,11 +155,11 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 					'icon_url' => $dir_url.'complianz-gdpr.gif',
 					'constant' => 'cmplz_version',
 					'title' => 'Complianz GDPR/CCPA',
-					'description_short' => __('GDPR/CCPA Privacy Suite', "really-simple-ssl"),
+					'description_short' => __('GDPR/CCPA Privacy Suite', "burst-statistics"),
 					'disabled' => '',
-					'button_text' => __("Install", "really-simple-ssl"),
+					'button_text' => __("Install", "burst-statistics"),
 					'slug' => 'complianz-gdpr',
-					'description' => __('Configure your Cookie Notice, Cookie Consent and Cookie Policy with our Wizard and Cookie Scan. Supports GDPR, DSGVO, TTDSG, LGPD, POPIA, RGPD, CCPA and PIPEDA.', "really-simple-ssl"),
+					'description' => __('Configure your Cookie Notice, Cookie Consent and Cookie Policy with our Wizard and Cookie Scan. Supports GDPR, DSGVO, TTDSG, LGPD, POPIA, RGPD, CCPA and PIPEDA.', "burst-statistics"),
 					'install_url' => 'complianz+gdpr+POPIA&tab=search&type=term',
 				];
 				if ($current_plugin==='complianz-gdpr') {
@@ -163,11 +172,11 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 					'icon_url' => $dir_url.'really-simple-ssl.png',
 					'constant' => 'rsssl_version',
 					'title' => 'Really Simple SSL',
-					'description_short' => __('One click SSL optimization', "really-simple-ssl"),
+					'description_short' => __('One click SSL optimization', "burst-statistics"),
 					'disabled' => '',
-					'button_text' => __("Install", "really-simple-ssl"),
+					'button_text' => __("Install", "burst-statistics"),
 					'slug' => 'really-simple-ssl',
-					'description' => __('Really Simple SSL automatically detects your settings and configures your website to run over HTTPS. To keep it lightweight, we kept the options to a minimum. Your website will move to SSL with one click.', "really-simple-ssl"),
+					'description' => __('Really Simple SSL automatically detects your settings and configures your website to run over HTTPS. To keep it lightweight, we kept the options to a minimum. Your website will move to SSL with one click.', "burst-statistics"),
 					'install_url' => 'ssl%20really%20simple%20plugins%20complianz+HSTS&tab=search&type=term',
 				];
 				if ( $current_plugin==='really-simple-ssl' ) {
@@ -179,7 +188,7 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 			$suggestion['install_url'] = $admin_url.$suggestion['install_url'];
             if (defined($suggestion['constant'])){
 				$suggestion['install_url'] = '#';
-				$suggestion['button_text'] = __("Installed", "really-simple-ssl");
+				$suggestion['button_text'] = __("Installed", "burst-statistics");
 				$suggestion['disabled'] = 'disabled';
 			}
 
@@ -222,7 +231,7 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 						'admin_url' => admin_url( 'admin-ajax.php' ),
 						'token'     => wp_create_nonce( 'upgrade_to_pro_nonce'),
 						'cmplz_nonce'     => wp_create_nonce( 'complianz_save'),
-						'finished_title' => __("Installation finished", "really-simple-ssl"),
+						'finished_title' => __("Installation finished", "burst-statistics"),
 					)
 				);
 			}
@@ -320,7 +329,7 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
                     </div>
                 </div>
                 <div id="rsp-plugin-suggestion-template">
-                    <div class="rsp-recommended"><?php _e("Recommended by Really Simple Plugins","really-simple-ssl")?></div>
+                    <div class="rsp-recommended"><?php _e("Recommended by Really Simple Plugins","burst-statistics")?></div>
                     <div class="rsp-plugin-suggestion">
                         <div class="rsp-icon"><img alt="suggested plugin icon" src="<?=$this->get_suggested_plugin('icon_url')?>"></div>
                         <div class="rsp-summary">
@@ -345,7 +354,7 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
                 </div>
                 <div class="rsp-modal-transparent-background">
                     <div class="rsp-install-plugin-modal">
-                        <h3><?php echo __("Installing", "really-simple-ssl") . " " . $this->plugin_name ?></h3>
+                        <h3><?php echo __("Installing", "burst-statistics") . " " . $this->plugin_name ?></h3>
                         <div class="rsp-progress-bar-container">
                             <div class="rsp-progress rsp-grey">
                                 <div class="rsp-bar rsp-green" style="width:0%"></div>
@@ -356,20 +365,19 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
                         </div>
                         <div class="rsp-footer">
                             <a href="<?php echo $dashboard_url ?>" role="button" class="button-primary rsp-yellow rsp-hidden rsp-btn rsp-visit-dashboard">
-								<?php echo __("Visit Dashboard", "really-simple-ssl") ?>
+								<?php echo __("Visit Dashboard", "burst-statistics") ?>
                             </a>
                             <a href="<?php echo $plugins_url ?>" role="button" class="button-primary rsp-red rsp-hidden rsp-btn rsp-cancel">
-								<?php echo __("Cancel", "really-simple-ssl") ?>
+								<?php echo __("Cancel", "burst-statistics") ?>
                             </a>
-                            <div class="rsp-error-message rsp-folder rsp-package rsp-install rsp-activate rsp-hidden"><span><?php _e('An Error Occurred:',"really-simple-ssl")?></span>&nbsp;<?php printf(__('Install %sManually%s.',"really-simple-ssl").'&nbsp;', '<a target="_blank" href="https://really-simple-ssl.com/knowledge-base/install-really-simple-ssl-pro/">','</a>')?></div>
-                            <div class="rsp-error-message rsp-license rsp-hidden"><span><?php _e('An Error Occurred:',"really-simple-ssl")?></span>&nbsp;<?php printf(__('Check your %slicense%s.',"really-simple-ssl").'&nbsp;', '<a target="_blank" href="https://really-simple-ssl.com/account/">','</a>')?></div>
+                            <div class="rsp-error-message rsp-folder rsp-package rsp-install rsp-activate rsp-hidden"><span><?php _e('An Error Occurred:',"burst-statistics")?></span>&nbsp;<?php printf(__('Install %sManually%s.',"burst-statistics").'&nbsp;', '<a target="_blank" href="'.$this->instructions.'">','</a>')?></div>
+                            <div class="rsp-error-message rsp-license rsp-hidden"><span><?php _e('An Error Occurred:',"burst-statistics")?></span>&nbsp;<?php printf(__('Check your %slicense%s.',"burst-statistics").'&nbsp;', '<a target="_blank" href="'.$this->account_url.'">','</a>')?></div>
                         </div>
                     </div>
                 </div>
 				<?php
 			}
 		}
-
 
 		/**
 		 * Retrieve plugin info for rating use
@@ -433,7 +441,7 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 				$error = true;
 				$response = [
 					'success' => false,
-					'message' => __("Could not rename folder!", "really-simple-ssl"),
+					'message' => __("Could not rename folder!", "burst-statistics"),
 				];
 			}
 
@@ -533,7 +541,7 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 				if ( is_wp_error( $response ) ) {
 					$message = $response->get_error_message();
 				} else {
-					$message = __( 'An error occurred, please try again.', "really-simple-ssl");
+					$message = __( 'An error occurred, please try again.', "burst-statistics");
 				}
 			} else {
 				$license_data = json_decode( wp_remote_retrieve_body( $response ) );
@@ -541,31 +549,31 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 					switch( $license_data->error ) {
 						case 'expired' :
 							$message = sprintf(
-								__( 'Your license key expired on %s.', "really-simple-ssl"),
+								__( 'Your license key expired on %s.', "burst-statistics"),
 								date_i18n( get_option( 'date_format' ), strtotime( $license_data->expires, current_time( 'timestamp' ) ) )
 							);
 							break;
 						case 'disabled' :
 						case 'revoked' :
-							$message = __( 'Your license key has been disabled.', "really-simple-ssl");
+							$message = __( 'Your license key has been disabled.', "burst-statistics");
 							break;
 						case 'missing' :
-							$message = __('Missing license.', "really-simple-ssl");
+							$message = __('Missing license.', "burst-statistics");
 							break;
 						case 'invalid' :
-							$message = __( 'Invalid license.', "really-simple-ssl");
+							$message = __( 'Invalid license.', "burst-statistics");
 							break;
 						case 'site_inactive' :
-							$message = __( 'Your license is not active for this URL.', "really-simple-ssl" );
+							$message = __( 'Your license is not active for this URL.', "burst-statistics" );
 							break;
 						case 'item_name_mismatch' :
-							$message = __( 'This appears to be an invalid license key for this plugin.', "really-simple-ssl" );
+							$message = __( 'This appears to be an invalid license key for this plugin.', "burst-statistics" );
 							break;
 						case 'no_activations_left':
-							$message = __( 'Your license key has reached its activation limit.', "really-simple-ssl");
+							$message = __( 'Your license key has reached its activation limit.', "burst-statistics");
 							break;
 						default :
-							$message = __( 'An error occurred, please try again.', "really-simple-ssl" );
+							$message = __( 'An error occurred, please try again.', "burst-statistics" );
 							break;
 					}
 					//in case of failure, rename back to default

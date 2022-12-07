@@ -40,14 +40,15 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				//set some defaults;
 				$localize_args = apply_filters( 'burst_tracking_options',
 					array(
-						'url'                       => get_rest_url(),
-						'page_id'                   => isset($post->ID) ? $post->ID : 0,
-						'cookie_retention_days'     => 30,
-						'beacon_url'                => burst_get_beacon_url(),
-						'options'                   => array(
-							'beacon_enabled'         => burst_tracking_status_beacon(),
-							'enable_cookieless_tracking' => $cookieless,
-							'enable_turbo_mode'           => burst_get_option('enable_turbo_mode'),
+						'url'                   => get_rest_url(),
+						'page_id'               => isset( $post->ID ) ? (int) $post->ID : 0,
+						'cookie_retention_days' => 30,
+						'beacon_url'            => burst_get_beacon_url(),
+						'options'               => array(
+							'beacon_enabled'             => (int) burst_tracking_status_beacon(),
+							'enable_cookieless_tracking' => (int) $cookieless,
+							'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
+							'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
 						),
 					)
 				);
@@ -660,6 +661,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 		public function convert_date_to_utc( $timestamp ): int {
 			$time = DateTime::createFromFormat('Y-m-d H:i:s',$timestamp);
+			if ( !$time ) {
+				return $timestamp;
+			}
 			$utc_time           = $time->format('U');
 			$gmt_offset_seconds = (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
 			return $utc_time - $gmt_offset_seconds;

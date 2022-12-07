@@ -12,7 +12,6 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 			self::$_this = $this;
 			// actions and filters
 			add_action( 'plugins_loaded', array( $this, 'install' ) );
-			add_action( 'plugins_loaded', array( $this, 'setup_defaults' ) );
 		}
 
 		/**
@@ -21,33 +20,12 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		 * @return void
 		 */
 		public function install(): void {
-			if ( is_admin() || wp_doing_cron() ) {
-				$endpoint_installed = (bool) get_transient( 'burst_install_endpoint' ); // casts strings 'true' & 'false' to bool true
-				if ( ! $endpoint_installed ) {
-					set_transient( 'burst_install_endpoint', 'true', HOUR_IN_SECONDS );
-					$endpoint_status = $this->install_endpoint_file();
-					update_option( 'burst_endpoint_status', $endpoint_status, false );
-				}
+			$endpoint_installed = (bool) get_transient( 'burst_install_endpoint' ); // casts strings 'true' & 'false' to bool true
+			if ( ! $endpoint_installed ) {
+				set_transient( 'burst_install_endpoint', 'true', HOUR_IN_SECONDS );
+				$endpoint_status = $this->install_endpoint_file();
+				update_option( 'burst_endpoint_status', $endpoint_status, false );
 			}
-		}
-
-		/**
-		 * Setup default settings used for tracking
-		 * @return void
-		 */
-
-		public function setup_defaults(): void {
-			if ( !is_admin() && !wp_doing_cron() ) return;
-
-			$setup_defaults = get_option( 'burst_setup_defaults');
-			if ($setup_defaults) return;
-			$exclude_roles = burst_get_option('user_role_blocklist');
-			if ( ! $exclude_roles ) {
-				$defaults = [ 'administrator' ];
-				burst_update_option( 'user_role_blocklist', $defaults );
-			}
-
-			update_option( 'burst_setup_defaults', true, false );
 		}
 
 		/**
@@ -170,10 +148,12 @@ EOT;
 			);
 			$context = stream_context_create( $options );
 			@file_get_contents( $url, false, $context );
-			$http_response_header = $http_response_header ?? [];
-			$status_line = $http_response_header[0];
-			preg_match('{HTTP\/\S*\s(\d{3})}', $status_line, $match);
-			$status = $match[1];
+			$status_line = $http_response_header[0] ?? '';
+
+			$status = false;
+			if ( preg_match('{HTTP\/\S*\s(\d{3})}', $status_line, $matches) ) {
+				$status = $matches[1];
+			}
 
 			if ( $status !== "200") {
 				if ( WP_DEBUG ) {

@@ -115,6 +115,15 @@ function burst_fields( $load_values = true ) {
 			'default'  => false,
 		],
 		[
+			'id'       => 'enable_do_not_track',
+			'menu_id'  => 'general',
+			'group_id' => 'general',
+			'type'     => 'checkbox',
+			'label'    => __( "Honor 'Do Not Track' requests", 'burst-statistics' ),
+			'disabled' => false,
+			'default'  => false,
+		],
+		[
 			'id'          => 'restart_tour',
 			'menu_id'     => 'general',
 			'group_id'    => 'general',

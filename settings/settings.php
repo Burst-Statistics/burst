@@ -21,8 +21,19 @@ require_once( burst_path . 'settings/rest-api-optimizer/rest-api-optimizer.php' 
  * @return string
  */
 function burst_fix_rest_url_for_wpml( $url, $path, $blog_id, $scheme)  {
+	if ( strpos($url, 'burst/v')===false ) {
+		return $url;
+	}
+    $current_language = false;
 	if ( function_exists( 'icl_register_string' ) ) {
 		$current_language = apply_filters( 'wpml_current_language', null );
+	}
+
+    if ( function_exists('qtranxf_getLanguage') ){
+	    $current_language = qtranxf_getLanguage();
+    }
+
+    if ( $current_language ) {
 		if ( strpos($url, '/'.$current_language.'/wp-json/') ) {
 			$url = str_replace( '/'.$current_language.'/wp-json/', '/wp-json/', $url);
 		}
@@ -345,9 +356,6 @@ function burst_get_data($request){
     $request_args = json_decode($request->get_param('args'), true);
 	$args['metrics'] = $request_args['metrics'] ?? [];
 	switch($type){
-		case 'live':
-			$data = BURST()->statistics->get_live_data($args);
-			break;
 		case 'today':
 			$data = BURST()->statistics->get_today_data($args);
 			break;
@@ -500,7 +508,7 @@ function burst_rest_api_fields_set( $request ) {
  */
 
 function burst_update_option( $name, $value ) {
-	if ( !burst_user_can_manage() ) {
+	if ( !burst_user_can_manage() && !wp_doing_cron() ) {
 		return;
 	}
 

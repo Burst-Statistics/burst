@@ -55,7 +55,7 @@ let burst_set_cookie = (name, value) => {
  */
 let burst_use_cookies = () => {
 	if ( !navigator.cookieEnabled ) return false; // cookies blocked by browser
-	if ( burst_cookieless_option === '1' && window.burst_enable_cookieless_tracking === '1' ) return false; // cookieless is enabled by user or consent plugin
+	if ( burst_cookieless_option && window.burst_enable_cookieless_tracking ) return false; // cookieless is enabled by user or consent plugin
 	return true; // cookies are enabled
 };
 
@@ -169,6 +169,15 @@ let burst_is_user_agent = () => {
 	return re.test(userAgent);
 };
 
+let burst_is_do_not_track = () => {
+	if (burst.options.do_not_track) {
+		// check for doNotTrack and globalPrivacyControl headers
+		return navigator.doNotTrack === '1' || navigator.doNotTrack === 'yes' ||
+				navigator.msDoNotTrack === '1' || window.doNotTrack === '1' || navigator.globalPrivacyControl === 1;
+	}
+	return false;
+}
+
 /**
  * Make a XMLHttpRequest and return a promise
  * @param obj
@@ -207,6 +216,7 @@ let burst_api_request = obj => {
 
 async function burst_update_hit ( update_uid = false ){
 	if ( burst_is_user_agent() ) return;
+	if ( burst_is_do_not_track() ) return;
 	if ( ! burst_initial_track_hit ) return;
 
 	let event = new CustomEvent('burst_before_update_hit', {detail: burst});
@@ -245,6 +255,7 @@ async function burst_update_hit ( update_uid = false ){
  */
 async function burst_track_hit () {
 	if (burst_is_user_agent()) return;
+	if (burst_is_do_not_track()) return;
 	if (burst_track_hit_running) return;
 	burst_track_hit_running = true;
 	let event = new CustomEvent('burst_before_track_hit', {detail: burst});
