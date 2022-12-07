@@ -60,11 +60,18 @@ Burst Statistics can be used without setting cookies or storing data in browsers
 = Does it affect performance? =
 Burst Statistics uses an endpoint to minimize requests during sessions. For best performance you can always use our 'Turbo Mode' which loads Burst in the footer, using the defer attribute.
 = Do you mind if I give feedback about the product? =
-We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
+We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together and make this the best analytics tool for WordPress.
 = Is there a Pro version? =
 Not...yet.
 
 == Change log ==
+= 1.3.2 =
+* Fix: Cookieless tracking was not working properly. Issue where some users were not tracked.
+* Fix: Qtranslate caused an error where the dasboard could not load.
+* Fix: DateTime object was not properly formatted in the dashboard.
+* Fix: Issue where the tracking tests would crash and display the wrong information.
+* Feature: DoNotTrack & Global Privacy Control support. Added setting to honor DoNotTrack & Global Privacy Control headers.
+
 = 1.3.1 =
 * Fix: auto updates causing critical error because a required function is only loaded for logged in users
 
