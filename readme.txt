@@ -67,7 +67,7 @@ Not...yet.
 == Change log ==
 = 1.3.2 =
 * Fix: Cookieless tracking was not working properly. Issue where some users were not tracked.
-* Fix: Qtranslate caused an error where the dasboard could not load.
+* Fix: Qtranslate caused an error where the dashboard could not load.
 * Fix: DateTime object was not properly formatted in the dashboard.
 * Fix: Issue where the tracking tests would crash and display the wrong information.
 * Feature: DoNotTrack & Global Privacy Control support. Added setting to honor DoNotTrack & Global Privacy Control headers.
