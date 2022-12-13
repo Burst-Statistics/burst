@@ -34,9 +34,9 @@ const ProgressFooter = (props) => {
   }
   let trackingTooltipTexts = {
     'loading': '',
-    'error': __( 'Tracking does not seem to work. Check manually or contact support. ', 'burst-statistics' ),
+    'error': __( 'Tracking does not seem to work. Check manually or contact support.', 'burst-statistics' ),
     'rest': __( 'Tracking is working. You are using the REST API to collect statistics.', 'burst-statistics' ),
-    'beacon': __( 'Tracking is working. You are using the Burst endpoint to collect statistics. This is type of tracking is accurate and lightweight.', 'burst-statistics' ),
+    'beacon': __( 'Tracking is working. You are using the Burst endpoint to collect statistics. This type of tracking is accurate and lightweight.', 'burst-statistics' ),
     'disabled': __( 'Tracking is disabled', 'burst-statistics' ),
   }
   let trackingIcons = {

@@ -299,7 +299,7 @@ function burst_other_plugins_data($slug=false){
 			'constant_premium' => 'cmplz_premium',
 			'wordpress_url' => 'https://wordpress.org/plugins/complianz-gdpr/',
 			'upgrade_url' => 'https://complianz.io/pricing?src=burst-plugin',
-			'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst-statistics" ),
+			'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be", "burst-statistics" ),
 		],
 		[
 			'slug' => 'complianz-terms-conditions',

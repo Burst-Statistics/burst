@@ -89,9 +89,6 @@ class SettingsGroup extends Component {
                 {activeGroup.title && <div className="burst-grid-item-header">
                     <h3 className="burst-h4">{activeGroup.title}</h3>
                     {activeGroup.helpLink && anchor!=='letsencrypt'&& <div className="burst-grid-item-controls"><Hyperlink target="_blank" className="burst-helplink" text={helplinkText} url={activeGroup.helpLink}/></div>}
-                    {anchor==='letsencrypt' && <div className="burst-grid-item-controls">
-                        <a href="#" className="burst-helplink" onClick={ (e) => this.handleLetsEncryptReset(e) }>{__("Reset Let's Encrypt","burst-statistics")}</a>
-                    </div>}
                 </div>}
                 <div className="burst-grid-item-content">
                     {activeGroup.intro && <div className="burst-settings-block-intro">{activeGroup.intro}</div>}
