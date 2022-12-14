@@ -597,19 +597,97 @@ if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
 	 * @return bool
 	 */
 	function burst_is_ip_blocked(): bool {
+		error_log('burst_is_ip_blocked');
 		$ip           = burst_get_ip_address();
 		$blocked_ips  = preg_split('/\r\n|\r|\n/', burst_get_blocked_ips()); // split by line break
 		if ( is_array( $blocked_ips ) ) {
 			$blocked_ips_array  = array_map( 'trim', $blocked_ips );
 			$ip_blocklist = apply_filters( 'burst_ip_blocklist', $blocked_ips_array );
-			if ( in_array( $ip, $ip_blocklist ) ) {
-				if ( WP_DEBUG ) {
-					error_log( 'Burst Statistics: IP ' . $ip . ' is blocked for tracking' );
+			// check if IP is a range or just an IP
+			foreach ( $ip_blocklist as $ip_block ) {
+				if ( strpos( $ip_block, '/' ) !== false ) {
+					error_log('IP range');
+					// IP range
+					$ip_block = explode( '/', $ip_block );
+					if ( count( $ip_block ) === 2 ) {
+						$ip_block = array_map( 'trim', $ip_block );
+						if ( burst_ip_in_range( $ip, $ip_block[0], $ip_block[1] ) ) {
+							return true;
+						}
+					}
+				} else {
+					// single IP
+					if ( $ip === $ip_block ) {
+						return true;
+					}
 				}
-				return true;
 			}
 		}
 		return false;
+	}
+}
+
+// function to check if an ip is a range of ips
+if ( ! function_exists( 'burst_is_ip_in_range' ) ) {
+	/**
+	 * Check if IP is in range
+	 *
+	 * @param $ip
+	 * @param $range
+	 *
+	 * @return bool
+	 */
+	function burst_is_ip_in_range( $ip, $range ) {
+		// check if ip is ipv4 or ipv6
+		if ( strpos( $ip, ':' ) !== false ) {
+			return burst_is_ip_in_ipv6_range( $ip, $range );
+		} else {
+			return burst_is_ip_in_ipv4_range( $ip, $range );
+		}
+	}
+}
+
+if ( ! function_exists( 'burst_is_ip_in_ipv6_range') ) {
+	/**
+	 * Check if IP is in IPv6 range
+	 *
+	 * @param $ip
+	 * @param $range
+	 *
+	 * @return bool
+	 */
+	function burst_is_ip_in_ipv6_range($ip, $range) {
+		$range = explode('/', $range);
+		$range = $range[0];
+		$range_dec = inet_pton($range);
+		$ip_dec = inet_pton($ip);
+		$wildcard_dec = inet_pton('::');
+		$range_dec_len = strlen($range_dec);
+		return (substr_compare($ip_dec, $range_dec, 0, $range_dec_len) === 0) && (substr_compare($ip_dec, $wildcard_dec, $range_dec_len) === 0);
+	}
+}
+
+if ( ! function_exists( 'burst_is_ip_in_ipv4_range') ) {
+	/**
+	 * Check if IP is in IPv4 range
+	 *
+	 * @param $ip
+	 * @param $range
+	 *
+	 * @return bool
+	 */
+	function burst_is_ip_in_ipv4_range( $ip, $range ) {
+		if ( strpos( $range, '/' ) == false ) {
+			$range .= '/32';
+		}
+		// $range is in IP/CIDR format eg
+		list( $range, $netmask ) = explode( '/', $range, 2 );
+		$range_decimal    = ip2long( $range );
+		$ip_decimal       = ip2long( $ip );
+		$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
+		$netmask_decimal  = ~$wildcard_decimal;
+
+		return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
 	}
 }
 
