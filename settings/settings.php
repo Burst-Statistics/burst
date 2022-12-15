@@ -33,6 +33,11 @@ function burst_fix_rest_url_for_wpml( $url, $path, $blog_id, $scheme)  {
 	    $current_language = qtranxf_getLanguage();
     }
 
+    if ( function_exists('trp_translate') ){
+	    global $TRP_LANGUAGE;
+        $current_language = $TRP_LANGUAGE;
+    }
+
     if ( $current_language ) {
 		if ( strpos($url, '/'.$current_language.'/wp-json/') ) {
 			$url = str_replace( '/'.$current_language.'/wp-json/', '/wp-json/', $url);
