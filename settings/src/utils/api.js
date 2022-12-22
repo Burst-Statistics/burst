@@ -1,5 +1,6 @@
-import axios from 'axios';
 import getAnchor from "./getAnchor";
+import axios from 'axios';
+import apiFetch from '@wordpress/api-fetch';
 
 /*
  * Makes a get request to the fields list
@@ -9,16 +10,30 @@ import getAnchor from "./getAnchor";
  * @returns {AxiosPromise<any>}
  */
 
-export const getFields = () => {
-	//we pass the anchor, so we know when LE is loaded
-	let anchor = getAnchor('main');
-	let config = {
+export const getRandomToken = () => {
+	return '&token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+};
+
+const usesPlainPermalinks = () => {
+	return burst_settings.site_url.indexOf('?') !==-1;
+};
+
+const config = () => {
+	return {
 		headers: {
-			'X-WP-Nonce': burst_settings.nonce,
+			'X-WP-Nonce': burst_settings.wp_rest_nonce,
 		}
 	}
-	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
-	return axios.get(burst_settings.site_url+'burst/v1/fields/get'+glue+anchor+'&nonce='+burst_settings.burst_nonce, config);
+}
+
+export const getFields = () => {
+	//we pass the anchor, so we know when LE is loaded
+	let glue = usesPlainPermalinks() ? '&' : '?';
+	if ( usesPlainPermalinks() ) {
+		return axios.get(burst_settings.site_url+'burst/v1/fields/get'+glue+'nonce='+burst_settings.burst_nonce+getRandomToken() , config() ).then( ( response ) => {return response.data;})
+	} else {
+		return apiFetch( { path: '/burst/v1/fields/get'+glue+'nonce='+burst_settings.burst_nonce+getRandomToken() } );
+	}
 };
 
 /*
@@ -26,63 +41,66 @@ export const getFields = () => {
  * @param data
  * @returns {Promise<AxiosResponse<any>>}
  */
-export const setFields = (data) => {
-	//we pass the anchor, so we know when LE is loaded
-	let anchor = getAnchor('main');
-	let config = {
-		headers: {
-			'X-WP-Nonce': burst_settings.nonce,
-			'burst-nonce': burst_settings.nonce,
-		}
-	}
+export const setFields = async (data) => {
 	let nonce = {'nonce':burst_settings.burst_nonce};
 	data.push(nonce);
-	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
-	return axios.post(burst_settings.site_url+'burst/v1/fields/set'+glue+anchor, data, config );
-}
+	if ( usesPlainPermalinks() ) {
+		return axios.post(burst_settings.site_url+'burst/v1/fields/set/', data, config() ).then( ( response ) => {return response.data;});
+	} else {
+		let response = await apiFetch( {
+			path: 'burst/v1/fields/set/',
+			method: 'POST',
+			data: data,
+		} );
+		console.log(response);
+		return response;
+	}
+
+};
 
 export const getBlock = (block) => {
-	let config = {
-		headers: {
-			'X-WP-Nonce': burst_settings.nonce,
-		}
-	}
 	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
-	return axios.get(burst_settings.site_url+'burst/v1/block/'+block+glue+'nonce='+burst_settings.burst_nonce, config);
+	if ( usesPlainPermalinks() ) {
+		return axios.get(burst_settings.site_url+'burst/v1/block/'+block+glue+'nonce='+burst_settings.burst_nonce+getRandomToken(), config()).then( ( response ) => {return response.data;})
+	} else {
+		return apiFetch( { path: 'burst/v1/block/'+block+glue+'nonce='+burst_settings.burst_nonce+getRandomToken() } );
+	}
 };
 
 export const runTest = (test, state, data ) => {
-	let config = {
-		headers: {
-			'X-WP-Nonce': burst_settings.nonce,
-		}
-	}
 	if (data) {
 		data = encodeURIComponent(JSON.stringify(data));
 	}
 	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
-	return axios.get(burst_settings.site_url+'burst/v1/tests/'+test+glue+'state='+state+'&data='+data, config);
+	if ( usesPlainPermalinks() ) {
+		return axios.get(burst_settings.site_url+'burst/v1/tests/'+test+glue+'state='+state+'&nonce='+burst_settings.burst_nonce+getRandomToken()+'&data='+data, config()).then( ( response ) => {return response.data; })
+	} else {
+		return apiFetch( { path: 'burst/v1/tests/'+test+glue+'state='+state+'&nonce='+burst_settings.burst_nonce+getRandomToken()+'&data='+data } );
+	}
 };
 
 export const doAction = (action, data) => {
-	let config = {
-		headers: {
-			'X-WP-Nonce': burst_settings.nonce,
-		}
-	}
 	data.nonce = burst_settings.burst_nonce;
-	return axios.post(burst_settings.site_url+'burst/v1/do_action/'+action, data, config );
+	if ( usesPlainPermalinks() ) {
+		return axios.post(burst_settings.site_url+'burst/v1/do_action/'+action, data, config ).then( ( response ) => {return response.data;});
+	} else {
+		return apiFetch( {
+			path: 'burst/v1/do_action/'+action,
+			method: 'POST',
+			data: data,
+		} );
+	}
+
 }
 
 export const getData = (type, startDate, endDate, range, args ) => {
-	let config = {
-		headers: {
-			'X-WP-Nonce': burst_settings.nonce,
-		}
-	}
 	if (args) {
 		args = encodeURIComponent(JSON.stringify(args));
 	}
 	let glue = burst_settings.site_url.indexOf('?')!==-1 ? '&' : '?';
-	return axios.get(burst_settings.site_url+'burst/v1/data/'+type+glue+'date_start='+startDate+'&date_end='+endDate+'&date_range='+range+'&args='+args, config);
+	if ( usesPlainPermalinks() ) {
+		return axios.get(burst_settings.site_url+'burst/v1/data/'+type+glue+'date_start='+startDate+'&date_end='+endDate+'&date_range='+range+'&args='+args+'&nonce='+burst_settings.burst_nonce+getRandomToken(), config()).then( ( response ) => {return response.data; })
+	} else {
+		return apiFetch( { path: 'burst/v1/data/'+type+glue+'date_start='+startDate+'&date_end='+endDate+'&date_range='+range+'&args='+args+'&nonce='+burst_settings.burst_nonce+getRandomToken() } );
+	}
 };

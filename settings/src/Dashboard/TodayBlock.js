@@ -59,6 +59,7 @@ const TodayBlock = () => {
 
     function getData(startDate, endDate){
         getTodayData(startDate, endDate).then((response) => {
+            console.log(response);
             let data = response;
             data.live.icon = selectVisitorIcon(data.live.value);
             data.today.icon = selectVisitorIcon(data.today.value);
@@ -78,7 +79,7 @@ const TodayBlock = () => {
 
     function getTodayData(startDate, endDate, args= []){
         return burst_api.getData('today', startDate, endDate, 'custom', args).then( ( response ) => {
-            return response.data;
+            return response;
         });
     }
 

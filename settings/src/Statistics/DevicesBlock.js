@@ -61,7 +61,7 @@ const DevicesBlock = (props) => {
         setLoading(true);
         return burst_api.getData('devices', startDate, endDate, range, args).then( ( response ) => {
             setLoading(false);
-            return response.data;
+            return response;
         });
     }
 

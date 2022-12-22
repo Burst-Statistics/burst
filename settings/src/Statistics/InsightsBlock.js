@@ -116,7 +116,7 @@ const InsightsBlock  = (props) => {
       setLoading(true);
         return burst_api.getData('insights', startDate, endDate, range, args).then( ( response ) => {
             setLoading(false);
-            return response.data;
+            return response;
         });
     }
     

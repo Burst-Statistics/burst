@@ -38,7 +38,7 @@ const ReferrersBlock = (props) => {
         setLoading(true);
         return burst_api.getData('referrers', startDate, endDate, range, args).then( ( response ) => {
             setLoading(false);
-            return response.data;
+            return response;
         });
     }
 

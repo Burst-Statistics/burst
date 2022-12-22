@@ -12,15 +12,10 @@ const ProgressFooter = (props) => {
   let [lastChecked, setLastChecked] = useState(false);
   useMemo(() => {
     burst_api.runTest('tracking').then( ( response ) => {
-      if (response.status === 200) {
-        let status = response.data.status ? response.data.status : 'error';
-        let last_test = response.data.last_test ? response.data.last_test : __('Just now', 'burst-statistics');
+        let status = response.status ? response.status : 'error';
+        let last_test = response.last_test ? response.last_test : __('Just now', 'burst-statistics');
         setTrackingType(status);
         setLastChecked(last_test);
-      } else {
-        setTrackingType('error');
-        setLastChecked(__('Just now', 'burst-statistics'));
-      }
     })
   }, []);
 

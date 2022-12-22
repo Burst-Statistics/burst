@@ -15,7 +15,7 @@ require_once( burst_path . 'settings/rest-api-optimizer/rest-api-optimizer.php' 
  *
  * @param $url
  * @param $path
- * @param $blog_id
+ * @param $blog_id 
  * @param $scheme
  *
  * @return string
@@ -53,26 +53,26 @@ function burst_plugin_admin_scripts() {
 	);
 	wp_set_script_translations( 'burst-wizard-plugin-block-editor', 'burst-statistics' );
 
-	
+
 	wp_localize_script(
-        'burst-settings',
-        'burst_settings',
-        apply_filters('burst_localize_script',array(
-            'site_url' => get_rest_url(),
-            'dashboard_url' => add_query_arg(['page' => 'burst'], burst_admin_url() ),
-            'upgrade_link' => is_multisite() ? 'https://burst-statistics.com/pro-multisite' : 'https://burst-statistics.com/pro',
-            'plugin_url' => burst_url,
-            'network_link' => network_site_url('plugins.php'),
-            'blocks' => burst_blocks(),
-            'pro_plugin_active' => defined('burst_pro_version'),
-            'networkwide_active' => ! is_multisite(),//true for single sites and network wide activated
-            'nonce' => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
-            'burst_nonce' => wp_create_nonce( 'burst_nonce' ),
-            'current_ip' => burst_get_ip_address(),
-            'user_roles' => burst_get_user_roles(),
-            'date_ranges' => burst_get_date_ranges(),
-            'tour_shown' => burst_get_option('burst_tour_shown_once'),
-        ))
+		'burst-settings',
+		'burst_settings',
+		apply_filters( 'burst_localize_script', array(
+			'site_url'           => get_rest_url(),
+			'dashboard_url'      => add_query_arg( [ 'page' => 'burst' ], burst_admin_url() ),
+			'upgrade_link'       => is_multisite() ? 'https://burst-statistics.com/pro-multisite' : 'https://burst-statistics.com/pro',
+			'plugin_url'         => burst_url,
+			'network_link'       => network_site_url( 'plugins.php' ),
+			'blocks'             => burst_blocks(),
+			'pro_plugin_active'  => defined( 'burst_pro_version' ),
+			'networkwide_active' => ! is_multisite(), //true for single sites and network wide activated
+			'wp_rest_nonce'      => wp_create_nonce( 'wp_rest' ), //to authenticate the logged-in user
+			'burst_nonce'        => wp_create_nonce( 'burst_nonce' ),
+			'current_ip'         => burst_get_ip_address(),
+			'user_roles'         => burst_get_user_roles(),
+			'date_ranges'        => burst_get_date_ranges(),
+			'tour_shown'         => burst_get_option( 'burst_tour_shown_once' ),
+		) )
 	);
 }
 
@@ -413,14 +413,16 @@ function burst_sanitize_field_type( $type ) {
 /**
  * @param WP_REST_Request $request
  *
- * @return void
+ * @return array
  */
 function burst_rest_api_fields_set( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return;
 	}
-
+    error_log(print_r($request->get_params(), true));
+    error_log('burst_rest_api_fields_set');
 	$fields = $request->get_json_params();
+    error_log(print_r($fields, true));
 	//get the nonce
 	$nonce = false;
 	foreach ( $fields as $index => $field ){
@@ -431,6 +433,7 @@ function burst_rest_api_fields_set( $request ) {
 	}
 
 	if ( !wp_verify_nonce($nonce, 'burst_nonce') ) {
+        error_log('nonce not verified');
 		return;
 	}
 
