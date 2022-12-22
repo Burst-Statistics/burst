@@ -15,7 +15,7 @@ require_once( burst_path . 'settings/rest-api-optimizer/rest-api-optimizer.php' 
  *
  * @param $url
  * @param $path
- * @param $blog_id 
+ * @param $blog_id
  * @param $scheme
  *
  * @return string
