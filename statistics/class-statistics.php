@@ -53,7 +53,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					)
 				);
 				wp_enqueue_script( 'burst',
-					burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', array('burst-timeme') ),
+					burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', array('burst-timeme', 'wp-api-fetch') ),
 					burst_version, $in_footer );
 				wp_localize_script(
 					'burst',
