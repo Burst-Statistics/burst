@@ -1265,7 +1265,16 @@ let burst_api_request = obj => {
 					'Content-Type': 'application/json',
 				}),
 				body: JSON.stringify(obj.data),
-			}).then( response => resolve(response)).catch( error => reject(error));
+			}).then(
+					( res ) => {
+						if (res.status === 202) {
+							res.json().then(
+									(data) => console.warn(data),
+							);
+						}
+					},
+					( error ) => console.log( error )
+			);
 		}
 	});
 };
