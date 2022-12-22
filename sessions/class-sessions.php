@@ -15,7 +15,7 @@ if ( ! class_exists( "burst_sessions" ) ) {
 /**
  * Install session table
  * */
- 
+
 add_action( 'plugins_loaded', 'burst_install_sessions_table', 10 );
 function burst_install_sessions_table() {
 	if ( get_option( 'burst_sessions_db_version' ) !== burst_version ) {
