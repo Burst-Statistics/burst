@@ -33,4 +33,17 @@
       }
     }
   }
+  .burst-clickable-row-item{
+    cursor: pointer;
+    display: flex;
+    gap: var(--rsp-spacing-xxs);
+    padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
+    .burst-icon{
+      pointer-events: none
+    }
+  }
+  .burst-not-clickable-row-item{
+    cursor: default;
+    padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
+  }
 }

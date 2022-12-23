@@ -1,14 +1,8 @@
 import {
-  Component,
   Fragment,
-} from '@wordpress/element';
+} from 'react';
 
-class PagePlaceholder extends Component {
-  constructor() {
-    super(...arguments);
-  }
-
-  render() {
+const PagePlaceholder = (props) => {
     let plugin_url = burst_settings.plugin_url;
     return (
         <Fragment>
@@ -28,7 +22,6 @@ class PagePlaceholder extends Component {
           </div>
         </Fragment>
     );
-  }
 }
 
 export default PagePlaceholder;

@@ -33,6 +33,18 @@ function burst_menu() {
 					],
 				],
 				[
+					'id'       => 'goals',
+					'group_id' => 'goals',
+					'title'    => __( 'Goals', 'burst-statistics' ),
+					'step'     => 1,
+					'groups'   => [
+						[
+							'id'    => 'goals',
+							'title' => __( 'Goals', 'burst-statistics' ),
+						],
+					],
+				],
+				[
 					'id'       => 'advanced',
 					'group_id' => 'tracking',
 					'title'    => __( 'Advanced', 'burst-statistics' ),
@@ -64,7 +76,6 @@ function burst_fields( $load_values = true ) {
 	if ( ! burst_user_can_manage() ) {
 		return [];
 	}
-
 	$fields = [
 		[
 			'id'       => 'review_notice_shown',
@@ -135,6 +146,19 @@ function burst_fields( $load_values = true ) {
 			'default'     => false,
 		],
 		[
+			'id'       => 'goals',
+			'menu_id'  => 'goals',
+			'group_id' => 'goals',
+			'type'     => 'goals',
+			'label'    => __( 'Goals', 'burst-statistics' ),
+			'help'     => [
+				'label' => 'default',
+				'title' => __( 'How to select goals?', 'burst-statistics' ),
+				'text'  => __( "The extensive mixed content scan will list all current and future issues and provide a fix, or instructions to fix manually.", 'burst-statistics' ),
+				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
+			],
+		],
+		[
 			'id'       => 'user_role_blocklist',
 			'menu_id'  => 'advanced',
 			'group_id' => 'tracking',
@@ -184,6 +208,88 @@ function burst_fields( $load_values = true ) {
 	$fields = apply_filters( 'burst_fields_values', $fields );
 
 	return array_values( $fields );
+}
+
+function burst_goal_fields() {
+	$goals = [
+		[
+			'id'       => 'goal_title',
+			'type'     => 'hidden',
+			'disabled' => false,
+			'default'  => false,
+		],
+		[
+			'id'       => 'goal_type',
+			'type'     => 'radio-buttons',
+			'label'    => __( 'Goal type', 'burst-statistics' ),
+			'options'  => [
+				'clicks' => [
+					'label' => __('Clicks', 'burst-statistics'),
+			          'description' => __('Track clicks on a specific element', 'burst-statistics'),
+			          'type' => 'clicks',
+			          'icon' => 'mouse',
+				],
+				'views'  => [
+					'label'       => __( 'Views', 'burst-statistics' ),
+					'description' => __( 'Track views of a specific element.', 'burst-statistics' ),
+					'type'        => 'views',
+					'icon'        => 'eye',
+				],
+				'visits' => [
+					'label'       => __( 'Visits', 'burst-statistics' ),
+					'description' => __( 'Track visits to a specific page.', 'burst-statistics' ),
+					'type'        => 'visits',
+					'icon'        => 'visitors',
+				],
+			],
+			'disabled' => false,
+			'default'  => 'clicks',
+		],
+		[
+			'id'               => 'goal_page_or_website',
+			'type'             => 'radio-buttons',
+			'label'            => __( 'Goal specific page or full website', 'burst-statistics' ),
+			'options'          => [
+				'page'    => [
+					'label'       => __( 'Page', 'burst-statistics' ),
+					'description' => __( 'Track clicks on a specific element.', 'burst-statistics' ),
+					'type'        => 'page',
+					'icon'        => 'mouse',
+				],
+				'website' => [
+					'label'       => __( 'Website', 'burst-statistics' ),
+					'description' => __( 'Track views of a specific element.', 'burst-statistics' ),
+					'type'        => 'website',
+					'icon'        => 'eye',
+				],
+			],
+			'react_conditions' => [
+				'relation' => 'OR',
+				[
+					'goal_type' => 'clicks',
+					//					'goal_type' => 'views',
+				],
+			],
+			'disabled'         => false,
+			'default'          => 'website',
+		],
+		[
+			'id'               => 'goal_specific_page',
+			'type'             => 'select-page',
+			'label'            => __( 'Goal specific page', 'burst-statistics' ),
+			'disabled'         => false,
+			'default'          => false,
+			'react_conditions' => [
+				'relation' => 'AND',
+				[
+					'goal_type'                          => 'clicks',
+					'goal_page_or_website' => 'page',
+				],
+			],
+		],
+	];
+
+	return apply_filters( 'burst_goal_fields', $goals );
 }
 
 function burst_blocks() {

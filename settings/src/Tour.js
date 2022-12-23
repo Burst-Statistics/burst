@@ -198,10 +198,12 @@ function TourInstance() {
   return <></>;
 }
 
-export default function Tour() {
+const Tour = () => {
   return (
       <ShepherdTour steps={newSteps} tourOptions={tourOptions} >
         <TourInstance />
       </ShepherdTour>
   );
 }
+
+export default Tour;

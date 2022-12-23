@@ -1,7 +1,6 @@
-import {useState, useEffect, useRef} from "@wordpress/element";
+import {useState, useEffect, useRef} from "react";
 import { __ } from '@wordpress/i18n';
 import * as burst_api from "../utils/api";
-import Placeholder from '../Placeholder/Placeholder';
 
 const OtherPlugins = (props) => {
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -11,11 +10,11 @@ const OtherPlugins = (props) => {
   useEffect(()=>{
     if ( !dataLoaded ) {
       burst_api.runTest('otherpluginsdata').then( ( response ) => {
-        response.data.forEach(function(pluginItem, i) {
-          response.data[i].pluginActionNice = pluginActionNice(pluginItem.pluginAction);
+        response.forEach(function(pluginItem, i) {
+          response[i].pluginActionNice = pluginActionNice(pluginItem.pluginAction);
         });
 
-        setPluginData(response.data);
+        setPluginData(response);
         setDataLoaded(true);
       })
     }
@@ -38,7 +37,7 @@ const OtherPlugins = (props) => {
       return;
     }
     burst_api.doAction('plugin_actions', data).then( ( response ) => {
-      pluginItem = response.data;
+      pluginItem = response;
       updatePluginData(slug, pluginItem);
       PluginActions(slug, pluginItem.pluginAction);
     })

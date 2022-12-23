@@ -1,4 +1,5 @@
 .burst {
+  font-variant-numeric: tabular-nums; // https://css-tricks.com/almanac/properties/f/font-variant-numeric/
   margin: 0;
   margin-left: -20px;
   font-size: var(--rsp-fs-300);
@@ -90,6 +91,11 @@
   //wordpress inserts notices after the first h1 or h2. To prevent breaking layout we insert an empty h1 tag at the start of our page, where WP can insert the notice.
   .burst-notice-hook-element {
 	display: none !important;
+  }
+  .burst-divider {
+    width: 1px;
+    height: 1rem;
+    background-color: var(--rsp-text-color-light);
   }
 }
 // Hide nags from other plugins

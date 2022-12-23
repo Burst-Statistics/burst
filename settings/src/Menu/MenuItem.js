@@ -1,56 +1,48 @@
-import {
-    Component,
-} from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-class MenuItem extends Component {
-    constructor() {
-        super( ...arguments );
+const MenuItem = (props) => {
+    console.log(props);
+  const handleClick = (e) => {
+    // @todo fix
+    console.log('click on' + e )
+    // props.selectMenu(props.menuItem.id);
+  };
+
+  let menuIsSelected = props.selectedMenuItem === props.menuItem.id;
+  if (props.menuItem.menu_items) {
+    for (const item of props.menuItem.menu_items) {
+      if (item.id === props.selectedMenuItem) {
+        menuIsSelected = true;
+      }
     }
+  }
 
-    handleClick(){
-        this.props.selectMenu(this.props.menuItem.id);
-    }
-
-    componentDidMount() {
-        this.handleClick = this.handleClick.bind(this);
-    }
-
-    render(){
-        /*
-         * Menu is selected if the item is the same, or if it is a child.
-         */
-        let menuIsSelected = this.props.selectedMenuItem===this.props.menuItem.id;
-        if (this.props.menuItem.menu_items) {
-            for (const item of this.props.menuItem.menu_items){
-                if (item.id === this.props.selectedMenuItem ){
-                    menuIsSelected=true;
-                }
-            }
-        }
-
-        let menuClass = menuIsSelected ? ' burst-active' : '';
-        menuClass += this.props.menuItem.featured ? ' burst-featured' : '';
-        menuClass += this.props.menuItem.premium && !burst_settings.pro_plugin_active ? ' burst-premium' : '';
-        let href = '#'+this.props.selectedMainMenuItem+'/'+this.props.menuItem.id;
-        return (
-            <>
-            {this.props.menuItem.visible && <div className={"burst-menu-item" + menuClass}>
-                <a href={href} onClick={() => this.handleClick()}>
-                    <span>{this.props.menuItem.title}</span>
-                    {this.props.menuItem.featured && <span className="burst-menu-item-featured">{this.props.menuItem.featured}</span>}
-                </a>
-                { (this.props.menuItem.menu_items && menuIsSelected) && <div className="burst-submenu-item">
-                    {this.props.menuItem.menu_items.map(
-                        (subMenuItem, i) => subMenuItem.visible && <MenuItem key={i}
-                                                                             menuItem={subMenuItem}
-                                                                             selectMenu={this.props.selectMenu}
-                                                                             selectedMenuItem={this.props.selectedMenuItem}/>
+  let menuClass = menuIsSelected ? ' burst-active' : '';
+  menuClass += props.menuItem.featured ? ' burst-featured' : '';
+  menuClass += props.menuItem.premium && !burst_settings.pro_plugin_active
+      ? ' burst-premium'
+      : '';
+  let href = '#' + props.selectedMainMenuItem + '/' + props.menuItem.id;
+  return (
+      <>
+        {props.menuItem.visible &&
+            <div className={'burst-menu-item' + menuClass}>
+              <a href={href} onClick={() => handleClick()}>
+                <span>{props.menuItem.title}</span>
+                {props.menuItem.featured && <span
+                    className="burst-menu-item-featured">{props.menuItem.featured}</span>}
+              </a>
+              {(props.menuItem.menu_items && menuIsSelected) &&
+                  <div className="burst-submenu-item">
+                    {props.menuItem.menu_items.map(
+                        (subMenuItem, i) => subMenuItem.visible &&
+                            <MenuItem key={i}
+                                      menuItem={subMenuItem}
+                                      selectMenu={props.selectMenu}
+                                      selectedMenuItem={props.selectedMenuItem}/>,
                     )}
-                </div>}
+                  </div>}
             </div>}
-            </>
-        )
-    }
-}
+      </>
+  );
+};
 
-export default MenuItem
+export default MenuItem;

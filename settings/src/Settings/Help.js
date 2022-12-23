@@ -1,18 +1,17 @@
-import {Component, Fragment} from "@wordpress/element";
+import {Fragment} from "react";
 import Icon from "../utils/Icon";
 import { __ } from '@wordpress/i18n';
 
 /**
  * Render a help notice in the sidebar
  */
-class Help extends Component {
-    render(){
-        let notice = this.props.help;
+const Help = (props) => {
+        let notice = props.help;
         if ( !notice.title ){
             notice.title = notice.text;
             notice.text = false;
         }
-        let openStatus = this.props.noticesExpanded ? 'open' : '';
+        let openStatus = props.noticesExpanded ? 'open' : '';
         let target = notice.url && notice.url.indexOf("really-simple-ssl.com") !==-1 ? "_blank" : '_self';
         return (
             <Fragment>
@@ -30,7 +29,6 @@ class Help extends Component {
             </Fragment>
 
         );
-    }
 }
 
 export default Help

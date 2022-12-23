@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import {
     useEffect,
     useState,
-} from '@wordpress/element';
+} from 'react';
 import * as burst_api from "../utils/api";
 import {
     Chart as ChartJS,
@@ -16,6 +16,7 @@ import {
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import {parseISO, differenceInCalendarDays} from 'date-fns'
+import {UseInsightsStats} from '../data/statistics/insights';
 
 ChartJS.register(
     CategoryScale,
@@ -28,32 +29,8 @@ ChartJS.register(
   );
 
 const InsightsBlock  = (props) => {
-    const dateRange = props.dateRange;
-    const selectedMetrics = props.insightsMetrics.metrics;
-    const startDate = dateRange.startDate;
-    const endDate = dateRange.endDate;
-    const range = dateRange.range;
-    const [loading, setLoading] = useState(true);
-    const [chartData, setChartData] = useState(
-        {
-            labels: ['', '', '', '', '', '', ''],
-            datasets: [
-              {
-                label: __('Unique visitors', 'burst-statistics'),
-                data: [0, 0, 0, 0, 0, 0, 0],
-                borderColor: 'rgba(41, 182, 246, 1)',
-                backgroundColor: 'rgba(41, 182, 246, 0.2)',
-              },
-              {
-                label: __('Pageviews', 'burst-statistics'),
-                data: [0, 0, 0, 0, 0, 0, 0],
-                borderColor: 'rgba(244, 191, 62, 1)',
-                backgroundColor: 'rgba(244, 191, 62, 0.2)',
-              },
-            ],
-          }
-    );
-
+  const {chartData, loading} = UseInsightsStats(state => state);
+    console.log(chartData)
 
     const options = {
         responsive: true,
@@ -90,35 +67,15 @@ const InsightsBlock  = (props) => {
         },
       };
 
-    useEffect(() => {
-        // if startDate and endDate are less than two days apart, show hours as interval
-        const startDateObj = parseISO(startDate);
-        const endDateObj = parseISO(endDate);
-        const diffDays = differenceInCalendarDays(endDateObj, startDateObj) + 1;
-        let interval = 'hour';
-        if (diffDays >= 3) {
-            interval = 'day';
-        }
-
-
-        let args = {
-            metrics: selectedMetrics,
-            interval: interval,
-        }
-        getInsightsData(startDate, endDate, args).then((response) => {
-            setChartData(response);
-        }).catch((error) => {
-            console.error(error);
-        });
-      }, [dateRange, props.insightsMetrics]);
-
-    function getInsightsData(startDate, endDate, args){
-      setLoading(true);
-        return burst_api.getData('insights', startDate, endDate, range, args).then( ( response ) => {
-            setLoading(false);
-            return response.data;
-        });
-    }
+      // // @todo move to daterange component
+      //   // if startDate and endDate are less than two days apart, show hours as interval
+      //   const startDateObj = parseISO(startDate);
+      //   const endDateObj = parseISO(endDate);
+      //   const diffDays = differenceInCalendarDays(endDateObj, startDateObj) + 1;
+      //   let interval = 'hour';
+      //   if (diffDays >= 3) {
+      //       interval = 'day';
+      //   }
     
     let loadingClass = loading ? 'burst-loading' : '';
     return(

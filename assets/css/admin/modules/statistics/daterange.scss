@@ -1,7 +1,4 @@
 #burst-date-range-picker-container {
-  //display: none;
-  //position: absolute;
-  //right: 0;
   flex: 1 1 auto;
   flex-wrap: wrap;
   gap: var(--rsp-spacing-xs);
@@ -17,10 +14,13 @@
 #burst-date-range-picker-open-button{
   display: flex;
   align-items: center;
+  padding: var(---rsp-filter-padding);
+  box-shadow: var(--rsp-box-shadow);
   cursor: pointer;
   gap: var(--rsp-spacing-xxs);
   color: var(--rsp-text-color);
   background-color: var(--rsp-input-background-color);
+  background: var(--rsp-grey-200);
   border: 1px solid var(--rsp-input-border-color);
   border-radius: var(--rsp-border-radius-input);
   .burst-icon{

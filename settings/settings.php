@@ -142,6 +142,13 @@ function burst_settings_rest_route() {
 	if ( ! burst_user_can_view() ) {
 		return;
 	}
+	register_rest_route( 'burst/v1', 'menu/get', array(
+		'methods'             => 'GET',
+		'callback'            => 'burst_rest_api_menu_get',
+		'permission_callback' => function () {
+			return burst_user_can_manage();
+		}
+	) );
 	register_rest_route( 'burst/v1', 'fields/get', array(
 		'methods'             => 'GET',
 		'callback'            => 'burst_rest_api_fields_get',
@@ -347,34 +354,45 @@ function burst_get_data($request){
 	if ( ! burst_user_can_view() ) {
 		return;
 	}
+
 	$type = sanitize_title($request->get_param('type'));
+	error_log('burst_get_data for type: '.$type);
     $args = [
             'date_start' => BURST()->statistics->convert_date_to_utc( $request->get_param('date_start') . ' 00:00:00'), // add 00:00:00 to date,
             'date_end' => BURST()->statistics->convert_date_to_utc($request->get_param('date_end') . ' 23:59:59'), // add 23:59:59 to date
             'date_range' => burst_sanitize_date_range($request->get_param('date_range')),
     ];
     $request_args = json_decode($request->get_param('args'), true);
+    error_log('burst_get_data request_args: '.print_r($request_args, true));
 	$args['metrics'] = $request_args['metrics'] ?? [];
+    $args['page_id'] = $request_args['pageId'] ?? '';
+
 	switch($type){
+		case 'live-visitors':
+			$data = BURST()->statistics->get_live_visitors_data();
+			break;
 		case 'today':
 			$data = BURST()->statistics->get_today_data($args);
 			break;
+		case 'goals':
+			$data = BURST()->goals->get_goals_data($args);
+			break;
 		case 'insights':
-            $args['interval'] = sanitize_title($request_args['interval']);
-			$data = BURST()->statistics->get_insights_data($args);
-			break;
-		case 'pages':
-			$data = BURST()->statistics->get_pages_data($args);
-			break;
+            $args['interval'] = isset($request_args['interval']) ? sanitize_title($request_args['interval']) : 'day';
 
-		case 'referrers':
-			$data = BURST()->statistics->get_referrers_data($args);
+			$data = BURST()->statistics->get_insights_data($args);
 			break;
 		case 'compare':
 			$data = BURST()->statistics->get_compare_data($args);
 			break;
 		case 'devices':
 			$data = BURST()->statistics->get_devices_data($args);
+			break;
+		case 'pages':
+			$data = BURST()->statistics->get_pages_data($args);
+			break;
+		case 'referrers':
+			$data = BURST()->statistics->get_referrers_data($args);
 			break;
 		default:
 			$data = apply_filters("burst_get_data", [], $type, $request);
@@ -580,10 +598,22 @@ function burst_rest_api_fields_get() {
 	}
 
 	$output['fields'] = $fields;
-	$output['menu'] = $menu;
+    $output['goal_fields'] = burst_goal_fields();
 	$output['progress'] = BURST()->notices->get();
 
 	return apply_filters('rsssl_rest_api_fields_get', $output);
+}
+
+function burst_rest_api_menu_get() {
+    if ( !burst_user_can_manage() ) {
+        return;
+    }
+
+    $output = array();
+    $menu = burst_menu();
+    $output = $menu;
+
+    return apply_filters('rsssl_rest_api_menu_get', $output);
 }
 
 /**

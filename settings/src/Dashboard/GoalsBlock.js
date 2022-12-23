@@ -1,146 +1,180 @@
-import { __ } from '@wordpress/i18n';
+import {__} from '@wordpress/i18n';
 import {
   useState,
-  useEffect
-} from '@wordpress/element';
-import Placeholder from '../Placeholder/Placeholder';
+  useEffect,
+} from 'react';
 import Tooltip from '@mui/material/Tooltip';
 
-import * as burst_api from "../utils/api";
+import * as burst_api from '../utils/api';
 import Icon from '../utils/Icon';
-import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
-import {Button} from '@wordpress/components';
+import {
+  endOfDay,
+  format,
+  startOfDay,
+} from 'date-fns';
+import {formatTime, formatNumber, getPercentage} from '../utils/formatting';
 
 const GoalsBlock = () => {
   const [goals, setGoalsData] = useState(
       {
-        live: {
-          title: __('Live', 'burst-statistics'),
+        today: {
+          title: __('Today', 'burst-statistics'),
           value: '-',
           icon: 'goals',
         },
-        goals: {
+        total: {
           title: __('Total', 'burst-statistics'),
           value: '-',
           icon: 'goals',
         },
-        mostViewed: {
+        topPerformer: {
           title: '-',
           value: '-',
         },
-        pageviews: {
+        visitors: {
           title: '-',
           value: '-',
         },
-        referrer: {
+        conversionPercentage: {
           title: '-',
           value: '-',
         },
-        timeOnPage: {
+        timeToGoal: {
           title: '-',
           value: '-',
-        }
-      }
+        },
+        dateStart: '-',
+      },
   );
 
-  // const startDate = format(startOfDay(new Date()), 'yyyy-MM-dd');
-  // const endDate = format(endOfDay(new Date()), 'yyyy-MM-dd');
+  const startDate = format(startOfDay(new Date()), 'yyyy-MM-dd');
+  const endDate = format(endOfDay(new Date()), 'yyyy-MM-dd');
 
   // useEffect(() => {
   //       getData(startDate, endDate);
   //       const interval = setInterval(() => {
   //         getData(startDate, endDate);
-  //       }, 5000)
+  //         // startAnimation(5000);
+  //       }, 30000);
   //
   //       return () => clearInterval(interval);
-  //     }, [startDate, endDate]
-  // )
+  //     }, [startDate, endDate],
+  // );
 
-  function getData(startDate, endDate){
+  function getData(startDate, endDate) {
     getGoalsData(startDate, endDate).then((response) => {
+      let data = response;
+      data.today.icon = selectVisitorIcon(data.today.value);
+      data.total.icon = selectVisitorIcon(data.total.value);
+      // map data formatNumber
+      for (const [key, value] of Object.entries(data)) {
+        if (key === 'timeToGoal') {
+          data[key].value = formatTime(value.value);
+        }
+        else if (key === 'conversionPercentage') {
+          data[key].value = getPercentage(value.value, 1);
+        }
+        else {
+          data[key].value = formatNumber(value.value);
+        }
+      }
+      // new date from unix timestamp
+      const currentYear = new Date().getFullYear();
+      const dateStart = new Date(data.dateStart * 1000);
+      const formatString = dateStart.getFullYear() === currentYear
+          ? 'MMMM dd'
+          : 'MMMM dd, yyyy';
+      data.dateStart = format(dateStart, formatString);
 
-      // setGoalsData(data);
+      setGoalsData(data);
     }).catch((error) => {
       console.error(error);
     });
   }
 
-  function getGoalsData(startDate, endDate, args= []){
-    // return burst_api.getData('goals', startDate, endDate, args).then( ( response ) => {
-    //   return response.data;
-    // });
+  function getGoalsData(startDate, endDate, args = []) {
+    return burst_api.getData('goals', startDate, endDate, 'custom', args).
+        then((response) => {
+          return response;
+        });
+  }
+
+  function selectVisitorIcon(value) {
+    value = parseInt(value);
+    if (value > 100) {
+      return 'goals';
+    }
+    else if (value > 10) {
+      return 'goals';
+    }
+    else {
+      return 'goals';
+    }
   }
 
   const delayTooltip = 200;
-  if (goals) {
-    return(
-        <>
-          <div className="information-overlay">
-            <div className="information-overlay-container">
-              <h4>{__('Coming soon: Goals', 'burst-statistics')}</h4>
-              <p>{__('Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics.', 'burst-statistics')}</p>
-
-              {/*<h6>{__('Contribute', 'burst-statistics')}</h6>*/}
-              {/*<p>{__("We're building this plugin together with you, the WordPress community, to make it the best statistics plugin to date.", 'burst-statistics')}</p>*/}
-              {/*<p>{__('Help make our product better by leaving a suggestion on the Wordpress forum.', 'burst-statistics')}</p>*/}
-              <a href="https://wordpress.org/support/plugin/burst-statistics/" target="_blank" rel="noreferrer" className="button button-default">{__('Leave a suggestion', 'burst-statistics')}</a>
-            </div>
-
+  return (
+      <>
+        <div className="burst-goals">
+          <div className="burst-goals-select">
+            <Tooltip arrow title={goals.today.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-select-item">
+                <Icon name={goals.today.icon} size="23"/>
+                <h2>{goals.today.value}</h2>
+                <span><Icon name="sun" size="13"/> Today</span>
+              </div>
+            </Tooltip>
+            <Tooltip arrow title={goals.total.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-select-item">
+                <Icon name={goals.total.icon} size="23"/>
+                <h2>{goals.total.value}</h2>
+                <span><Icon name="total" size="13"
+                            color={'green'}/> Total</span>
+              </div>
+            </Tooltip>
           </div>
-          <div className="burst-goals">
-            <div className="burst-goals-select">
-              <Tooltip arrow title={goals.live.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-select-item">
-                  <Icon name={goals.live.icon} size='23' />
-                  <h2>{goals.live.value}</h2>
-                  <span><Icon name='live' size='13' color={'green'} /> Live</span>
-                </div>
-              </Tooltip>
-              <Tooltip arrow title={goals.goals.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-select-item">
-                  <Icon name={goals.goals.icon} size='23' />
-                  <h2>{goals.goals.value}</h2>
-                  <span><Icon name='total' size='13' color={'green'} /> Total</span>
-                </div>
-              </Tooltip>
-            </div>
-            <div className="burst-goals-list">
-              <Tooltip arrow title={goals.mostViewed.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-list-item">
-                  <Icon name="winner" />
-                  <p className='burst-goals-list-item-text'>{goals.mostViewed.title}</p>
-                  <p className='burst-goals-list-item-number'>{goals.mostViewed.value}</p>
-                </div>
-              </Tooltip>
-              <Tooltip arrow title={goals.referrer.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-list-item">
-                  <Icon name="visitors" />
-                  <p className='burst-goals-list-item-text'>{goals.referrer.title}</p>
-                  <p className='burst-goals-list-item-number'>{goals.referrer.value}</p>
-                </div>
-              </Tooltip>
-              <Tooltip arrow title={goals.pageviews.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-list-item">
-                  <Icon name="graph" />
-                  <p className='burst-goals-list-item-text'>{goals.pageviews.title}</p>
-                  <p className='burst-goals-list-item-number'>{goals.pageviews.value}</p>
-                </div>
-              </Tooltip>
-              <Tooltip arrow title={goals.timeOnPage.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-list-item">
-                  <Icon name="time" />
-                  <p className='burst-goals-list-item-text'>{goals.timeOnPage.title}</p>
-                  <p className='burst-goals-list-item-number'>{goals.timeOnPage.value}</p>
-                </div>
-              </Tooltip>
-            </div>
+          <div className="burst-goals-list">
+            <Tooltip arrow title={goals.topPerformer.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-list-item">
+                <Icon name="winner"/>
+                <p className="burst-goals-list-item-text">{goals.topPerformer.title}</p>
+                <p className="burst-goals-list-item-number">{goals.topPerformer.value}</p>
+              </div>
+            </Tooltip>
+            <Tooltip arrow title={goals.visitors.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-list-item">
+                <Icon name="visitors"/>
+                <p className="burst-goals-list-item-text">{goals.visitors.title}</p>
+                <p className="burst-goals-list-item-number">{goals.visitors.value}</p>
+              </div>
+            </Tooltip>
+            <Tooltip arrow title={goals.conversionPercentage.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-list-item">
+                <Icon name="graph"/>
+                <p className="burst-goals-list-item-text">{goals.conversionPercentage.title}</p>
+                <p className="burst-goals-list-item-number">{goals.conversionPercentage.value}</p>
+              </div>
+            </Tooltip>
+            <Tooltip arrow title={goals.timeToGoal.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-list-item">
+                <Icon name="time"/>
+                <p className="burst-goals-list-item-text">{goals.timeToGoal.title}</p>
+                <p className="burst-goals-list-item-number">{goals.timeToGoal.value}</p>
+              </div>
+            </Tooltip>
           </div>
-        </>
-    );
-  } else {
-    return (
-        <Placeholder lines = '10'/>
-    )
-  }
-}
+        </div>
+        <div className={'burst-grid-item-footer'}>
+          <p className={'burst-small-text burst-flex-push-right'}>Since <span>{goals.dateStart}</span>
+          </p>
+        </div>
+      </>
+  );
+};
 export default GoalsBlock;

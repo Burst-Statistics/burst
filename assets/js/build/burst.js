@@ -4,6 +4,31 @@ let burst_initial_track_hit = false;
 let burst_cookieless_option = burst.options.enable_cookieless_tracking; // User cookieless option
 // add option to window so a consent plugin can change this value
 window.burst_enable_cookieless_tracking = burst.options.enable_cookieless_tracking; // Consent plugin cookieless option
+let burst_page_url = window.location.href;
+let burst_completed_goals = [];
+
+/**
+ * Setup Goals if they exist for current page
+ * @returns {Promise<void>}
+ */
+const burst_import_goals = async () => {
+	let random_string = (Math.random() + 1).toString(36).substring(7)
+	const goals = await import('./burst-goals.js?random_string=' + random_string);
+	goals.default();
+}
+
+// If has goals and a goal has this page_url, import
+if ( burst.goals.length > 0 ) {
+	for ( let i = 0; i < burst.goals.length; i++ ) {
+		if (
+			burst.goals[i].page_url !== '' ||
+				burst.goals[i].page_url === burst_page_url
+		) {
+			burst_import_goals();
+			break;
+		}
+	}
+}
 
 /**
  * Get a cookie by name
@@ -195,7 +220,7 @@ let burst_api_request = obj => {
 			resolve('ok');
 		} else {
 			obj.url = burst.url + 'burst/v1/track' + burst_token;
-			// if browser supports fetch keepalive, it will use it. Otherwise, it will use a normal XMLHttpRequest
+			// if browser supports fetch keepalive, the request will be kept alive. Otherwise, it will send a normal XMLHttpRequest
 			fetch(obj.url, {
 				keepalive: true,
 				method: 'POST',
@@ -226,7 +251,9 @@ async function burst_update_hit ( update_uid = false ){
 		'fingerprint': false,
 		'uid': false,
 		'url': location.href,
-		'time_on_page': await burst_get_time_on_page()
+		'time_on_page': await burst_get_time_on_page(),
+		'completed_goals': burst_completed_goals,
+
 	};
 
 	if ( update_uid ){
@@ -270,7 +297,8 @@ async function burst_track_hit () {
 		'referrer_url': document.referrer,
 		'user_agent': navigator.userAgent,
 		'device_resolution': window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio,
-		'time_on_page': await burst_get_time_on_page()
+		'time_on_page': await burst_get_time_on_page(),
+		'completed_goals': burst_completed_goals,
 	};
 
 	if ( burst_use_cookies() ) {
@@ -307,6 +335,7 @@ async function burst_track_hit () {
  *
  */
 function burst_init_events() {
+	console.log('Init events/New page load')
 	// Initial track hit
 	let turbo_mode = burst.options.enable_turbo_mode;
 	if ( turbo_mode ) { // if turbo mode is enabled, we track the hit after the whole page has loaded
@@ -324,6 +353,7 @@ function burst_init_events() {
 				document.visibilityState === 'unloaded'
 
 		) {
+			console.log('visibilitychange');
 			burst_update_hit();
 		}
 	});

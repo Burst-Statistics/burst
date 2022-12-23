@@ -1,4 +1,4 @@
-import {useState, useEffect, useMemo} from "@wordpress/element";
+import {useState, useEffect, useMemo} from "react";
 import * as burst_api from "../utils/api";
 import { __ } from '@wordpress/i18n';
 import Icon from "../utils/Icon";
@@ -9,17 +9,18 @@ import { getRelativeTime } from '../utils/formatting';
 
 const ProgressFooter = (props) => {
   let [trackingType, setTrackingType] = useState('loading'); // loading, error, rest, endpoint, disabled
-  let [lastChecked, setLastChecked] = useState(false);
+  let [lastChecked, setLastChecked] = useState(0);
   useMemo(() => {
     burst_api.runTest('tracking').then( ( response ) => {
-      if (response.status === 200) {
-        let status = response.data.status ? response.data.status : 'error';
-        let last_test = response.data.last_test ? response.data.last_test : __('Just now', 'burst-statistics');
+      console.log(response);
+      if (response.status === 'beacon' || response.status === 'rest' || response.status === 'disabled') {
+        let status = response.status ? response.status : 'error';
+        let last_test = response.last_test ? response.last_test : __('Just now', 'burst-statistics');
         setTrackingType(status);
         setLastChecked(last_test);
       } else {
         setTrackingType('error');
-        setLastChecked(__('Just now', 'burst-statistics'));
+        setLastChecked(false);
       }
     })
   }, []);

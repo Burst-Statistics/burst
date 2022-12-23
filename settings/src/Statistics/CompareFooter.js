@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { differenceInDays, parseISO } from 'date-fns';
 const CompareFooter = (props) => {
+  return '';
     const dateRange = props.dateRange;
     const startDate = parseISO(dateRange.startDate);
     const endDate = parseISO(dateRange.endDate);

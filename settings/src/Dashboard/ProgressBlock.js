@@ -1,66 +1,34 @@
 import {
     Component,
-} from '@wordpress/element';
+    useState,
+    useEffect
+} from 'react';
 
 import * as burst_api from "../utils/api";
 import TaskElement from "./TaskElement";
 import { __ } from '@wordpress/i18n';
-import Placeholder from '../Placeholder/Placeholder';
 
-class ProgressBlock extends Component {
-    constructor() {
-        super( ...arguments);
-        this.percentageCompleted = 0;
-        this.progressText = '';
-        this.filter = 'all';
-        this.notices = null;
-        this.progressLoaded = false;
-        this.fields = this.props.fields;
-        this.state = {
-            progressText:'',
-            filter:'all',
-            notices:null,
-            percentageCompleted:0,
-            progressLoaded: false,
-        };
+const ProgressBlock = (props) => {
+        const [filter, setFilter] = useState('all');
+        const [notices, setNotices] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const fields = props.fields;
 
-    }
-    componentDidMount() {
-        this.getProgressData = this.getProgressData.bind(this);
-        this.onCloseTaskHandler = this.onCloseTaskHandler.bind(this);
-        this.getProgressData();
-    }
-
-    componentDidUpdate() {
-        //if a field has changed, we update the progress data as well.
-        if ( this.fields !== this.props.fields ) {
-            this.fields = this.props.fields;
-            this.getProgressData();
-        }
-    }
-    getStyles() {
-        return Object.assign(
-            {},
-            {width: this.percentageCompleted+"%"},
-        );
-    }
-
-    getProgressData(){
+    const getProgressData = () => {
         burst_api.runTest('progressData', 'refresh').then( ( response ) => {
-            this.filter = response.data.filter;
-            this.notices = response.data.notices;
-            this.progressLoaded = true;
-
-            this.setState({
-                progressLoaded: this.progressLoaded,
-                filter: this.filter,
-                notices: this.notices,
-            });
-            this.props.setBlockProps('notices',this.notices);
+            setFilter(response.filter);
+            setNotices(response.notices);
+            console.log(response);
+            // props.setBlockProps('notices',notices);
         });
     }
 
-    onCloseTaskHandler(e){
+    // only run on mount
+    useEffect(() => {
+        getProgressData();
+    }, []);
+
+    const onCloseTaskHandler = (e) => {
         let button = e.target.closest('button');
         let notice_id = button.getAttribute('data-id');
         let container = button.closest('.burst-task-element');
@@ -83,45 +51,38 @@ class ProgressBlock extends Component {
             }
         }
 
-        let notices = this.props.BlockProps.notices;
+        let notices = props.BlockProps.notices;
         notices = notices.filter(function (notice) {
             return notice.id !== notice_id;
         });
+        setNotices(notices);
 
-        this.props.setBlockProps('notices', notices);
         return burst_api.runTest('dismiss_task', notice_id).then(( response ) => {
-            this.percentageCompleted = response.data.percentage;
-            this.setState({
-                percentageCompleted:this.percentageCompleted
-            })
+            console.log('dismissed');
         });
     }
 
 
-    render(){
-        let henk = false;
-        const n = 1;
-        if ( !this.progressLoaded ) {
+        if ( loading ) {
             return (
                 <div className="burst-progress-block">
                     <div className="burst-scroll-container">
-                        {[...Array(n)].map((e, i) =>
-                            <div key={i} className="burst-task-element">
-                                <span className={'burst-task-status burst-loading'}>{__('Loading...', 'burst-statistics')}</span>
-                                <p className="burst-task-message">{__('Loading notices...', 'burst-statistics')}</p>
-                            </div>
-                        )}
+                        <div className="burst-task-element">
+                            <span
+                                className={'burst-task-status burst-loading'}>{__(
+                                'Loading...', 'burst-statistics')}</span>
+                            <p className="burst-task-message">{__(
+                                'Loading notices...', 'burst-statistics')}</p>
+                        </div>
                     </div>
                 </div>
             );
         }
-        let filter = 'all';
-        if ( this.props.BlockProps && this.props.BlockProps.filterStatus ) {
-            filter = this.props.BlockProps.filterStatus;
+        if ( props.BlockProps && props.BlockProps.filterStatus ) {
+            setFilter(props.BlockProps.filterStatus);
         }
-        let notices = this.notices;
         if ( filter==='remaining' ) {
-            notices = notices.filter(function (notice) {
+            notices.filter(function (notice) {
                 return notice.output.status==='open';
             });
         }
@@ -129,10 +90,9 @@ class ProgressBlock extends Component {
         return (
             <div className="burst-progress-block">
                 <div className="burst-scroll-container">
-                    {notices.map((notice, i) => <TaskElement key={i} index={i} notice={notice} onCloseTaskHandler={this.onCloseTaskHandler} highLightField={this.props.highLightField}/>)}
+                    {notices.map((notice, i) => <TaskElement key={i} index={i} notice={notice} onCloseTaskHandler={onCloseTaskHandler} highLightField={props.highLightField}/>)}
                 </div>
             </div>
         );
-    }
 }
 export default ProgressBlock;

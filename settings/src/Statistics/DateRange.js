@@ -1,27 +1,25 @@
 import {
-    render,
-    Component,
     useState,
     useRef,
-} from '@wordpress/element';
+} from 'react';
 import {Popover} from '@mui/material';
 
 // date range picker and date fns
 import { DateRangePicker } from 'react-date-range';
 import {format, parseISO, startOfYear, addDays, addMonths, isSameDay, startOfDay, endOfDay, startOfMonth, endOfMonth} from 'date-fns'
-import Icon from '../../utils/Icon';
+import Icon from '../utils/Icon';
 import {__} from '@wordpress/i18n';
-import {useEffect} from 'react';
+import {UseDate} from '../data/statistics/date';
 
 const DateRange = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const [selectionRange, setSelectionRange] = useState({
-            startDate:  parseISO(props.dateRange.startDate),
-            endDate: parseISO(props.dateRange.endDate),
-            key: 'selection',
-        }
-    );
+    const {startDate, endDate, setStartDate, setEndDate, range, setRange} = UseDate();
+    const selectionRange = {
+        startDate:  parseISO(startDate),
+        endDate: parseISO(endDate),
+        key: 'selection',
+    };
     const countClicks = useRef(0);
     // select date ranges from settings
     const selectedRanges = burst_settings.date_ranges;
@@ -104,7 +102,7 @@ const DateRange = (props) => {
 
     const updateDateRange = (ranges) => {
         countClicks.current++
-        setSelectionRange(ranges.selection);
+        // setSelectionRange(ranges.selection);
         let startStr = format(ranges.selection.startDate, 'yyyy-MM-dd');
         let endStr = format(ranges.selection.endDate, 'yyyy-MM-dd');
         let range = 'custom';
@@ -123,7 +121,9 @@ const DateRange = (props) => {
 
         if ( countClicks.current === 2 || startStr !== endStr || range !== 'custom' ) {
             countClicks.current = 0;
-            props.setDateRange(dateRange)
+            setStartDate(startStr);
+            setEndDate(endStr);
+            setRange(range);
             handleClose();
         }
 
@@ -131,8 +131,8 @@ const DateRange = (props) => {
 
     const formatString = 'MMMM d, yyyy';
     const display = {
-        startDate: props.dateRange.startDate ? format(new Date(props.dateRange.startDate), formatString) : format(defaultStart, formatString),
-        endDate: props.dateRange.endDate ? format(new Date(props.dateRange.endDate), formatString) : format(defaultEnd, formatString),
+        startDate: startDate ? format(new Date(startDate), formatString) : format(defaultStart, formatString),
+        endDate: endDate ? format(new Date(endDate), formatString) : format(defaultEnd, formatString),
     }
     return (
         <div className="burst-date-range-container">

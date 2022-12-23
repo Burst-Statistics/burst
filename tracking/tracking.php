@@ -29,6 +29,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 	 * @return string
 	 */
 	function burst_track_hit( $data ): string {
+		error_log( 'burst_track_hit' );
 		global $wpdb;
 		$user_agent_data = isset( $data['user_agent'] ) ? burst_get_user_agent_data( $data['user_agent'] ) : array(
 			'browser'  => '',
@@ -48,7 +49,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'time_on_page'      => null,
 		);
 		$data = wp_parse_args( $data, $defaults );
-
 		// update array
 		$arr                      = array();
 		$arr['entire_page_url']   = burst_sanitize_entire_page_url( $data['url'] ); // required
@@ -101,7 +101,8 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			$arr['time']             = time();
 			$arr['first_time_visit'] = burst_get_first_time_visit( $arr['uid'] );
 
-			burst_create_statistic( $arr );
+			$insert_id = burst_create_statistic( $arr );
+			error_log( 'burst_create_statistic: ' . $insert_id );
 
 			// if postmeta burst_total_pageviews_count does not exist, create it with sql and set it to 1
 			// if it exists, add 1 to it via sql
@@ -118,6 +119,23 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 				$meta_value = 1;
 				$sql = $wpdb->prepare( "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES (%d, %s, %d)", $arr['page_id'], $meta_key, $meta_value );
 				$wpdb->query( $sql );
+			}
+		}
+		if ( $arr['ID'] ) {
+			$statistic_id = $arr['ID'];
+		} else {
+			$statistic_id = $insert_id;
+		}
+		
+		$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr );
+		// if $arr['completed_goals'] is not an empty array, update burst_goals table
+		if ( ! empty( $completed_goals) ) {
+			foreach ( $completed_goals as $goal_id ) {
+				$goal_arr = array(
+					'goal_id'      => $goal_id,
+					'statistic_id' => $statistic_id,
+				);
+				burst_create_goal_statistic( $goal_arr );
 			}
 		}
 
@@ -337,6 +355,168 @@ if ( ! function_exists( 'burst_sanitize_first_time_visit' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_sanitize_completed_goal_ids' ) ) {
+	/**
+	 * Sanitize completed goals
+	 *
+	 * @param $completed_goals
+	 *
+	 * @return string
+	 */
+	function burst_sanitize_completed_goal_ids( $completed_goals ) {
+		if ( ! is_array( $completed_goals ) ) {
+			return [];
+		}
+		$completed_goals = array_intersect($completed_goals, burst_get_active_goals_ids()); // only keep active goals ids
+		$completed_goals = array_unique($completed_goals); // remove duplicates
+
+		return $completed_goals;
+	}
+}
+
+if ( ! function_exists( 'burst_get_active_goals' ) ) {
+	/**
+	 * @param $server_side
+	 *
+	 * @return array[]
+	 */
+	function burst_get_active_goals($server_side = false) {
+		global $wpdb;
+		$active_goals = [];
+		$server_side = $server_side === 'server_side' ? "AND server_side = 1" : "AND server_side = 0";
+		$goals        = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE status = 'active' {$server_side}", ARRAY_A );
+		$goals = [
+			[
+				'id' => '1',
+				'status' => 'active',
+				'server_or_client_side' => 'client_side',
+				'name' => 'Click on .this-is-a-conversion',
+				'type' => 'click',
+				'url' => '/hello-world/',
+				'setup' => [
+					'element' => '',
+					'attribute' => 'class',
+					'value' => 'this-is-a-conversion',
+				],
+			],
+			[
+				'id' => '3',
+				'status' => 'active',
+				'server_or_client_side' => 'client_side',
+				'name' => 'Click on .this-is-a-conversion2',
+				'type' => 'click',
+				'url' => '',
+				'setup' => [
+					'element' => '',
+					'attribute' => 'class',
+					'value' => 'wp-block-search__inside-wrapper',
+				],
+			],
+			[
+				'id' => '2',
+				'status' => 'active',
+				'server_or_client_side' => 'client_side',
+				'name' => 'Viewport goal',
+				'type' => 'view',
+				'url' => '',
+				'setup' => [
+					'element' => '',
+					'attribute' => 'class',
+					'value' => 'wp-block-search__inside-wrapper',
+				],
+			],
+			[
+				'id' => '3',
+				'status' => 'active',
+				'server_or_client_side' => 'server_side',
+				'name' => 'Visit checkout page',
+				'type' => 'visit',
+				'url' => '',
+				'setup' => [
+					'url' => 'https://wordpress/hello-world/',
+				],
+			],
+		];
+		return $goals;
+	}
+}
+
+if ( ! function_exists( 'burst_get_active_goals_ids' ) ) {
+	/**
+	 * @param $server_side
+	 *
+	 * @return array
+	 */
+	function burst_get_active_goals_ids($server_side = false) {
+		$active_goals = burst_get_active_goals($server_side);
+		$active_goals_ids = [];
+		foreach ( $active_goals as $goal ) {
+			$active_goals_ids[] = $goal['id'];
+		}
+
+		return $active_goals_ids;
+	}
+}
+
+if ( ! function_exists('burst_goal_is_completed') ) {
+	/**
+	 * @param $goal_id
+	 * @param $completed_goals
+	 *
+	 * @return bool
+	 */
+	function burst_goal_is_completed($goal, $hit_data) {
+		if (
+			! isset( $goal['type'] ) ||
+			! isset( $goal['setup']['url'] ) ||
+			! isset( $hit_data['entire_page_url'] )
+		) {
+			return false;
+		}
+
+		switch ($goal['type']) {
+			case 'visit':
+				// @todo compare parts of url (e.g. /hello-world/ and /hello-world/?utm_source=google)
+				// if url in hit data is equal to goal url
+				if ( $hit_data['entire_page_url'] === $goal['setup']['url'] ) {
+					return true;
+				}
+				break;
+			default:
+				return false;
+		}
+	}
+}
+
+if ( ! function_exists( 'burst_get_completed_goals') ) {
+	/**
+	 * Get completed goals
+	 *
+	 * @param $completed_goals
+	 *
+	 * @return string
+	 */
+	function burst_get_completed_goals( $client_side_goals, $hit_data ) {
+		$completed_client_goals =  burst_sanitize_completed_goal_ids( $client_side_goals );
+		$completed_server_goals = [];
+		$server_goals = burst_get_active_goals(true);
+
+		// if server side goals exist
+		if ( $server_goals ) {
+			// loop through server side goals
+			foreach ( $server_goals as $goal ) {
+				// if goal is completed
+				if ( burst_goal_is_completed( $goal, $hit_data ) ) {
+					// add goal id to completed goals array
+					$completed_server_goals[] = $goal['id'];
+				}
+			}
+		}
+
+		return array_merge($completed_client_goals, $completed_server_goals); // merge completed client goals and completed server goals
+	}
+}
+
 if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 	/**
 	 * Get user agent data
@@ -510,10 +690,11 @@ if ( ! function_exists( 'burst_create_statistic' ) ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
 		if ( burst_required_values_are_set( $data ) ) return;
-		$wpdb->insert(
+		$id = $wpdb->insert(
 			$wpdb->prefix . 'burst_statistics',
 			$data
 		);
+		return $wpdb->insert_id;
 	}
 }
 
@@ -535,6 +716,27 @@ if ( ! function_exists( 'burst_update_statistic' ) ) {
 			(array) $data,
 			array( 'ID' => $data['ID'] )
 		);
+		return $wpdb->insert_id;
+	}
+}
+
+if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
+	/**
+	 * Create goal statistic in {prefix}_burst_goal_statistics
+	 *
+	 * @param $data
+	 *
+	 * @return void
+	 */
+	function burst_create_goal_statistic( $data ) {
+		error_log( 'burst_create_goal_statistic' );
+		global $wpdb;
+		$wpdb->insert(
+			$wpdb->prefix . 'burst_goal_statistics',
+			$data
+		);
+		error_log( $wpdb->last_query );
+		error_log( $wpdb->last_error );
 	}
 }
 

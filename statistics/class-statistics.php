@@ -50,6 +50,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 							'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
 							'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
 						),
+						'goals'                     => burst_get_active_goals(false),
 					)
 				);
 				wp_enqueue_script( 'burst',
@@ -150,19 +151,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			return 'day';
 		}
 
-		public function get_today_data($args = array()) {
-			$start_time = microtime(true);
+		public function get_live_visitors_data(){
 			global $wpdb;
 			$data     = [];
-			$defaults = array(
-				'date_start' => 0,
-				'date_end'   => 0,
-			);
-			$args     = wp_parse_args( $args, $defaults );
-
-			$start = $args['date_start'];
-			$end   = $args['date_end'];
-			$table = $this->get_sql_table($start, $end);
 
 			// get real time visitors
 			$db_name               = $wpdb->prefix . 'burst_statistics';
@@ -178,11 +169,25 @@ if ( ! class_exists( "burst_statistics" ) ) {
                  	) AS active_visitors";
 			$live_value            = $wpdb->get_var( $sql );
 			$live_value            = (int) $live_value > 0 ? $live_value : 0;
-			$data['live']['value'] = $live_value;
+			return $live_value;
+		}
+
+		public function get_today_data($args = array()) {
+			global $wpdb;
+			$data     = [];
+			$defaults = array(
+				'date_start' => 0,
+				'date_end'   => 0,
+			);
+			$args     = wp_parse_args( $args, $defaults );
+
+			$start = $args['date_start'];
+			$end   = $args['date_end'];
+			$table = $this->get_sql_table($start, $end);
 
 			// if the live value didn't change we don't update the other stats. This is to avoid unnecessary queries. The transient expires every 60 seconds.
 			$cached_data = $this->get_transient( 'burst_today_data' );
-			if (  ! $cached_data || (int) $this->get_transient('burst_live_value') !== (int) $live_value){
+			if ( ! $cached_data ){
 				$this->set_transient('burst_live_value', $live_value, 60);
 
 				$select                      = $this->get_sql_select_for_metrics( [
@@ -229,12 +234,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				// setup defaults
 				$default_data = [
 					'live'       => [
-						'title'   => __( 'Live visitors', 'burst-statistics' ),
 						'value'   => '0',
 						'tooltip' => __( 'The amount of people using your website right now. The data updates every 5 seconds.', 'burst-statistics' ),
 					],
 					'today'      => [
-						'title'   => __( 'Today visitors', 'burst-statistics' ),
 						'value'   => '0',
 						'tooltip' => __( 'This is the total amount of unique visitors for today.', 'burst-statistics' ),
 					],
@@ -290,6 +293,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// generate labels for dataset
 			$labels = array();
 			$interval = $args['interval'];
+			// if not interval is a string and string is not ''
+			if ( ! is_string( $interval ) || $interval === '' ) {
+				$interval = 'day';
+			}
 			$date_start = $args['date_start'];
 			$date_end = $args['date_end'];
 			$date_range = $args['date_range'];
@@ -305,7 +312,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 ],
             ];
 
-
             for ( $i = 0; $i < $nr_of_periods; $i++ ) {
                 $date = $date_start + $i * $interval_args[$interval]['in_seconds'] + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
                 $labels[] = date_i18n( $interval_args[$interval]['format'], $date );
@@ -313,6 +319,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			// get data for each metric
 			$datasets = array();
+			error_log(print_r($metrics, true));
 			foreach ( $metrics as $metric ) {
 				$title = $metric_labels[$metric];
 				//get hits grouped per timeslot. default day
@@ -322,6 +329,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'date_end' => $date_end,
 					'interval' => $interval,
 					'date_range' => $date_range,
+					'page_id' => (int) $args['page_id'],
 				);
 				$hits = $this->get_chart_data_by_metric( $args );
 				$datasets[] = array(
@@ -332,6 +340,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'fill' => 'false',
 				);
 			}
+
+			$data = array(
+				'labels' => $labels,
+				'datasets' => $datasets,
+			);
 
 			return array(
 				'labels' => $labels,
@@ -345,6 +358,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		        'date_start' => 0,
 		        'date_end'   => 0,
 		        'date_range' => 'custom',
+		        'page_id'   => false,
 	        );
 	        $args     = wp_parse_args( $args, $defaults );
 
@@ -354,6 +368,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	        $start_diff = $start - $diff;
 	        $end_diff   = $end - $diff;
 			$date_range = $args['date_range'];
+	        $filters = [
+		        'page_id' => (int) $args['page_id'],
+	        ];
 
 	        $results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_compare_data_'.$date_range );
 	        if ( ! $results ) {
@@ -365,7 +382,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			        'first_time_visitors',
 			        'avg_time_on_page',
 		        ] );
-		        $from    = $this->get_sql_table($start, $end);
+		        $from    = $this->get_sql_table($start, $end, $filters);
 		        $sql     = "SELECT $select
 									FROM $from as stats";
 		        $current = $wpdb->get_results( $sql, 'ARRAY_A' );
@@ -376,7 +393,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		        }
 
 		        // get current data for bounces
-		        $from         = $this->get_sql_table_bounces($start, $end);
+		        $from         = $this->get_sql_table($start, $end, ['bounce' => true]);
 		        $sql          = "SELECT count(*) as bounced_sessions
 									FROM $from as stats";
 		        $curr_bounces = (int) $wpdb->get_var( $sql );
@@ -398,7 +415,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		        }
 
 		        // get previous data for bounces
-		        $from         = $this->get_sql_table_bounces($start_diff, $end_diff);
+		        $from         = $this->get_sql_table($start_diff, $end_diff, ['bounce' => true]);
 		        $sql          = "SELECT count(*) as bounced_sessions
 									FROM $from as stats";
 		        $prev_bounces = (int) $wpdb->get_var( $sql );
@@ -522,6 +539,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'date_start' => 0,
 				'date_end' => 0,
 				'metrics' => ['pageviews'], // only one metric should be passed at the moment. @todo add support for multiple metrics
+				'page_id' => false,
 			);
 			$args = wp_parse_args($args, $defaults);
 
@@ -566,6 +584,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'metric'     => $metric,
 						'date_start' => $date_start,
 						'date_end'   => $date_end,
+						'page_id'    => (int) $args['page_id'],
 					);
 					$data = $this->get_pages_by_metric( $args );
 				}
@@ -573,6 +592,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$results = [
 					"columns" => $columns,
 					"data"    => $data,
+					"metrics" => $metrics,
 				];
 				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_pages_data_'.$date_range, $results, DAY_IN_SECONDS);
 			}
@@ -592,10 +612,15 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $end        	= (int) $args['date_end'];
 			$metric     	= $this->sanitize_metric($args['metric']);
 
+			$filters = [
+				'page_id' => (int) $args['page_id'],
+			];
+
 			$select 	    = $this->get_sql_select_for_metric($metric);
-			$from 			= $this->get_sql_table($start, $end);
+			$from 			= $this->get_sql_table($start, $end, $filters);
 			$sql 			= "SELECT $select as $metric,
-								page_url as page
+								page_url as page,
+								page_id as page_id
 								FROM $from as stats
 								GROUP BY page order by $metric desc";
 
@@ -608,9 +633,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'date_start' => 0,
 				'date_end' => 0,
 				'metrics' => array('count'),
+				'page_id' => false,
 			);
 			$args = wp_parse_args($args, $defaults);
 			$date_range = $args['date_range'];
+			$filters = [
+				'page_id' => (int) $args['page_id'],
+			];
+
 
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_referrer_data_'.$date_range );
 
@@ -638,7 +668,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$remove      = array( "http://www.", "https://www.", "http://", "https://" );
 				$site_url    = str_replace( $remove, "", site_url() );
 
-				$table = $this->get_sql_table($start, $end);
+				$table = $this->get_sql_table($start, $end, $filters);
 				$sql   = "SELECT count(referrer) as count,
 									 CASE
 	                                    WHEN referrer = '/' THEN $direct_text
@@ -689,6 +719,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $start      = (int) $args['date_start'];
             $end        = (int) $args['date_end'];
 			$date_range = $args['date_range'];
+			$filters = [
+				'page_id' => (int) $args['page_id'],
+			];
 
             // first we get the data from the db
             if ( $interval === 'hour') {
@@ -701,10 +734,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $sqlperiod = "DATE_FORMAT(FROM_UNIXTIME(time), '" . $sqlformat . "')";
             if ( $metric === 'bounces' ) {
                 $select = 'count(*)';
-			    $from = $this->get_sql_table_bounces($start, $end);
+				$filters['bounce'] = true;
+			    $from = $this->get_sql_table($start, $end, $filters);
             } else {
                 $select= $this->get_sql_select_for_metric($metric);
-			    $from = $this->get_sql_table($start, $end);
+			    $from = $this->get_sql_table($start, $end, $filters);
 			}
             $sql = "SELECT $select as hit_count,
                         $sqlperiod as period
@@ -1073,38 +1107,24 @@ if ( ! class_exists( "burst_statistics" ) ) {
          *
          * @return string
          */
-        function get_sql_table($start, $end) {
+        function get_sql_table($start, $end, $filters = []) {
             global $wpdb;
+	        $bounce = isset($filters['bounce']) && $filters['bounce'] ? 'IN' : 'NOT IN';
+			$where = '';
+			if ( isset($filters['page_id']) && $filters['page_id'] ) {
+				$where = "AND page_id = {$filters['page_id']}";
+			}
             $table_name = $wpdb->prefix . 'burst_statistics';
             $time_bounce = apply_filters('burst_bounce_time', 5000);
-	        $bounce = "select session_id
+	        $bounce_sql = "select session_id
 						from $table_name
 						WHERE time > $start AND time < $end
 						GROUP BY session_id
 						having count(*) = 1
 						   and sum(time_on_page) < $time_bounce";
-            $statistics_without_bounces = "(SELECT * FROM $table_name WHERE session_id NOT IN ($bounce) and time > $start AND time < $end)";
+            $statistics_without_bounces = "(SELECT * FROM $table_name WHERE session_id $bounce ($bounce_sql) and time > $start AND time < $end $where)";
             return $statistics_without_bounces;
         }
-
-		/**
-		 * Function to get the SQL query to include bounces from query's
-		 *
-		 * @return string
-		 */
-		function get_sql_table_bounces($start, $end) {
-            global $wpdb;
-            $table_name = $wpdb->prefix . 'burst_statistics';
-			$time_bounce = apply_filters('burst_bounce_time', 5000);
-			$bounce = "select session_id
-						from $table_name
-						WHERE time > $start AND time < $end
-						GROUP BY session_id
-						having count(*) = 1
-						   and sum(time_on_page) < $time_bounce";
-			$statistics_without_bounces = "(SELECT * FROM $table_name WHERE session_id IN ($bounce) and time > $start AND time < $end)";
-			return $statistics_without_bounces;
-		}
 
         function get_sql_select_for_metric($metric){
             switch ($metric) {
@@ -1222,6 +1242,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 * @return mixed
 		 */
 		private function get_transient( $name ){
+			if (WP_DEBUG) {
+				return false;
+			}
+
 			$value = false;
 			$now = time();
 			$transients = get_option('burst_transients', array());
