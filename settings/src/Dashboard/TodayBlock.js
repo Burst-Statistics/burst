@@ -42,9 +42,19 @@ const TodayBlock = () => {
             }
         }
     );
+    // get currentDate
+    const currentDate = new Date();
+    // get current unix timestamp
+    const currentUnix = Math.floor(currentDate.getTime() / 1000);
 
-    const startDate = format(startOfDay(new Date()), 'yyyy-MM-dd');
-    const endDate = format(endOfDay(new Date()), 'yyyy-MM-dd');
+    // add burst_settings.gmt_offset x hour in seconds to currentUnix
+    const currentUnixWithOffset = currentUnix + (burst_settings.gmt_offset * 3600);
+
+    // get current date by currentUnixWithOffset
+    const currentDateWithOffset = new Date(currentUnixWithOffset * 1000);
+
+    const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+    const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
 
     useEffect(() => {
         getData(startDate, endDate);

@@ -72,6 +72,7 @@ function burst_plugin_admin_scripts() {
             'user_roles' => burst_get_user_roles(),
             'date_ranges' => burst_get_date_ranges(),
             'tour_shown' => burst_get_option('burst_tour_shown_once'),
+            'gmt_offset' => get_option('gmt_offset'),
         ))
 	);
 }

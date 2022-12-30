@@ -309,7 +309,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             for ( $i = 0; $i < $nr_of_periods; $i++ ) {
                 $date = $date_start + $i * $interval_args[$interval]['in_seconds'] + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
                 $labels[] = date_i18n( $interval_args[$interval]['format'], $date );
-            }
+			}
 
 			// get data for each metric
 			$datasets = array();
@@ -698,7 +698,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 $sqlformat = '%Y-%m-%d';
                 $format = 'Y-m-d';
             }
-            $sqlperiod = "DATE_FORMAT(FROM_UNIXTIME(time), '" . $sqlformat . "')";
+
+			$offset = (float) get_option( 'gmt_offset' );
+
+			// Calculate the number of hours and minutes
+			$hours = floor($offset);
+			$minutes = ($offset - $hours) * 60;
+
+			// Format the offset as a string
+			$timezone = sprintf("%+03d:%02d", $hours, $minutes);
+
+            $sqlperiod = "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '+00:00', '".$timezone."'), '" . $sqlformat . "')"; // this is the sql format for the period
             if ( $metric === 'bounces' ) {
                 $select = 'count(*)';
 			    $from = $this->get_sql_table_bounces($start, $end);

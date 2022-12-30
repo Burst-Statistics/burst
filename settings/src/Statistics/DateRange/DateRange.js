@@ -22,6 +22,18 @@ const DateRange = (props) => {
             key: 'selection',
         }
     );
+
+    // get currentDate
+    const currentDate = new Date();
+    // get current unix timestamp
+    const currentUnix = Math.floor(currentDate.getTime() / 1000);
+
+    // add burst_settings.gmt_offset x hour in seconds to currentUnix
+    const currentUnixWithOffset = currentUnix + (burst_settings.gmt_offset * 3600);
+
+    // get current date by currentUnixWithOffset
+    const currentDateWithOffset = new Date(currentUnixWithOffset * 1000);
+
     const countClicks = useRef(0);
     // select date ranges from settings
     const selectedRanges = burst_settings.date_ranges;
@@ -29,50 +41,50 @@ const DateRange = (props) => {
         'today': {
             label: __('Today', 'burst-statistics' ),
             range: () => ({
-                startDate: startOfDay(new Date()),
-                endDate: endOfDay(new Date())
+                startDate: startOfDay(currentDateWithOffset),
+                endDate: endOfDay(currentDateWithOffset)
             })
         },
         'yesterday': {
             label: __('Yesterday', 'burst-statistics'),
             range: () => ({
-                startDate: startOfDay(addDays(new Date(), -1)),
-                endDate: endOfDay(addDays(new Date(), -1))
+                startDate: startOfDay(addDays(currentDateWithOffset, -1)),
+                endDate: endOfDay(addDays(currentDateWithOffset, -1))
             })
         },
         'last-7-days': {
             label: __('Last 7 days', 'burst-statistics'),
             range: () => ({
-                startDate: startOfDay(addDays(new Date(), -7)),
-                endDate: endOfDay(addDays(new Date(), -1))
+                startDate: startOfDay(addDays(currentDateWithOffset, -7)),
+                endDate: endOfDay(addDays(currentDateWithOffset, -1))
             })
         },
         'last-30-days': {
             label: __('Last 30 days', 'burst-statistics' ),
             range: () => ({
-                startDate: startOfDay(addDays(new Date(), -30)),
-                endDate: endOfDay(addDays(new Date(), -1))
+                startDate: startOfDay(addDays(currentDateWithOffset, -30)),
+                endDate: endOfDay(addDays(currentDateWithOffset, -1))
             })
         },
         'last-90-days': {
             label: __('Last 90 days', 'burst-statistics'),
             range: () => ({
-                startDate: startOfDay(addDays(new Date(), -90)),
-                endDate: endOfDay(addDays(new Date(), -1))
+                startDate: startOfDay(addDays(currentDateWithOffset, -90)),
+                endDate: endOfDay(addDays(currentDateWithOffset, -1))
             })
         },
         'last-month': {
             label: __('Last month', 'burst-statistics' ),
             range: () => ({
-                startDate: startOfMonth(addMonths(new Date(), -1)),
-                endDate: endOfMonth(addMonths(new Date(), -1))
+                startDate: startOfMonth(addMonths(currentDateWithOffset, -1)),
+                endDate: endOfMonth(addMonths(currentDateWithOffset, -1))
             })
         },
         'year-to-date': {
             label: __('Year to date', 'burst-statistics' ),
             range: () => ({
-                startDate: startOfYear(new Date()),
-                endDate: endOfDay(new Date())
+                startDate: startOfYear(currentDateWithOffset),
+                endDate: endOfDay(currentDateWithOffset)
             })
         },
     }
@@ -163,7 +175,7 @@ const DateRange = (props) => {
                         months={2}
                         direction="horizontal"
                         minDate={new Date(2022, 0, 1)}
-                        maxDate={ new Date() }
+                        maxDate={ currentDateWithOffset }
                        staticRanges={dateRanges}
                     />
                 </div>
