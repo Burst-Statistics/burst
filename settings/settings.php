@@ -53,6 +53,11 @@ function burst_plugin_admin_scripts() {
 	);
 	wp_set_script_translations( 'burst-wizard-plugin-block-editor', 'burst-statistics' );
 
+	global $wpdb;
+
+	$timezone = $wpdb->get_var('SELECT @@global.time_zone');
+    $sql_time = $wpdb->get_var('SELECT NOW()');
+	$sql_time_utc = $wpdb->get_var('SELECT UTC_TIMESTAMP()');
 	
 	wp_localize_script(
         'burst-settings',
@@ -73,6 +78,11 @@ function burst_plugin_admin_scripts() {
             'date_ranges' => burst_get_date_ranges(),
             'tour_shown' => burst_get_option('burst_tour_shown_once'),
             'gmt_offset' => get_option('gmt_offset'),
+            'sql_timezone' => $timezone,
+            'sql_time' => $sql_time,
+            'sql_time_utc' => $sql_time_utc,
+            'wp_time' => current_time( 'timestamp' ),
+            'server_time' => time(),
         ))
 	);
 }
