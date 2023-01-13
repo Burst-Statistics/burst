@@ -1,6 +1,6 @@
 import create from 'zustand';
 import {__} from '@wordpress/i18n';
-import {UseDate} from './date';
+import {useDate} from './date';
 import * as burst_api from '../../utils/api';
 
 const emptyChartData = {
@@ -22,7 +22,7 @@ const emptyChartData = {
 };
 
 // define the store
-export const UseInsightsStats = create((set) => ({
+export const useInsightsStats = create((set) => ({
   loading: true,
   setLoading: (loading) => set({loading}),
   insightsMetrics: ['visitors', 'pageviews'],
@@ -31,8 +31,6 @@ export const UseInsightsStats = create((set) => ({
   setInterval: (interval) => set({interval}),
   chartData: emptyChartData,
   fetchChartData: (startDate, endDate, range, filters) => {
-    console.log('fetchChartData');
-    console.log(filters);
     set((state) => ({loading: true}));
     return burst_api.getData('insights', startDate, endDate, range, filters).then((response) => {
       set((state) => ({chartData: response}));

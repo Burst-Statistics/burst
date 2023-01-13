@@ -4,7 +4,7 @@ import {ClickableRowItem} from '../../Statistics/ClickableRowItem';
 
 
 // define the store
-export const UsePagesStats = create((set, get) => ({
+export const usePagesStats = create((set) => ({
   loading: true,
   setLoading: (loading) => set({loading}),
   pagesMetrics: ['pageviews'],
@@ -14,7 +14,6 @@ export const UsePagesStats = create((set, get) => ({
     burst_api.getData('pages', startDate, endDate, range, filters).
         then((response) => {
           response.columns[0].selector = row => row.page; // select data for page column
-          console.log(response);
           const metrics = response.metrics
           response.columns.forEach((column, index) => {
             if (index > 0) {

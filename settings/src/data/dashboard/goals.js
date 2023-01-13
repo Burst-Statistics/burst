@@ -6,44 +6,45 @@ import {__} from '@wordpress/i18n';
 const startDate = format(startOfDay(new Date()), 'yyyy-MM-dd');
 const endDate = format(endOfDay(new Date()), 'yyyy-MM-dd');
 const defaultData = {
-  live: {
-    title: __('Live', 'burst-statistics'),
-    icon: 'visitor',
-  },
   today: {
+    title: __('Today', 'burst-statistics'),
+    icon: 'goals',
+  },
+  total: {
     title: __('Total', 'burst-statistics'),
     value: '-',
-    icon: 'visitor',
+    icon: 'goals',
   },
-  mostViewed: {
+  topPerformer: {
     title: '-',
     value: '-',
   },
-  pageviews: {
+  visitors: {
     title: '-',
     value: '-',
   },
-  referrer: {
+  conversionPercentage: {
     title: '-',
     value: '-',
   },
-  timeOnPage: {
+  timeToGoal: {
     title: '-',
     value: '-',
   },
+  dateStart: '-',
 }
 // define the store
-export const useTodayStats = create(set => ({
-  liveVisitors: '-',
-  todayData: defaultData,
-  fetchLiveVisitors: () => {
-    burst_api.getData('live-visitors', startDate, endDate, 'custom').then((response) => {
-      set({liveVisitors: response});
+export const useGoalsStats = create(set => ({
+  todayGoals: '-',
+  totalGoalsData: defaultData,
+  fetchTodayGoals: () => {
+    burst_api.getData('live-goals', startDate, endDate, 'custom').then((response) => {
+      set({todayGoals: response});
     });
   },
-  fetchTodayData: () => {
-    burst_api.getData('today', startDate, endDate, 'custom').then((response) => {
-      set({todayData: response});
+  fetchTotalGoalsData: () => {
+    burst_api.getData('goals', startDate, endDate, 'custom').then((response) => {
+      set({totalGoalsData: response});
     });
   }
 }));

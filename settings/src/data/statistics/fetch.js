@@ -1,11 +1,11 @@
-import {UseDate} from './date';
-import {UseInsightsStats} from './insights';
-import {UseCompareStats} from './compare';
+import {useDate} from './date';
+import {useInsightsStats} from './insights';
+import {useCompareStats} from './compare';
 
 export function fetchStatisticsData() {
-  const {startDate, endDate, range} = UseDate();
-  const {interval, metrics, fetchChartData} = UseInsightsStats();
-  const {fetchCompareData} = UseCompareStats();
+  const {startDate, endDate, range} = useDate();
+  const {interval, metrics, fetchChartData} = useInsightsStats();
+  const {fetchCompareData} = useCompareStats();
 
   fetchChartData(startDate, endDate, range, interval, metrics);
   fetchCompareData(startDate, endDate, range);

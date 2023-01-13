@@ -1,98 +1,133 @@
 import PagePlaceholder from './Placeholder/PagePlaceholder';
 import {useEffect, useState} from 'react';
-import * as burst_api from './utils/api';
 import Header from './Header';
 import getAnchor from './utils/getAnchor';
 import Tour from './Tour';
 import DashboardPage from './Dashboard/DashboardPage';
 import StatisticsPage from './Statistics/StatisticsPage';
-import SettingsPage from './Settings/SettingsPage';
-import {useMenu} from './data/menu';
-import {UseDate} from './data/statistics/date';
-import {UseInsightsStats} from './data/statistics/insights';
-import {UseCompareStats} from './data/statistics/compare';
-import {UseDevicesStats} from './data/statistics/devices';
-import {UsePagesStats} from './data/statistics/pages';
-import {UseReferrersStats} from './data/statistics/referrers';
-import {UseTodayStats} from './data/dashboard/today';
-import {UseFilter} from './data/statistics/filters';
+import Menu from './Settings/Menu/Menu';
+import Settings from './Settings/Settings';
+import Notices from './Settings/Notices';
 
+// import data
+import {useDate} from './data/statistics/date';
+import {useInsightsStats} from './data/statistics/insights';
+import {useCompareStats} from './data/statistics/compare';
+import {useDevicesStats} from './data/statistics/devices';
+import {usePagesStats} from './data/statistics/pages';
+import {useReferrersStats} from './data/statistics/referrers';
+import {useFilters} from './data/statistics/filters';
+import {useMenu} from './data/menu';
+import {useFields} from './data/settings/fields';
+import {useGoals} from './data/settings/goals';
 
 const Page = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const {selectedMainMenuItem, fetchMenu} = useMenu();
-  const {startDate, endDate, range} = UseDate();
-  const {fetchChartData, interval, insightsMetrics } = UseInsightsStats();
-  const {fetchCompareData} = UseCompareStats();
-  const {fetchDevicesData} = UseDevicesStats();
-  const {fetchPagesData, pagesMetrics} = UsePagesStats();
-  const {fetchReferrersData, referrersMetrics} = UseReferrersStats();
-  const {fetchLiveVisitors} = UseTodayStats();
-  const {pageId} = UseFilter();
-  // const [fields, setFields] = useState([]);
+  const {startDate, endDate, range} = useDate();
+  const {fetchChartData, interval, insightsMetrics} = useInsightsStats();
+  const {fetchCompareData} = useCompareStats();
+  const {fetchDevicesData} = useDevicesStats();
+  const {fetchPagesData, pagesMetrics} = usePagesStats();
+  const {fetchReferrersData, referrersMetrics} = useReferrersStats();
+  const {filters} = useFilters();
 
-  // only run on startup, wait for menu's to be loaded before rendering anything
+
+
+  const {fetchSubMenuData, selectedMainMenuItem, menuLoaded} = useMenu();
+  const {
+    fields,
+    changedFields,
+    fetchFieldsData,
+    updateFieldsData,
+    fieldsLoaded,
+  } = useFields();
+  const {fetchGoalFields, fetchGoalValues} = useGoals();
+
+
+  // change pages
   useEffect(async () => {
-    // fetch global data first
-    await fetchMenu();
-
-    setIsLoaded(true);
-  }, []);
-
-  useEffect( () => {
-    fetchLiveVisitors();
-  }, []);
-
-  useEffect( () => {
-    let filters = {
-      pageId: pageId,
+    if (fieldsLoaded) {
+      await fetchSubMenuData(fields);
     }
-    fetchCompareData(startDate, endDate, range, filters);
-    fetchDevicesData(startDate, endDate, range, filters);
-  }, [startDate, endDate, range, pageId]);
+    window.addEventListener('hashchange', () => {
+      fetchSubMenuData(fields);
+    });
+  }, [fields]);
+
+  useEffect(async () => {
+    let subMenuItem = getAnchor('menu');
+    updateFieldsData(subMenuItem);
+  }, [changedFields]);
+
+  useEffect(async () => {
+    let subMenuItem = getAnchor('menu');
+    await fetchFieldsData(subMenuItem);
+  }, []);
+
+  // get goals fields & values
+  useEffect(async () => {
+    await fetchGoalFields();
+    await fetchGoalValues();
+  }, []);
+
+  // get data for stats & stuff
+  useEffect(() => {
+    let args = {
+      filters: filters
+    };
+    fetchCompareData(startDate, endDate, range, args);
+    fetchDevicesData(startDate, endDate, range, args);
+  }, [startDate, endDate, range, filters]);
 
   useEffect(() => {
-    let filters = {
-      pageId: pageId,
+    let args = {
+      filters: filters,
       metrics: insightsMetrics,
       interval: interval,
-    }
-    fetchChartData(startDate, endDate, range, filters);
-  }, [startDate, endDate, range, interval, insightsMetrics, pageId]);
+    };
+    fetchChartData(startDate, endDate, range, args);
+  }, [startDate, endDate, range, interval, insightsMetrics, filters]);
 
   useEffect(() => {
-    let filters = {
-      pageId: pageId,
+    let args = {
+      filters: filters,
       metrics: pagesMetrics,
-    }
-    fetchPagesData(startDate, endDate, range, filters);
-  }, [startDate, endDate, range, pagesMetrics, pageId]);
+    };
+    fetchPagesData(startDate, endDate, range, args);
+  }, [startDate, endDate, range, pagesMetrics, filters]);
 
   useEffect(() => {
-    let filters = {
-      pageId: pageId,
+    let args = {
+      filters: filters,
       metrics: referrersMetrics,
-    }
-    fetchReferrersData(startDate, endDate, range, filters);
-  }, [startDate, endDate, range, referrersMetrics, pageId]);
+    };
+    fetchReferrersData(startDate, endDate, range, args);
+  }, [startDate, endDate, range, referrersMetrics, filters]);
+
+  // without the temp var, it doesn't update in time
+  let selectedMainMenu = getAnchor('main');
   return (
       <>
-        { !isLoaded && <PagePlaceholder />}
-        { isLoaded && (
-            <>
-              <Header />
-              <div className={'burst-content-area burst-grid burst-' + selectedMainMenuItem}>
-                {(!burst_settings.tour_shown ||
-                    (getAnchor() === 'dashboard' && getAnchor('menu') ===
-                        'tour')) && <Tour/>}
-                {selectedMainMenuItem === 'dashboard' && <DashboardPage /> }
-                {selectedMainMenuItem === 'statistics' && <StatisticsPage />}
-                {selectedMainMenuItem === 'settings' && <SettingsPage />}
-              </div>
-            </>
-        )}
+        <Header/>
+        {menuLoaded && (<>
+          <div className={'burst-content-area burst-grid burst-' +
+              selectedMainMenuItem}>
+            {(!burst_settings.tour_shown ||
+                (getAnchor() === 'dashboard' && getAnchor('menu') ===
+                    'tour')) && <Tour/>}
+            {selectedMainMenuItem === 'dashboard' && <DashboardPage/>}
+            {selectedMainMenuItem === 'statistics' && <StatisticsPage/>}
+            {selectedMainMenuItem === 'settings' &&
+                <>
+                  <Menu/>
+                  <Settings/>
+                  <Notices className="cmplz-wizard-notices"/>
+                </>
+            }
+          </div>
+        </>)}
+        {!menuLoaded && <PagePlaceholder/>}
       </>
-  )
+  );
 };
 
 export default Page;

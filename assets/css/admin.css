@@ -1379,39 +1379,39 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(1) {
-    width: 85%;
+    width: 68%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(2) {
-    width: 75%;
+    width: 77%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(3) {
-    width: 99%;
+    width: 67%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(4) {
-    width: 96%;
+    width: 86%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(5) {
-    width: 78%;
+    width: 100%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(6) {
-    width: 84%;
+    width: 93%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(7) {
-    width: 80%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
     width: 89%;
 }
 
+.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
+    width: 94%;
+}
+
 .burst-placeholder .burst-placeholder-line:nth-of-type(9) {
-    width: 62%;
+    width: 74%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(10) {
@@ -1419,43 +1419,43 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(11) {
-    width: 90%;
+    width: 64%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(12) {
-    width: 91%;
+    width: 62%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(13) {
-    width: 89%;
+    width: 81%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(14) {
-    width: 89%;
+    width: 63%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(15) {
-    width: 97%;
+    width: 79%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(16) {
-    width: 96%;
+    width: 70%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(17) {
-    width: 67%;
+    width: 88%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(18) {
-    width: 93%;
+    width: 75%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(19) {
-    width: 71%;
+    width: 99%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(20) {
-    width: 65%;
+    width: 75%;
 }
 
 .burst-placeholder .burst-placeholder-line ~ .burst-placeholder-line {
@@ -1932,6 +1932,13 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
     font-size: var(--rsp-fs-300);
 }
 
+.burst div[class^=burst-wizard-] input[type=text], .burst div[class^=burst-wizard-] input[type=password], .burst div[class^=burst-wizard-] input[type=date], .burst div[class^=burst-wizard-] input[type=datetime], .burst div[class^=burst-wizard-] input[type=datetime-local], .burst div[class^=burst-wizard-] input[type=email], .burst div[class^=burst-wizard-] input[type=month], .burst div[class^=burst-wizard-] input[type=number], .burst div[class^=burst-wizard-] input[type=search], .burst div[class^=burst-wizard-] input[type=tel], .burst div[class^=burst-wizard-] input[type=time], .burst div[class^=burst-wizard-] input[type=url], .burst div[class^=burst-wizard-] input[type=week] {
+    background-color: var(--rsp-input-background-color);
+    border: 1px solid var(--rsp-input-border-color);
+    border-radius: var(--rsp-border-radius-input);
+    color: var(--rsp-input-text-color);
+}
+
 .burst div[class^=burst-wizard-] .components-flex {
     display: flex;
     flex-direction: row;
@@ -2071,6 +2078,35 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
     font-size: var(--rsp-fs-300);
 }
 
+.burst div[class^=burst-wizard-] .burst-class-id-field {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.burst div[class^=burst-wizard-] .burst-class-id-field > * {
+    width: 100%;
+}
+
+.burst div[class^=burst-wizard-] .burst-class-id-field__input {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+}
+
+.burst div[class^=burst-wizard-] .burst-class-id-field__input button {
+    background-color: var(--rsp-input-background-color);
+    border: 1px solid var(--rsp-input-border-color);
+    border-radius: var(--rsp-border-radius-input) 0 0 var(--rsp-border-radius-input);
+    border-right: 0;
+    cursor: pointer;
+}
+
+.burst div[class^=burst-wizard-] .burst-class-id-field__input input {
+    margin-left: 0;
+    border-radius: 0 var(--rsp-border-radius-input) var(--rsp-border-radius-input) 0;
+}
+
 .burst .components-snackbar-list.edit-site-notices {
     width: max-content;
     position: fixed;
@@ -2090,7 +2126,7 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
     font-weight: 700;
 }
 
-.burst .burst-settings-goals__list {
+.burst div[class^=burst-wizard-] .burst-settings-goals__list {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
@@ -2098,85 +2134,113 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
     margin-top: var(--rsp-spacing-s);
 }
 
-.burst .burst-settings-goals__list__item {
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item {
     width: 100%;
     background-color: var(--rsp-grey-200);
     border-radius: var(--rsp-border-radius-input);
 }
 
-.burst .burst-settings-goals__list__item details {
-    padding: var(--rsp-spacing-s) var(--rsp-spacing-s);
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item__fields {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+    gap: var(--rsp-spacing-xl);
+    padding: var(--rsp-spacing-xs);
+    margin-top: var(--rsp-spacing-s);
 }
 
-.burst .burst-settings-goals__list__item details summary {
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item__fields > * {
+    width: 100%;
+}
+
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details {
+    padding: var(--rsp-spacing-s) var(--rsp-spacing-s);
+    border-radius: var(--rsp-border-radius);
+    border: 2px solid var(--rsp-grey-300);
+}
+
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details summary {
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: 26px 1fr auto auto;
     align-items: center;
     gap: var(--rsp-spacing-s);
 }
 
-.burst .burst-settings-goals__list__item details summary .components-toggle-control {
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details summary h5 {
+    font-weight: 600;
+    display: inline-block;
+}
+
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details summary .components-toggle-control {
     display: flex;
     align-items: center;
     margin: 0;
 }
 
-.burst .burst-settings-goals__list__item details summary .burst-icon {
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details summary .burst-icon-chevron-down {
     transition: all 0.25s ease-in-out;
     transform: rotate(0deg);
 }
 
-.burst .burst-settings-goals__list__item details summary .burst-field-wrap {
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details[open] summary {
+    padding-bottom: var(--rsp-spacing-s);
+    border-bottom: 1px solid var(--rsp-grey-300);
+}
+
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details[open] summary .burst-icon-chevron-down {
+    transform: rotate(180deg);
+}
+
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details .burst-field-wrap {
     padding-inline: 0;
     padding: 0;
     padding-top: var(--rsp-spacing-m);
 }
 
-.burst .burst-settings-goals__list__item details summary .burst-label {
+.burst div[class^=burst-wizard-] .burst-settings-goals__list__item details .burst-label {
+    color: var(--rsp-text-color);
+    font-size: var(--rsp-fs-400);
+    font-weight: 600;
     margin-bottom: var(--rsp-spacing-xs);
 }
 
-.burst .burst-settings-goals__list__item details[open] summary {
-    padding-bottom: var(--rsp-spacing-s);
-    border-bottom: 1px solid var(--rsp-grey-300);
-}
-
-.burst .burst-settings-goals__list__item details[open] summary .burst-icon {
-    transform: rotate(180deg);
-}
-
-.burst .burst-radio-buttons__list {
+.burst div[class^=burst-wizard-] .burst-radio-buttons__list {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(49%, 1fr));
     gap: var(--rsp-spacing-s);
 }
 
-.burst .burst-radio-buttons__list input {
+.burst div[class^=burst-wizard-] .burst-radio-buttons__list__item input {
     display: none;
 }
 
-.burst .burst-radio-buttons__list input[type=radio]:checked + label {
+.burst div[class^=burst-wizard-] .burst-radio-buttons__list__item input[type=radio]:checked + label {
     background: var(--rsp-green-faded);
     border: 2px solid var(--rsp-green);
 }
 
-.burst .burst-radio-buttons__list__item {
+.burst div[class^=burst-wizard-] .burst-radio-buttons__list__item label {
     background: var(--rsp-white);
-    border: 2px solid transparent;
+    border: 2px solid var(--rsp-grey-300);
     padding: var(--rsp-spacing-xs);
     border-radius: var(--rsp-border-radius-input);
     display: grid;
     grid-template-columns: auto auto auto 1fr;
-    gap: var(--rsp-spacing-s);
+    gap: var(--rsp-spacing-xs);
     align-items: center;
 }
 
-.burst .burst-radio-buttons__list__item h5 {
+.burst div[class^=burst-wizard-] .burst-radio-buttons__list__item label .burst-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.burst div[class^=burst-wizard-] .burst-radio-buttons__list__item label h5 {
     font-weight: 600;
     letter-spacing: 0.3px;
 }
 
-.burst .burst-radio-buttons__list__item p {
+.burst div[class^=burst-wizard-] .burst-radio-buttons__list__item label p {
     font-size: var(--rsp-fs-200);
     color: var(--rsp-text-color-light);
 }
@@ -2244,7 +2308,7 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
     padding: var(---rsp-filter-padding);
     box-shadow: var(--rsp-box-shadow);
     cursor: pointer;
-    gap: var(--rsp-spacing-xxs);
+    gap: var(--rsp-spacing-xs);
     color: var(--rsp-text-color);
     background-color: var(--rsp-input-background-color);
     background: var(--rsp-grey-200);

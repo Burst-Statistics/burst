@@ -1,4 +1,4 @@
-.burst {
+.burst div[class^=burst-wizard-]{
   .burst-settings-goals {
     &__list {
       display: flex;
@@ -12,77 +12,111 @@
         background-color: var(--rsp-grey-200);
         border-radius: var(--rsp-border-radius-input);
 
-
+        &__fields{
+            display: flex;
+            flex-wrap: wrap;
+            overflow: hidden;
+            gap: var(--rsp-spacing-xl);
+            padding: var(--rsp-spacing-xs);
+            margin-top: var(--rsp-spacing-s);
+          & > * {
+            width: 100%;
+          }
+        }
 
         details {
           padding: var(--rsp-spacing-s) var(--rsp-spacing-s);
+            border-radius: var(--rsp-border-radius);
+          border: 2px solid var(--rsp-grey-300);
+
           summary {
             //padding: var(--rsp-spacing-m) var(--rsp-spacing-s);
             display: grid;
-            grid-template-columns: auto 1fr auto auto;
+            grid-template-columns: 26px 1fr auto auto;
             align-items: center;
             gap: var(--rsp-spacing-s);
+
+            h5{
+              font-weight: 600;
+              display: inline-block;
+            }
 
             .components-toggle-control {
               display: flex;
               align-items: center;
               margin: 0;
             }
-            .burst-icon{
+
+            .burst-icon-chevron-down {
               transition: all .25s ease-in-out;
               transform: rotate(0deg);
-            }
-            .burst-field-wrap{
-              padding-inline: 0;
-              padding: 0;
-              padding-top: var(--rsp-spacing-m);
-            }
-            .burst-label{
-              margin-bottom: var(--rsp-spacing-xs);
             }
           }
           &[open] {
             summary {
               padding-bottom: var(--rsp-spacing-s);
               border-bottom: 1px solid var(--rsp-grey-300);
-              .burst-icon{
+
+              .burst-icon-chevron-down {
                 transform: rotate(180deg);
               }
             }
+          }
+          .burst-field-wrap {
+            padding-inline: 0;
+            padding: 0;
+            padding-top: var(--rsp-spacing-m);
+          }
+
+          .burst-label {
+            color: var(--rsp-text-color);
+            font-size: var(--rsp-fs-400);
+            font-weight: 600;
+            margin-bottom: var(--rsp-spacing-xs);
           }
         }
       }
     }
   }
+
   .burst-radio-buttons__list {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(49%, 1fr));
     gap: var(--rsp-spacing-s);
 
-    input {
-      display: none;
-      &[type="radio"]:checked + label {
-        background: var(--rsp-green-faded);
-        border: 2px solid var(--rsp-green);
-      }
-    }
-
     &__item {
-      background: var(--rsp-white);
-      border: 2px solid transparent;
-      padding: var(--rsp-spacing-xs);
-      border-radius: var(--rsp-border-radius-input);
-      display: grid;
-      grid-template-columns: auto auto auto 1fr;
-      gap: var(--rsp-spacing-s);
-      align-items: center;
-      h5{
-        font-weight: 600;
-        letter-spacing: 0.3px;
+      input {
+        display: none;
+
+        &[type="radio"]:checked + label {
+          background: var(--rsp-green-faded);
+          border: 2px solid var(--rsp-green);
+        }
       }
-      p{
-        font-size: var(--rsp-fs-200);
-        color: var(--rsp-text-color-light);
+
+      label {
+        background: var(--rsp-white);
+        border: 2px solid var(--rsp-grey-300);
+        padding: var(--rsp-spacing-xs);
+        border-radius: var(--rsp-border-radius-input);
+        display: grid;
+        grid-template-columns: auto auto auto 1fr;
+        gap: var(--rsp-spacing-xs);
+        align-items: center;
+
+        .burst-icon{
+          width: 24px;
+          height: 24px;
+        }
+        h5 {
+          font-weight: 600;
+          letter-spacing: 0.3px;
+        }
+
+        p {
+          font-size: var(--rsp-fs-200);
+          color: var(--rsp-text-color-light);
+        }
       }
     }
   }

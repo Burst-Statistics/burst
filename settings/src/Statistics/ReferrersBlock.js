@@ -6,10 +6,10 @@ import {
 import DataTable from "react-data-table-component";
 import EmptyDataTable from './EmptyDataTable';
 import * as burst_api from "../utils/api";
-import {UseReferrersStats} from '../data/statistics/referrers';
+import {useReferrersStats} from '../data/statistics/referrers';
 
 const ReferrersBlock = (props) => {
-    const { loading, data } = UseReferrersStats();
+    const { loading, data } = useReferrersStats();
     let loadingClass = loading ? 'burst-loading' : '';
     return(
         <div className={"burst-loading-container " + loadingClass}>

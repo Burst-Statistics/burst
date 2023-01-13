@@ -1,14 +1,13 @@
-import {UseFilter} from '../data/statistics/filters';
+import {useFilters} from '../data/statistics/filters';
 import Icon from '../utils/Icon';
 
 export const ClickableRowItem = (props) => {
-  console.log('props', props);
   const {page, id} = props;
-  const {setPageId} = UseFilter();
+  const {setFilters} = useFilters();
 
   const handleClick = (e) => {
     let id = e.target.attributes['data-page-id'].value;
-    setPageId(parseInt(id));
+    setFilters('page_id', parseInt(id));
   };
 
   return (

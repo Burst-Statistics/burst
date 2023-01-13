@@ -50,7 +50,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 							'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
 							'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
 						),
-						'goals'                     => burst_get_active_goals(false),
+						'goals'                     => burst_get_active_goals(),
 					)
 				);
 				wp_enqueue_script( 'burst',
@@ -319,7 +319,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			// get data for each metric
 			$datasets = array();
-			error_log(print_r($metrics, true));
 			foreach ( $metrics as $metric ) {
 				$title = $metric_labels[$metric];
 				//get hits grouped per timeslot. default day
@@ -329,7 +328,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'date_end' => $date_end,
 					'interval' => $interval,
 					'date_range' => $date_range,
-					'page_id' => (int) $args['page_id'],
+					'filters' => $args['filters'],
 				);
 				$hits = $this->get_chart_data_by_metric( $args );
 				$datasets[] = array(
@@ -359,6 +358,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		        'date_end'   => 0,
 		        'date_range' => 'custom',
 		        'page_id'   => false,
+		        'filters'   => [],
 	        );
 	        $args     = wp_parse_args( $args, $defaults );
 
@@ -368,9 +368,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	        $start_diff = $start - $diff;
 	        $end_diff   = $end - $diff;
 			$date_range = $args['date_range'];
-	        $filters = [
-		        'page_id' => (int) $args['page_id'],
-	        ];
+	        $filters = $args['filters'];
 
 	        $results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_compare_data_'.$date_range );
 	        if ( ! $results ) {
@@ -456,16 +454,18 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$defaults = array(
 				'date_start' => 0,
 				'date_end' => 0,
+				'filters' => [],
 			);
 			$args = wp_parse_args($args, $defaults);
 			$start = $args['date_start'];
 			$end = $args['date_end'];
 			$devices = [];
 			$date_range = $args['date_range'];
+			$filters = $args['filters'];
 
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_devices_data_'.$date_range );
 			if ( ! $results ) {
-				$from          = $this->get_sql_table($start, $end);
+				$from          = $this->get_sql_table($start, $end, $filters);
 				$sql           = "SELECT device,
 	                    COUNT(device) AS count
 	                    FROM $from as stats
@@ -585,6 +585,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'date_start' => $date_start,
 						'date_end'   => $date_end,
 						'page_id'    => (int) $args['page_id'],
+						'filters' => [],
 					);
 					$data = $this->get_pages_by_metric( $args );
 				}
@@ -603,18 +604,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
             global $wpdb;
 			// Set up the base query arguments.
 			$defaults = array(
-				'metric' => ['pageviews'],
+				'metric'     => [ 'pageviews' ],
 				'date_start' => '0',
-				'date_end' => '0',
+				'date_end'   => '0',
+				'filters'    => [],
 			);
-			$args 			= wp_parse_args( $args, $defaults );
-			$start      	= (int) $args['date_start'];
-            $end        	= (int) $args['date_end'];
-			$metric     	= $this->sanitize_metric($args['metric']);
-
-			$filters = [
-				'page_id' => (int) $args['page_id'],
-			];
+			$args     = wp_parse_args( $args, $defaults );
+			$start    = (int) $args['date_start'];
+			$end      = (int) $args['date_end'];
+			$metric   = $this->sanitize_metric( $args['metric'] );
+			$filters  = $args['filters'];
 
 			$select 	    = $this->get_sql_select_for_metric($metric);
 			$from 			= $this->get_sql_table($start, $end, $filters);
@@ -634,12 +633,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'date_end' => 0,
 				'metrics' => array('count'),
 				'page_id' => false,
+				'filters' => [],
 			);
 			$args = wp_parse_args($args, $defaults);
 			$date_range = $args['date_range'];
-			$filters = [
-				'page_id' => (int) $args['page_id'],
-			];
+			$filters = $args['filters'];
 
 
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_referrer_data_'.$date_range );
@@ -719,9 +717,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $start      = (int) $args['date_start'];
             $end        = (int) $args['date_end'];
 			$date_range = $args['date_range'];
-			$filters = [
-				'page_id' => (int) $args['page_id'],
-			];
+			$filters = $args['filters'];
 
             // first we get the data from the db
             if ( $interval === 'hour') {
@@ -1111,9 +1107,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
             global $wpdb;
 	        $bounce = isset($filters['bounce']) && $filters['bounce'] ? 'IN' : 'NOT IN';
 			$where = '';
-			if ( isset($filters['page_id']) && $filters['page_id'] ) {
-				$where = "AND page_id = {$filters['page_id']}";
-			}
+
+	        $possible_filters = ['page_id', 'page_url', 'goal_id', 'referrer_url', 'device', 'browser', 'platform'];
+
+	        foreach ($possible_filters as $filter) {
+		        if (isset($filters[$filter]) && $filters[$filter]) {
+			        $where .= "AND {$filter} = '{$filters[$filter]}'";
+		        }
+	        }
+
+
             $table_name = $wpdb->prefix . 'burst_statistics';
             $time_bounce = apply_filters('burst_bounce_time', 5000);
 	        $bounce_sql = "select session_id
@@ -1123,10 +1126,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						having count(*) = 1
 						   and sum(time_on_page) < $time_bounce";
             $statistics_without_bounces = "(SELECT * FROM $table_name WHERE session_id $bounce ($bounce_sql) and time > $start AND time < $end $where)";
+
             return $statistics_without_bounces;
         }
 
-        function get_sql_select_for_metric($metric){
+		function get_sql_select_for_metric($metric){
             switch ($metric) {
                 case 'pageviews':
                     $sql = "count(*)";

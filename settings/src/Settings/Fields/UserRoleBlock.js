@@ -22,7 +22,7 @@ const UserRoleBlock = (props) => {
         fieldValue.splice(index, 1);
       }
     }
-    props.onChangeHandler(fieldValue);
+    props.onChange(fieldValue);
   }
 
 

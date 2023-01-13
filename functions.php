@@ -593,6 +593,7 @@ if ( ! function_exists( 'burst_get_date_ranges' ) ) {
 			'last-30-days',
 			'last-90-days',
 			'last-month',
+            'last-year',
             'year-to-date',
 		) );
 	}
@@ -608,6 +609,25 @@ if ( ! function_exists( 'burst_sanitize_date_range' ) ) {
 
 		return 'custom';
 	}
+}
+
+if ( ! function_exists('burst_sanitize_filters') ) {
+    function burst_sanitize_filters( $filters ) {
+        // sanitize key value pairs, but value can also be an array. Just one layer deep though. Also remove keys where value is empty. Also add comments to explain the code
+        $filters = array_filter( $filters, function( $item ) {
+            return ! empty( $item );
+        } );
+
+        foreach ( $filters as $key => $value ) {
+            if ( is_array( $value ) ) {
+                $filters[ $key ] = array_map( 'sanitize_text_field', $value );
+            } else {
+                $filters[ $key ] = sanitize_text_field( $value );
+            }
+        }
+
+        return $filters;
+    }
 }
 
 if ( ! function_exists( 'burst_tracking_status_error' ) ) {

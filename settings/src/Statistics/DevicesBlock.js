@@ -7,10 +7,10 @@ import {
 import * as burst_api from '../utils/api';
 import {getPercentage} from '../utils/formatting';
 import Icon from '../utils/Icon';
-import {UseDevicesStats} from '../data/statistics/devices'
+import {useDevicesStats} from '../data/statistics/devices'
 
 const DevicesBlock = () => {
-  const {loading, data} = UseDevicesStats();
+  const {loading, data} = useDevicesStats();
 
   let loadingClass = loading ? 'burst-loading' : '';
   return (

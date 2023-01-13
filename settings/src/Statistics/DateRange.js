@@ -6,15 +6,15 @@ import {Popover} from '@mui/material';
 
 // date range picker and date fns
 import { DateRangePicker } from 'react-date-range';
-import {format, parseISO, startOfYear, addDays, addMonths, isSameDay, startOfDay, endOfDay, startOfMonth, endOfMonth} from 'date-fns'
+import {format, parseISO, startOfYear, endOfYear, addYears, addDays, addMonths, isSameDay, startOfDay, endOfDay, startOfMonth, endOfMonth} from 'date-fns'
 import Icon from '../utils/Icon';
 import {__} from '@wordpress/i18n';
-import {UseDate} from '../data/statistics/date';
+import {useDate} from '../data/statistics/date';
 
 const DateRange = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const {startDate, endDate, setStartDate, setEndDate, range, setRange} = UseDate();
+    const {startDate, endDate, setStartDate, setEndDate, range, setRange} = useDate();
     const selectionRange = {
         startDate:  parseISO(startDate),
         endDate: parseISO(endDate),
@@ -71,6 +71,13 @@ const DateRange = (props) => {
             range: () => ({
                 startDate: startOfYear(new Date()),
                 endDate: endOfDay(new Date())
+            })
+        },
+        'last-year': {
+            label: __('Last year', 'burst-statistics' ),
+            range: () => ({
+                startDate: startOfYear(addYears(new Date(), -1)),
+                endDate: endOfYear(addYears(new Date(), -1))
             })
         },
     }
@@ -137,8 +144,10 @@ const DateRange = (props) => {
     return (
         <div className="burst-date-range-container">
             <button onClick={handleClick} id="burst-date-range-picker-open-button" className="button button-input" >
-                <Icon name='calendar' /> 
-                {display.startDate} - {display.endDate}
+                <Icon name='calendar' />
+
+                {range === 'custom' && display.startDate +  '-' +  display.endDate}
+                {range !== 'custom' && availableRanges[range].label}
                 <Icon name='chevron-down' />
             </button>
             <Popover

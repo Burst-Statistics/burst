@@ -61,7 +61,7 @@ function burst_menu() {
 	];
 
 
-	return $menu_items;
+	return apply_filters( 'cmplz_menu', $menu_items);
 }
 
 function burst_migrate_settings( $prev_version ) {
@@ -212,32 +212,32 @@ function burst_fields( $load_values = true ) {
 
 function burst_goal_fields() {
 	$goals = [
-		[
+		'goal_title' => [
 			'id'       => 'goal_title',
 			'type'     => 'hidden',
 			'disabled' => false,
 			'default'  => false,
 		],
-		[
+		'goal_type' => [
 			'id'       => 'goal_type',
 			'type'     => 'radio-buttons',
-			'label'    => __( 'Goal type', 'burst-statistics' ),
+			'label'    => __( 'What type of goal do you want to set?', 'burst-statistics' ),
 			'options'  => [
 				'clicks' => [
 					'label' => __('Clicks', 'burst-statistics'),
-			          'description' => __('Track clicks on a specific element', 'burst-statistics'),
+			          'description' => __('Track clicks on element', 'burst-statistics'),
 			          'type' => 'clicks',
 			          'icon' => 'mouse',
 				],
 				'views'  => [
 					'label'       => __( 'Views', 'burst-statistics' ),
-					'description' => __( 'Track views of a specific element.', 'burst-statistics' ),
+					'description' => __( 'Track views of element', 'burst-statistics' ),
 					'type'        => 'views',
 					'icon'        => 'eye',
 				],
 				'visits' => [
 					'label'       => __( 'Visits', 'burst-statistics' ),
-					'description' => __( 'Track visits to a specific page.', 'burst-statistics' ),
+					'description' => __( 'Track visits to page', 'burst-statistics' ),
 					'type'        => 'visits',
 					'icon'        => 'visitors',
 				],
@@ -245,45 +245,57 @@ function burst_goal_fields() {
 			'disabled' => false,
 			'default'  => 'clicks',
 		],
-		[
+		'goal_page_or_website' => [
 			'id'               => 'goal_page_or_website',
 			'type'             => 'radio-buttons',
-			'label'            => __( 'Goal specific page or full website', 'burst-statistics' ),
+			'label'            => __( 'Do you want to track a specific page or the entire website?', 'burst-statistics' ),
 			'options'          => [
 				'page'    => [
 					'label'       => __( 'Page', 'burst-statistics' ),
-					'description' => __( 'Track clicks on a specific element.', 'burst-statistics' ),
+					'description' => __( 'Track page specific', 'burst-statistics' ),
 					'type'        => 'page',
-					'icon'        => 'mouse',
+					'icon'        => 'page',
 				],
 				'website' => [
 					'label'       => __( 'Website', 'burst-statistics' ),
-					'description' => __( 'Track views of a specific element.', 'burst-statistics' ),
+					'description' => __( 'Track on whole site', 'burst-statistics' ),
 					'type'        => 'website',
-					'icon'        => 'eye',
+					'icon'        => 'bullet',
 				],
 			],
 			'react_conditions' => [
-				'relation' => 'OR',
+				'relation' => 'AND',
 				[
-					'goal_type' => 'clicks',
-					//					'goal_type' => 'views',
+					'goal_type' => ['clicks', 'views'],
 				],
 			],
 			'disabled'         => false,
 			'default'          => 'website',
 		],
-		[
+		'goal_specific_page' => [
 			'id'               => 'goal_specific_page',
 			'type'             => 'select-page',
-			'label'            => __( 'Goal specific page', 'burst-statistics' ),
+			'label'            => __( 'Which specific page do you want to track?', 'burst-statistics' ),
 			'disabled'         => false,
 			'default'          => false,
 			'react_conditions' => [
 				'relation' => 'AND',
 				[
-					'goal_type'                          => 'clicks',
+					'goal_type'                          => ['clicks', 'views', 'visits'],
 					'goal_page_or_website' => 'page',
+				],
+			],
+		],
+		'goal_element' => [
+			'id'               => 'goal_element',
+			'type'             => 'class-id',
+			'label'            => __( 'What element do you want to track? (Enter ID or Class)', 'burst-statistics' ),
+			'disabled'         => false,
+			'default'          => false,
+			'react_conditions' => [
+				'relation' => 'AND',
+				[
+					'goal_type'=> ['clicks', 'views'],
 				],
 			],
 		],

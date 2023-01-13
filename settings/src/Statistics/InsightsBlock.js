@@ -16,7 +16,7 @@ import {
   } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import {parseISO, differenceInCalendarDays} from 'date-fns'
-import {UseInsightsStats} from '../data/statistics/insights';
+import {useInsightsStats} from '../data/statistics/insights';
 
 ChartJS.register(
     CategoryScale,
@@ -29,8 +29,7 @@ ChartJS.register(
   );
 
 const InsightsBlock  = (props) => {
-  const {chartData, loading} = UseInsightsStats(state => state);
-    console.log(chartData)
+  const {chartData, loading} = useInsightsStats(state => state);
 
     const options = {
         responsive: true,

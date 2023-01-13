@@ -18,7 +18,6 @@ const ProgressBlock = (props) => {
         burst_api.runTest('progressData', 'refresh').then( ( response ) => {
             setFilter(response.filter);
             setNotices(response.notices);
-            console.log(response);
             // props.setBlockProps('notices',notices);
         });
     }

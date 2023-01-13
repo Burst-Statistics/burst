@@ -2,7 +2,7 @@ import create from 'zustand';
 import * as burst_api from '../../utils/api';
 
 // define the store
-export const UseReferrersStats = create((set) => ({
+export const useReferrersStats = create((set) => ({
   loading: true,
   setLoading: (loading) => set({loading}),
   referrersMetrics: ['pageviews'],

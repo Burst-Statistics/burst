@@ -26,7 +26,7 @@ Object.keys(metrics).forEach(function (key) {
 })
 
 // define the store
-export const UseCompareStats = create((set) => ({
+export const useCompareStats = create((set) => ({
   loading: true,
   setLoading: (loading) => set({loading}),
   data: emptyData,

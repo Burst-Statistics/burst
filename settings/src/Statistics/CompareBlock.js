@@ -1,8 +1,8 @@
 import Icon from "../utils/Icon";
-import {UseCompareStats} from '../data/statistics/compare';
+import {useCompareStats} from '../data/statistics/compare';
 
 const CompareBlock = (props) => {
-    const {data, loading} = UseCompareStats();
+    const {data, loading} = useCompareStats();
 
     let loadingClass = loading ? 'burst-loading' : '';
     return(

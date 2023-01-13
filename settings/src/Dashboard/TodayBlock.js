@@ -9,53 +9,20 @@ import * as burst_api from '../utils/api';
 import Icon from '../utils/Icon';
 import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
 import {formatTime, formatNumber} from '../utils/formatting';
-import {UseTodayStats} from '../data/dashboard/today';
+import {useTodayStats} from '../data/dashboard/today';
 
 const TodayBlock = () => {
-  const {liveVisitors, todayData, fetchLiveVisitors} = UseTodayStats();
+  const {liveVisitors, todayData, fetchLiveVisitors, fetchTodayData} = useTodayStats();
 
   // set timeout to fetch live visitors
   useEffect(() => {
+    fetchLiveVisitors();
+    fetchTodayData();
     const interval = setInterval(() => {
       fetchLiveVisitors();
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
-
-  // useEffect(() => {
-  //     getData(startDate, endDate);
-  //     const interval = setInterval(() => {
-  //         getData(startDate, endDate);
-  //         // startAnimation(5000);
-  //     }, 5000)
-  //
-  //     return () => clearInterval(interval);
-  //     }, [startDate, endDate]
-  // )
-
-  // function getData(startDate, endDate){
-  //     getTodayData(startDate, endDate).then((response) => {
-  //         let data = response;
-  //         data.live.icon = selectVisitorIcon(data.live.value);
-  //         data.today.icon = selectVisitorIcon(data.today.value);
-  //         // map data formatNumber
-  //         for (const [key, value] of Object.entries(data)) {
-  //             if (key === 'timeOnPage' ) {
-  //                 data[key].value = formatTime(value.value);
-  //             } else {
-  //                 data[key].value = formatNumber(value.value);
-  //             }
-  //         }
-  //         setTodayData(data);
-  //     }).catch((error) => {
-  //         console.error(error);
-  //     });
-  // }
-  //
-  // function getTodayData(startDate, endDate, args= []){
-  //     return burst_api.getData('today', startDate, endDate, 'custom',
-  // args).then( ( response ) => { return response; }); }
 
   function selectVisitorIcon(value) {
     value = parseInt(value);
@@ -69,7 +36,8 @@ const TodayBlock = () => {
       return 'visitor';
     }
   }
-
+  let liveIcon = selectVisitorIcon(liveVisitors);
+  let todayIcon = selectVisitorIcon(todayData.today.value);
   const delayTooltip = 200;
   return (
       <>
@@ -77,7 +45,7 @@ const TodayBlock = () => {
           <div className="burst-today-select">
             <Tooltip arrow title={todayData.live.tooltip} enterDelay={delayTooltip}>
               <div className="burst-today-select-item">
-                <Icon name={todayData.live.icon} size="23"/>
+                <Icon name={liveIcon} size="23"/>
                 <h2>{liveVisitors}</h2>
                 <span><Icon name="live" size="12" color={'red'}/> Live</span>
               </div>
@@ -85,7 +53,7 @@ const TodayBlock = () => {
             <Tooltip arrow title={todayData.today.tooltip}
                      enterDelay={delayTooltip}>
               <div className="burst-today-select-item">
-                <Icon name={todayData.today.icon} size="23"/>
+                <Icon name={todayIcon} size="23"/>
                 <h2>{todayData.today.value}</h2>
                 <span><Icon name="total" size="13"
                             color={'green'}/> Total</span>

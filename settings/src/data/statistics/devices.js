@@ -24,7 +24,7 @@ Object.keys(deviceNames).forEach(function(key) {
 });
 
 // define the store
-export const UseDevicesStats = create((set) => ({
+export const useDevicesStats = create((set) => ({
   loading: true,
   setLoading: (loading) => set({loading}),
   data: emptyData,

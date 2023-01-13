@@ -26,95 +26,71 @@ if ( ! class_exists( "burst_goals" ) ) {
 		    return $goal;
 	    }
 
-	    public function get_goals_data( $args = array() ) {
+	    public function get_goals( $args = array() ) {
 		    global $wpdb;
-		    $data     = [];
-		    $defaults = array(
-			    'date_start' => 0,
-			    'date_end'   => 0,
-		    );
-		    $args     = wp_parse_args( $args, $defaults );
+		    $default_args = [
+			    'status'  => 'all',
+			    'limit'   => 10,
+			    'offset'  => 0,
+			    'orderby' => 'ID',
+			    'order'   => 'DESC',
+		    ];
+		    // merge args
+		    $args  = wp_parse_args( $args, $default_args );
+		    $query = "SELECT * FROM {$wpdb->prefix}burst_goals";
+		    $where = [];
+		    if ( $args['status'] !== 'all' ) {
+			    $where[] = $wpdb->prepare( "status = %s", $args['status'] );
+		    }
+		    if ( ! empty( $where ) ) {
+			    $query .= " WHERE " . implode( " AND ", $where );
+		    }
+		    $query .= " ORDER BY {$args['orderby']} {$args['order']}";
+		    $query .= " LIMIT {$args['offset']}, {$args['limit']}";
 
-		    $start = $args['date_start'];
-		    $end   = $args['date_end'];
+		    return $wpdb->get_results( $query, ARRAY_A );
+	    }
 
-		    $goal_id      = $args['goal_id'];
-		    $goal_id      = 2; // @todo remove
-		    $today_start  = strtotime( 'today midnight' );
-		    $goal         = $this->get_goal_setup( $goal_id );
-		    $goal_url     = $goal['url'];
-		    $goal_url_sql = $goal_url != '' ? " AND statistics.page_url = {$goal_url}" : "";
+	    public function get_field_values_per_goal(): array {
+		    $goals_and_field_values = [];
+		    $goals = $this->get_goals();
+		    foreach ( $goals as $goal ) {
+			    $goal_field_values = $this->get_goal_field_values( $goal['ID'] );
+			    $goals_and_field_values[$goal['ID']] = $goal_field_values;
+		    }
+		    return $goals_and_field_values;
+	    }
 
-		    $sql = "SELECT count(*)
-					FROM {$wpdb->prefix}burst_statistics as statistics 
-					    INNER JOIN {$wpdb->prefix}burst_goal_statistics as goals 
-					        ON statistics.ID = goals.statistic_id
-					WHERE goals.goal_id = {$goal_id} AND statistics.time > {$today_start} {$goal_url_sql}";
-		    $data['today']['value'] = $wpdb->get_var($sql);
+	    public function get_goal_field_values($goal_id){
+		    // get db values for goal
+		    $goal_raw_values = $this->get_goal_setup($goal_id);
 
-		    // get total data
-		    $goal_start             = (int) $goal['start_date'];
-		    $goal_end               = (int) $goal['end_date'];
-		    $goal_end_sql           = $goal_end > 0 ? " AND statistics.time < {$goal_end}" : '';
+		    // map field id values to corresponding values in $goal_raw_values array
+		    $field_value_map = [
+			    'goal_title' => 'title',
+			    'goal_type' => 'type',
+			    'goal_page_or_website' => 'url',
+			    'goal_specific_page' => 'url',
+		    ];
 
-		    $sql = "SELECT count(*)
-					FROM {$wpdb->prefix}burst_statistics as statistics 
-					    INNER JOIN {$wpdb->prefix}burst_goal_statistics as goals 
-					        ON statistics.ID = goals.statistic_id
-					WHERE goals.goal_id = {$goal_id} AND statistics.time > {$goal_start} {$goal_end_sql} {$goal_url_sql}";
-		    $data['total']['value'] = $wpdb->get_var( $sql );
+		    // initialize array to hold field values
+		    $goal_field_values = [];
 
-
-
-			// $cached_data = BURST::$statistics->get_transient( 'burst_goals_data');
-		    $cached_data = false;
-		    if (  ! $cached_data ){
-			    // setup defaults
-			    $default_data = [
-				    'today'       => [
-					    'value'   => '0',
-					    'tooltip' => '',
-				    ],
-				    'total'      => [
-					    'value'   => '0',
-					    'tooltip' => '',
-				    ],
-				    'topPerformer' => [
-					    'title'   => '-',
-					    'value'   => '0',
-					    'tooltip' => '',
-				    ],
-				    'visitors'   => [
-					    'title'   => '-',
-					    'value'   => '0',
-					    'tooltip' => '',
-				    ],
-				    'conversionPercentage'  => [
-					    'title'   => __( 'Conversion percentage', 'burst-statistics' ),
-					    'value'   => '0',
-					    'tooltip' => '',
-				    ],
-				    'timeToGoal' => [
-					    'title'   => __( 'Average time to goal', 'burst-statistics' ),
-					    'value'   => '0',
-					    'tooltip' => '',
-				    ],
-				    'dateStart' => $goal_start,
-			    ];
-
-			    $data = wp_parse_args( $data, $default_data );
-			    foreach ($data as $key => $value) {
-				    // wp_parse_args doesn't work with nested arrays
-				    $data[$key] = wp_parse_args($value, $default_data[$key]);
-			    }
-
-			    // $this->set_transient('burst_goals_data', $data, 60);
-		    } else {
-			    $data = $cached_data;
+		    // loop through field value map and add values to $goal_field_values array
+		    foreach ( $field_value_map as $field_id => $value_key ) {
+			    $goal_field_values[$field_id] = isset( $goal_raw_values[$value_key] ) ? $goal_raw_values[$value_key] : '';
 		    }
 
-		    return $data;
+		    // handle special case for goal_page_or_website field
+		    if ( isset( $goal_field_values['goal_page_or_website'] ) && $goal_field_values['goal_page_or_website'] !== '' ) {
+			    $goal_field_values['goal_page_or_website'] = 'page';
+		    } else {
+			    $goal_field_values['goal_page_or_website'] = 'website';
+		    }
+
+		    return $goal_field_values;
 	    }
+
 		public function get( $id ) {
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_goals';

@@ -12,7 +12,6 @@ const ProgressFooter = (props) => {
   let [lastChecked, setLastChecked] = useState(0);
   useMemo(() => {
     burst_api.runTest('tracking').then( ( response ) => {
-      console.log(response);
       if (response.status === 'beacon' || response.status === 'rest' || response.status === 'disabled') {
         let status = response.status ? response.status : 'error';
         let last_test = response.last_test ? response.last_test : __('Just now', 'burst-statistics');

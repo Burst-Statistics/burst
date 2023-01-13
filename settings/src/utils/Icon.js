@@ -20,8 +20,7 @@ const Icon = (props) => {
   const iconColorValue = iconColors[iconColor] || iconColor;
 
   let renderedIcon = '';
-
-  if (iconName === 'bullet') {
+  if (iconName === 'bullet' || iconName === 'dot') {
     renderedIcon = {
       html:
           <svg aria-hidden="true" focusable="false" role="img"
@@ -41,6 +40,18 @@ const Icon = (props) => {
                height={iconSize}>
             <path fill={iconColorValue}
                   d="M512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z"/>
+          </svg>,
+    };
+  }
+
+  if (iconName === 'period') {
+    renderedIcon = {
+      html:
+          <svg aria-hidden="true" focusable="false" role="img"
+               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512"
+               height={iconSize}>
+            <path fill={iconColorValue}
+                   d="M64 352c-35.35 0-64 28.65-64 64c0 35.35 28.65 64 64 64s64-28.65 64-64C128 380.7 99.35 352 64 352zM64 448c-17.64 0-32-14.36-32-32s14.36-32 32-32s32 14.36 32 32S81.64 448 64 448z"/>
           </svg>,
     };
   }
@@ -518,7 +529,6 @@ const Icon = (props) => {
     };
   }
 
-  // @todo replace icons
   if (iconName === 'mouse') {
     renderedIcon = {
       html:
@@ -548,6 +558,18 @@ const Icon = (props) => {
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
                 height={iconSize}>
             <path fill={iconColorValue} d="M320 512H64C28.65 512 0 483.3 0 448V64C0 28.65 28.65 0 64 0H245.5C262.5 0 278.7 6.743 290.7 18.75L365.3 93.26C377.3 105.3 384 121.5 384 138.5V448C384 483.3 355.3 512 320 512zM64 480H320C337.7 480 352 465.7 352 448V138.5C352 130 348.6 121.9 342.6 115.9L268.1 41.37C262.1 35.37 253.1 32 245.5 32H64C46.33 32 32 46.33 32 64V448C32 465.7 46.33 480 64 480V480z"/>
+          </svg>,
+    };
+  }
+
+  if (iconName === 'hashtag') {
+    renderedIcon = {
+      html:
+          <svg aria-hidden="true" focusable="false" role="img"
+               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+               height={iconSize}>
+            <path fill={iconColorValue}
+                  d="M432 144h-85.73l21.32-92.4c1.969-8.609-3.375-17.2-12-19.19c-8.688-2.031-17.19 3.39-19.19 11.1l-22.98 99.59H186.3l21.32-92.4c1.969-8.609-3.375-17.2-12-19.19c-8.719-2.031-17.19 3.39-19.19 11.1L153.4 144H48c-8.844 0-16 7.144-16 15.99C32 168.8 39.16 176 48 176h98.04L109.1 336H16c-8.844 0-16 7.151-16 15.99s7.156 16 16 16h85.73L80.41 460.4c-1.969 8.609 3.375 17.2 12 19.19C93.63 479.9 94.81 480 96 480c7.281 0 13.88-4.1 15.59-12.41l22.98-99.59h127.2l-21.32 92.4c-1.969 8.609 3.375 17.2 12 19.19C253.6 479.9 254.8 480 256 480c7.281 0 13.88-4.1 15.59-12.41l22.98-99.59H400c8.844 0 16-7.161 16-16s-7.156-15.99-16-15.99h-98.04l36.92-159.1H432c8.844 0 16-7.168 16-16.01C448 151.2 440.8 144 432 144zM269.1 336H141.1L178.9 176h127.2L269.1 336z"/>
           </svg>,
     };
   }
