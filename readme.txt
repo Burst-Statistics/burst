@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.1
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,13 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.3.3 =
+* Fix: Timezones were not functioning correctly. Burst now utilizes the WordPress timezone setting to ensure the correct timezone is used for all dates.
+* Fix: Translation plugins would occasionally alter the REST API URL, resulting in tracking with the REST API not working. This issue has been resolved by utilizing wp.apiFetch instead of fetch.
+* Improvement: Previously, when an IP was blocked in the settings, a 403 error would be displayed. Now, a 202 response with a message indicating that the IP has been blocked is returned.
+* Fix: Typos in the code have been corrected.
+* Fix: PHP warnings that would appear upon dismissing the tour have been resolved.
+
 = 1.3.2 =
 * Fix: Cookieless tracking was not working properly. Issue where some users were not tracked.
 * Fix: Qtranslate caused an error where the dashboard could not load.

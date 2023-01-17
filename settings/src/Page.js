@@ -105,12 +105,12 @@ class Page extends Component {
 
     getFields(){
         return burst_api.getFields().then( ( response ) => {
-            this.superMenu = response.data.menu;
+            this.superMenu = response.menu;
             let selectedMainMenuItem =  getAnchor('main') || 'dashboard';
             this.menu = this.getSelectedMenu(this.superMenu, selectedMainMenuItem);
 
-            this.fields = response.data.fields;
-            this.progress = response.data.progress;
+            this.fields = response.fields;
+            this.progress = response.progress;
             this.setState({
                 isAPILoaded: true,
                 fields: this.fields,
@@ -321,6 +321,18 @@ class Page extends Component {
             insightsMetrics,
             dropItemFromModal,
         } = this.state;
+        
+        console.log('---------------------Please copy and paste the below on the WP forums:---------------------');
+        console.log('dateRange: ', dateRange);
+        console.log('gmt_offset: ', burst_settings.gmt_offset);
+        console.log('sql_timezone: ', burst_settings.sql_timezone);
+        console.log('wp_time: ', burst_settings.wp_time);
+        console.log('server_time: ', burst_settings.server_time);
+        console.log('sql_time', burst_settings.sql_time);
+        console.log('sql_time_utc: ', burst_settings.sql_time_utc);
+        console.log('device_time: ', new Date().getTime());
+        console.log('device_timezone: ', Intl.DateTimeFormat().resolvedOptions().timeZone);
+        console.log('---------------------Copy till here--------------------------------------------------------');
 
         return (
     

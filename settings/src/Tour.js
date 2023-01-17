@@ -170,7 +170,7 @@ const onTourEnd = () => {
   if (! tourEndRunning) {
     tourEndRunning = true;
     let saveFields = [];
-    saveFields.push({id: 'burst_tour_shown_once', value: '1'});
+    saveFields.push({id: 'burst_tour_shown_once', value: '1', type: 'hidden'});
     burst_api.setFields(saveFields).then((response) => {
       tourEndRunning = false;
     })

@@ -53,6 +53,11 @@ function burst_plugin_admin_scripts() {
 	);
 	wp_set_script_translations( 'burst-wizard-plugin-block-editor', 'burst-statistics' );
 
+	global $wpdb;
+
+	$timezone = $wpdb->get_var('SELECT @@global.time_zone');
+    $sql_time = $wpdb->get_var('SELECT NOW()');
+	$sql_time_utc = $wpdb->get_var('SELECT UTC_TIMESTAMP()');
 	
 	wp_localize_script(
         'burst-settings',
@@ -72,6 +77,12 @@ function burst_plugin_admin_scripts() {
             'user_roles' => burst_get_user_roles(),
             'date_ranges' => burst_get_date_ranges(),
             'tour_shown' => burst_get_option('burst_tour_shown_once'),
+            'gmt_offset' => get_option('gmt_offset'),
+            'sql_timezone' => $timezone,
+            'sql_time' => $sql_time,
+            'sql_time_utc' => $sql_time_utc,
+            'wp_time' => current_time( 'timestamp' ),
+            'server_time' => time(),
         ))
 	);
 }
@@ -299,7 +310,7 @@ function burst_other_plugins_data($slug=false){
 			'constant_premium' => 'cmplz_premium',
 			'wordpress_url' => 'https://wordpress.org/plugins/complianz-gdpr/',
 			'upgrade_url' => 'https://complianz.io/pricing?src=burst-plugin',
-			'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst-statistics" ),
+			'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be", "burst-statistics" ),
 		],
 		[
 			'slug' => 'complianz-terms-conditions',
@@ -413,14 +424,16 @@ function burst_sanitize_field_type( $type ) {
 /**
  * @param WP_REST_Request $request
  *
- * @return void
+ * @return array
  */
 function burst_rest_api_fields_set( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return;
 	}
-
+    error_log(print_r($request->get_params(), true));
+    error_log('burst_rest_api_fields_set');
 	$fields = $request->get_json_params();
+    error_log(print_r($fields, true));
 	//get the nonce
 	$nonce = false;
 	foreach ( $fields as $index => $field ){
@@ -431,13 +444,13 @@ function burst_rest_api_fields_set( $request ) {
 	}
 
 	if ( !wp_verify_nonce($nonce, 'burst_nonce') ) {
+        error_log('nonce not verified');
 		return;
 	}
 
 	$config_fields = burst_fields(false);
 	$config_ids = array_column($config_fields, 'id');
 	foreach ( $fields as $index => $field ) {
-
 		$config_field_index = array_search($field['id'], $config_ids);
 		$config_field = $config_fields[$config_field_index];
 		if ( !$config_field_index ){

@@ -47,8 +47,8 @@ class ProgressBlock extends Component {
 
     getProgressData(){
         burst_api.runTest('progressData', 'refresh').then( ( response ) => {
-            this.filter = response.data.filter;
-            this.notices = response.data.notices;
+            this.filter = response.filter;
+            this.notices = response.notices;
             this.progressLoaded = true;
 
             this.setState({
@@ -90,7 +90,7 @@ class ProgressBlock extends Component {
 
         this.props.setBlockProps('notices', notices);
         return burst_api.runTest('dismiss_task', notice_id).then(( response ) => {
-            this.percentageCompleted = response.data.percentage;
+            this.percentageCompleted = response.percentage;
             this.setState({
                 percentageCompleted:this.percentageCompleted
             })

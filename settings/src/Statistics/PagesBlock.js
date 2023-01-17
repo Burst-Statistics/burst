@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import {
     useState,
     useEffect
@@ -45,7 +45,7 @@ const PagesBlock = (props) => {
         setLoading(true);
         return burst_api.getData('pages', startDate, endDate, range, args).then( ( response ) => {
             setLoading(false);
-            return response.data;
+            return response;
         });
     }
 
@@ -61,7 +61,7 @@ const PagesBlock = (props) => {
                 paginationPerPage={10}
                 paginationComponentOptions={{
                     rowsPerPageText: '',
-                    rangeSeparatorText: __('of', 'burst-statistics'),
+                    rangeSeparatorText: _x('of', 'Range separator text. Used for displaying rows. E.g. "10 of 200"' , 'burst-statistics'),
                     noRowsPerPage: false,
                     selectAllRowsItem: true,
                     selectAllRowsItemText: __('All', 'burst-statistics')}}

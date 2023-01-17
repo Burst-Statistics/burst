@@ -108,7 +108,7 @@ function burst_fields( $load_values = true ) {
 			'help'     => [
 				'label' => 'default',
 				'title' => __( 'What is Cookieless tracking?', 'burst-statistics' ),
-				'text'  => __( "With cookieless tracking enabled, Burst will not use cookies to match tracking data with users. It will use contextual data, like browser version and device, also called 'fingerprinting'. The latter could be less reliable for some users.", 'burst-statistics' ),
+				'text'  => __( "With cookieless tracking enabled, Burst will not use cookies to determine the number of unique visitors. It will use contextual data, like the browser version and device, also called 'fingerprinting'. The latter could be less reliable for some users.", 'burst-statistics' ),
 				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
 			],
 			'disabled' => false,

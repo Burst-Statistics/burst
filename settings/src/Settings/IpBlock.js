@@ -25,7 +25,7 @@ class IpBlock extends Component {
     let ip = burst_settings.current_ip;
 
     if (inputValue.includes(ip)) {
-      this.setState({warning: __('Your IP address is: ', 'burst-statistics') + " '" +  ip + "'. " + __('Which is already in the list.', 'burst-statistics')});
+      this.setState({warning: __('Your IP address is:', 'burst-statistics') + " '" +  ip + "'. " + __('Which is already in the list.', 'burst-statistics')});
       // set time out and remove warning
       setTimeout(() => {
         this.setState({warning: false});

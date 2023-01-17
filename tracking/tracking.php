@@ -136,8 +136,8 @@ if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
 		}
 
 		if ( burst_is_ip_blocked() ) {
-			http_response_code(401);
-			return false;
+			http_response_code(200);
+			return 'ip blocked';
 		}
 
 		$data = json_decode( json_decode( $request, true ), true ); // The data is encoded in JSON and decoded twice to get the array.
@@ -157,7 +157,8 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 	 */
 	function burst_rest_track_hit( WP_REST_Request $request ): WP_REST_Response {
 		if ( burst_is_ip_blocked() ) {
-			return new WP_REST_Response( array( 'error' => 'ip_blocked' ), 403 );
+			$status_code = WP_DEBUG ? 202 : 200;
+			return new WP_REST_Response('Burst Statistics: Your IP is blocked from tracking.', $status_code );
 		}
 		$data = json_decode($request->get_json_params(), true);
 		if ( isset( $data['request'] ) && $data['request'] === 'test' ) {

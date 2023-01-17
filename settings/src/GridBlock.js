@@ -73,11 +73,11 @@ class GridBlock extends Component {
         }
         let test = this.props.block.content.data;
         return burst_api.runTest(test, setState).then((response) => {
-            this.content = response.data.html
-            this.testDisabled = response.data.disabled
-            this.progress = response.data.progress
+            this.content = response.html
+            this.testDisabled = response.disabled
+            this.progress = response.progress
             this.testRunning = this.progress<100
-            this.footerHtml = response.data.footerHtml
+            this.footerHtml = response.footerHtml
             this.setState({
                 testRunning:this.testRunning,
                 content:this.content,
