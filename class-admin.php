@@ -133,7 +133,7 @@ if ( ! class_exists( "burst_admin" ) ) {
                     delete_transient($transient_name);
                 }
                 // delete custom transient
-                delete_option('burst_transients');
+                delete_option('burst_transient');
             }
         }
 
