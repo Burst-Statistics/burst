@@ -51,7 +51,7 @@ function burst_plugin_admin_scripts() {
 		$script_asset['dependencies'],
 		$script_asset['version']
 	);
-	wp_set_script_translations( 'burst-wizard-plugin-block-editor', 'burst-statistics' );
+	wp_set_script_translations( 'burst-settings', 'burst-statistics' );
 
 	global $wpdb;
 
