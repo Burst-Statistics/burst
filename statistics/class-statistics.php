@@ -659,12 +659,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		}
 
 
-		public function convert_date_to_utc( $timestamp ): int {
-			$time = DateTime::createFromFormat('Y-m-d H:i:s',$timestamp);
-			if ( !$time ) {
-				return $timestamp;
-			}
-			$utc_time           = (int) $time->format('U');
+		public function convert_date_to_utc( $time_string ): int {
+			$time = DateTime::createFromFormat('Y-m-d H:i:s', $time_string);
+			$utc_time = $time ? $time->format('U') : strtotime($time_string);
 			$gmt_offset_seconds = (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
 			return $utc_time - $gmt_offset_seconds;
 		}
