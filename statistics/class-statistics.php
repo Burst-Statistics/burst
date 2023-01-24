@@ -1232,6 +1232,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 * @return mixed
 		 */
 		private function get_transient( $name ){
+			return false;
 			$value = false;
 			$now = time();
 			$transients = get_option('burst_transients', array());
