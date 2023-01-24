@@ -664,7 +664,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			if ( !$time ) {
 				return $timestamp;
 			}
-			$utc_time           = $time->format('U');
+			$utc_time           = (int) $time->format('U');
 			$gmt_offset_seconds = (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
 			return $utc_time - $gmt_offset_seconds;
 		}
