@@ -305,7 +305,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 ],
             ];
 
-
             for ( $i = 0; $i < $nr_of_periods; $i++ ) {
                 $date = $date_start + $i * $interval_args[$interval]['in_seconds'] + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
                 $labels[] = date_i18n( $interval_args[$interval]['format'], $date );
@@ -688,7 +687,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $start      = (int) $args['date_start'];
             $end        = (int) $args['date_end'];
 			$date_range = burst_sanitize_date_range($args['date_range']);
-
+			error_log("get insights data args");
+			error_log(print_r($args, true));
             // first we get the data from the db
             if ( $interval === 'hour') {
                 $sqlformat = '%Y-%m-%d %H:00';
@@ -719,10 +719,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
                         $sqlperiod as period
                         FROM $from as stats
                         GROUP BY period order by period";
-
+			error_log("select SQL ");
+			error_log($sql);
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false: $this->get_transient('burst_insights_'.$metric.'_'.$date_range );
-			if ( ! $results ) {
+			error_log(print_r("cached insights results",true));
+			error_log(print_r($results,true));
+			if ( !$results ) {
+				error_log("regenerated data:");
 				$results = $wpdb->get_results($sql);
+				error_log(print_r($results,true));
+
 				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_insights_'.$metric.'_'.$date_range, $results, DAY_IN_SECONDS);
 			}
 
