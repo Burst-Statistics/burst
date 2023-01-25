@@ -366,6 +366,7 @@ function burst_get_data($request){
     ];
     $request_args = json_decode($request->get_param('args'), true);
 	$args['metrics'] = $request_args['metrics'] ?? [];
+    $args['metrics'] = BURST()->statistics->sanitize_metric($args['metrics']);
 
 	switch($type){
 		case 'today':
