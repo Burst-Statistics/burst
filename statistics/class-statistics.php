@@ -113,6 +113,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			return 'visitors';
 		}
+
 		/**
 		 * @param array $metrics
 		 *

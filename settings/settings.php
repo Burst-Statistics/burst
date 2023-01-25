@@ -365,8 +365,8 @@ function burst_get_data($request){
             'date_range' => burst_sanitize_date_range($request->get_param('date_range')),
     ];
     $request_args = json_decode($request->get_param('args'), true);
-	$args['metrics'] = $request_args['metrics'] ?? [];
-    $args['metrics'] = BURST()->statistics->sanitize_metric($args['metrics']);
+	$args['metrics'] = $request_args['metrics'] ?? ['visitors'];
+    $args['metrics'] = BURST()->statistics->sanitize_metrics($args['metrics']);
 
 	switch($type){
 		case 'today':
