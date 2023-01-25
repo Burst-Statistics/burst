@@ -366,18 +366,18 @@ function burst_get_data($request){
     ];
     $request_args = json_decode($request->get_param('args'), true);
 	$args['metrics'] = $request_args['metrics'] ?? [];
+
 	switch($type){
 		case 'today':
 			$data = BURST()->statistics->get_today_data($args);
 			break;
 		case 'insights':
-            $args['interval'] = sanitize_title($request_args['interval']);
+			$args['interval'] = BURST()->statistics->sanitize_interval($request_args['interval']) ?? 'day';
 			$data = BURST()->statistics->get_insights_data($args);
 			break;
 		case 'pages':
 			$data = BURST()->statistics->get_pages_data($args);
 			break;
-
 		case 'referrers':
 			$data = BURST()->statistics->get_referrers_data($args);
 			break;
@@ -430,10 +430,7 @@ function burst_rest_api_fields_set( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return;
 	}
-    error_log(print_r($request->get_params(), true));
-    error_log('burst_rest_api_fields_set');
 	$fields = $request->get_json_params();
-    error_log(print_r($fields, true));
 	//get the nonce
 	$nonce = false;
 	foreach ( $fields as $index => $field ){
@@ -701,7 +698,17 @@ function burst_sanitize_ip_field( $value ) {
     return implode( PHP_EOL, $ips );
 }
 
-function burst_get_user_roles(){
+/**
+ * Get user roles for the settings page in Burst
+ *
+ * @return array
+ */
+
+function burst_get_user_roles(): array {
+    if ( !burst_user_can_manage() ) {
+        return [];
+    }
+
     global $wp_roles;
     return $wp_roles->get_names();
 }

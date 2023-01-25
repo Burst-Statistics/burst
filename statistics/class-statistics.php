@@ -283,13 +283,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'date_range' => 'custom',
 			);
 			$args = wp_parse_args($args, $defaults);
-
 			$metrics = $this->sanitize_metrics( $args['metrics'] );
 			$metric_labels = $this->get_metrics();
 
 			// generate labels for dataset
 			$labels = array();
-			$interval = $args['interval'];
+			$interval = $this->sanitize_interval($args['interval']);
 			$date_start = $args['date_start'];
 			$date_end = $args['date_end'];
 			$date_range = $args['date_range'];
@@ -561,6 +560,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				// - bounces
 
 				// get data for each metric
+				$data = [];
 				foreach ( $metrics as $metric ) {
 					$args = array(
 						'metric'     => $metric,
@@ -749,27 +749,28 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 		/**
 		 * @param string $period
-		 * @param int $start_time
-		 * @param int $end_time
+		 * @param int    $start_time
+		 * @param int    $end_time
 		 *
 		 * @return float
 		 */
 
-		private function get_nr_of_periods($period, $start_time, $end_time ){
+		private function get_nr_of_periods( string $period, int $start_time, int $end_time ): float {
 			$range_in_seconds = $end_time - $start_time;
-			$period_in_seconds = constant(strtoupper($period).'_IN_SECONDS' );
+			$period_in_seconds = defined(strtoupper($period).'_IN_SECONDS') ? constant(strtoupper($period).'_IN_SECONDS' ) : DAY_IN_SECONDS;
 			return ROUND($range_in_seconds/$period_in_seconds);
 		}
 
         /**
 		 * Get color for a graph
-		 * @param int     $index
+		 *
+		 * @param string $metric
 		 * @param string $type 'background' or 'border'
 		 *
 		 * @return string
 		 */
 
-		private function get_metric_color( $metric = 'visitors', $type = 'default' ) {
+		private function get_metric_color( string $metric = 'visitors', string $type = 'default' ): string {
 			$colors = array(
 				'visitors' => array(
 					'background' => 'rgba(41, 182, 246, 0.2)',
