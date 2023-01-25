@@ -289,9 +289,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// generate labels for dataset
 			$labels = array();
 			$interval = $this->sanitize_interval($args['interval']);
-			$date_start = $args['date_start'];
-			$date_end = $args['date_end'];
-			$date_range = $args['date_range'];
+			$date_start = (int) $args['date_start'];
+			$date_end = (int) $args['date_end'];
+			$date_range = burst_sanitize_date_range($args['date_range']);
 			$nr_of_periods = $this->get_nr_of_periods($interval, $date_start, $date_end );
             $interval_args = [
                 'hour' => [
@@ -347,15 +347,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	        );
 	        $args     = wp_parse_args( $args, $defaults );
 
-	        $start      = $args['date_start'];
-	        $end        = $args['date_end'];
+	        $start      = (int) $args['date_start'];
+	        $end        = (int) $args['date_end'];
 	        $diff       = $end - $start;
 	        $start_diff = $start - $diff;
 	        $end_diff   = $end - $diff;
-			$date_range = $args['date_range'];
+			$date_range = burst_sanitize_date_range($args['date_range']);
 
 	        $results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_compare_data_'.$date_range );
-	        if ( ! $results ) {
+	        $all_entries_empty = $results && ($results['current']['visitors']===0 && $results['current']['pageviews'] === 0 && $results['current']['sessions'] === 0);
+	        if ( ! $results || $all_entries_empty ) {
 		        // get current data for each metric
 		        $select  = $this->get_sql_select_for_metrics( [
 			        'visitors',
@@ -440,13 +441,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'date_end' => 0,
 			);
 			$args = wp_parse_args($args, $defaults);
-			$start = $args['date_start'];
-			$end = $args['date_end'];
+			$start = (int) $args['date_start'];
+			$end = (int) $args['date_end'];
 			$devices = [];
-			$date_range = $args['date_range'];
+			$date_range = burst_sanitize_date_range($args['date_range']);
 
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_devices_data_'.$date_range );
-			if ( ! $results ) {
+			$entries_empty = isset($results['all']['count']) && $results['all']['count']===0;
+			if ( ! $results || $entries_empty ) {
 				$from          = $this->get_sql_table($start, $end);
 				$sql           = "SELECT device,
 	                    COUNT(device) AS count
@@ -527,12 +529,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$metrics = $this->sanitize_metrics( $args['metrics'] );
 			$metric_labels = $this->get_metrics();
 
-			$date_start = $args['date_start'];
-			$date_end = $args['date_end'];
-			$date_range = $args['date_range'];
+			$date_start = (int) $args['date_start'];
+			$date_end = (int) $args['date_end'];
+			$date_range = burst_sanitize_date_range($args['date_range']);
 
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_pages_data_'.$date_range );
-			if ( ! $results ) {
+			if ( ! $results || empty($results['data']) ) {
 
 				// generate columns for each metric
 				$columns   = array();
@@ -604,17 +606,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 		public function get_referrers_data($args = array(), $clear_cache = false) {
             global $wpdb;
+
 			$defaults = array(
 				'date_start' => 0,
 				'date_end' => 0,
 				'metrics' => array('count'),
 			);
 			$args = wp_parse_args($args, $defaults);
-			$date_range = $args['date_range'];
-
+			$date_range = burst_sanitize_date_range( $args['date_range']);
 			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_referrer_data_'.$date_range );
-
-			if ( ! $results ) {
+			if ( empty($results) || empty($results['data']) ) {
 				$columns = [
 	                [
 	                    'name' => __('Referrer', 'burst-statistics'),
@@ -685,7 +686,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $interval   = $this->sanitize_interval($args['interval']);
             $start      = (int) $args['date_start'];
             $end        = (int) $args['date_end'];
-			$date_range = $args['date_range'];
+			$date_range = burst_sanitize_date_range($args['date_range']);
 
             // first we get the data from the db
             if ( $interval === 'hour') {
@@ -980,7 +981,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				case 'last-month':
 					$current_month = date('n');
 					$previous_month = $current_month-1;
-					if ($current_month==1) $previous_month = 12;
+					if ( $current_month === 1 ) $previous_month = 12;
 					$start = mktime(0, 0, 0, $previous_month, 1);
 					$end = mktime(23, 59, 59, $previous_month, date('t', $start));
 					break;
