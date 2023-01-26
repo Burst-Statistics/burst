@@ -43,8 +43,8 @@ if ( ! function_exists('burst_add_view_capability')){
 if ( ! function_exists('burst_add_manage_capability')){
 	/**
 	 * Add a user capability to WordPress and add to admin and editor role
-     *
-     * @param bool $handle_subsites
+	 *
+	 * @param bool $handle_subsites
 	 */
 	function burst_add_manage_capability(bool $handle_subsites=true){
 		$capability = 'manage_burst_statistics';
@@ -68,25 +68,9 @@ if ( ! function_exists('burst_add_manage_capability')){
 			}
 		}
 	}
-
-    if ( !function_exists('cmplz_add_role_to_subsite') ) {
-	    /**
-	     * When a new site is added, add our capability
-	     *
-	     * @param $site
-	     *
-	     * @return void
-	     */
-	    function cmplz_add_role_to_subsite( $site ) {
-		    switch_to_blog( $site->blog_id );
-		    burst_add_manage_capability( false );
-		    restore_current_blog();
-	    }
-	    add_action('wp_initialize_site', 'cmplz_add_role_to_subsite', 10, 1);
-    }
 }
 
-if ( !function_exists('cmplz_add_role_to_subsite') ) {
+if ( !function_exists('burst_add_role_to_subsite') ) {
     /**
      * When a new site is added, add our capability
      *
@@ -94,12 +78,12 @@ if ( !function_exists('cmplz_add_role_to_subsite') ) {
      *
      * @return void
      */
-    function cmplz_add_role_to_subsite( $site ) {
+    function burst_add_role_to_subsite( $site ) {
         switch_to_blog( $site->blog_id );
         burst_add_manage_capability( false );
         restore_current_blog();
     }
-    add_action('wp_initialize_site', 'cmplz_add_role_to_subsite', 10, 1);
+    add_action('wp_initialize_site', 'burst_add_role_to_subsite', 10, 1);
 }
 
 if ( ! function_exists( 'burst_user_can_view' ) ) {
