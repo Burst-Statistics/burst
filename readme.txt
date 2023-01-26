@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.1
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,9 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.3.4 =
+* Fix: add capability to multisite administrators who are active on a subsite only as well.
+
 = 1.3.3 =
 * Fix: Timezones were not functioning correctly. Burst now utilizes the WordPress timezone setting to ensure the correct timezone is used for all dates.
 * Fix: Translation plugins would occasionally alter the REST API URL, resulting in tracking with the REST API not working. This issue has been resolved by utilizing wp.apiFetch instead of fetch.
