@@ -161,8 +161,11 @@ class BURST {
 	}
 
 	private function hooks() {
-		$plugin = plugin_basename(__FILE__);
+		if ( is_admin() ) {
+			add_action('plugins_loaded', array(self::$instance->admin, 'init'), 10);
+		}
 
+		$plugin = plugin_basename(__FILE__);
 		/**
 		 * Tell the consent API we're following the api
 		 */

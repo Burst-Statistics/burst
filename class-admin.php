@@ -53,6 +53,35 @@ if ( ! class_exists( "burst_admin" ) ) {
 		}
 
 		/**
+		 * Initializes the admin class
+		 *
+		 * @since  2.2
+		 *
+		 * @access public
+		 *
+		 */
+
+		public function init() {
+			if ( ! burst_user_can_manage() ) {
+				return;
+			}
+			/*
+			 * check if we're one minute past the activation. Then flush rewrite rules
+			 * this way we lower the memory impact on activation
+			 * Flush should happen on shutdown, not on init, as often happens in other plugins
+			 * https://codex.wordpress.org/Function_Reference/flush_rewrite_rules
+			 * */
+
+			$activation_time          = get_option( 'burst_flush_rewrite_rules' );
+			$more_than_one_minute_ago = $activation_time < strtotime( "-1 minute" );
+			$less_than_2_minutes_ago  = $activation_time > strtotime( "-2 minute" );
+			if ( $activation_time && $more_than_one_minute_ago && $less_than_2_minutes_ago ) {
+				delete_option( 'burst_flush_rewrite_rules' );
+				add_action( 'shutdown', 'flush_rewrite_rules' );
+			}
+		}
+
+		/**
 		 * Add some privacy info
 		 */
 
@@ -95,6 +124,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 		public function setup_defaults(): void {
 			update_option( 'burst_activation_time', time(), false );
+			update_option('burst_flush_rewrite_rules', time(), false );
 			burst_add_view_capability();
 			burst_add_manage_capability();
 
