@@ -140,7 +140,7 @@ if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
 			return 'ip blocked';
 		}
 
-		$data = json_decode( json_decode( $request, true ), true ); // The data is encoded in JSON and decoded twice to get the array.
+		$data = json_decode( $request, true );
 		burst_track_hit( $data );
 		http_response_code(200);
 		return 'success';
@@ -160,7 +160,8 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 			$status_code = WP_DEBUG ? 202 : 200;
 			return new WP_REST_Response('Burst Statistics: Your IP is blocked from tracking.', $status_code );
 		}
-		$data = json_decode($request->get_json_params(), true);
+		$data = $request->get_json_params();
+
 		if ( isset( $data['request'] ) && $data['request'] === 'test' ) {
 			return new WP_REST_Response( array( 'success' => 'test' ), 200 );
 		}

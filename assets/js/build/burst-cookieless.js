@@ -1309,7 +1309,7 @@ async function burst_update_hit ( update_uid = false ){
 	}
 	if (data.time_on_page > 0 || data.uid !== false) {
 		await burst_api_request({
-			data: JSON.stringify(data)
+			data: data
 		}).catch(error => {
 
 		}) // @todo handle error and send notice to the user. If multiple errors send to backend
@@ -1351,7 +1351,7 @@ async function burst_track_hit () {
 
 	let request_params = {
 		method: 'POST',
-		data: JSON.stringify(data)
+		data: data
 	};
 	burst_api_request(request_params).catch(error => {
 			burst_track_hit_running	= false;
