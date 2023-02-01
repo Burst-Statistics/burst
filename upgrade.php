@@ -35,6 +35,16 @@ function burst_check_upgrade() {
 		}
 	}
 
+	//add capability to multisite as well
+	if ( is_multisite() ) {
+		if ( $prev_version
+		     && version_compare( $prev_version, '1.3.4', '<' )
+		) {
+			burst_add_view_capability();
+			burst_add_manage_capability();
+		}
+	}
+
 	do_action( 'burst_upgrade', $prev_version );
 	update_option( 'burst-current-version', burst_version, false );
 }

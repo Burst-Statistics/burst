@@ -52,7 +52,6 @@ export const setFields = async (data) => {
 			method: 'POST',
 			data: data,
 		} );
-		console.log(response);
 		return response;
 	}
 

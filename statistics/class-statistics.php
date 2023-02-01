@@ -348,90 +348,82 @@ if ( ! class_exists( "burst_statistics" ) ) {
 	        );
 	        $args     = wp_parse_args( $args, $defaults );
 
-	        $start      = $args['date_start'];
-	        $end        = $args['date_end'];
+	        $start      = (int) $args['date_start'];
+	        $end        = (int) $args['date_end'];
 	        $diff       = $end - $start;
 	        $start_diff = $start - $diff;
 	        $end_diff   = $end - $diff;
-			$date_range = $args['date_range'];
-
-	        $results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_compare_data_'.$date_range );
-	        if ( ! $results ) {
-		        // get current data for each metric
-		        $select  = $this->get_sql_select_for_metrics( [
-			        'visitors',
-			        'pageviews',
-			        'sessions',
-			        'first_time_visitors',
-			        'avg_time_on_page',
-		        ] );
-		        $from    = $this->get_sql_table($start, $end);
-		        $sql     = "SELECT $select
-									FROM $from as stats";
-		        $current = $wpdb->get_results( $sql, 'ARRAY_A' );
-		        $current = $current[0];
-		        // loop through array and convert to ints
-		        foreach ( $current as $key => $value ) {
-			        $current[ $key ] = (int) $value;
-		        }
-
-		        // get current data for bounces
-		        $from         = $this->get_sql_table_bounces($start, $end);
-		        $sql          = "SELECT count(*) as bounced_sessions
-									FROM $from as stats";
-		        $curr_bounces = (int) $wpdb->get_var( $sql );
-
-		        // get previous data for each metric
-		        $select   = $this->get_sql_select_for_metrics( [
-			        'visitors',
-			        'pageviews',
-			        'sessions',
-		        ] );
-		        $from     = $this->get_sql_table($start_diff, $end_diff);
-		        $sql      = "SELECT $select
-									FROM $from as stats";
-		        $previous = $wpdb->get_results( $sql, 'ARRAY_A' );
-		        $previous = $previous[0];
-
-		        foreach ( $previous as $key => $value ) {
-			        $previous[ $key ] = (int) $value;
-		        }
-
-		        // get previous data for bounces
-		        $from         = $this->get_sql_table_bounces($start_diff, $end_diff);
-		        $sql          = "SELECT count(*) as bounced_sessions
-									FROM $from as stats";
-		        $prev_bounces = (int) $wpdb->get_var( $sql );
-
-		        // setup defaults
-		        $default_data = [
-			        'current'  => [
-				        'pageviews'           => 0,
-				        'sessions'            => 0,
-				        'visitors'            => 0,
-				        'first_time_visitors' => 0,
-				        'avg_time_on_page'    => 0, // in seconds
-			        ],
-			        'previous' => [
-				        'pageviews' => 0,
-				        'sessions'  => 0,
-				        'visitors'  => 0,
-			        ],
-		        ];
-
-		        $data = [
-			        'current'  => $current,
-			        'previous' => $previous,
-		        ];
-		        // add bounces
-		        $data['current']['bounced_sessions']  = $curr_bounces;
-		        $data['previous']['bounced_sessions'] = $prev_bounces;
-
-				$results = wp_parse_args($data, $default_data);
-		        if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_compare_data_'.$date_range, $results, DAY_IN_SECONDS);
+	        // get current data for each metric
+	        $select  = $this->get_sql_select_for_metrics( [
+		        'visitors',
+		        'pageviews',
+		        'sessions',
+		        'first_time_visitors',
+		        'avg_time_on_page',
+	        ] );
+	        $from    = $this->get_sql_table($start, $end);
+	        $sql     = "SELECT $select
+								FROM $from as stats";
+	        $current = $wpdb->get_results( $sql, 'ARRAY_A' );
+	        $current = $current[0];
+	        // loop through array and convert to ints
+	        foreach ( $current as $key => $value ) {
+		        $current[ $key ] = (int) $value;
 	        }
 
-	        return $results;
+	        // get current data for bounces
+	        $from         = $this->get_sql_table_bounces($start, $end);
+	        $sql          = "SELECT count(*) as bounced_sessions
+								FROM $from as stats";
+	        $curr_bounces = (int) $wpdb->get_var( $sql );
+
+	        // get previous data for each metric
+	        $select   = $this->get_sql_select_for_metrics( [
+		        'visitors',
+		        'pageviews',
+		        'sessions',
+	        ] );
+	        $from     = $this->get_sql_table($start_diff, $end_diff);
+	        $sql      = "SELECT $select
+								FROM $from as stats";
+	        $previous = $wpdb->get_results( $sql, 'ARRAY_A' );
+	        $previous = $previous[0];
+
+	        foreach ( $previous as $key => $value ) {
+		        $previous[ $key ] = (int) $value;
+	        }
+
+	        // get previous data for bounces
+	        $from         = $this->get_sql_table_bounces($start_diff, $end_diff);
+	        $sql          = "SELECT count(*) as bounced_sessions
+								FROM $from as stats";
+	        $prev_bounces = (int) $wpdb->get_var( $sql );
+
+	        // setup defaults
+	        $default_data = [
+		        'current'  => [
+			        'pageviews'           => 0,
+			        'sessions'            => 0,
+			        'visitors'            => 0,
+			        'first_time_visitors' => 0,
+			        'avg_time_on_page'    => 0, // in seconds
+		        ],
+		        'previous' => [
+			        'pageviews' => 0,
+			        'sessions'  => 0,
+			        'visitors'  => 0,
+		        ],
+	        ];
+
+	        $data = [
+		        'current'  => $current,
+		        'previous' => $previous,
+	        ];
+	        // add bounces
+	        $data['current']['bounced_sessions']  = $curr_bounces;
+	        $data['previous']['bounced_sessions'] = $prev_bounces;
+
+			return wp_parse_args($data, $default_data);
 		}
 
 		public function get_devices_data($args = array(), $clear_cache = false) {
@@ -441,13 +433,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'date_end' => 0,
 			);
 			$args = wp_parse_args($args, $defaults);
-			$start = $args['date_start'];
-			$end = $args['date_end'];
+			$start = (int) $args['date_start'];
+			$end = (int) $args['date_end'];
 			$devices = [];
-			$date_range = $args['date_range'];
 
-			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_devices_data_'.$date_range );
-			if ( ! $results ) {
 				$from          = $this->get_sql_table($start, $end);
 				$sql           = "SELECT device,
 	                    COUNT(device) AS count
@@ -511,10 +500,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					],
 				];
 
-				$results = wp_parse_args($devices, $default_data);
-				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_devices_data_'.$date_range, $results, DAY_IN_SECONDS);
-			}
-			return $results;
+				return wp_parse_args($devices, $default_data);
+
 		}
 
 		public function get_pages_data($args = array(), $clear_cache = false) {
@@ -528,39 +515,36 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$metrics = $this->sanitize_metrics( $args['metrics'] );
 			$metric_labels = $this->get_metrics();
 
-			$date_start = $args['date_start'];
-			$date_end = $args['date_end'];
-			$date_range = $args['date_range'];
+			$date_start = (int) $args['date_start'];
+			$date_end = (int) $args['date_end'];
 
-			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_pages_data_'.$date_range );
-			if ( ! $results ) {
-
-				// generate columns for each metric
-				$columns   = array();
+			// generate columns for each metric
+			$columns   = array();
+			$columns[] = array(
+				'name'     => __( 'Page', 'burst-statistics' ),
+				'sortable' => true,
+				'grow'     => 10,
+			);
+			foreach ( $metrics as $metric ) {
+				$title     = $metric_labels[ $metric ];
 				$columns[] = array(
-					'name'     => __( 'Page', 'burst-statistics' ),
+					'name'     => $title,
 					'sortable' => true,
-					'grow'     => 10,
+					"right"    => true,
+					'grow'     => 3,
 				);
-				foreach ( $metrics as $metric ) {
-					$title     = $metric_labels[ $metric ];
-					$columns[] = array(
-						'name'     => $title,
-						'sortable' => true,
-						"right"    => true,
-						'grow'     => 3,
-					);
-				}
+			}
 
-				//  @todo add metrics
-				// - page views
-				// - visitors
-				// - entrances
-				// - exits
-				// - avg.time on page
-				// - bounces
+			//  @todo add metrics
+			// - page views
+			// - visitors
+			// - entrances
+			// - exits
+			// - avg.time on page
+			// - bounces
 
 				// get data for each metric
+				$data = [];
 				foreach ( $metrics as $metric ) {
 					$args = array(
 						'metric'     => $metric,
@@ -570,13 +554,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					$data = $this->get_pages_by_metric( $args );
 				}
 
-				$results = [
-					"columns" => $columns,
-					"data"    => $data,
-				];
-				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_pages_data_'.$date_range, $results, DAY_IN_SECONDS);
-			}
-			return $results;
+			return [
+				"columns" => $columns,
+				"data"    => $data,
+			];
 		}
 
 		public function get_pages_by_metric($args = array()){
@@ -610,24 +591,19 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'metrics' => array('count'),
 			);
 			$args = wp_parse_args($args, $defaults);
-			$date_range = $args['date_range'];
-
-			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_referrer_data_'.$date_range );
-
-			if ( ! $results ) {
-				$columns = [
-	                [
-	                    'name' => __('Referrer', 'burst-statistics'),
-	                    'sortable' => true,
-	                    'grow' => 10,
-	                ],
-	                [
-	                    'name' => __('Count', 'burst-statistics'),
-	                    'sortable' => true,
-	                    'right' => true,
-	                    'grow' => 3,
-	                ],
-	            ];
+			$columns = [
+                [
+                    'name' => __('Referrer', 'burst-statistics'),
+                    'sortable' => true,
+                    'grow' => 10,
+                ],
+                [
+                    'name' => __('Count', 'burst-statistics'),
+                    'sortable' => true,
+                    'right' => true,
+                    'grow' => 3,
+                ],
+            ];
 
 				// Set up the base query arguments.
 				$start      	= (int) $args['date_start'];
@@ -652,19 +628,14 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					"columns" => $columns,
 					"data"    => $data,
 				];
-				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_referrer_data_'.$date_range, $results, DAY_IN_SECONDS);
-			}
 
 			return $results;
 		}
 
 
-		public function convert_date_to_utc( $timestamp ): int {
-			$time = DateTime::createFromFormat('Y-m-d H:i:s',$timestamp);
-			if ( !$time ) {
-				return $timestamp;
-			}
-			$utc_time           = $time->format('U');
+		public function convert_date_to_utc( $time_string ): int {
+			$time = DateTime::createFromFormat('Y-m-d H:i:s', $time_string);
+			$utc_time = $time ? $time->format('U') : strtotime($time_string);
 			$gmt_offset_seconds = (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
 			return $utc_time - $gmt_offset_seconds;
 		}
@@ -688,7 +659,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
             $interval   = $this->sanitize_interval($args['interval']);
             $start      = (int) $args['date_start'];
             $end        = (int) $args['date_end'];
-			$date_range = $args['date_range'];
+			$date_range = burst_sanitize_date_range($args['date_range']);
 
             // first we get the data from the db
             if ( $interval === 'hour') {
@@ -708,7 +679,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// Format the offset as a string
 			$timezone = sprintf("%+03d:%02d", $hours, $minutes);
 
-            $sqlperiod = "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '+00:00', '".$timezone."'), '" . $sqlformat . "')"; // this is the sql format for the period
+			$sql_time = $wpdb->get_var('SELECT NOW()');
+			$sql_time_utc = $wpdb->get_var('SELECT UTC_TIMESTAMP()');
+
+			$time_diff = strtotime($sql_time) - strtotime($sql_time_utc);
+			$hours = floor($time_diff / 3600);
+			$minutes = floor(($time_diff / 60) % 60);
+
+			$server_timezone = sprintf("%s%02d:%02d", ($time_diff >= 0 ? '+' : '-'), abs($hours), abs($minutes));
+
+            $sqlperiod = "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '$server_timezone', '".$timezone."'), '" . $sqlformat . "')"; // this is the sql format for the period
             if ( $metric === 'bounces' ) {
                 $select = 'count(*)';
 			    $from = $this->get_sql_table_bounces($start, $end);
@@ -721,11 +701,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                         FROM $from as stats
                         GROUP BY period order by period";
 
-			$results = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false: $this->get_transient('burst_insights_'.$metric.'_'.$date_range );
-			if ( ! $results ) {
-				$results = $wpdb->get_results($sql);
-				if ($date_range !=='custom' && $date_range !=='today' ) $this->set_transient('burst_insights_'.$metric.'_'.$date_range, $results, DAY_IN_SECONDS);
-			}
+			$results = $wpdb->get_results($sql);
 
             // match results to periods
 			$nr_of_periods = $this->get_nr_of_periods($interval, $start, $end );
@@ -752,27 +728,28 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 		/**
 		 * @param string $period
-		 * @param int $start_time
-		 * @param int $end_time
+		 * @param int    $start_time
+		 * @param int    $end_time
 		 *
 		 * @return float
 		 */
 
-		private function get_nr_of_periods($period, $start_time, $end_time ){
+		private function get_nr_of_periods( string $period, int $start_time, int $end_time ): float {
 			$range_in_seconds = $end_time - $start_time;
-			$period_in_seconds = constant(strtoupper($period).'_IN_SECONDS' );
+			$period_in_seconds = defined(strtoupper($period).'_IN_SECONDS') ? constant(strtoupper($period).'_IN_SECONDS' ) : DAY_IN_SECONDS;
 			return ROUND($range_in_seconds/$period_in_seconds);
 		}
 
         /**
 		 * Get color for a graph
-		 * @param int     $index
+		 *
+		 * @param string $metric
 		 * @param string $type 'background' or 'border'
 		 *
 		 * @return string
 		 */
 
-		private function get_metric_color( $metric = 'visitors', $type = 'default' ) {
+		private function get_metric_color( string $metric = 'visitors', string $type = 'default' ): string {
 			$colors = array(
 				'visitors' => array(
 					'background' => 'rgba(41, 182, 246, 0.2)',
@@ -1024,7 +1001,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
                 'most_visited_pageviews' => '',
             );
             $dashboard_widget = $clear_cache || $date_range === 'custom' || $date_range === 'today' ? false : $this->get_transient('burst_dashboard_widget_'.$date_range);
-            if ( !$dashboard_widget ) {
+            $empty_data = isset($dashboard_widget['visitors']) && $dashboard_widget['visitors'] ===0;
+			if ( !$dashboard_widget || $empty_data ) {
                 $result['visitors'] = $this->get_single_statistic('visitors', $date_start, $date_end);
                 $visitors_prev = $this->get_single_statistic('visitors', $date_start_diff, $date_end_diff);
                 $result['visitors_uplift'] = $this->format_uplift($visitors_prev, $result['visitors']);

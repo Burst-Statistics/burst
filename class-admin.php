@@ -186,16 +186,8 @@ if ( ! class_exists( "burst_admin" ) ) {
             }
             wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
                 $this,
-                'generate_burst_dashboard_widget_wrapper'
+                'generate_dashboard_widget'
             ));
-        }
-
-        /**
-         * Wrapper function for dashboard widget so params can be sent along
-         */
-
-        public function generate_burst_dashboard_widget_wrapper() {
-            echo $this->generate_dashboard_widget();
         }
 
         /**
@@ -203,21 +195,11 @@ if ( ! class_exists( "burst_admin" ) ) {
          * Generate the dashboard widget
          * Also generated the Top Searches grid item
          *
-         * @param int|bool $start
-         * @param int|bool $end
          * @return false|string
          */
-        public function generate_dashboard_widget($start = false, $end = false)
+        public function generate_dashboard_widget()
         {
-            ob_start();
-            echo 'henkie';
-            $template = burst_get_html_template('wordpress/dashboard-widget.php');
-            //only use cached data on dash
-
-
-            ob_get_clean();
-            return $template;
-
+	        echo burst_get_html_template('wordpress/dashboard-widget.php');
         }
 
         /**

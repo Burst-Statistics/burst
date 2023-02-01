@@ -69,7 +69,6 @@ const TodayBlock = () => {
 
     function getData(startDate, endDate){
         getTodayData(startDate, endDate).then((response) => {
-            console.log(response);
             let data = response;
             data.live.icon = selectVisitorIcon(data.live.value);
             data.today.icon = selectVisitorIcon(data.today.value);

@@ -51,14 +51,9 @@ function burst_plugin_admin_scripts() {
 		$script_asset['dependencies'],
 		$script_asset['version']
 	);
-	wp_set_script_translations( 'burst-wizard-plugin-block-editor', 'burst-statistics' );
+	wp_set_script_translations( 'burst-settings', 'burst-statistics' );
 
 	global $wpdb;
-
-	$timezone = $wpdb->get_var('SELECT @@global.time_zone');
-    $sql_time = $wpdb->get_var('SELECT NOW()');
-	$sql_time_utc = $wpdb->get_var('SELECT UTC_TIMESTAMP()');
-	
 	wp_localize_script(
         'burst-settings',
         'burst_settings',
@@ -78,11 +73,6 @@ function burst_plugin_admin_scripts() {
             'date_ranges' => burst_get_date_ranges(),
             'tour_shown' => burst_get_option('burst_tour_shown_once'),
             'gmt_offset' => get_option('gmt_offset'),
-            'sql_timezone' => $timezone,
-            'sql_time' => $sql_time,
-            'sql_time_utc' => $sql_time_utc,
-            'wp_time' => current_time( 'timestamp' ),
-            'server_time' => time(),
         ))
 	);
 }
@@ -365,19 +355,23 @@ function burst_get_data($request){
             'date_range' => burst_sanitize_date_range($request->get_param('date_range')),
     ];
     $request_args = json_decode($request->get_param('args'), true);
-	$args['metrics'] = $request_args['metrics'] ?? [];
+	$args['metrics'] = $request_args['metrics'] ?? ['visitors'];
+    $args['metrics'] = BURST()->statistics->sanitize_metrics($args['metrics']);
+
 	switch($type){
 		case 'today':
 			$data = BURST()->statistics->get_today_data($args);
 			break;
 		case 'insights':
-            $args['interval'] = sanitize_title($request_args['interval']);
+			$args['interval'] = $request_args['interval'] ?? 'day';
+			$args['interval'] = BURST()->statistics->sanitize_interval($args['interval']);
+            error_log("insights args");
+            error_log(print_r($args, true));
 			$data = BURST()->statistics->get_insights_data($args);
 			break;
 		case 'pages':
 			$data = BURST()->statistics->get_pages_data($args);
 			break;
-
 		case 'referrers':
 			$data = BURST()->statistics->get_referrers_data($args);
 			break;
@@ -430,10 +424,7 @@ function burst_rest_api_fields_set( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return;
 	}
-    error_log(print_r($request->get_params(), true));
-    error_log('burst_rest_api_fields_set');
 	$fields = $request->get_json_params();
-    error_log(print_r($fields, true));
 	//get the nonce
 	$nonce = false;
 	foreach ( $fields as $index => $field ){
@@ -444,7 +435,6 @@ function burst_rest_api_fields_set( $request ) {
 	}
 
 	if ( !wp_verify_nonce($nonce, 'burst_nonce') ) {
-        error_log('nonce not verified');
 		return;
 	}
 
@@ -701,7 +691,17 @@ function burst_sanitize_ip_field( $value ) {
     return implode( PHP_EOL, $ips );
 }
 
-function burst_get_user_roles(){
+/**
+ * Get user roles for the settings page in Burst
+ *
+ * @return array
+ */
+
+function burst_get_user_roles(): array {
+    if ( !burst_user_can_manage() ) {
+        return [];
+    }
+
     global $wp_roles;
     return $wp_roles->get_names();
 }
