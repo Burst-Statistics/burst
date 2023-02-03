@@ -9,7 +9,11 @@ import Tooltip from '@mui/material/Tooltip';
 import * as burst_api from "../utils/api";
 import Icon from '../utils/Icon';
 import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
-import {formatTime, formatNumber} from '../utils/formatting';
+import {
+    formatTime,
+    formatNumber,
+    currentDateWithOffset,
+} from '../utils/formatting';
 
 const TodayBlock = () => {
     const [today, setTodayData] = useState(
@@ -42,16 +46,7 @@ const TodayBlock = () => {
             }
         }
     );
-    // get currentDate
-    const currentDate = new Date();
-    // get current unix timestamp
-    const currentUnix = Math.floor(currentDate.getTime() / 1000);
-
-    // add burst_settings.gmt_offset x hour in seconds to currentUnix
-    const currentUnixWithOffset = currentUnix + (burst_settings.gmt_offset * 3600);
-
-    // get current date by currentUnixWithOffset
-    const currentDateWithOffset = new Date(currentUnixWithOffset * 1000);
+    const currentDateWithOffset = currentDateWithOffset();
 
     const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
     const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
