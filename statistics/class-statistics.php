@@ -679,7 +679,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// Format the offset as a string
 			$timezone = sprintf("%+03d:%02d", $hours, $minutes);
 
-            $sqlperiod = "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '+00:00', '".$timezone."'), '" . $sqlformat . "')"; // this is the sql format for the period
+			$sql_time = $wpdb->get_var('SELECT NOW()');
+			$sql_time_utc = $wpdb->get_var('SELECT UTC_TIMESTAMP()');
+
+			$time_diff = strtotime($sql_time) - strtotime($sql_time_utc);
+			$hours = floor($time_diff / 3600);
+			$minutes = floor(($time_diff / 60) % 60);
+
+			$server_timezone = sprintf("%s%02d:%02d", ($time_diff >= 0 ? '+' : '-'), abs($hours), abs($minutes));
+
+            $sqlperiod = "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '$server_timezone', '".$timezone."'), '" . $sqlformat . "')"; // this is the sql format for the period
             if ( $metric === 'bounces' ) {
                 $select = 'count(*)';
 			    $from = $this->get_sql_table_bounces($start, $end);
