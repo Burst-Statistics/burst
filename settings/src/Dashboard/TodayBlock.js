@@ -1,5 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import {
+    formatTime,
+    formatNumber,
+} from '../utils/formatting';
+import {
     useState,
     useEffect
 } from '@wordpress/element';
@@ -9,11 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import * as burst_api from "../utils/api";
 import Icon from '../utils/Icon';
 import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
-import {
-    formatTime,
-    formatNumber,
-    currentDateWithOffset,
-} from '../utils/formatting';
+
 
 const TodayBlock = () => {
     const [today, setTodayData] = useState(
@@ -46,7 +46,24 @@ const TodayBlock = () => {
             }
         }
     );
-    const currentDateWithOffset = currentDateWithOffset();
+    // get currentDate
+    const currentDate = new Date();
+
+    // get client's timezone offset in minutes
+    const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
+
+    // convert client's timezone offset from minutes to seconds
+    const clientTimezoneOffsetSeconds = clientTimezoneOffsetMinutes * -60;
+
+    // get current unix timestamp
+    const currentUnix = Math.floor(currentDate.getTime() / 1000);
+    // add burst_settings.gmt_offset x hour and client's timezone offset in
+    // seconds to currentUnix
+    const currentUnixWithOffsets = currentUnix +
+        (burst_settings.gmt_offset * 3600) - clientTimezoneOffsetSeconds;
+
+    // get current date by currentUnixWithOffsets
+    const currentDateWithOffset = new Date(currentUnixWithOffsets * 1000);
 
     const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
     const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');

@@ -92,27 +92,6 @@ function formatNumber(value, decimals = 1){
   }).format(value);
 }
 
-function currentDateWithOffset() {
-  // get currentDate
-  const currentDate = new Date();
-
-  // get client's timezone offset in minutes
-  const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
-
-  // convert client's timezone offset from minutes to seconds
-  const clientTimezoneOffsetSeconds = clientTimezoneOffsetMinutes * -60;
-
-  // get current unix timestamp
-  const currentUnix = Math.floor(currentDate.getTime() / 1000);
-  // add burst_settings.gmt_offset x hour and client's timezone offset in
-  // seconds to currentUnix
-  const currentUnixWithOffsets = currentUnix +
-      (burst_settings.gmt_offset * 3600) - clientTimezoneOffsetSeconds;
-
-  // get current date by currentUnixWithOffsets
-  return new Date(currentUnixWithOffsets * 1000);
-}
-
 export {
   getRelativeTime,
   getPercentage,
@@ -120,5 +99,4 @@ export {
   getBouncePercentage,
   formatTime,
   formatNumber,
-  currentDateWithOffset
 };
