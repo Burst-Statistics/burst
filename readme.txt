@@ -65,6 +65,13 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.3.4 =
+* Fix: Removed caching of statistics due to causing multiple issues and not providing any performance benefits.
+* Fix: Timestamp bug where the time for today would be off by the client timezone offset has been resolved.
+* Improvement: Obsolete output buffering has been removed.
+* Fix: JS translations have been corrected.
+* Fix: Unnecessary rror logs have been removed.
+
 = 1.3.3 =
 * Fix: Timezones were not functioning correctly. Burst now utilizes the WordPress timezone setting to ensure the correct timezone is used for all dates.
 * Fix: Translation plugins would occasionally alter the REST API URL, resulting in tracking with the REST API not working. This issue has been resolved by utilizing wp.apiFetch instead of fetch.
