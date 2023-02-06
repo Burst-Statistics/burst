@@ -44,7 +44,8 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
 			add_action( 'admin_init', array($this, 'add_privacy_info'), 10);
 
-            //disabled for now
+            // remove tables on multisite uninstall
+			add_filter( 'wpmu_drop_tables', array( $this, 'ms_remove_tables' ), 10, 2 );
 		}
 
 
@@ -186,16 +187,8 @@ if ( ! class_exists( "burst_admin" ) ) {
             }
             wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
                 $this,
-                'generate_burst_dashboard_widget_wrapper'
+                'generate_dashboard_widget'
             ));
-        }
-
-        /**
-         * Wrapper function for dashboard widget so params can be sent along
-         */
-
-        public function generate_burst_dashboard_widget_wrapper() {
-            echo $this->generate_dashboard_widget();
         }
 
         /**
@@ -203,21 +196,11 @@ if ( ! class_exists( "burst_admin" ) ) {
          * Generate the dashboard widget
          * Also generated the Top Searches grid item
          *
-         * @param int|bool $start
-         * @param int|bool $end
          * @return false|string
          */
-        public function generate_dashboard_widget($start = false, $end = false)
+        public function generate_dashboard_widget()
         {
-            ob_start();
-            echo 'henkie';
-            $template = burst_get_html_template('wordpress/dashboard-widget.php');
-            //only use cached data on dash
-
-
-            ob_get_clean();
-            return $template;
-
+	        echo burst_get_html_template('wordpress/dashboard-widget.php');
         }
 
         /**
@@ -556,5 +539,23 @@ if ( ! class_exists( "burst_admin" ) ) {
                 $wpdb->query($sql);
             }
         }
+
+		/**
+		 * Drop tables during the site deletion
+		 *
+		 * @param array $tables  The tables to drop.
+		 * @param int   $blog_id The site ID.
+		 *
+		 * @return array
+		 */
+		public function ms_remove_tables( $tables, $blog_id ) {
+			global $wpdb;
+
+			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_sessions';
+			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_statistics';
+			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_goals';
+
+			return $tables;
+		}
 	}
 } //class closure

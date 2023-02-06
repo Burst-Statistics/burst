@@ -43,19 +43,6 @@ const GoalsBlock = () => {
       }
   );
 
-  // const startDate = format(startOfDay(new Date()), 'yyyy-MM-dd');
-  // const endDate = format(endOfDay(new Date()), 'yyyy-MM-dd');
-
-  // useEffect(() => {
-  //       getData(startDate, endDate);
-  //       const interval = setInterval(() => {
-  //         getData(startDate, endDate);
-  //       }, 5000)
-  //
-  //       return () => clearInterval(interval);
-  //     }, [startDate, endDate]
-  // )
-
   function getData(startDate, endDate){
     getGoalsData(startDate, endDate).then((response) => {
 
