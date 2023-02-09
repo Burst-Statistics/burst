@@ -43,9 +43,8 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
 			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
 			add_action( 'admin_init', array($this, 'add_privacy_info'), 10);
-			add_filter( 'wpmu_drop_tables', array( $this, 'ms_remove_tables' ), 10, 2 );
 
-            // remove tables on multisite uninstall
+			// remove tables on multisite uninstall
 			add_filter( 'wpmu_drop_tables', array( $this, 'ms_remove_tables' ), 10, 2 );
 		}
 
