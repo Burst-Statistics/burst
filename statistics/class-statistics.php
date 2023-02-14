@@ -618,7 +618,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$sql   = "SELECT count(referrer) as count,
 									 CASE
 	                                    WHEN referrer = '/' THEN $direct_text
-	                                    ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
+	                                    ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3)) 
 	                                END as referrer
 									FROM $table as stats
 									WHERE referrer NOT LIKE '%$site_url%' AND referrer NOT LIKE ''
