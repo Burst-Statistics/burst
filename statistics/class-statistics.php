@@ -211,10 +211,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$site_url    = str_replace( $remove, "", site_url() );
 				// get top referrer
 				$sql = "SELECT count(referrer) as value,
-                            CASE
+                           CASE
                                 WHEN referrer = '/' THEN $direct_text
-                                WHEN referrer = '' THEN $direct_text
-                                ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3))
+                                ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
                             END as title
                         FROM $table as t
                         WHERE referrer IS NOT NULL 
@@ -823,7 +822,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     $sql = "SELECT 
                                 CASE
                                     WHEN referrer = '/' THEN $direct_text
-                                    ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3))
+                                    ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
                                 END as val,
                                 COUNT(referrer) AS referrer_count
                             FROM $table_name
