@@ -86,7 +86,7 @@ class BURST {
 			self::$instance->frontend     = new burst_frontend();
 
 
-			if ( burst_admin_logged_in() || burst_is_activation()) {
+			if ( burst_admin_logged_in() || burst_is_activation() ) {
 				self::$instance->admin   = new burst_admin();
 				self::$instance->review  = new burst_review();
 				self::$instance->notices = new burst_notices();
@@ -151,7 +151,7 @@ class BURST {
 		require_once( burst_path . 'cron/cron.php');
 		require_once( burst_path . 'upgrade.php');
 
-		if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+		if ( burst_admin_logged_in() || burst_is_activation() ){
 			require_once( burst_path . 'class-admin.php' );
 			require_once( burst_path . 'settings/settings.php' );
 			require_once( burst_path . 'class-review.php' );
