@@ -85,7 +85,8 @@ class BURST {
 			self::$instance->goals        = new burst_goals();
 			self::$instance->frontend     = new burst_frontend();
 
-			if ( burst_admin_logged_in() ) {
+
+			if ( burst_admin_logged_in() || burst_is_activation()) {
 				self::$instance->admin   = new burst_admin();
 				self::$instance->review  = new burst_review();
 				self::$instance->notices = new burst_notices();

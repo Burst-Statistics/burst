@@ -16,6 +16,12 @@ if ( ! function_exists( 'burst_admin_logged_in' ) ) {
     }
 }
 
+if ( ! function_exists( 'burst_is_activation' ) ) {
+	function burst_is_activation() {
+		return current_user_can( 'activate_plugins') && isset( $_GET['action'] ) && $_GET['action'] === 'activate';
+	}
+}
+
 if ( ! function_exists('burst_add_view_capability')){
 	/**
 	 * Add a user capability to WordPress and add to admin and editor role
