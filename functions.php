@@ -10,11 +10,19 @@ if ( ! function_exists( 'burst_is_logged_in_rest' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_admin_logged_in' ) ) {
+    function burst_admin_logged_in() {
+	    return ( is_user_logged_in() && burst_user_can_view()) || burst_is_logged_in_rest() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI );
+    }
+}
+
 if ( ! function_exists('burst_add_view_capability')){
 	/**
 	 * Add a user capability to WordPress and add to admin and editor role
+     *
+     * @param bool $handle_subsites
 	 */
-	function burst_add_view_capability(){
+	function burst_add_view_capability(bool $handle_subsites=true){
 		$capability = 'view_burst_statistics';
 		$roles = apply_filters('burst_burst_add_view_capability', array('administrator', 'editor') );
 		foreach( $roles as $role ){
@@ -23,14 +31,28 @@ if ( ! function_exists('burst_add_view_capability')){
 				$role->add_cap( $capability );
 			}
 		}
+
+		//we need to add this role across subsites as well.
+		if ( $handle_subsites && is_multisite() ) {
+			$sites = get_sites();
+			if (count($sites)>0) {
+				foreach ($sites as $site) {
+					switch_to_blog($site->blog_id);
+					burst_add_view_capability(false);
+					restore_current_blog();
+				}
+			}
+		}
 	}
 }
 
 if ( ! function_exists('burst_add_manage_capability')){
 	/**
 	 * Add a user capability to WordPress and add to admin and editor role
+	 *
+	 * @param bool $handle_subsites
 	 */
-	function burst_add_manage_capability(){
+	function burst_add_manage_capability(bool $handle_subsites=true){
 		$capability = 'manage_burst_statistics';
 		$roles = apply_filters('burst_burst_add_manage_capability', array('administrator', 'editor') );
 		foreach( $roles as $role ){
@@ -39,7 +61,35 @@ if ( ! function_exists('burst_add_manage_capability')){
 				$role->add_cap( $capability );
 			}
 		}
+
+		//we need to add this role across subsites as well.
+		if ( $handle_subsites && is_multisite() ) {
+			$sites = get_sites();
+			if (count($sites)>0) {
+				foreach ($sites as $site) {
+					switch_to_blog($site->blog_id);
+					burst_add_manage_capability(false);
+					restore_current_blog();
+				}
+			}
+		}
 	}
+}
+
+if ( !function_exists('burst_add_role_to_subsite') ) {
+    /**
+     * When a new site is added, add our capability
+     *
+     * @param $site
+     *
+     * @return void
+     */
+    function burst_add_role_to_subsite( $site ) {
+        switch_to_blog( $site->blog_id );
+        burst_add_manage_capability( false );
+        restore_current_blog();
+    }
+    add_action('wp_initialize_site', 'burst_add_role_to_subsite', 10, 1);
 }
 
 if ( ! function_exists( 'burst_user_can_view' ) ) {
@@ -240,19 +290,6 @@ if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
 		$time = sprintf( $format, $hours, $minutes, $seconds );
 
 		return rtrim( $time, '0' );
-	}
-}
-
-/*
- * @return string
- * @since 1.0.0
- */
-if ( ! function_exists( 'burst_offset_utc_time_to_gtm_offset' ) ) {
-	function burst_offset_utc_time_to_gtm_offset( $utc_time ): int {
-		$utc_time           = (int) $utc_time;
-		$gmt_offset_seconds = (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
-
-		return $utc_time - $gmt_offset_seconds;
 	}
 }
 
@@ -599,18 +636,6 @@ if ( ! function_exists( 'burst_get_date_ranges' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_sanitize_date_range' ) ) {
-	function burst_sanitize_date_range( $date_range ) {
-		$date_range  = sanitize_title( $date_range );
-		$date_ranges = burst_get_date_ranges();
-		if ( in_array( $date_range, $date_ranges ) ) {
-			return $date_range;
-		}
-
-		return 'custom';
-	}
-}
-
 if ( ! function_exists('burst_sanitize_filters') ) {
     function burst_sanitize_filters( $filters ) {
         // sanitize key value pairs, but value can also be an array. Just one layer deep though. Also remove keys where value is empty. Also add comments to explain the code
@@ -628,6 +653,22 @@ if ( ! function_exists('burst_sanitize_filters') ) {
 
         return $filters;
     }
+}
+
+if ( ! function_exists( 'burst_sanitize_relative_url' ) ) {
+	/**
+	 * Sanitize relative_url
+	 *
+	 * @param string $relative_url
+	 *
+	 * @return string
+	 */
+	function burst_sanitize_relative_url( $relative_url ): string {
+        if ( $relative_url[0] !== '/' ) {
+            $relative_url = '/' . $relative_url;
+        }
+		return trailingslashit( filter_var( $relative_url, FILTER_SANITIZE_URL ) );
+	}
 }
 
 if ( ! function_exists( 'burst_tracking_status_error' ) ) {

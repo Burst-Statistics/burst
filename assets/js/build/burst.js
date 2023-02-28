@@ -210,8 +210,6 @@ let burst_is_do_not_track = () => {
  */
 let burst_api_request = obj => {
 	// generate a new token every request
-	let glue = burst.url.indexOf('?')!==-1 ? '&' : '?';
-	let burst_token = glue + 'token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 7);
 	return new Promise((resolve, reject) => {
 		// if browser supports sendBeacon use it
 		if (window.navigator.sendBeacon && burst.options.beacon_enabled) {
@@ -219,16 +217,23 @@ let burst_api_request = obj => {
 			window.navigator.sendBeacon(burst.beacon_url, JSON.stringify( obj.data) );
 			resolve('ok');
 		} else {
-			obj.url = burst.url + 'burst/v1/track' + burst_token;
-			// if browser supports fetch keepalive, the request will be kept alive. Otherwise, it will send a normal XMLHttpRequest
-			fetch(obj.url, {
+			let burst_token = 'token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 7);
+			// if browser supports fetch keepalive, it will use it. Otherwise, it will use a normal XMLHttpRequest
+			wp.apiFetch({
+				path: '/burst/v1/track/?'+burst_token,
 				keepalive: true,
 				method: 'POST',
-				headers: new Headers({
-					'Content-Type': 'application/json',
-				}),
-				body: JSON.stringify(obj.data),
-			}).then( response => resolve(response)).catch( error => reject(error));
+				data: obj.data,
+			}).then(
+					( res ) => {
+						if (res.status === 202) {
+							res.json().then(
+									(data) => console.warn(data),
+							);
+						}
+					},
+					( error ) => console.log( error )
+			);
 		}
 	});
 };
@@ -253,7 +258,6 @@ async function burst_update_hit ( update_uid = false ){
 		'url': location.href,
 		'time_on_page': await burst_get_time_on_page(),
 		'completed_goals': burst_completed_goals,
-
 	};
 
 	if ( update_uid ){

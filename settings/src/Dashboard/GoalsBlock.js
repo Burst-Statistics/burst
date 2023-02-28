@@ -4,6 +4,7 @@ import {
   useEffect,
 } from 'react';
 import Tooltip from '@mui/material/Tooltip';
+import ClickToFilter from '../Statistics/ClickToFilter';
 
 import * as burst_api from '../utils/api';
 import Icon from '../utils/Icon';
@@ -12,50 +13,58 @@ import {
   format,
   startOfDay,
 } from 'date-fns';
-import {formatTime, formatNumber, getPercentage} from '../utils/formatting';
+import {
+  formatTime,
+  formatNumber,
+  getPercentage,
+  getRelativeTime,
+} from '../utils/formatting';
 import {useGoalsStats} from '../data/dashboard/goals';
 
 const GoalsBlock = () => {
-  const {todayGoals, fetchTodayGoals, totalGoalsData, fetchTotalGoalsData} = useGoalsStats();
+  const {selectedGoalId, todayGoals, fetchTodayGoals, totalGoalsData, fetchTotalGoalsData} = useGoalsStats();
+  const [loading, setLoading] = useState(true);
 
   // set timeout to fetch live visitors
   useEffect(() => {
-    fetchTodayGoals();
-    fetchTotalGoalsData();
+    setLoading(true);
+    fetchTodayGoals(selectedGoalId);
+    fetchTotalGoalsData(selectedGoalId);
+    setLoading(false);
     const interval = setInterval(() => {
-      fetchTodayGoals();
-    }, 3000);
+      fetchTodayGoals(selectedGoalId, true);
+    }, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedGoalId]);
 
-  function selectVisitorIcon(value) {
+  function selectGoalIcon(value) {
     value = parseInt(value);
     if (value > 100) {
-      return 'visitors-crowd';
+      return 'goals-crowd';
     }
     else if (value > 10) {
-      return 'visitors';
+      return 'goals';
     }
     else {
-      return 'visitor';
+      return 'goals';
     }
   }
 
-  let todayIcon = selectVisitorIcon(todayGoals);
-  let totalIcon = selectVisitorIcon(totalGoalsData.total.value);
+  let todayIcon = selectGoalIcon(todayGoals);
+  let totalIcon = selectGoalIcon(totalGoalsData.total.value);
   const delayTooltip = 200;
+  let loadingClass = loading ? 'burst-loading' : '';
   return (
       <>
-        <div className="burst-goals">
+        <div className={"burst-goals burst-loading-container " + loadingClass}>
           <div className="burst-goals-select">
-            <Tooltip arrow title={totalGoalsData.today.tooltip}
-                     enterDelay={delayTooltip}>
+            <ClickToFilter filter="goal_id" filterValue={totalGoalsData.goalId} label={totalGoalsData.today.tooltip}>
               <div className="burst-goals-select-item">
                 <Icon name={todayIcon} size="23"/>
                 <h2>{todayGoals}</h2>
-                <span><Icon name="sun" size="13"/> Today</span>
+                <span><Icon name="sun" color={"yellow"} size="13"/> Today</span>
               </div>
-            </Tooltip>
+            </ClickToFilter>
             <Tooltip arrow title={totalGoalsData.total.tooltip}
                      enterDelay={delayTooltip}>
               <div className="burst-goals-select-item">
@@ -91,17 +100,17 @@ const GoalsBlock = () => {
                 <p className="burst-goals-list-item-number">{totalGoalsData.conversionPercentage.value}</p>
               </div>
             </Tooltip>
-            <Tooltip arrow title={totalGoalsData.timeToGoal.tooltip}
+            <Tooltip arrow title={totalGoalsData.bestDevice.tooltip}
                      enterDelay={delayTooltip}>
               <div className="burst-goals-list-item">
-                <Icon name="time"/>
-                <p className="burst-goals-list-item-text">{totalGoalsData.timeToGoal.title}</p>
-                <p className="burst-goals-list-item-number">{totalGoalsData.timeToGoal.value}</p>
+                <Icon name={totalGoalsData.bestDevice.icon} />
+                <p className="burst-goals-list-item-text">{totalGoalsData.bestDevice.title}</p>
+                <p className="burst-goals-list-item-number">{totalGoalsData.bestDevice.value}</p>
               </div>
             </Tooltip>
           </div>
           <div className={'burst-grid-item-footer'}>
-            <p className={'burst-small-text burst-flex-push-right'}>Since <span>{totalGoalsData.dateStart}</span>
+            <p className={'burst-small-text burst-flex-push-right'}>{__('Activated', 'burst-statistics')} <span>{getRelativeTime(totalGoalsData.dateStart)}</span>
             </p>
           </div>
         </div>

@@ -56,7 +56,6 @@
     .burst-field-wrap, .burst-settings-block-intro{
       padding-block: var(--rsp-spacing-s);
       @include burst-inline-block-padding;
-      overflow: hidden;
       & > .burst-field-wrap{
         padding: 0;
       }

@@ -2,6 +2,7 @@ import create from 'zustand';
 import {endOfDay, format, startOfDay} from 'date-fns';
 import * as burst_api from '../../utils/api';
 import {__} from '@wordpress/i18n';
+import {formatTime, formatNumber, getChangePercentage} from '../../utils/formatting';
 
 const startDate = format(startOfDay(new Date()), 'yyyy-MM-dd');
 const endDate = format(endOfDay(new Date()), 'yyyy-MM-dd');
@@ -38,11 +39,22 @@ export const useTodayStats = create(set => ({
   todayData: defaultData,
   fetchLiveVisitors: () => {
     burst_api.getData('live-visitors', startDate, endDate, 'custom').then((response) => {
-      set({liveVisitors: response});
+      set({liveVisitors: formatNumber(response)});
     });
   },
   fetchTodayData: () => {
     burst_api.getData('today', startDate, endDate, 'custom').then((response) => {
+      // loop trough response and format values
+      for (let key in response) {
+        if (response.hasOwnProperty(key)) {
+          if (key === 'timeOnPage') {
+            response[key].value = formatTime(response[key].value);
+          }
+          else {
+            response[key].value = formatNumber(response[key].value);
+          }
+        }
+      }
       set({todayData: response});
     });
   }

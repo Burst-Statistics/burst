@@ -29,7 +29,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 	 * @return string
 	 */
 	function burst_track_hit( $data ): string {
-		error_log( 'burst_track_hit' );
 		global $wpdb;
 		$user_agent_data = isset( $data['user_agent'] ) ? burst_get_user_agent_data( $data['user_agent'] ) : array(
 			'browser'  => '',
@@ -37,7 +36,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'platform' => '',
 			'device'   => '',
 		);
-		$defaults = array(
+		$defaults        = array(
 			'url'               => null,
 			'page_id'           => null,
 			'time'              => null,
@@ -48,7 +47,8 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'device_resolution' => null,
 			'time_on_page'      => null,
 		);
-		$data = wp_parse_args( $data, $defaults );
+		$data            = wp_parse_args( $data, $defaults );
+		error_log( 'burst_track_hit: ' . print_r( $data, true ) );
 		// update array
 		$arr                      = array();
 		$arr['entire_page_url']   = burst_sanitize_entire_page_url( $data['url'] ); // required
@@ -64,6 +64,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		$arr['device']            = $user_agent_data['device']; // already sanitized
 		$arr['device_resolution'] = burst_sanitize_device_resolution( $data['device_resolution'] );
 		$arr['time_on_page']      = burst_sanitize_time_on_page( $data['time_on_page'] );
+		$arr['bounce']            = 1;
 
 		$arr = apply_filters( 'burst_before_track_hit', $arr );
 
@@ -74,6 +75,18 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		// update burst_sessions table
 		// Get the last record with the same uid within 30 minutes. If it exists, use session_id. If not, create a new session.
 		$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'] );
+
+		// Determine if hit is a bounce
+		// - check if previous page was not a bounce, then this is also not a bounce
+		// - check if last_statistic page_url is different, then more than two pages are visited
+		// - check if last_statistic time_on_page + current time_on_page is more than 5 seconds, then it is not a bounce
+		if ( (int) $last_statistic['bounce'] !== 1 || ( $last_statistic['page_url'] !== null && $last_statistic['page_url'] !== $arr['page_url'] ) || $last_statistic['time_on_page'] + $arr['time_on_page'] > 5000 ) {
+			$arr['bounce'] = 0;
+			// if previous page was a bounce and curretn page is not, then this should be updated to a non-bounce
+			if ( $last_statistic['page_url'] !== null && $last_statistic['page_url'] !== $arr['page_url'] ) {
+				burst_update_statistic( array( 'ID' => $last_statistic['ID'], 'bounce' => 0 ) );
+			}
+		}
 
 		if ( $last_statistic['session_id'] > 0 ) {
 			$arr['session_id'] = $last_statistic['session_id'];
@@ -102,34 +115,35 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			$arr['first_time_visit'] = burst_get_first_time_visit( $arr['uid'] );
 
 			$insert_id = burst_create_statistic( $arr );
-			error_log( 'burst_create_statistic: ' . $insert_id );
 
 			// if postmeta burst_total_pageviews_count does not exist, create it with sql and set it to 1
 			// if it exists, add 1 to it via sql
 			$meta_key = 'burst_total_pageviews_count';
 			// get post meta via sql
-			$sql = $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s", $arr['page_id'], $meta_key );
+			$sql        = $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s", $arr['page_id'], $meta_key );
 			$meta_value = $wpdb->get_var( $sql );
 
 			if ( (int) $meta_value > 0 ) {
 				$meta_value = (int) $meta_value + 1;
-				$sql = $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %d WHERE post_id = %d AND meta_key = %s", $meta_value, $arr['page_id'], $meta_key );
+				$sql        = $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %d WHERE post_id = %d AND meta_key = %s", $meta_value, $arr['page_id'], $meta_key );
 				$wpdb->query( $sql );
 			} else {
 				$meta_value = 1;
-				$sql = $wpdb->prepare( "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES (%d, %s, %d)", $arr['page_id'], $meta_key, $meta_value );
+				$sql        = $wpdb->prepare( "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES (%d, %s, %d)", $arr['page_id'], $meta_key, $meta_value );
 				$wpdb->query( $sql );
 			}
 		}
-		if ( $arr['ID'] ) {
+		if ( array_key_exists( 'ID', $arr ) && $arr['ID'] > 0 ) {
 			$statistic_id = $arr['ID'];
 		} else {
 			$statistic_id = $insert_id;
 		}
-		
+
 		$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr );
+		error_log( 'statistic_id: ' . $statistic_id);
+		error_log( 'completed_goals: ' . print_r( $completed_goals, true ));
 		// if $arr['completed_goals'] is not an empty array, update burst_goals table
-		if ( ! empty( $completed_goals) ) {
+		if ( ! empty( $completed_goals ) ) {
 			foreach ( $completed_goals as $goal_id ) {
 				$goal_arr = array(
 					'goal_id'      => $goal_id,
@@ -149,18 +163,21 @@ if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
 	function burst_beacon_track_hit() {
 		$request = (string) file_get_contents( 'php://input' );
 		if ( $request === 'request=test' ) {
-			http_response_code(200);
+			http_response_code( 200 );
+
 			return 'success';
 		}
 
 		if ( burst_is_ip_blocked() ) {
-			http_response_code(401);
-			return false;
+			http_response_code(200);
+			return 'ip blocked';
+
 		}
 
 		$data = json_decode( json_decode( $request, true ), true ); // The data is encoded in JSON and decoded twice to get the array.
 		burst_track_hit( $data );
-		http_response_code(200);
+		http_response_code( 200 );
+
 		return 'success';
 	}
 }
@@ -175,9 +192,10 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 	 */
 	function burst_rest_track_hit( WP_REST_Request $request ): WP_REST_Response {
 		if ( burst_is_ip_blocked() ) {
-			return new WP_REST_Response( array( 'error' => 'ip_blocked' ), 403 );
+			$status_code = WP_DEBUG ? 202 : 200;
+			return new WP_REST_Response('Burst Statistics: Your IP is blocked from tracking.', $status_code );
 		}
-		$data = json_decode($request->get_json_params(), true);
+		$data = json_decode( $request->get_json_params(), true );
 		if ( isset( $data['request'] ) && $data['request'] === 'test' ) {
 			return new WP_REST_Response( array( 'success' => 'test' ), 200 );
 		}
@@ -290,9 +308,9 @@ if ( ! function_exists( 'burst_sanitize_referrer' ) ) {
 	 */
 	function burst_sanitize_referrer( $referrer ): ?string {
 		if ( ! defined( 'burst_path' ) ) {
-			define( 'burst_path', plugin_dir_path( __FILE__ ).'../' );
+			define( 'burst_path', plugin_dir_path( __FILE__ ) . '../' );
 		}
-		$referrer = filter_var( $referrer, FILTER_SANITIZE_URL );
+		$referrer      = filter_var( $referrer, FILTER_SANITIZE_URL );
 		$referrer_url  = parse_url( $referrer, PHP_URL_HOST );
 		$ref_spam_list = file( burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 		if ( array_search( $referrer_url, $ref_spam_list ) ) {
@@ -367,8 +385,8 @@ if ( ! function_exists( 'burst_sanitize_completed_goal_ids' ) ) {
 		if ( ! is_array( $completed_goals ) ) {
 			return [];
 		}
-		$completed_goals = array_intersect($completed_goals, burst_get_active_goals_ids()); // only keep active goals ids
-		$completed_goals = array_unique($completed_goals); // remove duplicates
+		$completed_goals = array_intersect( $completed_goals, burst_get_active_goals_ids() ); // only keep active goals ids
+		$completed_goals = array_unique( $completed_goals ); // remove duplicates
 
 		return $completed_goals;
 	}
@@ -380,63 +398,15 @@ if ( ! function_exists( 'burst_get_active_goals' ) ) {
 	 *
 	 * @return array[]
 	 */
-	function burst_get_active_goals($server_side = false) {
+	function burst_get_active_goals( $server_side = false ) {
 		global $wpdb;
 		$active_goals = [];
-		$server_side = $server_side === 'server_side' ? "AND server_side = 1" : "AND server_side = 0";
+		$server_side  = $server_side ? "AND server_side = 1" : "AND server_side = 0";
 		$goals        = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE status = 'active' {$server_side}", ARRAY_A );
-		$goals = [
-			[
-				'id' => '1',
-				'status' => 'active',
-				'server_or_client_side' => 'client_side',
-				'name' => 'Click on .this-is-a-conversion',
-				'type' => 'click',
-				'url' => '/hello-world/',
-				'setup' => [
-					'element' => '',
-					'attribute' => 'class',
-					'value' => 'this-is-a-conversion',
-				],
-			],
-			[
-				'id' => '3',
-				'status' => 'active',
-				'server_or_client_side' => 'client_side',
-				'name' => 'Click on .this-is-a-conversion2',
-				'type' => 'click',
-				'url' => '',
-				'setup' => [
-					'element' => '',
-					'attribute' => 'class',
-					'value' => 'wp-block-search__inside-wrapper',
-				],
-			],
-			[
-				'id' => '2',
-				'status' => 'active',
-				'server_or_client_side' => 'client_side',
-				'name' => 'Viewport goal',
-				'type' => 'view',
-				'url' => '',
-				'setup' => [
-					'element' => '',
-					'attribute' => 'class',
-					'value' => 'wp-block-search__inside-wrapper',
-				],
-			],
-			[
-				'id' => '3',
-				'status' => 'active',
-				'server_or_client_side' => 'server_side',
-				'name' => 'Visit checkout page',
-				'type' => 'visit',
-				'url' => '',
-				'setup' => [
-					'url' => 'https://wordpress/hello-world/',
-				],
-			],
-		];
+		foreach ( $goals as $key => $goal ) {
+			$goals[ $key ]['setup'] = json_decode( $goals[ $key ]['setup'], true );
+		}
+
 		return $goals;
 	}
 }
@@ -447,25 +417,25 @@ if ( ! function_exists( 'burst_get_active_goals_ids' ) ) {
 	 *
 	 * @return array
 	 */
-	function burst_get_active_goals_ids($server_side = false) {
-		$active_goals = burst_get_active_goals($server_side);
+	function burst_get_active_goals_ids( $server_side = false ) {
+		$active_goals     = burst_get_active_goals( $server_side );
 		$active_goals_ids = [];
 		foreach ( $active_goals as $goal ) {
-			$active_goals_ids[] = $goal['id'];
+			$active_goals_ids[] = $goal['ID'];
 		}
 
 		return $active_goals_ids;
 	}
 }
 
-if ( ! function_exists('burst_goal_is_completed') ) {
+if ( ! function_exists( 'burst_goal_is_completed' ) ) {
 	/**
 	 * @param $goal_id
 	 * @param $completed_goals
 	 *
 	 * @return bool
 	 */
-	function burst_goal_is_completed($goal, $hit_data) {
+	function burst_goal_is_completed( $goal, $hit_data ) {
 		if (
 			! isset( $goal['type'] ) ||
 			! isset( $goal['setup']['url'] ) ||
@@ -474,7 +444,7 @@ if ( ! function_exists('burst_goal_is_completed') ) {
 			return false;
 		}
 
-		switch ($goal['type']) {
+		switch ( $goal['type'] ) {
 			case 'visit':
 				// @todo compare parts of url (e.g. /hello-world/ and /hello-world/?utm_source=google)
 				// if url in hit data is equal to goal url
@@ -488,7 +458,7 @@ if ( ! function_exists('burst_goal_is_completed') ) {
 	}
 }
 
-if ( ! function_exists( 'burst_get_completed_goals') ) {
+if ( ! function_exists( 'burst_get_completed_goals' ) ) {
 	/**
 	 * Get completed goals
 	 *
@@ -497,9 +467,9 @@ if ( ! function_exists( 'burst_get_completed_goals') ) {
 	 * @return string
 	 */
 	function burst_get_completed_goals( $client_side_goals, $hit_data ) {
-		$completed_client_goals =  burst_sanitize_completed_goal_ids( $client_side_goals );
+		$completed_client_goals = burst_sanitize_completed_goal_ids( $client_side_goals );
 		$completed_server_goals = [];
-		$server_goals = burst_get_active_goals(true);
+		$server_goals           = burst_get_active_goals( true );
 
 		// if server side goals exist
 		if ( $server_goals ) {
@@ -513,7 +483,7 @@ if ( ! function_exists( 'burst_get_completed_goals') ) {
 			}
 		}
 
-		return array_merge($completed_client_goals, $completed_server_goals); // merge completed client goals and completed server goals
+		return array_merge( $completed_client_goals, $completed_server_goals ); // merge completed client goals and completed server goals
 	}
 }
 
@@ -616,14 +586,15 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 			'ID'           => null,
 			'session_id'   => null,
 			'page_url'     => null,
-			'time_on_page' => null,
+			'time_on_page' => 0,
+			'bounce'       => 1,
 		);
 		if ( ! $search_uid ) {
 			return $default_data;
 		}
 		$data = $wpdb->get_row(
 			$wpdb->prepare(
-				"select ID, session_id, page_url, time_on_page
+				"select ID, session_id, page_url, time_on_page, bounce
 							from {$wpdb->prefix}burst_statistics
 		                    where uid = %s AND time > %s ORDER BY ID DESC limit 1",
 				$search_uid,
@@ -682,6 +653,7 @@ if ( ! function_exists( 'burst_update_session' ) ) {
 if ( ! function_exists( 'burst_create_statistic' ) ) {
 	/**
 	 * Create statistic in {prefix}_burst_statistics
+	 *
 	 * @param $data
 	 *
 	 * @return void
@@ -689,11 +661,15 @@ if ( ! function_exists( 'burst_create_statistic' ) ) {
 	function burst_create_statistic( $data ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
-		if ( burst_required_values_are_set( $data ) ) return;
+		if ( burst_required_values_are_set( $data ) ) {
+			error_log( 'burst_create_statistic: required values are not set');
+			return;
+		}
 		$id = $wpdb->insert(
 			$wpdb->prefix . 'burst_statistics',
 			$data
 		);
+
 		return $wpdb->insert_id;
 	}
 }
@@ -709,13 +685,12 @@ if ( ! function_exists( 'burst_update_statistic' ) ) {
 	function burst_update_statistic( $data ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
-		if ( burst_required_values_are_set( $data ) ) return;
-
 		$wpdb->update(
 			$wpdb->prefix . 'burst_statistics',
 			(array) $data,
 			array( 'ID' => $data['ID'] )
 		);
+
 		return $wpdb->insert_id;
 	}
 }
@@ -729,14 +704,21 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 	 * @return void
 	 */
 	function burst_create_goal_statistic( $data ) {
-		error_log( 'burst_create_goal_statistic' );
 		global $wpdb;
+		// first get row with same statistics_id and goal_id
+		$goal_statistic = $wpdb->get_var(
+				"select count(*)
+							from {$wpdb->prefix}burst_goal_statistics
+		                    where statistic_id = {$data['statistic_id']} AND goal_id = {$data['goal_id']}");
+		error_log( 'burst_create_goal_statistic: ' . $goal_statistic);
+		if ( $goal_statistic > 0 ) {
+			return;
+		}
+		error_log('insert anyway');
 		$wpdb->insert(
 			$wpdb->prefix . 'burst_goal_statistics',
 			$data
 		);
-		error_log( $wpdb->last_query );
-		error_log( $wpdb->last_error );
 	}
 }
 
@@ -758,7 +740,7 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 		return $data;
 	}
 }
-if ( ! function_exists('burst_required_values_are_set') ) {
+if ( ! function_exists( 'burst_required_values_are_set' ) ) {
 	/**
 	 * Check if required values are set
 	 *
@@ -767,27 +749,28 @@ if ( ! function_exists('burst_required_values_are_set') ) {
 	 * @return bool
 	 */
 	function burst_required_values_are_set( array $data ): bool {
-		return ! ( isset( $data['uid'] ) && isset($data['page_url']) && isset( $data['entire_page_url'] ) && isset( $data['page_id'] ) !== null );
+		return ! ( isset( $data['uid'] ) && isset( $data['page_url'] ) && isset( $data['entire_page_url'] ) && isset( $data['page_id'] ) !== null );
 	}
 }
 
-if ( ! function_exists('burst_get_blocked_ips') ) {
+if ( ! function_exists( 'burst_get_blocked_ips' ) ) {
 	/**
 	 * Get a Burst option by name
 	 *
 	 * @param string $name
-	 * @param mixed $default
+	 * @param mixed  $default
 	 *
 	 * @return string
 	 */
 
 	function burst_get_blocked_ips() {
-		$name = 'ip_blocklist';
+		$name    = 'ip_blocklist';
 		$options = get_option( 'burst_options_settings', [] );
-		$value = isset($options[$name]) ? $options[$name] : false;
-		if ( $value===false ) {
+		$value   = isset( $options[ $name ] ) ? $options[ $name ] : false;
+		if ( $value === false ) {
 			$value = '';
 		}
+
 		return $value;
 	}
 }
@@ -799,18 +782,20 @@ if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
 	 * @return bool
 	 */
 	function burst_is_ip_blocked(): bool {
-		$ip           = burst_get_ip_address();
-		$blocked_ips  = preg_split('/\r\n|\r|\n/', burst_get_blocked_ips()); // split by line break
+		$ip          = burst_get_ip_address();
+		$blocked_ips = preg_split( '/\r\n|\r|\n/', burst_get_blocked_ips() ); // split by line break
 		if ( is_array( $blocked_ips ) ) {
-			$blocked_ips_array  = array_map( 'trim', $blocked_ips );
-			$ip_blocklist = apply_filters( 'burst_ip_blocklist', $blocked_ips_array );
+			$blocked_ips_array = array_map( 'trim', $blocked_ips );
+			$ip_blocklist      = apply_filters( 'burst_ip_blocklist', $blocked_ips_array );
 			if ( in_array( $ip, $ip_blocklist ) ) {
 				if ( WP_DEBUG ) {
 					error_log( 'Burst Statistics: IP ' . $ip . ' is blocked for tracking' );
 				}
+
 				return true;
 			}
 		}
+
 		return false;
 	}
 }
@@ -836,7 +821,7 @@ if ( ! function_exists( 'burst_get_ip_address' ) ) {
 			'HTTP_X_REAL_IP',
 			'HTTP_FORWARDED_FOR',
 			'HTTP_FORWARDED',
-			'REMOTE_ADDR'
+			'REMOTE_ADDR',
 		);
 
 		foreach ( $variables as $variable ) {
@@ -851,6 +836,7 @@ if ( ! function_exists( 'burst_get_ip_address' ) ) {
 			$ips        = explode( ',', $current_ip );
 			$current_ip = $ips[0];
 		}
+
 		return apply_filters( "burst_visitor_ip", $current_ip );
 	}
 }
@@ -866,6 +852,7 @@ if ( ! function_exists( 'burst_is_real_ip' ) ) {
 
 	function burst_is_real_ip( $var ) {
 		$ip = getenv( $var );
+
 		return ! $ip || trim( $ip ) === '127.0.0.1' ? false : $ip;
 	}
 }

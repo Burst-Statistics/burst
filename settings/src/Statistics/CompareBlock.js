@@ -3,7 +3,6 @@ import {useCompareStats} from '../data/statistics/compare';
 
 const CompareBlock = (props) => {
     const {data, loading} = useCompareStats();
-
     let loadingClass = loading ? 'burst-loading' : '';
     return(
             <>

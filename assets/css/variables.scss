@@ -25,7 +25,7 @@ $rsp-break-xxl: 1599px;
   --rsp-border-radius-s: 8px;
   --rsp-border-radius-input: 5px;
   --rsp-border: 1px solid var(--rsp-border-color);
-  --rsp-box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  --rsp-box-shadow: rgba(0, 0, 0, 0.1) 0 4px 6px -1px, rgba(0, 0, 0, 0.06) 0 2px 4px -1px;
   --rsp-border-color: #dfdfdf;
 
   // RSP Brand Colors
@@ -61,6 +61,7 @@ $rsp-break-xxl: 1599px;
   --rsp-text-color-invert: rgba(255, 255, 255, 0.9);
   --rsp-text-color-white: rgba(255, 255, 255, 0.9);
   --rsp-text-color-light: rgba(69, 69, 82, 0.9);
+  --rsp-text-color-hover: var(--rsp-green);
 
   --rsp-grey-100: #fafafa;
   --rsp-grey-200: #f7f7f7;

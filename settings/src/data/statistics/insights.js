@@ -1,4 +1,5 @@
 import create from 'zustand';
+import {produce} from 'immer';
 import {__} from '@wordpress/i18n';
 import {useDate} from './date';
 import * as burst_api from '../../utils/api';
@@ -26,7 +27,12 @@ export const useInsightsStats = create((set) => ({
   loading: true,
   setLoading: (loading) => set({loading}),
   insightsMetrics: ['visitors', 'pageviews'],
-  setInsightsMetrics: (metrics) => set({metrics}),
+  setInsightsMetrics: (metrics) => {
+    set(
+        produce((state) => {
+          state.insightsMetrics = metrics;
+        }));
+  },
   interval: 'day',
   setInterval: (interval) => set({interval}),
   chartData: emptyChartData,

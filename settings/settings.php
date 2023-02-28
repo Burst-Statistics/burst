@@ -51,9 +51,9 @@ function burst_plugin_admin_scripts() {
 		$script_asset['dependencies'],
 		$script_asset['version']
 	);
-	wp_set_script_translations( 'burst-wizard-plugin-block-editor', 'burst-statistics' );
+	wp_set_script_translations( 'burst-settings', 'burst-statistics' );
 
-	
+	global $wpdb;
 	wp_localize_script(
         'burst-settings',
         'burst_settings',
@@ -73,6 +73,7 @@ function burst_plugin_admin_scripts() {
             'user_roles' => burst_get_user_roles(),
             'date_ranges' => burst_get_date_ranges(),
             'tour_shown' => burst_get_option('burst_tour_shown_once'),
+            'gmt_offset' => get_option('gmt_offset'),
         ))
 	);
 }
@@ -175,16 +176,8 @@ function burst_settings_rest_route() {
 		}
 	) );
 
-	register_rest_route( 'burst/v1', 'goal_values/get', array(
-		'methods'             => 'GET',
-		'callback'            => 'burst_rest_api_goal_values_get',
-		'permission_callback' => function () {
-			return burst_user_can_manage();
-		}
-	) );
-
 	register_rest_route( 'burst/v1', 'goal_fields/set', array(
-		'methods'             => 'GET',
+		'methods'             => 'POST',
 		'callback'            => 'burst_rest_api_goal_fields_set',
 		'permission_callback' => function () {
 			return burst_user_can_manage();
@@ -222,6 +215,20 @@ function burst_settings_rest_route() {
 			return burst_user_can_view();
 		}
 	) );
+
+	register_rest_route('burst/v1', '/posts/', array(
+		'methods' => 'GET',
+		'callback' => 'burst_get_posts',
+		'args' => array(
+			'search_input' => array(
+				'required' => false,
+				'sanitize_callback' => 'sanitize_title',
+			),
+		),
+		'permission_callback' => function () {
+			return burst_user_can_view();
+		}
+	));
 }
 
 /**
@@ -238,7 +245,7 @@ function burst_run_test($request){
 	$state = $request->get_param('state');
 	$state =  $state !== 'undefined' ? $state : false;
 	switch($test){
-		case 'progressdata':
+		case 'notices':
 			$data = BURST()->notices->get();
 			break;
 		case 'dismiss_task':
@@ -332,7 +339,7 @@ function burst_other_plugins_data($slug=false){
 			'constant_premium' => 'cmplz_premium',
 			'wordpress_url' => 'https://wordpress.org/plugins/complianz-gdpr/',
 			'upgrade_url' => 'https://complianz.io/pricing?src=burst-plugin',
-			'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst-statistics" ),
+			'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be", "burst-statistics" ),
 		],
 		[
 			'slug' => 'complianz-terms-conditions',
@@ -382,18 +389,13 @@ function burst_get_data($request){
 	}
 
 	$type = sanitize_title($request->get_param('type'));
-	error_log('burst_get_data for type: '.$type);
     $args = [
             'date_start' => BURST()->statistics->convert_date_to_utc( $request->get_param('date_start') . ' 00:00:00'), // add 00:00:00 to date,
             'date_end' => BURST()->statistics->convert_date_to_utc($request->get_param('date_end') . ' 23:59:59'), // add 23:59:59 to date
-            'date_range' => burst_sanitize_date_range($request->get_param('date_range')),
     ];
     $request_args = json_decode($request->get_param('args'), true);
-    error_log('burst_get_data request_args: '.print_r($request_args, true));
 	$args['metrics'] = $request_args['metrics'] ?? [];
     $args['filters'] = burst_sanitize_filters($request_args['filters'] ?? []);
-    error_log('burst_get_data args: '.print_r($args, true));
-
 
 	switch($type){
 		case 'live-visitors':
@@ -403,14 +405,16 @@ function burst_get_data($request){
 			$data = BURST()->statistics->get_today_data($args);
 			break;
 		case 'goals':
+            $args['goal_id'] = $request_args['goal_id'] ?? 0;
 			$data = BURST()->goal_statistics->get_goals_data($args);
 			break;
 		case 'live-goals':
+			$args['goal_id'] = $request_args['goal_id'] ?? 0;
 			$data = BURST()->goal_statistics->get_live_goals_data($args);
 			break;
 		case 'insights':
-            $args['interval'] = isset($request_args['interval']) ? sanitize_title($request_args['interval']) : 'day';
-
+			$args['interval'] = $request_args['interval'] ?? 'day';
+			$args['interval'] = BURST()->statistics->sanitize_interval($args['interval']);
 			$data = BURST()->statistics->get_insights_data($args);
 			break;
 		case 'compare':
@@ -462,13 +466,12 @@ function burst_sanitize_field_type( $type ) {
 /**
  * @param WP_REST_Request $request
  *
- * @return void
+ * @return array|void
  */
 function burst_rest_api_fields_set( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return;
 	}
-
 	$fields = $request->get_json_params();
 	//get the nonce
 	$nonce = false;
@@ -486,7 +489,6 @@ function burst_rest_api_fields_set( $request ) {
 	$config_fields = burst_fields(false);
 	$config_ids = array_column($config_fields, 'id');
 	foreach ( $fields as $index => $field ) {
-
 		$config_field_index = array_search($field['id'], $config_ids);
 		$config_field = $config_fields[$config_field_index];
 		if ( !$config_field_index ){
@@ -631,7 +633,7 @@ function burst_rest_api_fields_get() {
 	$output['fields'] = $fields;
 	$output['progress'] = BURST()->notices->get();
 
-	return apply_filters('rsssl_rest_api_fields_get', $output);
+	return apply_filters('burst_rest_api_fields_get', $output);
 }
 
 /**
@@ -644,138 +646,104 @@ function burst_rest_api_goal_fields_get() {
 		return;
 	}
 
+    $goal_fields = [];
 	$fields = burst_goal_fields();
-	foreach ( $fields as $index => $field ) {
-		/**
-		 * Load data from source
-		 */
-		if ( isset($field['data_source']) ){
-			$data_source = $field['data_source'];
-			if ( is_array($data_source)) {
-				$main = $data_source[0];
-				$class = $data_source[1];
-				$function = $data_source[2];
-				$field['value'] = [];
-				if (function_exists($main)){
-					$field['value'] = $main()->$class->$function();
-				}
-			} else if ( function_exists($field['data_source'])) {
-				$func = $field['data_source'];
-				$field['value'] = $func();
-			}
-		}
+	$goals = BURST()->goals->get_goals();
 
-		$fields[$index] = $field;
-	}
+   $field_value_map = [
+       'goal_title' => 'title',
+       'goal_status' => 'status',
+       'goal_type' => 'type',
+       'goal_page_or_website' => 'url',
+       'goal_specific_page' => 'url',
+       'goal_selector' => 'setup->selector',
+       'goal_element' => 'setup->element',
+   ];
 
-	return apply_filters('rsssl_rest_api_fields_get', $fields);
+    // loop through goals and add the fields and get field values
+    foreach ( $goals as $goal_id => $goal ) {
+        // add fields to every goal
+        $goal_fields[$goal['ID']] = $fields;
+	    $goal_values = BURST()->goals->get_goal_field_values($goal['ID']);
+        // loop through fields and set values
+        foreach ( $goal_fields[$goal['ID']] as $field_id => $field ) {
+            $field_value = isset( $goal_values[ $field_id ] ) ? $goal_values[ $field_id ] : '';
+            $default_value = isset( $fields[ $field_id ]['default'] ) ? $fields[ $field_id ]['default'] : '';
+            $goal_fields[$goal['ID']][$field_id]['value'] = $field_value !== '' ? $field_value : $default_value;
+        }
+    }
+    // Add an empty goal to the end of the list, with zero as the ID
+    $goal_fields[0] = $fields;
+
+    return apply_filters('burst_rest_api_goal_fields_get', $goal_fields);
+
+
+
+
+//	$fields = burst_goal_fields();
+//	foreach ( $fields as $index => $field ) {
+//		/**
+//		 * Load data from source
+//		 */
+//		if ( isset($field['data_source']) ){
+//			$data_source = $field['data_source'];
+//			if ( is_array($data_source)) {
+//				$main = $data_source[0];
+//				$class = $data_source[1];
+//				$function = $data_source[2];
+//				$field['value'] = [];
+//				if (function_exists($main)){
+//					$field['value'] = $main()->$class->$function();
+//				}
+//			} else if ( function_exists($field['data_source'])) {
+//				$func = $field['data_source'];
+//				$field['value'] = $func();
+//			}
+//		}
+//
+//		$fields[$index] = $field;
+//	}
+//
+//	return apply_filters('burst_rest_api_goal_fields_get', $fields);
 }
-
-/**
- * Get the rest api goal values
- * @return void
- */
-
-function burst_rest_api_goal_values_get() {
-	if ( !burst_user_can_manage() ) {
-		return;
-	}
-
-	$values = BURST()->goals->get_field_values_per_goal();
-
-	return apply_filters('rsssl_rest_api_values_get', $values);
-}
-
 
 /**
  * @param WP_REST_Request $request
  *
- * @return void
+ * @return array
  */
 function burst_rest_api_goal_fields_set( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return;
 	}
+	$goals = $request->get_json_params();
+    error_log(print_r($goals, true));
 
-	$fields = $request->get_json_params();
 	//get the nonce
 	$nonce = false;
-	foreach ( $fields as $index => $field ){
+	foreach ( $goals as $index => $field ){
 		if ( isset($field['nonce']) ) {
 			$nonce = $field['nonce'];
-			unset($fields[$index]);
+			unset($goals[$index]);
 		}
 	}
 
 	if ( !wp_verify_nonce($nonce, 'burst_nonce') ) {
 		return;
 	}
+    $saved_goal_ids = [];
+    foreach ( $goals as $index => $goal ) {
+        $id = $goal['id'];
+        unset($goal['id']);
 
-//	$config_fields = burst_fields(false);
-//	$config_ids = array_column($config_fields, 'id');
-//	foreach ( $fields as $index => $field ) {
-//
-//		$config_field_index = array_search($field['id'], $config_ids);
-//		$config_field = $config_fields[$config_field_index];
-//		if ( !$config_field_index ){
-//			error_log("Burst Statistics: unsetting ".$field['id']." as not existing field in BURST ");
-//			unset($fields[$index]);
-//			continue;
-//		}
-//		$type = burst_sanitize_field_type($field['type']);
-//		$field_id = sanitize_text_field($field['id']);
-//		$value = burst_sanitize_field( $field['value'] , $type,  $field_id);
-//		//if an endpoint is defined, we use that endpoint instead
-//		if ( isset($config_field['data_endpoint'])){
-//			//the updateItemId allows us to update one specific item in a field set.
-//			$update_item_id = isset($field['updateItemId']) ? $field['updateItemId'] : false;
-//			$action = isset($field['action']) && $field['action']==='delete' ? 'delete' : 'update';
-//			$endpoint = $config_field['data_endpoint'];
-//			if (is_array($endpoint) ) {
-//				$main = $endpoint[0];
-//				$class = $endpoint[1];
-//				$function = $endpoint[2];
-//				if (function_exists($main)) {
-//					$main()->$class->$function( $value, $update_item_id, $action );
-//				}
-//			} else if ( function_exists($endpoint) ){
-//				$endpoint($value, $update_item_id, $action);
-//			}
-//
-//			unset($fields[$index]);
-//			continue;
-//		}
-//
-//		$field['value'] = $value;
-//		$fields[$index] = $field;
-//	}
-//
-//	$options = get_option( 'burst_options_settings', [] );
-//
-//
-//	//build a new options array
-//	foreach ( $fields as $field ) {
-//		$prev_value = isset( $options[ $field['id'] ] ) ? $options[ $field['id'] ] : false;
-//		do_action( "burst_before_save_option", $field['id'], $field['value'], $prev_value, $field['type'] );
-//		$options[ $field['id'] ] = $field['value'];
-//	}
-//
-//	if ( ! empty( $options ) ) {
-//		update_option( 'burst_options_settings', $options );
-//	}
-//
-//	foreach ( $fields as $field ) {
-//		do_action( "burst_after_save_field", $field['id'], $field['value'], $prev_value, $field['type'] );
-//	}
-//	do_action('burst_after_saved_fields', $fields );
-//
-//	return [
-//		'success' => true,
-//		'progress' => BURST()->notices->get(),
-//		'fields' => burst_fields(true),
-//	];
+	    $set = BURST()->goals->set_goal_field_values( $id, $goal );
+        // if not null add to saved goal ids
+        if ( $set !== null ) {
+            $saved_goal_ids[] = $id;
+        }
+    }
 
-    return 'set goals';
+    return $saved_goal_ids ?? [];
 }
 function burst_rest_api_menu() {
     if ( !burst_user_can_manage() ) {
@@ -811,6 +779,7 @@ function burst_drop_empty_menu_items( $menu_items, $fields) {
     }
     return $new_menu_items;
 }
+
 
 /**
  * Get grid block data
@@ -887,7 +856,55 @@ function burst_sanitize_ip_field( $value ) {
     return implode( PHP_EOL, $ips );
 }
 
-function burst_get_user_roles(){
+/**
+ * Get user roles for the settings page in Burst
+ *
+ * @return array
+ */
+
+function burst_get_user_roles(): array {
+    if ( !burst_user_can_manage() ) {
+        return [];
+    }
+
     global $wp_roles;
     return $wp_roles->get_names();
 }
+
+function burst_get_posts($data) {
+    error_log('burst_get_posts');
+    if ( !burst_user_can_view() ) {
+        return [];
+    }
+	global $wpdb;
+    $data = $data->get_params();
+
+    error_log(print_r($data, true));
+    if ($data['search'] !== '') {
+        error_log('search: ' . $data['search']) ;
+        $search = $data['search'];
+        $sql = "SELECT page_url, page_id, count(*) as pageviews FROM {$wpdb->prefix}burst_statistics WHERE bounce = 0 AND page_url LIKE '%$search%' GROUP BY page_url ORDER BY pageviews DESC LIMIT 10";
+    } else {
+        error_log('no search');
+        // get the most viewed posts from wp_burst_statistics
+        $sql = "SELECT page_url, page_id, count(*) as pageviews FROM {$wpdb->prefix}burst_statistics WHERE bounce = 0 GROUP BY page_url ORDER BY pageviews DESC LIMIT 10";
+    }
+
+	$posts = $wpdb->get_results($sql, 'ARRAY_A');
+    // get the post title from wp_posts
+    foreach ($posts as $key => $post) {
+        $post_id = $post['page_id'];
+        $post_title = get_the_title($post_id);
+        $posts[$key]['post_title'] = $post_title;
+    }
+    error_log('posts: ' . print_r($posts, true));
+
+	//$sql = "SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'publish' ORDER BY post_title ASC";
+	if (!empty($posts)) {
+		return new WP_REST_Response($posts, 200);
+    }
+
+
+	return new WP_REST_Response([], 200);
+}
+

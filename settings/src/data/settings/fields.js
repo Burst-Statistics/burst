@@ -27,7 +27,7 @@ export const useFields = create(( set, get ) => ({
     set(
         produce((state) => {
           //remove current reference
-          const existingFieldIndex = state.changedFields.findIndex(field => {
+          const existingFieldIndex = state.changedFields.findIndex(field => { //find index of existing field
             return field.id===id;
           });
 
@@ -99,9 +99,7 @@ export const useFields = create(( set, get ) => ({
         saveFields.push(field);
       }
     }
-
-    //if no fields were changed, do nothing.
-    if (saveFields.length>0) {
+    if (saveFields.length>0){
       burst_api.setFields(saveFields).then(( response ) => {
         progress = response.progress;
         fields = response.fields;
@@ -211,31 +209,31 @@ export const handleShowSavedSettingsNotice = () => {
   });
 }
 
-const validateConditions = (conditions, fields) => {
+export const validateConditions = (conditions, fields) => {
   let relation = conditions.relation === 'OR' ? 'OR' : 'AND';
   let conditionApplies = relation==='AND';
+  let result = {};
+
   for (const key in conditions) {
     if ( conditions.hasOwnProperty(key) ) {
       let thisConditionApplies = relation==='AND';
       let subConditionsArray = conditions[key];
       if ( subConditionsArray.hasOwnProperty('relation') ) {
-        thisConditionApplies = validateConditions(subConditionsArray, fields)
+        let subConditionsResult = validateConditions(subConditionsArray, fields);
+        thisConditionApplies = subConditionsResult.conditionApplies;
       } else {
         for ( let conditionField in subConditionsArray ) {
           let invert = conditionField.indexOf('!')===0;
           if ( subConditionsArray.hasOwnProperty(conditionField) ) {
             let conditionValue = subConditionsArray[conditionField];
             conditionField = conditionField.replace('!','');
-            let conditionFields = fields.filter(field => field.id === conditionField);
-            if ( conditionFields.hasOwnProperty(0) ){
+            let conditionFields = Array.isArray(fields) ? fields.filter(field => field.id === conditionField) : [];
+            if (conditionFields.length > 0) {
               let field = conditionFields[0];
               let actualValue = field.value;
               if ( field.type==='checkbox' ) {
                 thisConditionApplies = actualValue === conditionValue;
               } else if ( field.type==='multicheckbox' ) {
-
-                //multicheckbox conditions
-                //loop through objects
                 thisConditionApplies = false;
                 let arrayValue = actualValue;
                 if ( arrayValue.length===0 ) {
@@ -250,16 +248,22 @@ const validateConditions = (conditions, fields) => {
                   }
                 }
               } else if ( field.type==='radio' ) {
-                //as the regions field can be both radio and multicheckbox, an array is possible for a radio field
                 if ( Array.isArray(conditionValue) ) {
                   thisConditionApplies = conditionValue.includes(actualValue);
                 } else {
                   thisConditionApplies = conditionValue === actualValue;
                 }
-
               } else {
-                if (conditionValue.indexOf('EMPTY')!==-1){
+                if (typeof conditionValue === 'string' && conditionValue.indexOf('EMPTY')!==-1){
                   thisConditionApplies = actualValue.length===0;
+                } else if (Array.isArray(conditionValue)) {
+                  thisConditionApplies = false;
+                  for (const value of conditionValue) {
+                    if (String(actualValue).toLowerCase() === value.toLowerCase()) {
+                      thisConditionApplies = true;
+                      break;
+                    }
+                  }
                 } else {
                   thisConditionApplies = String(actualValue).toLowerCase() === conditionValue.toLowerCase();
                 }

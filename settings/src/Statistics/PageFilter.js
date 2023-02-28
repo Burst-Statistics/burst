@@ -5,14 +5,14 @@ import {__} from '@wordpress/i18n';
 export const PageFilter = () => {
   const {filters, filtersConf, setFilters} = useFilters();
 
-  // map thought the filtersConf and get filters that are set
+  // map through the filtersConf and get filters that are set
   return (
       <>
         {Object.keys(filtersConf).map((filter, index) => {
           if (filters[filter] !== '') {
             return (
                 <div className={'burst-data-filter'} key={index}>
-                  <Icon name="page" size="18"/>
+                  <Icon name={filtersConf[filter].icon} size="18"/>
                   <p className={"burst-data-filter__label"}>{filtersConf[filter].label}</p>
                   <span className={"burst-data-filter-divider"}></span>
                   <p className={"burst-data-filter__value"}>{filters[filter]}</p>

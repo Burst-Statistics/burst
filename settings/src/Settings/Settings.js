@@ -4,6 +4,7 @@ import Help from "./Help";
 import {useState} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import {useFields} from "../data/settings/fields";
+import {useGoals} from '../data/settings/goals';
 import {useMenu} from "../data/menu";
 
 /**
@@ -14,6 +15,7 @@ const Settings = (props) => {
   const [noticesExpanded, setNoticesExpanded] = useState(true);
   const {progress, fieldsLoaded, saveFields, fields, nextButtonDisabled} = useFields();
   const {subMenuLoaded, subMenu, setSelectedSidebarMenuItem, selectedSubMenuItem, selectedMainMenuItem, nextMenuItem, previousMenuItem} = useMenu();
+  const {saveChangedGoalValues} = useGoals();
   // const {saveCookies} = UseSyncData();
 
   const toggleNotices = () => {
@@ -22,6 +24,7 @@ const Settings = (props) => {
 
   const saveData = async () => {
     await saveFields();
+    await saveChangedGoalValues();
     // await saveCookies(); // save goals
   }
 
@@ -38,7 +41,7 @@ const Settings = (props) => {
   const { menu_items: menuItems } = subMenu;
   if ( !subMenuLoaded ||  !fieldsLoaded || menuItems.length ===0  ) {
     return(
-        <h1>laden...</h1>
+        <div className={'burst-loading-container burst-loading'}></div>
     )
   }
   let selectedFields = fields.filter(field => field.menu_id === selectedSubMenuItem);

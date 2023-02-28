@@ -1,6 +1,15 @@
 import {intervalToDuration} from 'date-fns';
 
 const getRelativeTime = (relativeDate, date = new Date()) => {
+  // if relativeDate is a number, we assume it is an UTC timestamp
+  if (typeof relativeDate === 'number') {
+    // convert to date object
+    relativeDate = new Date(relativeDate * 1000);
+  }
+  if (!(relativeDate instanceof Date)) {
+    // invalid date, probably still loading
+    return '-';
+  }
   let units = {
     year  : 24 * 60 * 60 * 1000 * 365,
     month : 24 * 60 * 60 * 1000 * 365/12,
@@ -92,6 +101,18 @@ function formatNumber(value, decimals = 1){
   }).format(value);
 }
 
+function formatPercentage(value, decimals = 1){
+  value = Number(value) / 100;
+
+  if (isNaN(value)){
+    value = 0;
+  }
+  return new Intl.NumberFormat(undefined, {
+    style: "percent",
+    maximumFractionDigits: decimals,
+  }).format(value);
+}
+
 export {
   getRelativeTime,
   getPercentage,
@@ -99,4 +120,5 @@ export {
   getBouncePercentage,
   formatTime,
   formatNumber,
+  formatPercentage
 };

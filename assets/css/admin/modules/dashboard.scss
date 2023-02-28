@@ -150,13 +150,24 @@
         }
 
         &-text {
-          widows: 100%;
+          width: 100%;
           margin-right: auto;
         }
 
         &-number {
           font-weight: 600;
         }
+      }
+    }
+    &-controls-flex{
+      display: flex;
+      //justify-content: space-between;
+      align-items: center;
+      gap: var(--rsp-spacing-xs);
+      .burst-divider {
+        width: 1px;
+        height: 80%;
+        background: var(--rsp-grey-500);
       }
     }
   }

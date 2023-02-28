@@ -11,6 +11,7 @@ import ProgressFooter from './Dashboard/ProgressFooter';
 import OtherPlugins from './Dashboard/OtherPlugins';
 
 import TodayBlock from './Dashboard/TodayBlock';
+import GoalsHeader from './Dashboard/GoalsHeader';
 import GoalsBlock from './Dashboard/GoalsBlock';
 
 import CompareBlock from './Statistics/CompareBlock';
@@ -51,6 +52,7 @@ const GridBlock = (props) => {
     'ProgressBlock': ProgressBlock,
     'ProgressFooter': ProgressFooter,
     'TodayBlock': TodayBlock,
+    'GoalsHeader': GoalsHeader,
     'GoalsBlock': GoalsBlock,
     'OtherPlugins': OtherPlugins,
     'CompareBlock': CompareBlock,
@@ -110,5 +112,4 @@ const GridBlock = (props) => {
       </div>
   );
 };
-
 export default GridBlock;

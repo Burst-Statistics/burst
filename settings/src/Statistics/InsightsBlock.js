@@ -65,16 +65,6 @@ const InsightsBlock  = (props) => {
             padding: 0,
         },
       };
-
-      // // @todo move to daterange component
-      //   // if startDate and endDate are less than two days apart, show hours as interval
-      //   const startDateObj = parseISO(startDate);
-      //   const endDateObj = parseISO(endDate);
-      //   const diffDays = differenceInCalendarDays(endDateObj, startDateObj) + 1;
-      //   let interval = 'hour';
-      //   if (diffDays >= 3) {
-      //       interval = 'day';
-      //   }
     
     let loadingClass = loading ? 'burst-loading' : '';
     return(

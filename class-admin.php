@@ -26,7 +26,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'body' => '',
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-            add_action( 'admin_init', array($this, 'empty_dashboard_cache') );
             add_action( 'wp_dashboard_setup', array($this, 'add_burst_dashboard_widget') );
 
 			$plugin = burst_plugin;
@@ -34,8 +33,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			//multisite
 			add_filter( "network_admin_plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
-			add_action( 'admin_init', array($this, 'init_grid') );
-            add_action( 'wp_ajax_burst_get_datatable', array($this, 'ajax_get_datatable') );
 
             // column
             add_action( 'admin_init', array($this, 'add_burst_admin_columns' ), 1);
@@ -46,7 +43,8 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
 			add_action( 'admin_init', array($this, 'add_privacy_info'), 10);
 
-            //disabled for now
+            // remove tables on multisite uninstall
+			add_filter( 'wpmu_drop_tables', array( $this, 'ms_remove_tables' ), 10, 2 );
 		}
 
 
@@ -112,34 +110,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 		}
 
 		/**
-         * Empty dashboard cache for Burst
-         * @param $hook
-         */
-
-        public function empty_dashboard_cache( $hook ) {
-            if ( !burst_user_can_view() ) return;
-            $skip_transients = array('burst_warnings');
-            if (isset($_GET['burst_clear_cache'])){
-                global $wpdb;
-                // get all burst transients
-                $results = $wpdb->get_results(
-                        "SELECT `option_name` AS `name`, `option_value` AS `value`
-                                FROM  $wpdb->options
-                                WHERE `option_name` LIKE '%transient_burst%'
-                                ORDER BY `option_name`", 'ARRAY_A'
-                );
-                // loop through all burst transients
-                foreach ($results as $key => $value){
-                    $transient_name = substr($value['name'], 11);
-                    if ( in_array($transient_name, $skip_transients) ) continue;
-                    delete_transient($transient_name);
-                }
-                // delete custom transient
-                delete_option('burst_transient');
-            }
-        }
-
-		/**
 		 * Add custom link to plugins overview page
 		 *
 		 * @hooked plugin_action_links_$plugin
@@ -173,18 +143,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 			return $links;
 		}
 
-		/**
-         *  get list of warnings for the tool
-         *
-		 * @param bool $cache
-		 *
-		 * @return array
-		 */
-
-		public function get_warnings($cache = false) {
-		    return array('warning-one');
-        }
-
         /**
          *
          * Add a dashboard widget
@@ -200,16 +158,8 @@ if ( ! class_exists( "burst_admin" ) ) {
             }
             wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
                 $this,
-                'generate_burst_dashboard_widget_wrapper'
+                'generate_dashboard_widget'
             ));
-        }
-
-        /**
-         * Wrapper function for dashboard widget so params can be sent along
-         */
-
-        public function generate_burst_dashboard_widget_wrapper() {
-            echo $this->generate_dashboard_widget();
         }
 
         /**
@@ -217,296 +167,11 @@ if ( ! class_exists( "burst_admin" ) ) {
          * Generate the dashboard widget
          * Also generated the Top Searches grid item
          *
-         * @param int|bool $start
-         * @param int|bool $end
          * @return false|string
          */
-        public function generate_dashboard_widget($start = false, $end = false)
+        public function generate_dashboard_widget()
         {
-            ob_start();
-            echo 'henkie';
-            $template = burst_get_html_template('wordpress/dashboard-widget.php');
-            //only use cached data on dash
-
-
-            ob_get_clean();
-            return $template;
-
-        }
-
-        public function get_daterange_dropdown()
-        {
-            ob_start();
-            ?>
-            <div class="burst-date-container burst-date-range">
-                <i class="dashicons dashicons-calendar-alt"></i>&nbsp;
-                <span></span>
-                <i class="dashicons dashicons-arrow-down-alt2"></i>
-            </div>
-            <input type="hidden" name="burst_date_start" value="0">
-            <input type="hidden" name="burst_date_end" value="0">
-            <?php
-	        return ob_get_clean();
-        }
-
-
-		/**
-		 * Initialize the grid
-		 */
-
-		public function init_grid()
-        {
-            if (!burst_user_can_view()) return;
-
-            if (!isset($_GET['page']) || substr($_GET['page'], 0, 5) !== 'burst') return;
-
-            //$metric_control = $this->get_metric_dropdown();
-
-
-            $grid_items = apply_filters('burst_grid_items', array(
-                'dashboard' => array(
-                    1 => array(
-                        'title' => __("Your notices", "burst-statistics" ),
-                        'class' => 'burst-overview column-2 row-2',
-                        'type' => 'progress',
-                        'controls' => '',
-                        'page' => 'dashboard',
-                    ),
-                    2 => array(
-                        'title' => __("Today", "burst-statistics" ),
-                        'class' => 'row-2 border-to-border',
-                        'type' => 'real-time',
-                        'ajax_load' => true,
-                        'page' => 'dashboard',
-                    ),
-                    3 => array(
-                        'title' => __("Settings", "burst-statistics" ),
-                        'class' => 'row-2 border-to-border',
-                        'type' => 'settings',
-                        'page' => 'dashboard',
-                    ),
-                    4 => array(
-                        'title' => __("Tips & Tricks", "burst-statistics" ),
-                        'type' => 'tipstricks',
-                        'class' => 'column-2',
-                        'page' => 'dashboard',
-                    ),
-                    5 => array(
-                        'title' => __("Other Plugins", "burst-statistics" ),
-                        'class' => 'column-2 no-border no-background ',
-                        'type' => 'other-plugins',
-                        'footer' => ' ',
-                        'controls' => '<div class="rsp-logo"><a href="https://really-simple-plugins.com/"><img src="' . trailingslashit(burst_url) . 'assets/img/really-simple-plugins.svg" alt="Really Simple Plugins" /></a></div>',
-                        'page' => 'dashboard',
-                    ),
-                ),
-                'statistics' => array(
-                    1 => array(
-                        'title' => __("Insights", "burst-statistics" ),
-                        'class' => 'statistics column-2',
-                        'type' => 'insights-chart',
-                        'controls' => '',
-                        'page' => 'statistics',
-                    ),
-                    2 => array(
-                        'title' => __("Compare", "burst-statistics" ),
-                        'body' => '<div class="burst-skeleton"></div>',
-                        'footer' => 'henkje',
-                        'class' => 'burst-load-ajax',
-                        //'body' => '<div class="burst-skeleton"></div>',
-                        'type' => 'compare',
-                        'controls' => '',
-                        'page' => 'statistics',
-
-                    ),
-                    3 => array(
-                        'title' => __("Devices", "burst-statistics" ),
-                        'body' => '<div class="burst-skeleton"></div>',
-                        'class' => 'burst-load-ajax',
-                        'type' => 'devices',
-                        'controls' => '',
-                        'page' => 'statistics',
-                    ),
-                    4 => array(
-                        'title' => __("Most visited", "burst-statistics" ),
-                        'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table" width="100%"></table></div>',
-                        'class' => 'burst-grid-datatable column-2 burst-load-ajax-datatable',
-                        'type' => 'page_url',
-                        'controls' => '',
-                        'page' => 'statistics',
-                    ),
-                    5 => array(
-                        'title' => __("Top referrers", "burst-statistics" ),
-                        'body' => '<div class="burst-skeleton datatable-skeleton"></div><div class="burst-datatable" width="100%"><table class="burst-table" width="100%"></table></div>',
-                        'class' => 'burst-grid-datatable column-2 burst-load-ajax-datatable',
-                        'type' => 'referrer',
-                        'controls' => '',
-                        'page' => 'statistics',
-                    ),
-                ),
-            ));
-
-
-
-            foreach ( $grid_items as $key => $grid_dashboard ) {
-                foreach ($grid_dashboard as $grid_key => $grid_block) {
-                    $grid_dashboard[$grid_key] = wp_parse_args($grid_block, $this->default_grid_item);
-                }
-                $grid_items[$key] = $grid_dashboard;
-            }
-            $this->grid_items = $grid_items;
-        }
-
-
-		/**
-		 * Dashboard page
-		 */
-		public function burst_pages() {
-            $burst_page = isset($_GET['burst-page']) ? $_GET['burst-page'] : false;
-		    $burst_page = $this->sanitize_burst_page($burst_page);
-			$grid_items = $this->grid_items[$burst_page];
-			$admin_pages = $this->get_burst_admin_pages();
-            $controls = $admin_pages[$burst_page]['controls'];
-
-			//give each item the key as index
-			array_walk($grid_items, function(&$a, $b) { $a['index'] = $b; });
-
-			$grid_html = '';
-			foreach ($grid_items as $index => $grid_item) {
-			    $grid_html .= burst_grid_element($grid_item);
-			}
-
-            $args = array(
-                'page' => $burst_page,
-                'content' => burst_grid_container($grid_html),
-                'controls' => $controls,
-            );
-			echo burst_get_template('admin_wrap.php', $args );
-		}
-
-        /**
-         * Dashboard page
-         */
-        public function burst_statistics() {
-
-            $grid_items = $this->grid_items['statistics'];
-
-            //give each item the key as index
-            array_walk($grid_items, function(&$a, $b) { $a['index'] = $b; });
-
-            $grid_html = '';
-            foreach ($grid_items as $index => $grid_item) {
-                $grid_html .= burst_grid_element($grid_item);
-            }
-            $args = array(
-                'page' => 'statistics',
-                'content' => burst_grid_container($grid_html),
-                'controls' => $this->get_daterange_dropdown(),
-            );
-            echo burst_get_template('admin_wrap.php', $args );
-        }
-
-        public function sanitize_burst_page($page_unsanitized){
-            $pages = $this->get_burst_admin_pages();
-            foreach ( $pages as $page => $value) {
-                if ($page_unsanitized === $page) {
-                    return $page;
-                }
-            }
-            return 'dashboard';
-        }
-
-        public function get_burst_admin_pages(){
-            return apply_filters('burst_admin_pages',
-                array(
-                    'dashboard' => array(
-                        'title' => __('Dashboard', 'burst-statistics'),
-                        'show_in_menu' => true,
-                        'controls' => '',
-                    ),
-                    'statistics' => array(
-                        'title' => __('Statistics', 'burst-statistics'),
-                        'show_in_menu' => true,
-                        'controls' => $this->get_daterange_dropdown(),
-                    ),
-                )
-            );
-        }
-
-	    /**
-         * Get status link for plugin, depending on installed, or premium availability
-	     * @param $item
-	     *
-	     * @return string
-	     */
-
-        public function get_status_link($item){
-            if (is_multisite()){
-                $install_url = network_admin_url('plugin-install.php?s=');
-            } else {
-                $install_url = admin_url('plugin-install.php?s=');
-            }
-
-	        if (defined($item['constant_free']) && defined($item['constant_premium'])) {
-		        $status = __("Installed", "burst-statistics" );
-	        } elseif (defined($item['constant_free']) && !defined($item['constant_premium'])) {
-		        $link = $item['website'];
-		        $text = __('Upgrade to pro', 'burst-statistics');
-		        $status = "<a href=$link>$text</a>";
-	        } else {
-		        $link = $install_url.$item['search']."&tab=search&type=term";
-		        $text = __('Install', 'burst-statistics');
-		        $status = "<a href=$link>$text</a>";
-	        }
-	        return $status;
-        }
-
-        public function ajax_get_datatable()
-        {
-            $error = false;
-            $total = 0;
-            $html  = __("No data found", "burst-statistics" );
-            if (!burst_user_can_view()) {
-                $error = true;
-            }
-
-            if (!isset($_GET['start'])){
-                $error = true;
-            }
-
-            if (!isset($_GET['end'])){
-                $error = true;
-            }
-
-            if (!isset($_GET['type'])){
-                $error = true;
-            }
-
-	        if (!isset($_GET['date_range'])){
-		        $error = true;
-	        }
-
-            $page = isset($_GET['page']) ? intval($_GET['page']) : false;
-
-            if (!$error){
-                $start = burst_offset_utc_time_to_gtm_offset($_GET['start']);
-                $end = burst_offset_utc_time_to_gtm_offset($_GET['end']);
-                $type = sanitize_title($_GET['type']);
-                $date_range = burst_sanitize_date_range($_GET['date_range']);
-                $total = 2;
-                $html = $this->datatable_html( $start, $end, $page, $type, $date_range);
-            }
-
-            $data = array(
-                'success' => !$error,
-                'html' => $html,
-                'total_rows' => $total,
-                'batch' => $this->rows_batch,
-            );
-
-            header("Content-Type: application/json");
-            echo wp_json_encode($data);
-            exit;
+	        echo burst_get_html_template('wordpress/dashboard-widget.php');
         }
 
         /**
@@ -845,5 +510,23 @@ if ( ! class_exists( "burst_admin" ) ) {
                 $wpdb->query($sql);
             }
         }
+
+		/**
+		 * Drop tables during the site deletion
+		 *
+		 * @param array $tables  The tables to drop.
+		 * @param int   $blog_id The site ID.
+		 *
+		 * @return array
+		 */
+		public function ms_remove_tables( $tables, $blog_id ) {
+			global $wpdb;
+
+			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_sessions';
+			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_statistics';
+			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_goals';
+
+			return $tables;
+		}
 	}
 } //class closure

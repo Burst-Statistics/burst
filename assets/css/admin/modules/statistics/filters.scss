@@ -2,6 +2,7 @@
   ---rsp-filter-padding: 4px 15px;
 
   .burst-data-filters {
+    gap: var(--rsp-spacing-xs);
     .burst-data-filter {
       display: flex;
       align-items: center;
@@ -19,7 +20,7 @@
         line-height: var(--rsp-fs-400);
       }
 
-      .burst-data-filter-divider {
+      .burst-data-filter-divider, .burst-divider {
         width: 1px;
         height: 80%;
         background: var(--rsp-grey-500);
@@ -42,5 +43,15 @@
         height: 100%;
       }
     }
+  }
+  .burst-click-to-filter{
+    cursor: pointer;
+    //display: block;
+    //border-radius: var(--rsp-border-radius-input);
+    //padding: var(--rsp-spacing-l) var(--rsp-spacing-xs);
+    //transition: background-color 0.2s ease-in-out;
+    //&:hover{
+    //  background: rgba(10, 10, 65, 0.08);
+    //}
   }
 }

@@ -57,7 +57,14 @@ export const useCompareStats = create((set) => ({
 
           data[key].value = getBouncePercentage(curr[key], curr['sessions']);
           data[key].change = change.val;
-          data[key].changeStatus = change.status;
+          data[key].changeStatus = change.status ;
+          // flip change status
+          if (data[key].changeStatus === 'positive') {
+            data[key].changeStatus = 'negative';
+          } else {
+            data[key].changeStatus = 'positive';
+          }
+
           data[key].subtitle =  curr.bounced_sessions + ' ' + __('visitors bounced', 'burst-statistics');
           data[key].value = getBouncePercentage(curr.bounced_sessions, curr.sessions);
         }

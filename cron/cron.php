@@ -13,9 +13,9 @@ function burst_schedule_cron() {
 			wp_schedule_event( time(), 'burst_every_5_minutes', 'burst_every_5_minutes' );
 		}
 
-		add_action( 'burst_every_5_minutes', array( BURST()->statistics, 'generate_cached_data' ) );
+		add_action( 'burst_every_5_minutes', array( BURST()->db_upgrade, 'init' ) );
 	} else {
-		add_action( 'init', array( BURST()->statistics, 'generate_cached_data' ) );
+		add_action( 'init', array( BURST()->statistics, 'init' ) );
 	}
 }
 

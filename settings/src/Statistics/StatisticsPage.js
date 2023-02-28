@@ -3,7 +3,6 @@ import GridBlock from "../GridBlock";
 
 const StatisticsPage = (props) => {
         let blocks = burst_settings.blocks.statistics;
-        // @todo change to props?
         return (
             <>
                <Filters />

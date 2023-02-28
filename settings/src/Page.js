@@ -20,6 +20,7 @@ import {useFilters} from './data/statistics/filters';
 import {useMenu} from './data/menu';
 import {useFields} from './data/settings/fields';
 import {useGoals} from './data/settings/goals';
+import {useGoalsStats} from './data/dashboard/goals';
 
 const Page = () => {
   const {startDate, endDate, range} = useDate();
@@ -28,6 +29,7 @@ const Page = () => {
   const {fetchDevicesData} = useDevicesStats();
   const {fetchPagesData, pagesMetrics} = usePagesStats();
   const {fetchReferrersData, referrersMetrics} = useReferrersStats();
+  const {selectedGoalId, todayGoals, fetchTodayGoals, totalGoalsData, fetchTotalGoalsData} = useGoalsStats();
   const {filters} = useFilters();
 
 
@@ -40,7 +42,7 @@ const Page = () => {
     updateFieldsData,
     fieldsLoaded,
   } = useFields();
-  const {fetchGoalFields, fetchGoalValues} = useGoals();
+  const {initGoals} = useGoals();
 
 
   // change pages
@@ -65,8 +67,7 @@ const Page = () => {
 
   // get goals fields & values
   useEffect(async () => {
-    await fetchGoalFields();
-    await fetchGoalValues();
+    await initGoals();
   }, []);
 
   // get data for stats & stuff

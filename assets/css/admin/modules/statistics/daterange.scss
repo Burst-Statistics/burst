@@ -50,7 +50,7 @@
     cursor: pointer;
     height: 2.5em;
     line-height: 2.5em;
-    border: 0px;
+    border: 0;
     background: transparent;
     width: 100%;
     color: #849095;
@@ -117,7 +117,7 @@
     text-align: center;
     border-style: solid;
     margin: auto;
-    transform: translate(-3px, 0px);
+    transform: translate(-3px, 0);
   }
 }
 
@@ -125,7 +125,7 @@
   i {
     border-width: 4px 6px 4px 4px;
     border-color: transparent rgb(52, 73, 94) transparent transparent;
-    transform: translate(-3px, 0px);
+    transform: translate(-3px, 0);
   }
 }
 
@@ -134,7 +134,7 @@
     margin: 0 0 0 7px;
     border-width: 4px 4px 4px 6px;
     border-color: transparent transparent transparent rgb(52, 73, 94);
-    transform: translate(3px, 0px);
+    transform: translate(3px, 0);
   }
 }
 
@@ -270,7 +270,7 @@
     border-top-left-radius: var(--rsp-border-radius-input);
     border-bottom-left-radius: var(--rsp-border-radius-input);
     border-left-width: 2px;
-    left: 0px;
+    left: 0;
   }
 }
 
@@ -279,7 +279,7 @@
     border-top-right-radius: var(--rsp-border-radius-input);
     border-bottom-right-radius: var(--rsp-border-radius-input);
     border-right-width: 2px;
-    right: 0px;
+    right: 0;
   }
 }
 
@@ -288,11 +288,11 @@
   background: rgba(255, 255, 255, 0.09);
   position: absolute;
   top: 3px;
-  left: 0px;
-  right: 0px;
+  left: 0;
+  right: 0;
   bottom: 3px;
   pointer-events: none;
-  border: 0px solid currentColor;
+  border: 0 solid currentColor;
   z-index: 1;
 }
 
@@ -303,7 +303,7 @@
   border-bottom-width: 2px;
   border-top-left-radius: var(--rsp-border-radius-input);
   border-bottom-left-radius: var(--rsp-border-radius-input);
-  left: 0px;
+  left: 0;
 }
 
 .rdrDayInPreview{
@@ -317,7 +317,7 @@
   border-bottom-width: 2px;
   border-top-right-radius: var(--rsp-border-radius-input);
   border-bottom-right-radius: var(--rsp-border-radius-input);
-  right: 0px;
+  right: 0;
 }
 
 .rdrDefinedRangesWrapper{
@@ -389,8 +389,8 @@
   position: absolute;
   top: -2px;
   bottom: -2px;
-  left: 0px;
-  right: 0px;
+  left: 0;
+  right: 0;
   background: transparent;
 }
 

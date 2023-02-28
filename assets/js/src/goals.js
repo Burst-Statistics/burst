@@ -15,10 +15,10 @@ const burst_goals_setup = () => {
   for (let i = 0; i < burst.goals.length; i++) {
     let goal = burst.goals[i];
     switch (goal.type) {
-      case 'view':
+      case 'views':
         burst_setup_viewport_tracker(goal);
         break;
-      case 'click':
+      case 'clicks':
       default:
         burst_setup_click_tracker(goal);
         break;
@@ -31,7 +31,7 @@ const burst_goals_setup = () => {
  * @param goal
  */
 const burst_setup_viewport_tracker = (goal) => {
-  console.log(`burst_setup_viewport_tracker for ${goal.name}`);
+  console.log(`burst_setup_viewport_tracker for ${goal.title}`);
   let selector = goal.setup.attribute === 'id' ? '#' : '.';
   let elements = document.querySelectorAll(goal.setup.element + selector + goal.setup.value);
 
@@ -83,14 +83,14 @@ const burst_listener_view = (element, goal) => {
  * @param goal
  */
 const burst_setup_click_tracker = (goal) => {
-  console.log(`burst_setup_click_tracker for ${goal.name}`);
+  console.log(`burst_setup_click_tracker for ${goal.title}`);
   let selector = goal.setup.attribute === 'id' ? '#' : '.';
   let elements = document.querySelectorAll(goal.setup.element + selector + goal.setup.value);
   for (let i = 0; i < elements.length; i++) {
     let element = elements[i];
     element.style.border = '2px solid red'; // @todo remove
     element.addEventListener('click',
-        () => burst_listener_click(element, goal), true );
+        () => burst_listener_click(element, goal), {once: true} );
   }
 };
 
@@ -110,11 +110,13 @@ const burst_listener_click = (element, goal) => {
  * @param goal
  */
 const burst_goal_triggered = (goal) => {
-  console.log(`The ${goal.name} goal was triggered.`);
+  console.log(`The ${goal.title} goal was triggered.`);
   // if burst_completed_goals does not contain goal.id, add it
-  if (burst_completed_goals.indexOf(goal.id) === -1) {
-    burst_completed_goals.push(goal.id);
+  if (burst_completed_goals.indexOf(goal.ID) === -1) {
+    console.log(goal);
+    burst_completed_goals.push(goal.ID);
   }
+  console.log('burst_completed_goals: ', burst_completed_goals);
 };
 
 /**

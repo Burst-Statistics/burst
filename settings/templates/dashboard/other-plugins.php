@@ -17,7 +17,7 @@ $plugins = array(
         'url' => 'https://wordpress.org/plugins/complianz-gdpr/',
         'website' => 'https://complianz.io/pricing?src=burst-plugin',
         'search' => 'complianz',
-        'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be ", "burst-statistics" ),
+        'title' => __("Complianz Privacy Suite - Cookie Consent Management as it should be", "burst-statistics" ),
     ),
     'BURST' => array(
         'constant_free' => 'burst_plugin',

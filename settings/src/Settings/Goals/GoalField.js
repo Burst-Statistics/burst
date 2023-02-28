@@ -28,7 +28,6 @@ const GoalField = (props) => {
     validateInput(field, value);
     // if value is validated, set it
     if (validated) {
-      console.log('setGoalValue', goal_id, field.id, value);
       setGoalValue(goal_id, field.id, value);
     }
   }
@@ -67,7 +66,7 @@ const GoalField = (props) => {
   visible = !field.conditionallyDisabled;
   if ( !visible ) {
     return (
-        <p>not visible</p>
+        <div className={className} style={{display: 'none'}}></div>
     );
   }
 

@@ -15,7 +15,7 @@ const IpBlock = (props) => {
     let ip = burst_settings.current_ip;
 
     if (inputValue.includes(ip)) {
-      setWarning( __('Your IP address is: ', 'burst-statistics') + " '" +  ip + "'. " + __('Which is already in the list.', 'burst-statistics') );
+      setWarning( __('Your IP address is:', 'burst-statistics') + " '" +  ip + "'. " + __('Which is already in the list.', 'burst-statistics') );
       setTimeout(() => {
         setWarning(false);
       } , 5000);

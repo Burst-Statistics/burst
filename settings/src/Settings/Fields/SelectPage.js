@@ -1,95 +1,118 @@
-// import React, { useState } from 'react'
-// import Select from 'react-select'
-// import { useEffect, useRef } from "@wordpress/element";
-// import {__} from '@wordpress/i18n'
-//
-// const SelectPage = (props) => {
-//   const [options, setOptions] = useState([])
-//   const [inputValue, setInputValue] = useState('')
-//   const [selectedOption, setSelectedOption] = useState(null)
-//   const currentType = useRef(props.field.value);
-//
-//   useEffect(() => {
-//     // Fetch list of pages
-//     fetchPages().then(response => {
-//       setOptions(response.pages)
-//     })
-//   }, [])
-//
-//   const fetchPages = async (search) => {
-//     const data = {
-//       search: search,
-//     };
-//     return burst_api.doAction('get_pages_list', data).then( ( response ) => {
-//       return response;
-//     });
-//   }
-//
-//   const handleSearch = async (search) => {
-//     setInputValue(search)
-//     const pages = await fetchPages(search)
-//     setOptions(pages)
-//   }
-//
-//   const handleChange = (selectedOption) => {
-//     setSelectedOption(selectedOption)
-//     if (selectedOption.value) {
-//       let data = {};
-//       data.pageId = selectedOption.value;
-//       data.type = props.field.id;
-//       burst_api.doAction('update_custom_legal_document_id', data).then( ( response ) => {});
-//     }
-//     if (selectedOption.label === __('Custom URL', 'complianz-gdpr') ) {
-//       setSelectedOption(null)
-//     }
-//   }
-//
-//   const handleInputChange = (newValue) => {
-//     const inputValue = newValue.replace(/\W/g, '');
-//     setInputValue(inputValue);
-//     return inputValue;
-//   };
-//
-//   const handleBlur = () => {
-//     if (inputValue) {
-//       let data = {};
-//       data.pageUrl = inputValue;
-//       data.type = props.field.id;
-//       burst_api.doAction('update_custom_legal_document_url', data).then( ( response ) => {});
-//     }
-//   }
-//
-//   const customOptions = [
-//     {
-//       label: __('Custom URL', 'complianz-gdpr'),
-//       value: 'custom',
-//     },
-//   ]
-//   options.push(...customOptions)
-//   return (
-//       <>
-//         <p className={'burst-label'}>{props.field.label}</p>
-//       <Select
-//           value={selectedOption}
-//           onChange={handleChange}
-//           onInputChange={handleInputChange}
-//           onBlur={handleBlur}
-//           onMenuOpen={() => handleSearch(inputValue)}
-//           options={options}
-//           placeholder={__('Select a page', 'complianz-gdpr')}
-//           isClearable={true}
-//           isSearchable={true}
-//           isCreatable={false}
-//       />
-//       </>
-//   )
-// }
-//
-// export default SelectPage
+import React, {useEffect, useState} from 'react';
+import AsyncCreatableSelect from 'react-select/async-creatable';
+import {getPosts} from '../../utils/api';
+import Icon from '../../utils/Icon';
+import {formatNumber} from '../../utils/formatting';
+import debounce from 'lodash/debounce';
 
-const SelectPage = (props) => {
+
+export default (props) => {
+  console.log(props.value);
+  const [isLoading, setIsLoading] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [defaultPosts, setDefaultPosts] = useState([]);
+  const [defaultValue, setDefaultValue] = useState(props.value); // add state for defaultValue
+
+  useEffect(() => {
+    // set default value from props
+    setDefaultValue(props.value);
+  }, [props.value]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    getPosts('').then((response) => {
+      setDefaultPosts(
+          response.map((post) => ({
+            value: post.page_url,
+            label: post.page_url,
+            page_id: post.page_id,
+            post_title: post.post_title,
+            pageviews: post.pageviews,
+          }))
+      );
+      setIsLoading(false);
+    });
+  }, []);
+
+  const loadOptions = debounce((inputValue, callback) => {
+    setIsLoading(true);
+    console.log(inputValue);
+    getPosts(inputValue).then((response) => {
+      setPosts(
+          response.map((post) => ({
+            value: post.page_url,
+            label: post.page_url,
+            page_id: post.page_id,
+            post_title: post.post_title,
+            pageviews: post.pageviews,
+          }))
+      );
+      setIsLoading(false);
+      callback(posts);
+    });
+  }, 500); // 500ms debounce delay
+
   return (
-      <h1>test</h1>
-  )
-}
-export default SelectPage
+      <>
+        <p className={'burst-label'}>{props.field.label}</p>
+        <AsyncCreatableSelect
+            classNamePrefix="burst-select"
+            onChange={(e) => {
+              console.log(e.value);
+              props.onChangeHandler(e.value);
+            }}
+            isLoading={isLoading}
+            isSearchable={true}
+            name="selectPage"
+            cacheOptions
+            defaultValue={defaultValue}
+            defaultOptions={defaultPosts}
+            defaultInputValue={defaultValue}
+            loadOptions={loadOptions}
+            components={{Option: OptionLayout}}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 'var(--rsp-border-radius-input)',
+              colors: {
+                ...theme.colors,
+                text: 'orangered',
+                primary25: 'hotpink',
+                primary: 'var(--rsp-green)',
+              },
+            })}
+            styles={{
+              control: (baseStyles, state) => ({
+                ...baseStyles,
+                borderColor: state.isFocused
+                    ? 'var(--rsp-green)'
+                    : 'var(--rsp-input-border-color)',
+              }),
+            }}
+        />
+      </>
+  );
+};
+
+
+const OptionLayout = props => {
+  const { innerProps, innerRef } = props;
+  const r = props.data;
+  console.log(r);
+  return (
+      <article ref={innerRef} {...innerProps}
+               className={'burst-select__custom-option'}>
+        <div>
+          <h6 className={'burst-select__title'}>{r.label}</h6>
+          {r.post_title !== 'Untitled' &&
+              <><span> - </span> <p className={'burst-select__subtitle'}>{r.post_title} </p></>}
+        </div>
+
+        {r.pageviews > 0 && <div className={'burst-select__pageview-count'}>
+          <Icon name={'eye'} size={12}/>
+          <span>{
+            formatNumber(r.pageviews)
+          }</span>
+        </div>}
+      </article>
+  );
+};
