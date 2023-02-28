@@ -1,5 +1,12 @@
 .burst{
   div[class^="burst-wizard-"]{ // starts with selector
+
+    input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="email"], input[type="month"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="week"]{
+      background-color: var(--rsp-input-background-color);
+      border: 1px solid var(--rsp-input-border-color);
+      border-radius: var(--rsp-border-radius-input);
+      color: var(--rsp-input-text-color);
+    }
     .components-flex{
       display: flex;
       flex-direction: row;
@@ -49,7 +56,6 @@
     .burst-field-wrap, .burst-settings-block-intro{
       padding-block: var(--rsp-spacing-s);
       @include burst-inline-block-padding;
-      overflow: hidden;
       & > .burst-field-wrap{
         padding: 0;
       }
@@ -109,6 +115,32 @@
         margin-top: var(--rsp-spacing-xxs);
         font-weight: 400;
         font-size: var(--rsp-fs-300);
+      }
+    }
+    .burst-class-id-field {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+
+       & > * {
+            width: 100%;
+        }
+
+      &__input {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        button{
+          background-color: var(--rsp-input-background-color);
+          border: 1px solid var(--rsp-input-border-color);
+          border-radius:  var(--rsp-border-radius-input) 0 0 var(--rsp-border-radius-input);
+          border-right: 0;
+          cursor: pointer;
+        }
+        input{
+          margin-left: 0;
+          border-radius: 0 var(--rsp-border-radius-input) var(--rsp-border-radius-input) 0
+        }
       }
     }
   }

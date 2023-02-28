@@ -1,12 +1,11 @@
-import {useState, useEffect, useRef} from "@wordpress/element";
+import {useState, useEffect, useRef} from "react";
 import { __ } from '@wordpress/i18n';
 import * as burst_api from "../utils/api";
-import Placeholder from '../Placeholder/Placeholder';
-
+import useOtherPlugins from "../data/dashboard/other-plugins";
 const OtherPlugins = (props) => {
-  const [dataLoaded, setDataLoaded] = useState(false);
   const [dataUpdated, setDataUpdated] = useState('');
-  const [pluginData, setPluginData] = useState(false);
+  const {dataLoaded, setDataLoaded, pluginData, setPluginData} = useOtherPlugins();
+  // const [pluginData, setPluginData] = useState(false);
 
   useEffect(()=>{
     if ( !dataLoaded ) {

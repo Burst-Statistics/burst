@@ -1,133 +1,121 @@
-import { __ } from '@wordpress/i18n';
+import {__} from '@wordpress/i18n';
 import {
   useState,
-  useEffect
-} from '@wordpress/element';
-import Placeholder from '../Placeholder/Placeholder';
+  useEffect,
+} from 'react';
 import Tooltip from '@mui/material/Tooltip';
+import ClickToFilter from '../Statistics/ClickToFilter';
 
-import * as burst_api from "../utils/api";
+import * as burst_api from '../utils/api';
 import Icon from '../utils/Icon';
-import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
-import {Button} from '@wordpress/components';
+import {
+  endOfDay,
+  format,
+  startOfDay,
+} from 'date-fns';
+import {
+  formatTime,
+  formatNumber,
+  getPercentage,
+  getRelativeTime,
+} from '../utils/formatting';
+import {useGoalsStats} from '../data/dashboard/goals';
 
 const GoalsBlock = () => {
-  const [goals, setGoalsData] = useState(
-      {
-        live: {
-          title: __('Live', 'burst-statistics'),
-          value: '-',
-          icon: 'goals',
-        },
-        goals: {
-          title: __('Total', 'burst-statistics'),
-          value: '-',
-          icon: 'goals',
-        },
-        mostViewed: {
-          title: '-',
-          value: '-',
-        },
-        pageviews: {
-          title: '-',
-          value: '-',
-        },
-        referrer: {
-          title: '-',
-          value: '-',
-        },
-        timeOnPage: {
-          title: '-',
-          value: '-',
-        }
-      }
-  );
+  const {selectedGoalId, todayGoals, fetchTodayGoals, totalGoalsData, fetchTotalGoalsData} = useGoalsStats();
+  const [loading, setLoading] = useState(true);
 
-  function getData(startDate, endDate){
-    getGoalsData(startDate, endDate).then((response) => {
+  // set timeout to fetch live visitors
+  useEffect(() => {
+    setLoading(true);
+    fetchTodayGoals(selectedGoalId);
+    fetchTotalGoalsData(selectedGoalId);
+    setLoading(false);
+    const interval = setInterval(() => {
+      fetchTodayGoals(selectedGoalId, true);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [selectedGoalId]);
 
-      // setGoalsData(data);
-    }).catch((error) => {
-      console.error(error);
-    });
+  function selectGoalIcon(value) {
+    value = parseInt(value);
+    if (value > 100) {
+      return 'goals-crowd';
+    }
+    else if (value > 10) {
+      return 'goals';
+    }
+    else {
+      return 'goals';
+    }
   }
 
-  function getGoalsData(startDate, endDate, args= []){
-    // return burst_api.getData('goals', startDate, endDate, args).then( ( response ) => {
-    //   return response.data;
-    // });
-  }
-
+  let todayIcon = selectGoalIcon(todayGoals);
+  let totalIcon = selectGoalIcon(totalGoalsData.total.value);
   const delayTooltip = 200;
-  if (goals) {
-    return(
-        <>
-          <div className="information-overlay">
-            <div className="information-overlay-container">
-              <h4>{__('Coming soon: Goals', 'burst-statistics')}</h4>
-              <p>{__('Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics.', 'burst-statistics')}</p>
-
-              {/*<h6>{__('Contribute', 'burst-statistics')}</h6>*/}
-              {/*<p>{__("We're building this plugin together with you, the WordPress community, to make it the best statistics plugin to date.", 'burst-statistics')}</p>*/}
-              {/*<p>{__('Help make our product better by leaving a suggestion on the Wordpress forum.', 'burst-statistics')}</p>*/}
-              <a href="https://wordpress.org/support/plugin/burst-statistics/" target="_blank" rel="noreferrer" className="button button-default">{__('Leave a suggestion', 'burst-statistics')}</a>
-            </div>
-
+  let loadingClass = loading ? 'burst-loading' : '';
+  return (
+      <>
+        <div className={"burst-goals burst-loading-container " + loadingClass}>
+          <div className="burst-goals-select">
+            <ClickToFilter filter="goal_id" filterValue={totalGoalsData.goalId} label={totalGoalsData.today.tooltip}>
+              <div className="burst-goals-select-item">
+                <Icon name={todayIcon} size="23"/>
+                <h2>{todayGoals}</h2>
+                <span><Icon name="sun" color={"yellow"} size="13"/> Today</span>
+              </div>
+            </ClickToFilter>
+            <Tooltip arrow title={totalGoalsData.total.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-select-item">
+                <Icon name={totalIcon} size="23"/>
+                <h2>{totalGoalsData.total.value}</h2>
+                <span><Icon name="total" size="13"
+                            color={'green'}/> Total</span>
+              </div>
+            </Tooltip>
           </div>
-          <div className="burst-goals">
-            <div className="burst-goals-select">
-              <Tooltip arrow title={goals.live.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-select-item">
-                  <Icon name={goals.live.icon} size='23' />
-                  <h2>{goals.live.value}</h2>
-                  <span><Icon name='live' size='13' color={'green'} /> Live</span>
-                </div>
-              </Tooltip>
-              <Tooltip arrow title={goals.goals.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-select-item">
-                  <Icon name={goals.goals.icon} size='23' />
-                  <h2>{goals.goals.value}</h2>
-                  <span><Icon name='total' size='13' color={'green'} /> Total</span>
-                </div>
-              </Tooltip>
-            </div>
-            <div className="burst-goals-list">
-              <Tooltip arrow title={goals.mostViewed.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-list-item">
-                  <Icon name="winner" />
-                  <p className='burst-goals-list-item-text'>{goals.mostViewed.title}</p>
-                  <p className='burst-goals-list-item-number'>{goals.mostViewed.value}</p>
-                </div>
-              </Tooltip>
-              <Tooltip arrow title={goals.referrer.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-list-item">
-                  <Icon name="visitors" />
-                  <p className='burst-goals-list-item-text'>{goals.referrer.title}</p>
-                  <p className='burst-goals-list-item-number'>{goals.referrer.value}</p>
-                </div>
-              </Tooltip>
-              <Tooltip arrow title={goals.pageviews.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-list-item">
-                  <Icon name="graph" />
-                  <p className='burst-goals-list-item-text'>{goals.pageviews.title}</p>
-                  <p className='burst-goals-list-item-number'>{goals.pageviews.value}</p>
-                </div>
-              </Tooltip>
-              <Tooltip arrow title={goals.timeOnPage.tooltip} enterDelay={delayTooltip}>
-                <div className="burst-goals-list-item">
-                  <Icon name="time" />
-                  <p className='burst-goals-list-item-text'>{goals.timeOnPage.title}</p>
-                  <p className='burst-goals-list-item-number'>{goals.timeOnPage.value}</p>
-                </div>
-              </Tooltip>
-            </div>
+          <div className="burst-goals-list">
+            <Tooltip arrow title={totalGoalsData.topPerformer.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-list-item">
+                <Icon name="winner"/>
+                <p className="burst-goals-list-item-text">{totalGoalsData.topPerformer.title}</p>
+                <p className="burst-goals-list-item-number">{totalGoalsData.topPerformer.value}</p>
+              </div>
+            </Tooltip>
+            <Tooltip arrow title={totalGoalsData.visitors.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-list-item">
+                <Icon name="visitors"/>
+                <p className="burst-goals-list-item-text">{totalGoalsData.visitors.title}</p>
+                <p className="burst-goals-list-item-number">{totalGoalsData.visitors.value}</p>
+              </div>
+            </Tooltip>
+            <Tooltip arrow title={totalGoalsData.conversionPercentage.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-list-item">
+                <Icon name="graph"/>
+                <p className="burst-goals-list-item-text">{totalGoalsData.conversionPercentage.title}</p>
+                <p className="burst-goals-list-item-number">{totalGoalsData.conversionPercentage.value}</p>
+              </div>
+            </Tooltip>
+            <Tooltip arrow title={totalGoalsData.bestDevice.tooltip}
+                     enterDelay={delayTooltip}>
+              <div className="burst-goals-list-item">
+                <Icon name={totalGoalsData.bestDevice.icon} />
+                <p className="burst-goals-list-item-text">{totalGoalsData.bestDevice.title}</p>
+                <p className="burst-goals-list-item-number">{totalGoalsData.bestDevice.value}</p>
+              </div>
+            </Tooltip>
           </div>
-        </>
-    );
-  } else {
-    return (
-        <Placeholder lines = '10'/>
-    )
-  }
-}
+          <div className={'burst-grid-item-footer'}>
+            <p className={'burst-small-text burst-flex-push-right'}>{__('Activated', 'burst-statistics')} <span>{getRelativeTime(totalGoalsData.dateStart)}</span>
+            </p>
+          </div>
+        </div>
+
+      </>
+  );
+};
 export default GoalsBlock;

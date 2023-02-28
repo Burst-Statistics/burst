@@ -42,6 +42,13 @@ function jsTask(cb) {
   .pipe(jsuglify())
   .pipe(gulp.dest('./assets/js/build'));
 
+  gulp.src('./assets/js/src/goals.js', { allowEmpty: true })
+  .pipe(concat('burst-goals.js'))
+  .pipe(gulp.dest('./assets/js/build'))
+  .pipe(concat('burst-goals.min.js'))
+  .pipe(jsuglify())
+  .pipe(gulp.dest('./assets/js/build'));
+
   cb();
 }
 exports.js = jsTask

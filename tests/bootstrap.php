@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file.
  *
- * @package Burst
+ * @package Burst_Premium
  */
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
@@ -23,7 +23,7 @@ require_once "{$_tests_dir}/includes/functions.php";
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( __FILE__, 2 ) . '/burst.php';
+	require dirname( __FILE__, 2 ) . '/burst-premium.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );

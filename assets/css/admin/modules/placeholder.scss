@@ -9,7 +9,7 @@ $base-color: #ddd;
 $shine-color: #e8e8e8;
 $animation-duration: 1.6s;
 @mixin background-gradient {
-  background-image: linear-gradient(90deg, $base-color 0px, $shine-color 40px, $base-color 80px);
+  background-image: linear-gradient(90deg, $base-color 0, $shine-color 40px, $base-color 80px);
   background-size: 600px;
 }
 
@@ -20,7 +20,6 @@ $animation-duration: 1.6s;
   margin: 0;
   padding-bottom: 24px;
   color: #1e1e1e;
-  -moz-font-smoothing: subpixel-antialiased;
   -webkit-font-smoothing: subpixel-antialiased;
   border-radius: 2px;
   background-color: #fff;

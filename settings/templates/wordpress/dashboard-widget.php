@@ -1,14 +1,22 @@
 <?php
 defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
-$date_range = burst_sanitize_date_range(apply_filters('burst_dashboard_widget_date_range', 'last-7-days'));
-$date_range_unix = BURST()->statistics->get_time_stamp_for_date_range($date_range);
-$date_end = $date_range_unix['end'];
-$date_start = $date_range_unix['start'];
+
+$end = strtotime( "today" ) - 1; // end of yesterday
+$start = strtotime( "today" ) - DAY_IN_SECONDS * 7; // start of 7 days ago
+
+// get date formatted like Y-m-d H:i:s
+$end = date( 'Y-m-d H:i:s', $end );
+$start = date( 'Y-m-d H:i:s', $start );
+
+// convert date to utc
+$date_end = BURST()->statistics->convert_date_to_utc($end);
+$date_start = BURST()->statistics->convert_date_to_utc($start);
+
 ?>
 <div class="burst burst-dashboard-widget">
     <div class="burst-dashboard-widget__content">
         <?php
-        $widget_statistics = BURST()->statistics->get_dashboard_widget_statistics($date_start, $date_end, $date_range);
+        $widget_statistics = BURST()->statistics->get_dashboard_widget_statistics($date_start, $date_end);
         $args = array(
             'title' => __('Unique visitors', 'burst-statistics'),
             'tooltip' => '',

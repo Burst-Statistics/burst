@@ -26,7 +26,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'body' => '',
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-            add_action( 'admin_init', array($this, 'empty_dashboard_cache') );
             add_action( 'wp_dashboard_setup', array($this, 'add_burst_dashboard_widget') );
 
 			$plugin = burst_plugin;
@@ -109,34 +108,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			update_option( 'burst_setup_defaults', true, false );
 		}
-
-		/**
-         * Empty dashboard cache for Burst
-         * @param $hook
-         */
-
-        public function empty_dashboard_cache( $hook ) {
-            if ( !burst_user_can_view() ) return;
-            $skip_transients = array('burst_warnings');
-            if (isset($_GET['burst_clear_cache'])){
-                global $wpdb;
-                // get all burst transients
-                $results = $wpdb->get_results(
-                        "SELECT `option_name` AS `name`, `option_value` AS `value`
-                                FROM  $wpdb->options
-                                WHERE `option_name` LIKE '%transient_burst%'
-                                ORDER BY `option_name`", 'ARRAY_A'
-                );
-                // loop through all burst transients
-                foreach ($results as $key => $value){
-                    $transient_name = substr($value['name'], 11);
-                    if ( in_array($transient_name, $skip_transients) ) continue;
-                    delete_transient($transient_name);
-                }
-                // delete custom transient
-                delete_option('burst_transients');
-            }
-        }
 
 		/**
 		 * Add custom link to plugins overview page

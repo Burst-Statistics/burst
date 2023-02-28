@@ -103,7 +103,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 			$notices = [
 				'tracking-error' => [
 					'callback' => 'burst_tracking_status_error',
-					'score' => 0,
 					'output' => array(
 						'true' => array(
 							'msg' => __( "Due to your server or website configuration it is not possible to track statistics.", 'burst-statistics' ),
@@ -128,9 +127,32 @@ if ( ! class_exists( "burst_notices" ) ) {
 						],
 					],
 				],
+				'notice_to_dismissweew' => [
+					'callback' => '_true_',
+					'output' => [
+						'true' => [
+							'msg' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ),
+							'icon' => 'premium',
+							'url' => burst_premium_url,
+							'dismissible' => true,
+							'plusone' => true,
+						],
+					],
+				],
+				'notice_to_dismiss_twowewe' => [
+					'callback' => '_true_',
+					'output' => [
+						'true' => [
+							'msg' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ),
+							'icon' => 'warning',
+							'url' => burst_premium_url,
+							'dismissible' => true,
+							'plusone' => true,
+						],
+					],
+				],
 				'leave-feedback' => [
 					'callback' => '_true_',
-					'score' => 0,
 					'status' => 'all',
 					'output' => array(
 						'true' => array(
@@ -145,10 +167,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 				],
 			];
 
-			//on multisite, don't show the notice on subsites.
-			if ( is_multisite() && !is_network_admin() ) {
-				unset($notices['secure_cookies_set']);
-			}
 
 			$notices = apply_filters('burst_notices', $notices);
 			foreach ($notices as $id => $notice) {

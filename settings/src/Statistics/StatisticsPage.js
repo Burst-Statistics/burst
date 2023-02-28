@@ -1,29 +1,24 @@
-import {Component, Fragment} from "@wordpress/element";
+import {Filters} from './Filters';
 import GridBlock from "../GridBlock";
 
-class StatisticsPage extends Component {
-    constructor() {
-        super( ...arguments );
-    }
-
-    render() {
+const StatisticsPage = (props) => {
         let blocks = burst_settings.blocks.statistics;
         return (
             <>
+               <Filters />
                 {blocks.map((block, i) => <GridBlock
                     key={i}
                     block={block}
-                    isApiLoaded={this.props.isAPILoaded}
-                    fields={this.props.fields}
-                    highLightField={this.props.highLightField}
-                    selectMainMenu={this.props.selectMainMenu}
-                    dateRange = {this.props.dateRange}
-                    insightsMetrics = {this.props.insightsMetrics}
-                    setInsightsMetrics = {this.props.setInsightsMetrics}
+                    isApiLoaded={props.isAPILoaded}
+                    fields={props.fields}
+                    highLightField={props.highLightField}
+                    selectMainMenu={props.selectMainMenu}
+                    dateRange = {props.dateRange}
+                    insightsMetrics = {props.insightsMetrics}
+                    setInsightsMetrics = {props.setInsightsMetrics}
                 />
                 )}
             </>
         );
-    }
 }
 export default StatisticsPage

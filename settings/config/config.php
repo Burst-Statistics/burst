@@ -33,6 +33,18 @@ function burst_menu() {
 					],
 				],
 				[
+					'id'       => 'goals',
+					'group_id' => 'goals',
+					'title'    => __( 'Goals', 'burst-statistics' ),
+					'step'     => 1,
+					'groups'   => [
+						[
+							'id'    => 'goals',
+							'title' => __( 'Goals', 'burst-statistics' ),
+						],
+					],
+				],
+				[
 					'id'       => 'advanced',
 					'group_id' => 'tracking',
 					'title'    => __( 'Advanced', 'burst-statistics' ),
@@ -49,7 +61,7 @@ function burst_menu() {
 	];
 
 
-	return $menu_items;
+	return apply_filters( 'cmplz_menu', $menu_items);
 }
 
 function burst_migrate_settings( $prev_version ) {
@@ -64,7 +76,6 @@ function burst_fields( $load_values = true ) {
 	if ( ! burst_user_can_manage() ) {
 		return [];
 	}
-
 	$fields = [
 		[
 			'id'       => 'review_notice_shown',
@@ -135,6 +146,20 @@ function burst_fields( $load_values = true ) {
 			'default'     => false,
 		],
 		[
+			'id'       => 'goals',
+			'menu_id'  => 'goals',
+			'group_id' => 'goals',
+			'type'     => 'goals',
+			'label'    => __( 'Goals', 'burst-statistics' ),
+			'help'     => [
+				'label' => 'default',
+				'title' => __( 'How to select goals?', 'burst-statistics' ),
+				'text'  => __( "The extensive mixed content scan will list all current and future issues and provide a fix, or instructions to fix manually.", 'burst-statistics' ),
+				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
+			],
+			'default' => [],
+		],
+		[
 			'id'       => 'user_role_blocklist',
 			'menu_id'  => 'advanced',
 			'group_id' => 'tracking',
@@ -167,13 +192,6 @@ function burst_fields( $load_values = true ) {
 		                                  'disabled'           => false,
 		                                  'new_features_block' => false,
 		] );
-		//handle server side conditions
-		if ( isset( $field['server_conditions'] ) ) {
-			if ( ! burst_conditions_apply( $field['server_conditions'] ) ) {
-				unset( $fields[ $key ] );
-				continue;
-			}
-		}
 		if ( $load_values ) {
 			$value          = burst_sanitize_field( burst_get_option( $field['id'], $field['default'] ), $field['type'], $field['id'] );
 			$field['value'] = apply_filters( 'burst_field_value_' . $field['id'], $value, $field );
@@ -186,16 +204,114 @@ function burst_fields( $load_values = true ) {
 	return array_values( $fields );
 }
 
+function burst_goal_fields() {
+	$goals = [
+		'goal_title' => [
+			'id'       => 'goal_title',
+			'type'     => 'hidden',
+			'default'  => false,
+		],
+		'goal_status' => [
+			'id'       => 'goal_status',
+			'type'     => 'hidden',
+			'default'  => false,
+		],
+		'goal_type' => [
+			'id'       => 'goal_type',
+			'type'     => 'radio-buttons',
+			'label'    => __( 'What type of goal do you want to set?', 'burst-statistics' ),
+			'options'  => [
+				'clicks' => [
+					'label' => __('Clicks', 'burst-statistics'),
+			          'description' => __('Track clicks on element', 'burst-statistics'),
+			          'type' => 'clicks',
+			          'icon' => 'mouse',
+				],
+				'views'  => [
+					'label'       => __( 'Views', 'burst-statistics' ),
+					'description' => __( 'Track views of element', 'burst-statistics' ),
+					'type'        => 'views',
+					'icon'        => 'eye',
+				],
+				'visits' => [
+					'label'       => __( 'Visits', 'burst-statistics' ),
+					'description' => __( 'Track visits to page', 'burst-statistics' ),
+					'type'        => 'visits',
+					'icon'        => 'visitors',
+				],
+			],
+			'disabled' => false,
+			'default'  => 'clicks',
+		],
+		'goal_page_or_website' => [
+			'id'               => 'goal_page_or_website',
+			'type'             => 'radio-buttons',
+			'label'            => __( 'Do you want to track a specific page or the entire website?', 'burst-statistics' ),
+			'options'          => [
+				'page'    => [
+					'label'       => __( 'Page', 'burst-statistics' ),
+					'description' => __( 'Track page specific', 'burst-statistics' ),
+					'type'        => 'page',
+					'icon'        => 'page',
+				],
+				'website' => [
+					'label'       => __( 'Website', 'burst-statistics' ),
+					'description' => __( 'Track on whole site', 'burst-statistics' ),
+					'type'        => 'website',
+					'icon'        => 'website',
+				],
+			],
+			'react_conditions' => [
+				'relation' => 'AND',
+				[
+					'goal_type' => ['clicks', 'views'],
+				],
+			],
+			'disabled'         => false,
+			'default'          => 'website',
+		],
+		'goal_specific_page' => [
+			'id'               => 'goal_specific_page',
+			'type'             => 'select-page',
+			'label'            => __( 'Which specific page do you want to track?', 'burst-statistics' ),
+			'disabled'         => false,
+			'default'          => false,
+			'react_conditions' => [
+				'relation' => 'OR',
+				[
+					'goal_page_or_website' => ['page'],
+					'goal_type' => ['visits'],
+				],
+			],
+		],
+		'goal_element' => [
+			'id'               => 'goal_element',
+			'type'             => 'class-id',
+			'label'            => __( 'What element do you want to track?', 'burst-statistics' ),
+			'disabled'         => false,
+			'default'          => [
+				'attribute' => 'class',
+				'value'     => '',
+			],
+			'react_conditions' => [
+				'relation' => 'AND',
+				[
+					'goal_type'=> ['clicks', 'views'],
+				],
+			],
+		],
+	];
+
+	return apply_filters( 'burst_goal_fields', $goals );
+}
+
 function burst_blocks() {
 	$blocks = [
 		'dashboard' => [
 			[
 				'id'       => 'progress',
 				'title'    => __( 'Progress', 'burst-statistics' ),
-				'controls' => [
-					'type' => 'react',
-					'data' => 'ProgressHeader',
-				],
+				'controls' => [ 'type' => 'react', 'data' => 'ProgressHeader', ],
 				'content'  => [ 'type' => 'react', 'data' => 'ProgressBlock' ],
 				'footer'   => [ 'type' => 'react', 'data' => 'ProgressFooter' ],
 				'class'    => 'burst-column-2',
@@ -209,8 +325,8 @@ function burst_blocks() {
 			],
 			[
 				'id'       => 'goals',
-				'controls' => false,
 				'title'    => __( 'Goals', 'burst-statistics' ),
+				'controls' => [ 'type' => 'react', 'data' => 'GoalsHeader', ],
 				'content'  => [ 'type' => 'react', 'data' => 'GoalsBlock' ],
 				'footer'   => [ 'type' => 'html', 'data' => '' ],
 				'class'    => 'border-to-border',

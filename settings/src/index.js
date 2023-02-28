@@ -1,3 +1,4 @@
+import React from 'react';
 import {
     render,
 } from '@wordpress/element';
@@ -11,9 +12,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	const container = document.getElementById( 'burst-statistics' );
 	if ( container ) {
 		render(
-			<>
-                <Page />
-			</>,
+				<React.StrictMode>
+					<div className="burst-wrapper">
+						<Page />
+					</div>
+				</React.StrictMode>,
 			container
 		);
 	}

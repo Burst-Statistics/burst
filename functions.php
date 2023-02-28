@@ -10,6 +10,12 @@ if ( ! function_exists( 'burst_is_logged_in_rest' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_admin_logged_in' ) ) {
+    function burst_admin_logged_in() {
+	    return ( is_user_logged_in() && burst_user_can_view()) || burst_is_logged_in_rest() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI );
+    }
+}
+
 if ( ! function_exists('burst_add_view_capability')){
 	/**
 	 * Add a user capability to WordPress and add to admin and editor role
@@ -284,19 +290,6 @@ if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
 		$time = sprintf( $format, $hours, $minutes, $seconds );
 
 		return rtrim( $time, '0' );
-	}
-}
-
-/*
- * @return string
- * @since 1.0.0
- */
-if ( ! function_exists( 'burst_offset_utc_time_to_gtm_offset' ) ) {
-	function burst_offset_utc_time_to_gtm_offset( $utc_time ): int {
-		$utc_time           = (int) $utc_time;
-		$gmt_offset_seconds = (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
-
-		return $utc_time - $gmt_offset_seconds;
 	}
 }
 
@@ -637,20 +630,44 @@ if ( ! function_exists( 'burst_get_date_ranges' ) ) {
 			'last-30-days',
 			'last-90-days',
 			'last-month',
+            'last-year',
             'year-to-date',
 		) );
 	}
 }
 
-if ( ! function_exists( 'burst_sanitize_date_range' ) ) {
-	function burst_sanitize_date_range( $date_range ) {
-		$date_range  = sanitize_title( $date_range );
-		$date_ranges = burst_get_date_ranges();
-		if ( in_array( $date_range, $date_ranges ) ) {
-			return $date_range;
-		}
+if ( ! function_exists('burst_sanitize_filters') ) {
+    function burst_sanitize_filters( $filters ) {
+        // sanitize key value pairs, but value can also be an array. Just one layer deep though. Also remove keys where value is empty. Also add comments to explain the code
+        $filters = array_filter( $filters, function( $item ) {
+            return ! empty( $item );
+        } );
 
-		return 'custom';
+        foreach ( $filters as $key => $value ) {
+            if ( is_array( $value ) ) {
+                $filters[ $key ] = array_map( 'sanitize_text_field', $value );
+            } else {
+                $filters[ $key ] = sanitize_text_field( $value );
+            }
+        }
+
+        return $filters;
+    }
+}
+
+if ( ! function_exists( 'burst_sanitize_relative_url' ) ) {
+	/**
+	 * Sanitize relative_url
+	 *
+	 * @param string $relative_url
+	 *
+	 * @return string
+	 */
+	function burst_sanitize_relative_url( $relative_url ): string {
+        if ( $relative_url[0] !== '/' ) {
+            $relative_url = '/' . $relative_url;
+        }
+		return trailingslashit( filter_var( $relative_url, FILTER_SANITIZE_URL ) );
 	}
 }
 
