@@ -81,12 +81,13 @@ class BURST {
 			self::$instance->endpoint     = new burst_endpoint();
 			self::$instance->anonymize_IP = new burst_ip_anonymizer();
 			self::$instance->statistics   = new burst_statistics();
+			self::$instance->goal_statistics = new burst_goal_statistics();
 			self::$instance->sessions     = new burst_sessions();
 			self::$instance->goals        = new burst_goals();
 			self::$instance->frontend     = new burst_frontend();
 
 
-			if ( burst_admin_logged_in() || burst_is_activation() ) {
+			if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 				self::$instance->admin   = new burst_admin();
 				self::$instance->review  = new burst_review();
 				self::$instance->notices = new burst_notices();
@@ -146,12 +147,15 @@ class BURST {
 		require_once( burst_path . 'helpers/anonymize-ip.php' );
 		require_once( burst_path . 'helpers/php-user-agent/UserAgentParser.php' );
 		require_once( burst_path . 'statistics/class-statistics.php' );
+		require_once( burst_path . 'statistics/class-goal-statistics.php' );
 		require_once( burst_path . 'sessions/class-sessions.php' );
 		require_once( burst_path . 'goals/class-goals.php' );
 		require_once( burst_path . 'cron/cron.php');
 		require_once( burst_path . 'upgrade.php');
+		require_once( burst_path . 'class-db-upgrade.php');
 
-		if ( burst_admin_logged_in() || burst_is_activation() ){
+
+		if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 			require_once( burst_path . 'class-admin.php' );
 			require_once( burst_path . 'settings/settings.php' );
 			require_once( burst_path . 'class-review.php' );

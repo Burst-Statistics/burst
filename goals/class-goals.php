@@ -149,7 +149,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 				return $wpdb->update( $table_name, $args, array( 'ID' => $args['ID'] ) );
 			}
 
-			$args['setup'] = json_encode( $args['setup'] );
+			$args['setup'] = isset( $args['setup'] ) ? json_encode( $args['setup'] ) : '{}';
 
 
 			// set defaults for new goal

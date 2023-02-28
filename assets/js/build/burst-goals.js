@@ -85,7 +85,7 @@ const burst_listener_view = (element, goal) => {
 const burst_setup_click_tracker = (goal) => {
   console.log(`burst_setup_click_tracker for ${goal.title}`);
   let selector = goal.setup.attribute === 'id' ? '#' : '.';
-  let elements = document.querySelectorAll(goal.setup.element + selector + goal.setup.value);
+  let elements = document.querySelectorAll(selector + goal.setup.value);
   for (let i = 0; i < elements.length; i++) {
     let element = elements[i];
     element.style.border = '2px solid red'; // @todo remove
