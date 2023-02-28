@@ -127,30 +127,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 						],
 					],
 				],
-				'notice_to_dismissweew' => [
-					'callback' => '_true_',
-					'output' => [
-						'true' => [
-							'msg' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ),
-							'icon' => 'premium',
-							'url' => burst_premium_url,
-							'dismissible' => true,
-							'plusone' => true,
-						],
-					],
-				],
-				'notice_to_dismiss_twowewe' => [
-					'callback' => '_true_',
-					'output' => [
-						'true' => [
-							'msg' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ),
-							'icon' => 'warning',
-							'url' => burst_premium_url,
-							'dismissible' => true,
-							'plusone' => true,
-						],
-					],
-				],
 				'leave-feedback' => [
 					'callback' => '_true_',
 					'status' => 'all',

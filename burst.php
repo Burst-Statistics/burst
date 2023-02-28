@@ -3,7 +3,7 @@
  * Plugin Name: Burst Statistics - Privacy-Friendly Analytics for WordPress
  * Plugin URI: https://www.wordpress.org/plugins/burst-statistics
  * Description: Get detailed insights into visitors’ behavior with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.
- * Version: 1.3.4
+ * Version: 1.4.0
  * Text Domain: burst-statistics
  * Domain Path: /languages
  * Author: Really Simple Plugins
@@ -67,6 +67,7 @@ class BURST {
 	public $review;
 	public $config;
 	public $notices;
+	public $db_upgrade;
 
 	private function __construct() {
 	}
@@ -84,10 +85,11 @@ class BURST {
 			self::$instance->goals        = new burst_goals();
 			self::$instance->frontend     = new burst_frontend();
 
-			if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			if ( burst_admin_logged_in() ) {
 				self::$instance->admin   = new burst_admin();
 				self::$instance->review  = new burst_review();
 				self::$instance->notices = new burst_notices();
+				self::$instance->db_upgrade = new burst_db_upgrade();
 			}
 			self::$instance->hooks();
 		}
@@ -111,7 +113,7 @@ class BURST {
 		$burst_plugin = implode( '/', $burst_plugin );
 		define( 'burst_plugin_folder', $burst_plugin );
 		$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
-		define( 'burst_version', '1.3.4' . $debug );
+		define( 'burst_version', '1.4.0' . $debug );
 		define( 'burst_plugin_file', __FILE__ );
 		define( 'burst_main_menu_position', 100 );
 		define( 'burst_premium_url', 'https://burst-statistics.com/premium?src=burst-plugin' );

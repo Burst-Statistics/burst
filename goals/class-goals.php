@@ -209,6 +209,21 @@ function burst_install_goals_table() {
               PRIMARY KEY  (ID)
             ) $charset_collate;";
         dbDelta( $sql );
+
+		// if there is no default goal, then insert one
+	    $goals = BURST()->goals->get_goals();
+		$count = count( $goals );
+		if ( $count === 0 ) {
+			BURST()->goals->set( array(
+				'title'       => __( 'Default goal', 'burst-statistics' ),
+				'type'        => 'clicks',
+				'status'      => 'inactive',
+				'server_side' => 0,
+				'date_created' => time(),
+			) );
+		}
+
+		// insert default goal
         update_option( 'burst_goals_db_version', burst_version );
     }
 }
