@@ -37,7 +37,6 @@ const burst_setup_viewport_tracker = (goal) => {
 
   for (let i = 0; i < elements.length; i++) {
     let element = elements[i];
-    element.style.border = '2px solid blue'; // @todo remove
     // if the element is already in the viewport, trigger the goal
     if (burst_is_element_in_viewport(element)) {
       burst_goal_triggered(goal);
@@ -88,7 +87,6 @@ const burst_setup_click_tracker = (goal) => {
   let elements = document.querySelectorAll(selector + goal.setup.value);
   for (let i = 0; i < elements.length; i++) {
     let element = elements[i];
-    element.style.border = '2px solid red'; // @todo remove
     element.addEventListener('click',
         () => burst_listener_click(element, goal), {once: true} );
   }
