@@ -33,12 +33,16 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			$goal_url     = $goal['url'];
 			$goal_url_sql = $goal_url ? "AND statistics.page_url = '{$goal_url}'" : "";
 
+			error_log("goal_id: {$goal_id}");
+			error_log('goal: ' . print_r($goal, true));
+
 			$sql = "SELECT COUNT(*)
 					FROM {$wpdb->prefix}burst_statistics as statistics 
 					    INNER JOIN {$wpdb->prefix}burst_goal_statistics as goals 
 					        ON statistics.ID = goals.statistic_id
 					WHERE statistics.bounce = 0 AND goals.goal_id = {$goal_id} AND statistics.time > {$today} {$goal_url_sql}";
 			$val = $wpdb->get_var( $sql );
+			error_log("val: {$val} {$sql}");
 
 			return (int) $val ?: 0;
 		}
@@ -56,9 +60,9 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			$args     = wp_parse_args( $args, $defaults );
 
 			// Sanitize input
-			$goal_url   = sanitize_text_field( $args['url'] );
 			$goal_id    = (int) $this->get_goal_id( $args['goal_id'] );
 			$goal       = BURST()->goals->get_goal_setup( $goal_id );
+			$goal_url   = $goal['url'];
 			$goal_start = (int) $goal['date_start'];
 			$goal_end   = (int) $goal['date_end'];
 
@@ -71,12 +75,8 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 					'value'   => 0,
 					'tooltip' => __( 'Most goals reached on this page', 'burst-statistics' ),
 				),
-				'visitors'             => array(
-					'title'   => __( 'Visitors', 'burst-statistics' ),
-					'value'   => 0,
-					'tooltip' => '',
-				),
 				'pageviews'            => array(
+					'title'   => __( 'Pageviews', 'burst-statistics' ),
 					'value'   => 0,
 					'tooltip' => '',
 				),
@@ -86,7 +86,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 					'tooltip' => '',
 				),
 				'bestDevice'           => array(
-					'title'   => '',
+					'title'   => __( 'Not enough data', 'burst-statistics' ),
 					'value'   => 0,
 					'tooltip' => __('Best performing device', 'burst-statistics'),
 					'icon'   => 'desktop',
@@ -119,15 +119,11 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 					$data['topPerformer']['value'] = $top_performer_result->value;
 				}
 
-				// Query to get total number of visitors
-				$visitors_sql              = "SELECT COUNT(DISTINCT(UID)) FROM {$wpdb->prefix}burst_statistics as statistics
-												WHERE statistics.time > {$goal_start} {$goal_end_sql} AND statistics.bounce = 0 {$goal_url_sql}";
-				$data['visitors']['value'] = $wpdb->get_var( $visitors_sql );
-
 				// Query to get total number of pageviews
 				$visitors_sql               = "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics as statistics
 												WHERE statistics.time > {$goal_start} {$goal_end_sql} AND statistics.bounce = 0 {$goal_url_sql}";
 				$data['pageviews']['value'] = $wpdb->get_var( $visitors_sql );
+				error_log("visitors_sql: {$visitors_sql}");
 
 				// Query to get best performing device
 				$device_sql    = "SELECT COUNT(*) AS value, statistics.device AS title FROM {$wpdb->prefix}burst_statistics AS statistics

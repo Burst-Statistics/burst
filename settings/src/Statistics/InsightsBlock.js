@@ -17,6 +17,8 @@ import {
 import { Line } from 'react-chartjs-2';
 import {parseISO, differenceInCalendarDays} from 'date-fns'
 import {useInsightsStats} from '../data/statistics/insights';
+import {useFilters} from '../data/statistics/filters';
+import {useDate} from '../data/statistics/date';
 
 ChartJS.register(
     CategoryScale,
@@ -29,7 +31,17 @@ ChartJS.register(
   );
 
 const InsightsBlock  = (props) => {
-  const {chartData, loading} = useInsightsStats(state => state);
+  const {chartData, loading, fetchChartData, insightsMetrics} = useInsightsStats(state => state);
+    const {filters} = useFilters();
+    const {startDate, endDate, range} = useDate();
+
+    useEffect(() => {
+        let args = {
+            filters: filters,
+            metrics: insightsMetrics,
+        };
+        fetchChartData(startDate, endDate, range, args);
+    }, [startDate, endDate, range, insightsMetrics, filters]);
 
     const options = {
         responsive: true,

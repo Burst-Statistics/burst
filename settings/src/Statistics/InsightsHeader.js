@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import {
-  Component,
-    useRef
+  useRef,
+  useState
 } from 'react';
 import Icon from '../utils/Icon';
 import {Button} from '@wordpress/components';
@@ -11,8 +11,7 @@ import {useInsightsStats} from '../data/statistics/insights';
 const InsightsHeader = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const {insightsMetrics, setInsightsMetrics} = useInsightsStats(state => state);
-  const refMetrics = useRef(insightsMetrics ? [...insightsMetrics] : []);
-  const availableMetrics = ['visitors', 'pageviews', 'bounces', 'sessions']
+  const [pendingMetrics, setPendingMetrics] = useState(insightsMetrics);
   const metricLabels = {
     visitors: __('Unique visitors', 'burst-statistics'),
     pageviews: __('Pageviews', 'burst-statistics'),
@@ -27,24 +26,21 @@ const InsightsHeader = (props) => {
 
   const handleClose = (e) => {
     // save metrics
-    setInsightsMetrics(refMetrics.current);
+    setInsightsMetrics(pendingMetrics);
     e.preventDefault();
     setAnchorEl(null);
   };
 
-  const changeMetric = (e) => {
-    // save metric as ref
-    const metric = e.target.value;
-    if (refMetrics.current.includes(metric)) {
-      // remove metric
-      const index = refMetrics.current.indexOf(metric);
-      if (index > -1) {
-        refMetrics.current.splice(index, 1);
+  const handleCheckboxChange = (event) => {
+    const metric = event.target.value;
+    const isChecked = event.target.checked;
+    setPendingMetrics((prevPendingMetrics) => {
+      if (isChecked) {
+        return [...prevPendingMetrics, metric];
+      } else {
+        return prevPendingMetrics.filter((pendingMetric) => pendingMetric !== metric);
       }
-    } else {
-      // add metric
-      refMetrics.current.push(metric);
-    }
+    });
   };
 
   return (
@@ -69,15 +65,20 @@ const InsightsHeader = (props) => {
             onClose={handleClose}
         >
           <h4>{__('Select metrics', 'burst-statistics')}</h4>
-          {availableMetrics.map((metric, index) => {
-                return (
-                    <div className="burst-filter-dropdown-content-body-item" key={index}>
-                      <input type="checkbox" id={metric} name={metric} value={metric} defaultChecked={insightsMetrics.includes(metric)} onChange={changeMetric} />
-                      <label htmlFor={metric}>{metricLabels[metric]}</label>
-                    </div>
-                )
-              }
-          )}
+          {Object.keys(metricLabels).map((metric) => (
+              <div className="burst-filter-dropdown-content-body-item" key={metric}>
+                <label>
+                  <input
+                      type="checkbox"
+                      value={metric}
+                      checked={pendingMetrics.includes(metric)}
+                      onChange={handleCheckboxChange}
+                  />
+                  {metricLabels[metric]}
+                </label>
+              </div>
+          ))}
+
           <input type="hidden" name="burst-metrics" value={insightsMetrics} />
           <Button onClick={handleClose} className="button button-secondary">{__('Apply', 'burst-statistics')}</Button>
         </Popover>

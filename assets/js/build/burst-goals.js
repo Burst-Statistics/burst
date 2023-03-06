@@ -7,7 +7,8 @@ const burst_goals_setup = () => {
   // don't have a path
   for (let i = 0; i < burst.goals.length; i++) {
     let goal = burst.goals[i];
-    if (goal.url && goal.url !== window.location.pathname) {
+    if (goal.url && (goal.url !== window.location.pathname && goal.url !== '*')) {
+      console.log('splicing goal');
       burst.goals.splice(i, 1);
     }
   }
@@ -33,7 +34,7 @@ const burst_goals_setup = () => {
 const burst_setup_viewport_tracker = (goal) => {
   console.log(`burst_setup_viewport_tracker for ${goal.title}`);
   let selector = goal.setup.attribute === 'id' ? '#' : '.';
-  let elements = document.querySelectorAll(goal.setup.element + selector + goal.setup.value);
+  let elements = document.querySelectorAll( selector + goal.setup.value);
 
   for (let i = 0; i < elements.length; i++) {
     let element = elements[i];

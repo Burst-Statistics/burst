@@ -4,35 +4,39 @@ import EmptyDataTable from './EmptyDataTable';
 import {usePagesStats} from '../data/statistics/pages';
 import {ClickableRowItem} from './ClickableRowItem';
 import ClickToFilter from './ClickToFilter';
+import {useEffect} from 'react';
+import {useFilters} from '../data/statistics/filters';
+import {useDate} from '../data/statistics/date';
 
 const PagesBlock = () => {
-  const {loading, data} = usePagesStats();
+  const {loading, data, fetchPagesData, pagesMetrics} = usePagesStats();
+  const {filters} = useFilters();
+  const {startDate, endDate, range} = useDate();
   let loadingClass = loading ? 'burst-loading' : '';
+
+  useEffect(() => {
+    let args = {
+      filters: filters,
+      metrics: pagesMetrics,
+    };
+    fetchPagesData(startDate, endDate, range, args);
+  }, [startDate, endDate, range, pagesMetrics, filters]);
 
   // if data is empty array, then we need to show empty data table
   if (data.length === 0) {
     return (
         <div className={'burst-loading-container ' + loadingClass}>
-          return <EmptyDataTable/>;
+          <EmptyDataTable/>;
         </div>
     );
   }
 
   data.columns[0].cell = (row) => {
-    if (row.page_id !== 0 && row.page_id !== '0') {
-      return (
-          <ClickToFilter filter="page_id" filterValue={row.page_id}>
-            {row.page_url}
-          </ClickToFilter>
-      );
-    }
-    else {
       return (
           <ClickToFilter filter="page_url" filterValue={row.page_url}>
             {row.page_url}
           </ClickToFilter>
       );
-    }
   };
   let tableData = data.data;
   let columns = data.columns;

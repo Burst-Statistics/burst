@@ -276,24 +276,30 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$defaults = array(
 				'date_start' => 0,
 				'date_end'   => 0,
-				'interval'   => 'day',
 				'metrics'    => array( 'visitors', 'pageviews' ),
 			);
 			$args     = wp_parse_args( $args, $defaults );
-
 			$metrics       = $this->sanitize_metrics( $args['metrics'] );
 			$metric_labels = $this->get_metrics();
 
 			// generate labels for dataset
 			$labels   = array();
-			$interval = $args['interval'];
 			// if not interval is a string and string is not ''
-			if ( ! is_string( $interval ) || $interval === '' ) {
-				$interval = 'day';
-			}
 			$date_start    = $args['date_start'];
 			$date_end      = $args['date_end'];
+			$nr_of_days = $this->get_nr_of_periods( 'day', $date_start, $date_end );
+
+			$interval = 'hour';
+
+			// if $nr_of_days > 3 then interval is day
+			// if $nr_of_days > 30 then interval is week
+			// if $nr_of_days > 365 then interval is month
+			if ( $nr_of_days > 3 ) {
+				$interval = 'day';
+			}
+
 			$nr_of_periods = $this->get_nr_of_periods( $interval, $date_start, $date_end );
+
 			$interval_args = [
 				'hour' => [
 					'format'     => 'H:i',
@@ -490,7 +496,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'date_end'   => 0,
 				'metrics'    => [ 'pageviews' ],
 				// only one metric should be passed at the moment. @todo add support for multiple metrics
-				'page_id'    => false,
 			);
 			$args     = wp_parse_args( $args, $defaults );
 
@@ -532,7 +537,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'metric'     => $metric,
 					'date_start' => $date_start,
 					'date_end'   => $date_end,
-					'page_id'    => (int) $args['page_id'],
 					'filters'    => $args['filters']
 				);
 				$data = $this->get_pages_by_metric( $args );
@@ -560,13 +564,13 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$end      = (int) $args['date_end'];
 			$metric   = $this->sanitize_metric( $args['metric'] );
 			// add page_url and page_id to metrics array
-			$metrics = [ $metric, 'page_url', 'page_id' ];
+			$metrics = [ $metric, 'page_url' ];
 
 
 			$filters  = $args['filters'];
 			$filters['bounce'] = 0;
 
-			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_id' );
+			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url' );
 			return $wpdb->get_results( $sql );
 		}
 
@@ -683,18 +687,18 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$sqlperiod = "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '$server_timezone', '" . $timezone . "'), '" . $sqlformat . "')"; // this is the sql format for the period
 
 			if ( $metric === 'bounces' ) {
-				$select            = 'count';
+				$select            = 'count(*)';
 				$filters['bounce'] = 1;
-				$sql = $this->get_sql_table( $start, $end, $select, $filters );
 			} else {
 				$filters['bounce'] = 0;
 				$select = $this->get_sql_select_for_metric( $metric );
-				$sql = $this->get_sql_table( $start, $end, ['*'], $filters );
 			}
+			$sql = $this->get_sql_table( $start, $end, ['*'], $filters );
 			$sql = "SELECT $select as hit_count,
                         $sqlperiod as period
                         FROM ($sql) as stats
                         GROUP BY period order by period";
+
 
 			$results = $wpdb->get_results( $sql );
 
@@ -790,11 +794,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$visitors_uplift_status = $this->calculate_uplift_status( $prev_data[0]->visitors, $visitors );
 
 			// time per session = avg time_on_page / avg pageviews per session
-			$average_pageviews_per_session = $curr_data[0]->pageviews / $curr_data[0]->sessions;
+			$average_pageviews_per_session = ($curr_data[0]->sessions !== 0) ? ($curr_data[0]->pageviews / $curr_data[0]->sessions) : 0;
 			$time_per_session = $curr_data[0]->avg_time_on_page / $average_pageviews_per_session;
 
 			// prev time per session
-			$prev_average_pageviews_per_session = $prev_data[0]->pageviews / $prev_data[0]->sessions;
+			$prev_average_pageviews_per_session = $prev_data[0]->sessions !== 0 ? ($prev_data[0]->pageviews / $prev_data[0]->sessions) : 0;
 			$prev_time_per_session = $prev_data[0]->avg_time_on_page / $prev_average_pageviews_per_session;
 
 			// calculate uplift for time per session
@@ -803,33 +807,36 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			// get top referrer
 			$top_referrer = $wpdb->get_results($this->get_sql_table( $date_start, $date_end, ['pageviews', 'referrer'], ['bounce' => 0], 'referrer', 'pageviews DESC', 1 ));
-			if ( $top_referrer[0]->referrer == '' ) {
-				$top_referrer[0]->referrer = __( 'Direct', 'burst-statistics' );
-			} else if ( $top_referrer[0]->pageviews === 0 ) {
-				$top_referrer[0]->referrer = __( 'No referrers', 'burst-statistics' );
+			if ( isset( $top_referrer[0] ) ) {
+				if ( $top_referrer[0]->referrer == '' ) {
+					$top_referrer[0]->referrer = __( 'Direct', 'burst-statistics' );
+				} else if ( $top_referrer[0]->pageviews === 0 ) {
+					$top_referrer[0]->referrer = __( 'No referrers', 'burst-statistics' );
+				}
 			}
 
 			// get most visited page
-			$most_visited = $wpdb->get_results($this->get_sql_table( $date_start, $date_end, ['pageviews', 'page_url'], ['bounce' => 0], 'page_url', 'pageviews DESC', 1 ));
-			if ( $most_visited[0]->page_url === '/' ) {
-				$most_visited[0]->page_url = __( 'Homepage', 'burst-statistics' );
-			} else if ( ! $most_visited[0]->pageviews === 0 ) {
-				$most_visited[0]->page_url = __( 'No pageviews', 'burst-statistics' );
-			}
 
+			$most_visited = $wpdb->get_results($this->get_sql_table( $date_start, $date_end, ['pageviews', 'page_url'], ['bounce' => 0], 'page_url', 'pageviews DESC', 1 ));
+			if ( isset( $most_visited[0] ) ) {
+				if ( $most_visited[0]->page_url === '/' ) {
+					$most_visited[0]->page_url = __( 'Homepage', 'burst-statistics' );
+				} else if ( ! $most_visited[0]->pageviews === 0 ) {
+					$most_visited[0]->page_url = __( 'No pageviews', 'burst-statistics' );
+				}
+			}
 			// Create the result array
-			$result = array(
-				'visitors'                       => $visitors,
-				'visitors_uplift'                => $visitors_uplift,
-				'visitors_uplift_status'         => $visitors_uplift_status,
-				'time_per_session'               => $time_per_session,
-				'time_per_session_uplift'        => $time_per_session_uplift,
-				'time_per_session_uplift_status' => $time_per_session_uplift_status,
-				'top_referrer'                   => $top_referrer[0]->referrer,
-				'top_referrer_pageviews'         => $top_referrer[0]->pageviews,
-				'most_visited'                   => $most_visited[0]->page_url,
-				'most_visited_pageviews'         => $most_visited[0]->pageviews,
-			);
+
+			$result['visitors']                       = $visitors;
+			$result['visitors_uplift']                = $visitors_uplift;
+			$result['visitors_uplift_status']         = $visitors_uplift_status;
+			$result['time_per_session']               = $time_per_session;
+			$result['time_per_session_uplift']        = $time_per_session_uplift;
+			$result['time_per_session_uplift_status'] = $time_per_session_uplift_status;
+			$result['top_referrer']                   = $top_referrer[0]->referrer;
+			$result['top_referrer_pageviews']         = $top_referrer[0]->pageviews;
+			$result['most_visited']                   = $most_visited[0]->page_url;
+			$result['most_visited_pageviews']         = $most_visited[0]->pageviews;
 
 			return $result;
 		}
@@ -948,6 +955,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			return $sql;
 		}
 
+		/**
+		 * @param $metrics
+		 * @param $filters array
+		 * @return string
+		 */
 		function get_sql_select_for_metrics( $metrics ) {
 			$select = '';
 			$count  = count( $metrics );

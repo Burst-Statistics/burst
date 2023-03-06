@@ -9,9 +9,20 @@ import {getPercentage} from '../utils/formatting';
 import Icon from '../utils/Icon';
 import {useDevicesStats} from '../data/statistics/devices';
 import ClickToFilter from './ClickToFilter';
+import {useFilters} from '../data/statistics/filters';
+import {useDate} from '../data/statistics/date';
 
 const DevicesBlock = () => {
-    const {loading, data} = useDevicesStats();
+    const {loading, data, fetchDevicesData} = useDevicesStats();
+    const {filters} = useFilters();
+    const {startDate, endDate, range} = useDate();
+
+    useEffect(() => {
+        let args = {
+            filters: filters,
+        };
+        fetchDevicesData(startDate, endDate, range, args);
+    }, [startDate, endDate, range, filters]);
 
     let loadingClass = loading ? 'burst-loading' : '';
     return (

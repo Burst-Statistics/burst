@@ -8,10 +8,22 @@ import EmptyDataTable from './EmptyDataTable';
 import * as burst_api from '../utils/api';
 import {useReferrersStats} from '../data/statistics/referrers';
 import ClickToFilter from './ClickToFilter';
+import {useFilters} from '../data/statistics/filters';
+import {useDate} from '../data/statistics/date';
 
 const ReferrersBlock = (props) => {
-  const {loading, data} = useReferrersStats();
+  const {loading, data, fetchReferrersData, referrersMetrics} = useReferrersStats();
   let loadingClass = loading ? 'burst-loading' : '';
+  const {filters} = useFilters();
+  const {startDate, endDate, range} = useDate();
+
+  useEffect(() => {
+    let args = {
+      filters: filters,
+      metrics: referrersMetrics,
+    };
+    fetchReferrersData(startDate, endDate, range, args);
+  }, [startDate, endDate, range, referrersMetrics, filters]);
 
   // if data is empty array, then we need to show empty data table
   if (data.length === 0) {

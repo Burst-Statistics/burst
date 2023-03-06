@@ -27,12 +27,7 @@ export const useInsightsStats = create((set) => ({
   loading: true,
   setLoading: (loading) => set({loading}),
   insightsMetrics: ['visitors', 'pageviews'],
-  setInsightsMetrics: (metrics) => {
-    set(
-        produce((state) => {
-          state.insightsMetrics = metrics;
-        }));
-  },
+  setInsightsMetrics: (metrics) => set(() => ({ insightsMetrics: metrics })),
   interval: 'day',
   setInterval: (interval) => set({interval}),
   chartData: emptyChartData,

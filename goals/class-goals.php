@@ -72,8 +72,8 @@ if ( ! class_exists( "burst_goals" ) ) {
 			$goal_field_values['goal_title'] = $goal_raw_values['title'] ?? '';
 			$goal_field_values['goal_status'] = $goal_raw_values['status'] ?? 'inactive';
 			$goal_field_values['goal_type'] = $goal_raw_values['type'] ?? 'clicks';
-			$goal_field_values['goal_page_or_website'] = $goal_raw_values['url'] !== '' ? 'page' : 'website';
-			$goal_field_values['goal_specific_page'] = $goal_raw_values['url'] ?? '';
+			$goal_field_values['goal_page_or_website'] = $goal_raw_values['url'] !== '*' ? 'page' : 'website';
+			$goal_field_values['goal_specific_page'] = $goal_raw_values['url'] !== '*' ? $goal_raw_values['url'] : '';
 
 			$goal_field_values['goal_element'] = $goal_raw_values['setup'] ? json_decode($goal_raw_values['setup']) : [
 					'attribute' => '',
@@ -93,20 +93,20 @@ if ( ! class_exists( "burst_goals" ) ) {
 
 		    if ( isset( $goal_field_values['goal_title'] ) ) $args['title'] = $goal_field_values['goal_title'] ?? '';
 		    if ( isset( $goal_field_values['goal_status'] ) ) $args['status'] = $goal_field_values['goal_status'] ?? 'inactive';
+			if ( isset( $goal_field_values['goal_status'] ) ) $args['date_start'] = $goal_field_values['goal_status'] === 'active' ? time() : '';
+			if ( isset( $goal_field_values['goal_status'] ) ) $args['date_end'] = $goal_field_values['goal_status'] === 'active' ? 0 : time();
+
+
 		    if ( isset( $goal_field_values['goal_type'] ) ) $args['type'] = isset($available_goal_types[$goal_field_values['goal_type']]) ? $goal_field_values['goal_type'] : '';
 		    if ( isset( $goal_field_values['goal_type'] ) ) $args['server_side'] = $available_goal_types[$goal_field_values['goal_type']]['server_side'] ?? 0;
 
+			error_log(print_r($goal_field_values, true));
 		    if ( isset( $goal_field_values['goal_specific_page'] ) ) $args['url'] = $goal_field_values['goal_specific_page'] !== '' ? $goal_field_values['goal_specific_page'] : '';
 		    if ( isset( $goal_field_values['goal_page_or_website'] ) ) $args['url'] = $goal_field_values['goal_page_or_website'] === 'website' ? '' : $args['url'] ?? '';
+			error_log(print_r($args, true));
 
 		    if ( isset( $goal_field_values['goal_element'] ) ) $args['setup']['attribute'] = $goal_field_values['goal_element']['attribute'] ?? '';
 		    if ( isset( $goal_field_values['goal_element'] ) ) $args['setup']['value'] = $goal_field_values['goal_element']['value'] ?? '';
-
-
-			// if the only value that is set is the ID, then we don't need to update anything
-            if ( count( $args ) === 1 ) {
-				return null;
-		    }
 
 		    // set db values for goal
 		    return $this->set($args);
@@ -125,29 +125,33 @@ if ( ! class_exists( "burst_goals" ) ) {
 			// sanitize data
 			// if arg exists, then sanitize it
 			if ( isset( $args['ID'] ) ) $args['ID']   = (int) $args['ID'];
-			if ( isset( $args['ID'] ) ) $args['title'] = sanitize_text_field( $args['title'] );
+			if ( isset( $args['title'] ) ) $args['title'] = sanitize_text_field( $args['title'] );
 			if ( isset( $args['type'] ) ) $args['type']  = sanitize_text_field( $args['type'] );
 			if ( isset( $args['status'] ) ) $args['status'] = sanitize_text_field( $args['status'] );
 			if ( isset( $args['server_side'] ) ) $args['server_side'] =  (int) $args['server_side'];
-			if ( isset( $args['url'] ) ) $args['url']   = burst_sanitize_relative_url( $args['url'] );
-			if ( isset( $args['setup'] ) ) $args['setup'] = array_map( 'sanitize_text_field', $args['setup']);
+			if ( isset( $args['url'] ) ) $args['url']  = burst_sanitize_relative_url( $args['url'] );
 			if ( isset( $args['date_start'] ) ) $args['date_start'] = (int) $args['date_start'];
 			if ( isset( $args['date_end'] ) ) $args['date_end'] = (int) $args['date_end'];
 			if ( isset( $args['date_created'] ) ) $args['date_created'] = (int) $args['date_created'];
+			error_log('args: ' . print_r($args, true));
 
 
 			// if setup already has values, then we need to merge the new values with the existing values
 			if ( isset( $args['ID'] ) && $args['ID'] > 0 ) {
 				$existing_goal = $this->get( $args['ID'] );
-				if ( isset( $existing_goal['setup'] ) && $existing_goal['setup'] !== '' && isset( $args['setup'] ) && $args['setup'] !== '' ) {
+				if ( isset( $args['setup'] ) && $args['setup'] !== '' && isset( $existing_goal['setup'] ) && $existing_goal['setup'] !== '' ) {
 					$existing_goal['setup'] = json_decode( $existing_goal['setup'], true );
 					$existing_goal['setup'] = is_array( $existing_goal['setup'] ) ? $existing_goal['setup'] : [];
-
-					$args['setup'] = array_merge( $existing_goal['setup'], $args['setup'] );
+					error_log('existing goal setup: ' . print_r($existing_goal['setup'], true));
+					error_log('new goal setup: ' . print_r($args['setup'], true));
+					$args['setup'] = wp_parse_args( $args['setup'], $existing_goal['setup'] );
+					error_log('merged goal setup: ' . print_r($args['setup'], true));
 				}
-				$args['setup'] = json_encode( $args['setup'] );
+				if ( isset($args['setup'] ) ) $args['setup'] = json_encode( $args['setup'] );
 				return $wpdb->update( $table_name, $args, array( 'ID' => $args['ID'] ) );
 			}
+			// insert new goal
+			error_log('inserting new goal');
 
 			$args['setup'] = isset( $args['setup'] ) ? json_encode( $args['setup'] ) : '{}';
 
@@ -166,7 +170,6 @@ if ( ! class_exists( "burst_goals" ) ) {
 		}
 
 		public function delete( $id ) {
-			global $wpdb;
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_goals';
 			$wpdb->delete( $table_name, array( 'ID' => $id ) );

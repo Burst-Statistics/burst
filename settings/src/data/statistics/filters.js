@@ -7,7 +7,6 @@ export const useFilters = create(set => ({
       filters: {
         page_id: '',
         page_url: '',
-        // post_type: '',
         goal_id: '',
         referrer: '',
         device: '',
@@ -15,12 +14,8 @@ export const useFilters = create(set => ({
         platform: '',
       },
       filtersConf: {
-        page_id: {
-          label: __('Page', 'burst-statistics'),
-          icon: 'page',
-        },
         page_url: {
-          label: __('Page URL', 'burst-statistics'),
+          label: __('Page', 'burst-statistics'),
           icon: 'page',
         },
         goal_id: {

@@ -18,7 +18,6 @@ if ( ! function_exists( 'burst_admin_logged_in' ) ) {
 
 if ( ! function_exists( 'burst_is_activation' ) ) {
 	function burst_is_activation() {
-        error_log("burst_is_activation: " . current_user_can( 'activate_plugins') . " " . isset( $_GET['action'] ) . " " . $_GET['action'] === 'activate');
 		return current_user_can( 'activate_plugins') && isset( $_GET['action'] ) && $_GET['action'] === 'activate';
 	}
 }
@@ -671,9 +670,12 @@ if ( ! function_exists( 'burst_sanitize_relative_url' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_relative_url( $relative_url ): string {
-        if ( $relative_url[0] !== '/' ) {
-            $relative_url = '/' . $relative_url;
+        if ( empty( $relative_url ) ) {
+            return '*';
         }
+		if ( $relative_url[0] !== '/' ) {
+			$relative_url = '/' . $relative_url;
+		}
 		return trailingslashit( filter_var( $relative_url, FILTER_SANITIZE_URL ) );
 	}
 }

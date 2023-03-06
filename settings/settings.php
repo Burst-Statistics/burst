@@ -413,8 +413,6 @@ function burst_get_data($request){
 			$data = BURST()->goal_statistics->get_live_goals_data($args);
 			break;
 		case 'insights':
-			$args['interval'] = $request_args['interval'] ?? 'day';
-			$args['interval'] = BURST()->statistics->sanitize_interval($args['interval']);
 			$data = BURST()->statistics->get_insights_data($args);
 			break;
 		case 'compare':

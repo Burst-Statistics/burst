@@ -1,11 +1,13 @@
 import RadioButtons from './RadioButtons';
-import { __ } from '@wordpress/i18n';
-import {useEffect, useState} from 'react';
+import { __, sprintf } from '@wordpress/i18n';
+import {useEffect, useState, useRef} from 'react';
 import TextInput from './TextInput';
 const ClassId = (props) => {
   const { field, goal_id, label, help, value, onChangeHandler } = props;
-  const [classOrId, setClassOrId] = useState(value.attribute);
+  const [classOrId, setClassOrId] = useState(value.attribute || 'class');
   const [classOrIdValue, setClassOrIdValue] = useState(value.value);
+  const [warning, setWarning] = useState('');
+  const warningTimeoutRef = useRef(null);
 
   let fields = {...field};
   fields.options = {
@@ -22,14 +24,6 @@ const ClassId = (props) => {
       description: __('Add an id to the element', 'burst-statistics')
     }
   }
-  let search = 'world';
-
-  // useEffect(() => {
-  //   if (value) {
-  //     setClassOrId(value.attribute);
-  //     setClassOrIdValue(value.value);
-  //   }
-  // }, []);
 
   const handleRadioButtonChange = (value) => {
     setClassOrId(value);
@@ -37,9 +31,25 @@ const ClassId = (props) => {
   }
 
   const handleTextInputChange = (value) => {
-    setClassOrIdValue(value);
-    onChangeHandler({attribute: classOrId, value: value});
+    const inputValue = event.target.value;
+    const strippedValue = inputValue.replace(/[^a-zA-Z0-9-_]/g, ''); // this regex pattern will strip out all characters except for letters, numbers, hyphens, and underscores
+    if (inputValue !== strippedValue) {
+      let strippedChar = inputValue.replace(strippedValue, '');
+      let warning = sprintf(__(`The character '%s' can not be used.`, 'burst-statistics'), strippedChar );
+      if ( strippedChar === '.' || strippedChar === '#') {
+        warning = sprintf(__(`You don't need to prefix the input with a '%s' character.`, 'burst-statistics'), strippedChar, strippedChar );
+      }
+      setWarning(warning);
+      clearTimeout(warningTimeoutRef.current);
+      warningTimeoutRef.current = setTimeout(() => {
+        setWarning('');
+      }, 6000); // clear the warning state after 6 seconds
+    }
+    setClassOrIdValue(strippedValue);
+    onChangeHandler({attribute: classOrId, value: strippedValue});
   }
+
+
 
   return (
       <>
@@ -51,64 +61,11 @@ const ClassId = (props) => {
           onChangeHandler={handleRadioButtonChange}
       />
         <TextInput value={classOrIdValue} onChangeHandler={handleTextInputChange} field={field} label={__('What is the name for the') + ' ' + classOrId + '?' } />
+        {warning && <p
+            style={{transition: 'opacity 0.5s ease-out', opacity: 1}}
+            className="burst-settings-goals__list__item__fields__warning">{warning}</p>}
       </>
   );
 }
 
 export default ClassId;
-
-// import Icon from '../../utils/Icon';
-// import {useEffect, useState} from 'react';
-// import { __ } from '@wordpress/i18n';
-//
-// const ClassId = (props) => {
-//   const { disabled, field, goal_id, label, help, value, onChangeHandler } = props;
-//   const [classId, setClassId] = useState('');
-//   const [icon, setIcon] = useState('period');
-//
-//   const handleChange = e => {
-//     const value = e.target.value;
-//     if (value.startsWith('.')) {
-//       setIcon('period');
-//     }
-//     else if (value.startsWith('#')) {
-//       setIcon('hashtag');
-//     }
-//     if (value.match(/^[.#]?[a-z0-9-_]+$/i) || value === '') {
-//       let periodOrHashtag = icon === 'period' ? '.' : '#';
-//       setClassId(value);
-//       onChangeHandler(field, periodOrHashtag + value);
-//     }
-//   };
-//   //
-//   // useEffect(() => {
-//   //   handleChange({target: {value: value}});
-//   // }, [icon]);
-//
-//   const handleClick = () => {
-//     if (icon === 'period') {
-//       setIcon('hashtag')
-//     }
-//     else {
-//       setIcon('period')
-//     }
-//
-//   }
-//
-//   return (
-//       <div className={`burst-class-id-field`}>
-//         <p className="burst-label">{label}</p>
-//         <div className="burst-class-id-field__input">
-//           <button  onClick={handleClick}> <Icon name={icon}/></button>
-//           <input
-//               type="text"
-//               placeholder={icon === 'period' ? __('Add class', 'burst-statistics') : __('Add id', 'burst-statistics')}
-//               value={classId}
-//               onChange={handleChange}
-//           />
-//         </div>
-//       </div>
-//   );
-// };
-//
-// export default ClassId;

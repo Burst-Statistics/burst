@@ -144,7 +144,7 @@ const DateRange = (props) => {
   return (
       <div className="burst-date-range-container">
         <button onClick={handleClick} id="burst-date-range-picker-open-button" className="button button-input" >
-          <Icon name='calendar' />
+          <Icon name='calendar' size={'18'}/>
 
           {range === 'custom' && display.startDate +  '-' +  display.endDate}
           {range !== 'custom' && availableRanges[range].label}

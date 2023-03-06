@@ -49,6 +49,7 @@ const GoalsBlock = () => {
       return 'goals';
     }
   }
+  console.log(totalGoalsData);
 
   let todayIcon = selectGoalIcon(todayGoals);
   let totalIcon = selectGoalIcon(totalGoalsData.total.value);
@@ -84,12 +85,12 @@ const GoalsBlock = () => {
                 <p className="burst-goals-list-item-number">{totalGoalsData.topPerformer.value}</p>
               </div>
             </Tooltip>
-            <Tooltip arrow title={totalGoalsData.visitors.tooltip}
+            <Tooltip arrow title={totalGoalsData.pageviews.tooltip}
                      enterDelay={delayTooltip}>
               <div className="burst-goals-list-item">
-                <Icon name="visitors"/>
-                <p className="burst-goals-list-item-text">{totalGoalsData.visitors.title}</p>
-                <p className="burst-goals-list-item-number">{totalGoalsData.visitors.value}</p>
+                <Icon name="pageviews"/>
+                <p className="burst-goals-list-item-text">{totalGoalsData.pageviews.title}</p>
+                <p className="burst-goals-list-item-number">{totalGoalsData.pageviews.value}</p>
               </div>
             </Tooltip>
             <Tooltip arrow title={totalGoalsData.conversionPercentage.tooltip}
@@ -110,7 +111,10 @@ const GoalsBlock = () => {
             </Tooltip>
           </div>
           <div className={'burst-grid-item-footer'}>
-            <p className={'burst-small-text burst-flex-push-right'}>{__('Activated', 'burst-statistics')} <span>{getRelativeTime(totalGoalsData.dateStart)}</span>
+            <p className={'burst-small-text burst-flex-push-right'}>{__('Activated', 'burst-statistics')} <span>
+              {totalGoalsData.dateStart !== '-' && getRelativeTime(totalGoalsData.dateStart)}
+              {totalGoalsData.dateStart === '-' && '-'}
+            </span>
             </p>
           </div>
         </div>

@@ -25,7 +25,7 @@ const defaultData = {
     title: '-',
     value: '-',
   },
-  visitors: {
+  pageviews: {
     title: '-',
     value: '-',
   },

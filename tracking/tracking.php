@@ -48,7 +48,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'time_on_page'      => null,
 		);
 		$data            = wp_parse_args( $data, $defaults );
-		error_log( 'burst_track_hit: ' . print_r( $data, true ) );
 		// update array
 		$arr                      = array();
 		$arr['entire_page_url']   = burst_sanitize_entire_page_url( $data['url'] ); // required
@@ -66,6 +65,9 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		$arr['time_on_page']      = burst_sanitize_time_on_page( $data['time_on_page'] );
 		$arr['bounce']            = 1;
 
+		// if user agent is not set then this is an update hit
+		$is_update_hit = empty( $arr['user_agent'] );
+
 		$arr = apply_filters( 'burst_before_track_hit', $arr );
 
 		$session_arr = array(
@@ -74,7 +76,12 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		);
 		// update burst_sessions table
 		// Get the last record with the same uid within 30 minutes. If it exists, use session_id. If not, create a new session.
-		$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'] );
+		if ($is_update_hit) { // if update hit, make sure that the URL matches.
+			$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'], $arr['page_url'] );
+		} else {
+			$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'] );
+		}
+
 
 		// Determine if hit is a bounce
 		// - check if previous page was not a bounce, then this is also not a bounce
@@ -444,11 +451,12 @@ if ( ! function_exists( 'burst_goal_is_completed' ) ) {
 			return false;
 		}
 
+
 		switch ( $goal['type'] ) {
 			case 'visit':
-				// @todo compare parts of url (e.g. /hello-world/ and /hello-world/?utm_source=google)
+				// @todo maybe add support to compare parts of url (e.g. /hello-world/ and /hello-world/?utm_source=google)
 				// if url in hit data is equal to goal url
-				if ( $hit_data['entire_page_url'] === $goal['setup']['url'] ) {
+				if ( $hit_data['page_url'] === $goal['url'] ) {
 					return true;
 				}
 				break;
@@ -470,7 +478,6 @@ if ( ! function_exists( 'burst_get_completed_goals' ) ) {
 		$completed_client_goals = burst_sanitize_completed_goal_ids( $client_side_goals );
 		$completed_server_goals = [];
 		$server_goals           = burst_get_active_goals( true );
-
 		// if server side goals exist
 		if ( $server_goals ) {
 			// loop through server side goals
@@ -578,7 +585,7 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 	 *
 	 * @return null[]
 	 */
-	function burst_get_last_user_statistic( $uid, $fingerprint ): array {
+	function burst_get_last_user_statistic( $uid, $fingerprint, $page_url = false ): array {
 		global $wpdb;
 		// if fingerprint is send get the last user statistic with the same fingerprint
 		$search_uid   = $fingerprint ?: $uid;
@@ -592,11 +599,12 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 		if ( ! $search_uid ) {
 			return $default_data;
 		}
+		$where = $page_url ? " AND page_url = '{$page_url}'" : '';
 		$data = $wpdb->get_row(
 			$wpdb->prepare(
 				"select ID, session_id, page_url, time_on_page, bounce
 							from {$wpdb->prefix}burst_statistics
-		                    where uid = %s AND time > %s ORDER BY ID DESC limit 1",
+		                    where uid = %s AND time > %s {$where} ORDER BY ID DESC limit 1",
 				$search_uid,
 				strtotime( "-30 minutes" )
 			)
@@ -749,7 +757,7 @@ if ( ! function_exists( 'burst_required_values_are_set' ) ) {
 	 * @return bool
 	 */
 	function burst_required_values_are_set( array $data ): bool {
-		return ! ( isset( $data['uid'] ) && isset( $data['page_url'] ) && isset( $data['entire_page_url'] ) && isset( $data['page_id'] ) !== null );
+		return ! ( isset( $data['uid'] ) && isset( $data['page_url'] ) && isset( $data['entire_page_url'] ) && isset( $data['user_agent']) && isset( $data['page_id'] ) !== null );
 	}
 }
 

@@ -76,7 +76,7 @@ export default (props) => {
               colors: {
                 ...theme.colors,
                 text: 'orangered',
-                primary25: 'hotpink',
+                primary25: 'var(--rsp-green-faded)',
                 primary: 'var(--rsp-green)',
               },
             })}
