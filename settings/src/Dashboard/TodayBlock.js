@@ -19,18 +19,18 @@ const TodayBlock = () => {
   const {liveVisitors, todayData, fetchLiveVisitors, fetchTodayData} = useTodayStats();
 
   useEffect(() => {
-    const intervalLive = setInterval(() => {
-      fetchLiveVisitors();
-    }, 3000);
-
-    const intervalToday = setInterval(() => {
-      fetchTodayData();
-    }, 15000);
-
-    return () => {
-      clearInterval(intervalLive);
-      clearInterval(intervalToday);
-    };
+    // const intervalLive = setInterval(() => {
+    //   fetchLiveVisitors();
+    // }, 3000);
+    //
+    // const intervalToday = setInterval(() => {
+    //   fetchTodayData();
+    // }, 15000);
+    //
+    // return () => {
+    //   clearInterval(intervalLive);
+    //   clearInterval(intervalToday);
+    // };
   }, []);
 
     // get currentDate

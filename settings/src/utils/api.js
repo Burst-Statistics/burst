@@ -17,30 +17,32 @@ const getNonce = () => {
 	return '&nonce='+burst_settings.burst_nonce+'&token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 };
 burst_settings.countRequests = []; // @todo remove this
-const makeRequest = async (path, method = 'GET', data) => {
-	try {
-		burst_settings.countRequests.push({path, method, data});
-		const config = {
-			headers: {
-				'X-WP-Nonce': burst_settings.nonce,
+const makeRequest = (path, method = 'GET', data) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			burst_settings.countRequests.push({path, method, data});
+			const config = {
+				headers: {
+					'X-WP-Nonce': burst_settings.nonce,
+				}
 			}
+			if (usesPlainPermalinks()) {
+				const url = burst_settings.site_url + path;
+				const response = await axios[method.toLowerCase()](url, data, config);
+				resolve(response.data);
+			} else {
+				const response = await apiFetch({
+					path,
+					method,
+					data
+				});
+				resolve(response);
+			}
+		} catch (error) {
+			console.error(error);
+			reject(error);
 		}
-		if (usesPlainPermalinks()) {
-			const url = burst_settings.site_url + path;
-			const response = await axios[method.toLowerCase()](url, data, config);
-			return response.data;
-		} else {
-			const response = await apiFetch({
-				path,
-				method,
-				data
-			});
-			return response;
-		}
-	} catch (error) {
-		console.error(error);
-		throw error;
-	}
+	});
 }
 
 export const getFields = () => makeRequest('burst/v1/fields/get'+glue()+getNonce());

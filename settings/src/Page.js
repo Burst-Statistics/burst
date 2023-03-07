@@ -50,52 +50,6 @@ const Page = () => {
   const { fetchPagesData, pagesMetrics } = usePagesStats();
   const { fetchReferrersData, referrersMetrics } = useReferrersStats();
 
-
-  const fetchDashboardData = async () => {
-    // console log time start
-    console.log('fetchDashboardData start', new Date().getTime());
-    const [liveVisitorsData, todayData, todayGoalsData, totalGoalsData] = await Promise.all([
-      fetchLiveVisitors(),
-      fetchTodayData(),
-      fetchTodayGoals(selectedGoalId),
-      fetchTotalGoalsData(selectedGoalId),
-    ]);
-    console.log('fetchDashboardData end', new Date().getTime());
-  }
-
-  const fetchStatisticsData = async () => {
-    // console log time start
-    console.log('fetchStatisticsData start', new Date().getTime());
-    let insightsArgs = {
-      filters: filters,
-      metrics: insightsMetrics,
-    };
-    let compareArgs = {
-      filters: filters,
-    };
-    let devicesArgs = {
-      filters: filters,
-    };
-    let pagesArgs = {
-      filters: filters,
-      metrics: pagesMetrics,
-    };
-    let referrerArgs = {
-      filters: filters,
-      metrics: referrersMetrics,
-    }
-
-
-    await fetchChartData(startDate, endDate, range, insightsArgs);
-    await fetchCompareData(startDate, endDate, range, compareArgs);
-    await fetchDevicesData(startDate, endDate, range, devicesArgs);
-    await fetchPagesData(startDate, endDate, range, pagesArgs);
-    await fetchReferrersData(startDate, endDate, range, referrerArgs);
-
-    console.log('fetchStatisticsData end', new Date().getTime());
-  }
-
-
   // change pages
   useEffect(async () => {
     console.log('fields useEffect');
@@ -128,28 +82,41 @@ const Page = () => {
   // function to load data in the background after the main data has been loaded.
   useEffect(async () => {
     const currentAnchor = getAnchor();
+    const args = {
+      filters: filters,
+    }
     if (currentAnchor === 'statistics') {
-      try {
-        await Promise.all([
-          fetchStatisticsData()
-        ]);
-        setTimeout(() => {
-          fetchDashboardData();
-        }, 2000);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
+      Promise.all([
+        fetchChartData(startDate, endDate, range, {...args, metrics: insightsMetrics}),
+        fetchCompareData(startDate, endDate, range, args),
+        fetchDevicesData(startDate, endDate, range, args),
+        fetchPagesData(startDate, endDate, range, {...args, metrics: pagesMetrics}),
+        fetchReferrersData(startDate, endDate, range, {...args, metrics: referrersMetrics}),
+      ]).then((results) => {
+        console.log('All statistics blocks are loaded', results);
+        fetchLiveVisitors();
+        fetchTodayData();
+        fetchTodayGoals(selectedGoalId);
+        fetchTotalGoalsData(selectedGoalId);
+      }).catch((error) => {
+        console.error(error);
+      });
     } else {
-      try {
-        await Promise.all([
-          fetchDashboardData()
-        ]);
-        setTimeout(() => {
-          fetchStatisticsData();
-        }, 2000);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
+      Promise.all([
+        fetchLiveVisitors(),
+        fetchTodayData(),
+        fetchTodayGoals(selectedGoalId),
+        fetchTotalGoalsData(selectedGoalId),
+      ]).then((results) => {
+        console.log('All dashboard blocks are loaded', results);
+        fetchChartData(startDate, endDate, range, {...args, metrics: insightsMetrics});
+        fetchCompareData(startDate, endDate, range, args);
+        fetchDevicesData(startDate, endDate, range, args);
+        fetchPagesData(startDate, endDate, range, {...args, metrics: pagesMetrics});
+        fetchReferrersData(startDate, endDate, range, {...args, metrics: referrersMetrics});
+      }).catch((error) => {
+        console.error(error);
+      });
     }
   }, [])
 

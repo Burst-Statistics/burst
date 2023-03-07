@@ -38,12 +38,12 @@ export const useTodayStats = create(set => ({
   liveVisitors: '-',
   todayData: defaultData,
   fetchLiveVisitors: () => {
-    burst_api.getData('live-visitors', startDate, endDate, 'custom').then((response) => {
+    return burst_api.getData('live-visitors', startDate, endDate, 'custom').then((response) => {
       set({liveVisitors: formatNumber(response)});
     });
   },
   fetchTodayData: () => {
-    burst_api.getData('today', startDate, endDate, 'custom').then((response) => {
+    return burst_api.getData('today', startDate, endDate, 'custom').then((response) => {
       // loop trough response and format values
       for (let key in response) {
         if (response.hasOwnProperty(key)) {

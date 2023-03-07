@@ -49,7 +49,6 @@ const GoalsBlock = () => {
       return 'goals';
     }
   }
-  console.log(totalGoalsData);
 
   let todayIcon = selectGoalIcon(todayGoals);
   let totalIcon = selectGoalIcon(totalGoalsData.total.value);
