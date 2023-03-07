@@ -53,8 +53,10 @@ export const useGoalsStats = create(set => ({
     let args = {
       goal_id: id,
     }
-    burst_api.getData('live-goals', startDate, endDate, 'custom', args).then((response) => {
+    return burst_api.getData('live-goals', startDate, endDate, 'custom', args).then((response) => {
       set({todayGoals: formatNumber(response)});
+    }).catch((error) => {
+      console.error(error);
     });
   },
   fetchTotalGoalsData: (id) => {
@@ -62,7 +64,7 @@ export const useGoalsStats = create(set => ({
     let args = {
       goal_id: id,
     }
-    burst_api.getData('goals', startDate, endDate, 'custom', args).then((response) => {
+    return burst_api.getData('goals', startDate, endDate, 'custom', args).then((response) => {
 
       response.conversionPercentage.value = getPercentage(response.total.value, response.pageviews.value);
       response.bestDevice.value = formatPercentage(response.bestDevice.value);
@@ -79,6 +81,8 @@ export const useGoalsStats = create(set => ({
         }
       }
       set({totalGoalsData: response});
+    }).catch((error) => {
+      console.error(error);
     });
   }
 }));

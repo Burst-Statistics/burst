@@ -32,7 +32,7 @@ export const useCompareStats = create((set) => ({
   data: emptyData,
   fetchCompareData: async (startDate, endDate, range, filters) => {
     set((state) => ({loading: true}));
-    burst_api.getData('compare', startDate, endDate, range, filters).then((response) => {
+    return burst_api.getData('compare', startDate, endDate, range, filters).then((response) => {
       // loop through object metrics and place and edit data to be ready for display
       let data = {};
       let curr = response.current;

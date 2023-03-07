@@ -11,7 +11,7 @@ export const usePagesStats = create((set) => ({
   data: [],
   fetchPagesData: (startDate, endDate, range, filters) => {
     set((state) => ({loading: true}));
-    burst_api.getData('pages', startDate, endDate, range, filters).
+    return burst_api.getData('pages', startDate, endDate, range, filters).
         then((response) => {
           response.columns[0].selector = row => row.page; // select data for page column
           const metrics = response.metrics

@@ -30,7 +30,7 @@ export const useDevicesStats = create((set) => ({
   data: emptyData,
   fetchDevicesData: async (startDate, endDate, range, filters) => {
     set((state) => ({loading: true}));
-    burst_api.getData('devices', startDate, endDate, range, filters).then((response) => {
+    return burst_api.getData('devices', startDate, endDate, range, filters).then((response) => {
       // loop through object metrics and place and edit data to be ready for display
       // loop through object deviceNames and place and edit data to be
       // ready for display

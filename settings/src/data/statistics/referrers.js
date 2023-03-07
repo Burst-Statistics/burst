@@ -9,7 +9,7 @@ export const useReferrersStats = create((set) => ({
   data: [],
   fetchReferrersData: async (startDate, endDate, range, metrics) => {
     set((state) => ({loading: true}));
-    burst_api.getData('referrers', startDate, endDate, range, metrics).then((response) => {
+    return burst_api.getData('referrers', startDate, endDate, range, metrics).then((response) => {
       response.columns[0].selector = row => row.referrer; // select data for referrer column
       response.columns[1].selector = row => row.count; // select data for count column
       // foreach data convert to int
