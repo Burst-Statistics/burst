@@ -1,5 +1,5 @@
 import Icon from '../utils/Icon';
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {useCompareStats} from '../data/statistics/compare';
 import {useFilters} from '../data/statistics/filters';
 import {useDate} from '../data/statistics/date';
@@ -9,7 +9,12 @@ const CompareBlock = (props) => {
   const {filters} = useFilters();
   const {startDate, endDate, range} = useDate();
 
+  const firstUpdate = useRef(true);
   useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
     let args = {
       filters: filters,
     };

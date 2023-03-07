@@ -4,7 +4,7 @@ import EmptyDataTable from './EmptyDataTable';
 import {usePagesStats} from '../data/statistics/pages';
 import {ClickableRowItem} from './ClickableRowItem';
 import ClickToFilter from './ClickToFilter';
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {useFilters} from '../data/statistics/filters';
 import {useDate} from '../data/statistics/date';
 
@@ -14,7 +14,12 @@ const PagesBlock = () => {
   const {startDate, endDate, range} = useDate();
   let loadingClass = loading ? 'burst-loading' : '';
 
+  const firstUpdate = useRef(true);
   useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
     let args = {
       filters: filters,
       metrics: pagesMetrics,
@@ -32,11 +37,11 @@ const PagesBlock = () => {
   }
 
   data.columns[0].cell = (row) => {
-      return (
-          <ClickToFilter filter="page_url" filterValue={row.page_url}>
-            {row.page_url}
-          </ClickToFilter>
-      );
+    return (
+        <ClickToFilter filter="page_url" filterValue={row.page_url}>
+          {row.page_url}
+        </ClickToFilter>
+    );
   };
   let tableData = data.data;
   let columns = data.columns;

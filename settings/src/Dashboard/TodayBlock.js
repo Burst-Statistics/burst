@@ -13,18 +13,24 @@ import * as burst_api from '../utils/api';
 import Icon from '../utils/Icon';
 import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
 import {useTodayStats} from '../data/dashboard/today';
+import {useRef} from 'react';
 
 const TodayBlock = () => {
   const {liveVisitors, todayData, fetchLiveVisitors, fetchTodayData} = useTodayStats();
 
-  // set timeout to fetch live visitors
   useEffect(() => {
-    fetchLiveVisitors();
-    fetchTodayData();
-    const interval = setInterval(() => {
+    const intervalLive = setInterval(() => {
       fetchLiveVisitors();
     }, 3000);
-    return () => clearInterval(interval);
+
+    const intervalToday = setInterval(() => {
+      fetchTodayData();
+    }, 15000);
+
+    return () => {
+      clearInterval(intervalLive);
+      clearInterval(intervalToday);
+    };
   }, []);
 
     // get currentDate

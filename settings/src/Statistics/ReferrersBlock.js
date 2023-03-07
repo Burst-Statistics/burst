@@ -1,8 +1,5 @@
 import { __, _x } from '@wordpress/i18n';
-import {
-  useState,
-  useEffect,
-} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DataTable from 'react-data-table-component';
 import EmptyDataTable from './EmptyDataTable';
 import * as burst_api from '../utils/api';
@@ -17,7 +14,12 @@ const ReferrersBlock = (props) => {
   const {filters} = useFilters();
   const {startDate, endDate, range} = useDate();
 
+  const firstUpdate = useRef(true);
   useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
     let args = {
       filters: filters,
       metrics: referrersMetrics,

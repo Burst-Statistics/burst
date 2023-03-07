@@ -1,12 +1,7 @@
 import {__} from '@wordpress/i18n';
-import {
-  useState,
-  useEffect,
-} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import ClickToFilter from '../Statistics/ClickToFilter';
-
-import * as burst_api from '../utils/api';
 import Icon from '../utils/Icon';
 import {
   endOfDay,
@@ -23,10 +18,15 @@ import {useGoalsStats} from '../data/dashboard/goals';
 
 const GoalsBlock = () => {
   const {selectedGoalId, todayGoals, fetchTodayGoals, totalGoalsData, fetchTotalGoalsData} = useGoalsStats();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // set timeout to fetch live visitors
+  const firstUpdate = useRef(true);
   useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
     setLoading(true);
     fetchTodayGoals(selectedGoalId);
     fetchTotalGoalsData(selectedGoalId);

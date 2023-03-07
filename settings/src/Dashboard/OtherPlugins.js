@@ -18,7 +18,7 @@ const OtherPlugins = (props) => {
         setDataLoaded(true);
       })
     }
-  })
+  }, []);
 
   const PluginActions = (slug, pluginAction, e) => {
     if (e) e.preventDefault();
