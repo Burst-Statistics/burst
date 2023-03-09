@@ -5,7 +5,7 @@ import {useGoals} from '../../data/settings/goals';
 import Icon from '../../utils/Icon';
 
 const GoalsSettings = (props) => {
-  const { goalFields } = useGoals();
+  const goalFields = useGoals((state) => state.goalFields);
 
   // maybe add a default goal
   return (

@@ -71,7 +71,7 @@ const ProgressFooter = (props) => {
 
   return (
       <>
-      <a className={'button button-default'} href={'#statistics'}>{ __( "View my statistics", "burst-statistics" ) }</a>
+      <a className={'button button-transparent'} href={'#statistics'}>{ __( "View my statistics", "burst-statistics" ) }</a>
       <Tooltip arrow title={trackingTooltipText} enterDelay={200}>
         <div className="burst-legend burst-flex-push-right">
           <Icon name={trackingIcon} color={trackingIconColor} />

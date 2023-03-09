@@ -11,7 +11,6 @@ import Page from './Page';
 document.addEventListener( 'DOMContentLoaded', () => {
 	const container = document.getElementById( 'burst-statistics' );
 	if ( container ) {
-		console.log('burst-statistics');
 		render(
 				<React.StrictMode>
 					<div className="burst-wrapper">

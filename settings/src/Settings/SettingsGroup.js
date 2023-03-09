@@ -8,7 +8,8 @@ import {useMenu} from '../data/menu';
  */
 const SettingsGroup = (props) => {
     let upgrade='https://burst-statistics.com/pricing/';
-    const {subMenu, selectedSubMenuItem} = useMenu();
+    const subMenu = useMenu(state => state.subMenu);
+    const selectedSubMenuItem = useMenu(state => state.selectedSubMenuItem);
 
     const getLicenseStatus = () => {
 //         if ( props.pageProps.hasOwnProperty('licenseStatus') ){

@@ -23,7 +23,10 @@ import RadioButtons from './Fields/RadioButtons';
 
 const Field = (props) => {
 	const [validated, setValidated] = useState([]);
-	const {updateField, setChangedField, fields, highLightField} = useFields();
+	const updateField = useFields((state) => state.updateField);
+	const setChangedField = useFields((state) => state.setChangedField);
+	const fields = useFields((state) => state.fields);
+	const highLightField = useFields((state) => state.highLightField);
 
 	useEffect(() => {
     	let field = props.field;

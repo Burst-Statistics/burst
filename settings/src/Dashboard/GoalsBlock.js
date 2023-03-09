@@ -17,7 +17,11 @@ import {
 import {useGoalsStats} from '../data/dashboard/goals';
 
 const GoalsBlock = () => {
-  const {selectedGoalId, todayGoals, fetchTodayGoals, totalGoalsData, fetchTotalGoalsData} = useGoalsStats();
+  const fetchTodayGoals = useGoalsStats((state) => state.fetchTodayGoals);
+  const fetchTotalGoalsData = useGoalsStats((state) => state.fetchTotalGoalsData);
+  const selectedGoalId = useGoalsStats((state) => state.selectedGoalId);
+  const todayGoals = useGoalsStats((state) => state.todayGoals);
+  const totalGoalsData = useGoalsStats((state) => state.totalGoalsData);
   const [loading, setLoading] = useState(false);
 
   // set timeout to fetch live visitors
@@ -25,7 +29,10 @@ const GoalsBlock = () => {
   useEffect(() => {
     if (firstUpdate.current) {
       firstUpdate.current = false;
-      return;
+      const interval = setInterval(() => {
+        fetchTodayGoals(selectedGoalId, true);
+      }, 10000);
+      return () => clearInterval(interval);
     }
     setLoading(true);
     fetchTodayGoals(selectedGoalId);
@@ -36,6 +43,8 @@ const GoalsBlock = () => {
     }, 10000);
     return () => clearInterval(interval);
   }, [selectedGoalId]);
+
+
 
   function selectGoalIcon(value) {
     value = parseInt(value);
@@ -110,6 +119,7 @@ const GoalsBlock = () => {
             </Tooltip>
           </div>
           <div className={'burst-grid-item-footer'}>
+            <a className={'button button-transparent'} href={'#settings/goals'}>{ __( "View setup", "burst-statistics" ) }</a>
             <p className={'burst-small-text burst-flex-push-right'}>{__('Activated', 'burst-statistics')} <span>
               {totalGoalsData.dateStart !== '-' && getRelativeTime(totalGoalsData.dateStart)}
               {totalGoalsData.dateStart === '-' && '-'}

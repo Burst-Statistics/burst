@@ -10,7 +10,14 @@ import { __ } from '@wordpress/i18n';
 import useNotices from '../data/dashboard/notices';
 
 const ProgressBlock = (props) => {
-    const { loading, filter, notices, getNotices, filteredNotices, setFilter, dismissNotice} = useNotices();
+    const loading = useNotices((state) => state.loading);
+    const filter = useNotices((state) => state.filter);
+    const notices = useNotices((state) => state.notices);
+    const getNotices = useNotices((state) => state.getNotices);
+    const filteredNotices = useNotices((state) => state.filteredNotices);
+    const setFilter = useNotices((state) => state.setFilter);
+    const dismissNotice = useNotices((state) => state.dismissNotice);
+
     useEffect(() => {
         getNotices();
     }, []);

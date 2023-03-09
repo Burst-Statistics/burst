@@ -9,9 +9,16 @@ import {useFilters} from '../data/statistics/filters';
 import {useDate} from '../data/statistics/date';
 
 const PagesBlock = () => {
-  const {loading, data, fetchPagesData, pagesMetrics} = usePagesStats();
-  const {filters} = useFilters();
-  const {startDate, endDate, range} = useDate();
+  const loading = usePagesStats((state) => state.loading);
+  const data = usePagesStats((state) => state.data);
+  const fetchPagesData = usePagesStats((state) => state.fetchPagesData);
+  const pagesMetrics = usePagesStats((state) => state.pagesMetrics);
+
+  const filters = useFilters((state) => state.filters);
+  const startDate = useDate((state) => state.startDate);
+  const endDate = useDate((state) => state.endDate);
+  const range = useDate((state) => state.range);
+
   let loadingClass = loading ? 'burst-loading' : '';
 
   const firstUpdate = useRef(true);

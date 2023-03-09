@@ -7,7 +7,6 @@ import debounce from 'lodash/debounce';
 
 
 export default (props) => {
-  console.log(props.value);
   const [isLoading, setIsLoading] = useState(false);
   const [posts, setPosts] = useState([]);
   const [defaultPosts, setDefaultPosts] = useState([]);
@@ -36,7 +35,6 @@ export default (props) => {
 
   const loadOptions = debounce((inputValue, callback) => {
     setIsLoading(true);
-    console.log(inputValue);
     getPosts(inputValue).then((response) => {
       setPosts(
           response.map((post) => ({
@@ -58,7 +56,6 @@ export default (props) => {
         <AsyncCreatableSelect
             classNamePrefix="burst-select"
             onChange={(e) => {
-              console.log(e.value);
               props.onChangeHandler(e.value);
             }}
             isLoading={isLoading}
@@ -97,7 +94,6 @@ export default (props) => {
 const OptionLayout = props => {
   const { innerProps, innerRef } = props;
   const r = props.data;
-  console.log(r);
   return (
       <article ref={innerRef} {...innerProps}
                className={'burst-select__custom-option'}>

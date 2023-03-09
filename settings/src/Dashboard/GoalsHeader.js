@@ -4,8 +4,8 @@ import {useGoalsStats} from '../data/dashboard/goals';
 import Icon from '../utils/Icon';
 
 const GoalsHeader = () => {
-  const {setSelectedGoalId} = useGoalsStats();
-  const {goalFields} = useGoals();
+  const selectedGoalId = useGoalsStats((state) => state.selectedGoalId);
+  const goalFields = useGoals((state) => state.goalFields);
 
   // if goalValues is an empty array, return null
   if (!Object.keys(goalFields).length > 0) {

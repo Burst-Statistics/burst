@@ -39,7 +39,6 @@ const useNotices = create(( set, get ) => ({
     set(state => ({ filteredNotices:filteredNotices }))
   },
   getNotices: async () => {
-    console.log('getNotices');
     const {error, notices} = await burst_api.runTest('notices').then( ( response ) => {
       return response;
     });

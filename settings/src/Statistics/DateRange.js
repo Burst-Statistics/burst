@@ -14,7 +14,13 @@ import {useDate} from '../data/statistics/date';
 const DateRange = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const {startDate, endDate, setStartDate, setEndDate, range, setRange} = useDate();
+  const startDate = useDate((state) => state.startDate);
+  const endDate = useDate((state) => state.endDate);
+  const setStartDate = useDate((state) => state.setStartDate);
+  const setEndDate = useDate((state) => state.setEndDate);
+  const range = useDate((state) => state.range);
+  const setRange = useDate((state) => state.setRange);
+
   const selectionRange = {
     startDate:  parseISO(startDate),
     endDate: parseISO(endDate),

@@ -8,7 +8,8 @@ import {ToggleControl} from '@wordpress/components';
 import {useGoals} from '../../data/settings/goals';
 
 const GoalSetup = (props) => {
-  const {goalFields, setGoalValue} = useGoals();
+  const goalFields = useGoals((state) => state.goalFields);
+  const setGoalValue = useGoals((state) => state.setGoalValue);
   const id = props.id;
   const fields = goalFields[id];
   if (id === 0) {

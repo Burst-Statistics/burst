@@ -7,7 +7,7 @@ const ClickToFilter = (props) => {
   if (!props.filter || !props.filterValue) {
     return <>{props.children}</>
   }
-  const {setFilters} = useFilters();
+  const setFilters = useFilters((state) => state.setFilters);
   const tooltip = props.label ? __('Click to filter by:', 'burst-statistics') + ' ' + props.label : __('Click to filter', 'burst-statistics');
 
   const handleClick = () => {

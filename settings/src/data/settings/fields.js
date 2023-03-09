@@ -113,31 +113,6 @@ export const useFields = create(( set, get ) => ({
   updateFieldsData: async (selectedSubMenuItem) => {
     let fields = get().fields;
 
-    // let progress = get().progress;
-    // let changedFields = get().changedFields;
-    // let reload = false;
-    // for ( const field of fields ){
-    // 	let fieldIsIncluded = changedFields.filter( changedField => changedField.id===field.id ).length>0;
-    // 	reload = fieldIsIncluded && field.reload_fields_onchange;
-    // 	if (reload) {
-    // 		break;
-    // 	}
-    // }
-    //
-    // //check if we want a server side reload
-    // if ( reload ) {
-    // 	console.log("reload all fields from server");
-    // 	let response = await fetchFields();
-    // 	let serverFields = response.fields;
-    // 	//copy values over from current to server fields
-    // 	for ( const serverField of serverFields ){
-    // 		let clientField = fields.filter( clientField => clientField.id===serverField.id )[0];
-    // 		serverField.value = clientField.value;
-    // 	}
-    // 	fields = serverFields;
-    // 	progress = response.progress;
-    // }
-
     fields = updateFieldsListWithConditions(fields);
     const nextButtonDisabled = isNextButtonDisabled(fields, selectedSubMenuItem);
 

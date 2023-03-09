@@ -1,12 +1,22 @@
 import {__} from '@wordpress/i18n';
 import {useMenu} from './data/menu';
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 
 const Header = () => {
-  const {menu, menuLoaded, selectedMainMenuItem, fetchMainMenuData} = useMenu();
+  const menu = useMenu((state) => state.menu);
+  const menuLoaded = useMenu((state) => state.menuLoaded);
+  const selectedMainMenuItem = useMenu((state) => state.selectedMainMenuItem);
+  const fetchMainMenuData = useMenu((state) => state.fetchMainMenuData);
   const plugin_url = burst_settings.plugin_url;
+
+  const firstUpdate = useRef(true);
+
   useEffect(async () => {
-    await fetchMainMenuData();
+    if (firstUpdate.current) {
+      await fetchMainMenuData();
+      firstUpdate.current = false;
+      return;
+    }
   }, [] );
   let menuItems = Object.values(menu);
   menuItems = menuItems.filter( item => item!==null ); // Remove null values

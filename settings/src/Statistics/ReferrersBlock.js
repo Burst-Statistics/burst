@@ -9,10 +9,17 @@ import {useFilters} from '../data/statistics/filters';
 import {useDate} from '../data/statistics/date';
 
 const ReferrersBlock = (props) => {
-  const {loading, data, fetchReferrersData, referrersMetrics} = useReferrersStats();
+  const loading = useReferrersStats((state) => state.loading);
+  const data = useReferrersStats((state) => state.data);
+  const fetchReferrersData = useReferrersStats((state) => state.fetchReferrersData);
+  const referrersMetrics = useReferrersStats((state) => state.referrersMetrics);
+
   let loadingClass = loading ? 'burst-loading' : '';
-  const {filters} = useFilters();
-  const {startDate, endDate, range} = useDate();
+  const filters = useFilters((state) => state.filters);
+
+  const startDate = useDate((state) => state.startDate);
+  const endDate = useDate((state) => state.endDate);
+  const range = useDate((state) => state.range);
 
   const firstUpdate = useRef(true);
   useEffect(() => {
@@ -36,8 +43,7 @@ const ReferrersBlock = (props) => {
     );
   }
 
-
-  // make cell not clickable h1
+  // make cell clickable
   data.columns[0].cell = (row) => {
     return (
         <ClickToFilter filter="referrer" filterValue={row.referrer}>

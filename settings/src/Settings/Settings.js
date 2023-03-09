@@ -6,6 +6,8 @@ import { __ } from '@wordpress/i18n';
 import {useFields} from "../data/settings/fields";
 import {useGoals} from '../data/settings/goals';
 import {useMenu} from "../data/menu";
+import {useEffect} from 'react';
+import getAnchor from '../utils/getAnchor';
 
 /**
  * Renders the selected settings
@@ -13,9 +15,23 @@ import {useMenu} from "../data/menu";
  */
 const Settings = (props) => {
   const [noticesExpanded, setNoticesExpanded] = useState(true);
-  const {progress, fieldsLoaded, saveFields, fields, nextButtonDisabled} = useFields();
-  const {subMenuLoaded, subMenu, setSelectedSidebarMenuItem, selectedSubMenuItem, selectedMainMenuItem, nextMenuItem, previousMenuItem} = useMenu();
-  const {saveChangedGoalValues} = useGoals();
+  const progress = useFields((state) => state.progress);
+  const fieldsLoaded = useFields((state) => state.fieldsLoaded);
+  const saveFields = useFields((state) => state.saveFields);
+  const fields = useFields((state) => state.fields);
+  const nextButtonDisabled = useFields((state) => state.nextButtonDisabled);
+  const changedFields = useFields((state) => state.changedFields);
+  const updateFieldsData = useFields((state) => state.updateFieldsData);
+
+  const subMenuLoaded = useMenu((state) => state.subMenuLoaded);
+  const subMenu = useMenu((state) => state.subMenu);
+  const setSelectedSidebarMenuItem = useMenu((state) => state.setSelectedSidebarMenuItem);
+  const selectedSubMenuItem = useMenu((state) => state.selectedSubMenuItem);
+  const selectedMainMenuItem = useMenu((state) => state.selectedMainMenuItem);
+  const nextMenuItem = useMenu((state) => state.nextMenuItem);
+  const previousMenuItem = useMenu((state) => state.previousMenuItem);
+
+  const saveChangedGoalValues = useGoals((state) => state.saveChangedGoalValues);
   // const {saveCookies} = UseSyncData();
 
   const toggleNotices = () => {
@@ -40,9 +56,11 @@ const Settings = (props) => {
   }
   const { menu_items: menuItems } = subMenu;
   if ( !subMenuLoaded ||  !fieldsLoaded || menuItems.length ===0  ) {
-    return(
-        <div className={'burst-loading-container burst-loading'}></div>
-    )
+    return (
+        <>
+          <div className="burst-grid-item burst-grid-item-placeholder  burst-column-2"></div>
+        </>
+    );
   }
   let selectedFields = fields.filter(field => field.menu_id === selectedSubMenuItem);
   let groups = [];

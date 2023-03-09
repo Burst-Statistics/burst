@@ -4,16 +4,15 @@ import {__} from '@wordpress/i18n';
 import {useGoals} from '../data/settings/goals';
 
 export const PageFilter = () => {
-  const {filters, filtersConf, setFilters} = useFilters();
-  const {goalFields} = useGoals();
+  const filters = useFilters((state) => state.filters);
+  const filtersConf = useFilters((state) => state.filtersConf);
+  const setFilters = useFilters((state) => state.setFilters);
+  const goalFields = useGoals((state) => state.goalFields);
   let title = '';
 
 
   const getGoalsTitle = (id) => {
     let title = '';
-    console.log('goalFields ', goalFields);
-    console.log(id);
-    console.log(goalFields[id].goal_title.value);
     return goalFields[id].goal_title.value;
   }
 
@@ -24,7 +23,6 @@ export const PageFilter = () => {
       <>
         {Object.keys(filtersConf).map((filter, index) => {
           if (filters[filter] !== '') {
-            console.log(filter);
             if (filter === 'goal_id') {
               title = getGoalsTitle(filters[filter]);
             } else {

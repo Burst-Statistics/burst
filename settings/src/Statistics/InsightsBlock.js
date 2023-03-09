@@ -28,14 +28,15 @@ ChartJS.register(
 );
 
 const InsightsBlock = (props) => {
-  const {
-    chartData,
-    loading,
-    fetchChartData,
-    insightsMetrics,
-  } = useInsightsStats(state => state);
-  const {filters} = useFilters();
-  const {startDate, endDate, range} = useDate();
+  const chartData = useInsightsStats(state => state.chartData);
+  const loading = useInsightsStats(state => state.loading);
+  const fetchChartData = useInsightsStats(state => state.fetchChartData);
+  const insightsMetrics = useInsightsStats(state => state.insightsMetrics);
+
+  const filters = useFilters(state => state.filters);
+  const startDate = useDate(state => state.startDate);
+  const endDate = useDate(state => state.endDate);
+  const range = useDate(state => state.range);
 
   const firstUpdate = useRef(true);
   useEffect(() => {

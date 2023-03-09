@@ -31,9 +31,11 @@ $animation-duration: 1.6s;
     height: 16px;
     margin-top: 12px;
     border-radius: 7px;
-    &:last-of-type{
+
+    &:last-of-type {
       margin-bottom: 24px;
     }
+
     @include background-gradient;
     animation: shine-lines $animation-duration infinite linear;
     @for $i from 1 through 20 {
@@ -51,44 +53,50 @@ $animation-duration: 1.6s;
 
 @keyframes shine-lines {
   0% {
-    background-position:- 400px;
+    background-position: - 400px;
   }
   100% {
     background-position: 220px;
   }
 }
 
-.burst-page-placeholder{
-  /* Shine */
-  .burst-grid-item{
+.burst-page-placeholder .burst-grid-item, .burst-grid-item-placeholder {
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+
+  &:after {
+    content: '';
+    top: 0;
     overflow: hidden;
-    position: relative;
-    z-index: 1;
-  }
-  .burst-grid-item:after {
-    content:'';
-    top:0;
-    overflow: hidden;
-    transform:translateX(100%);
-    width:100%;
+    transform: translateX(100%);
+    width: 100%;
     height: 100%;
     position: absolute;
     display: inline-block;
-    z-index:1;
+    z-index: 1;
     animation: slide 1s infinite;
-    background: linear-gradient(103deg, rgba(228,229,232,0) 25%,rgba(228,229,232,0.35) 50%,rgba(128,186,232,0) 99%,rgba(125,185,232,0) 75%); /* W3C */
+    background: linear-gradient(103deg, rgba(228, 229, 232, 0) 25%, rgba(228, 229, 232, 0.35) 50%, rgba(128, 186, 232, 0) 99%, rgba(125, 185, 232, 0) 75%); /* W3C */
   }
+}
+.burst-grid-item-placeholder{
+  min-height: 300px;
 }
 
 /* animation */
 
 @keyframes slide {
-  0% {transform:translateX(-100%);}
-  100% {transform:translateX(100%);}
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
-.burst-loading-container{
+.burst-loading-container {
   transition: opacity 0.2s ease-in-out, filter 0.2s ease-in-out;
+
   &.burst-loading {
     opacity: 0.3;
     //filter: blur(1px);

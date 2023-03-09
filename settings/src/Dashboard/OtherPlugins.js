@@ -4,8 +4,10 @@ import * as burst_api from "../utils/api";
 import useOtherPlugins from "../data/dashboard/other-plugins";
 const OtherPlugins = (props) => {
   const [dataUpdated, setDataUpdated] = useState('');
-  const {dataLoaded, setDataLoaded, pluginData, setPluginData} = useOtherPlugins();
-  // const [pluginData, setPluginData] = useState(false);
+  const dataLoaded = useOtherPlugins((state) => state.dataLoaded);
+  const setDataLoaded = useOtherPlugins((state) => state.setDataLoaded);
+  const pluginData = useOtherPlugins((state) => state.pluginData);
+  const setPluginData = useOtherPlugins((state) => state.setPluginData);
 
   useEffect(()=>{
     if ( !dataLoaded ) {

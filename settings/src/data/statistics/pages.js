@@ -13,7 +13,7 @@ export const usePagesStats = create((set) => ({
     set((state) => ({loading: true}));
     return burst_api.getData('pages', startDate, endDate, range, filters).
         then((response) => {
-          response.columns[0].selector = row => row.page; // select data for page column
+          response.columns[0].selector = row => row.page_url; // select data for page column
           const metrics = response.metrics
           response.columns.forEach((column, index) => {
             if (index > 0) {

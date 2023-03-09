@@ -5,9 +5,14 @@ import {useFilters} from '../data/statistics/filters';
 import {useDate} from '../data/statistics/date';
 
 const CompareBlock = (props) => {
-  const {data, loading, fetchCompareData} = useCompareStats();
-  const {filters} = useFilters();
-  const {startDate, endDate, range} = useDate();
+  const fetchCompareData = useCompareStats((state) => state.fetchCompareData);
+  const data = useCompareStats((state) => state.data);
+  const loading = useCompareStats((state) => state.loading);
+
+  const filters = useFilters((state) => state.filters);
+  const startDate = useDate((state) => state.startDate);
+  const endDate = useDate((state) => state.endDate);
+  const range = useDate((state) => state.range);
 
   const firstUpdate = useRef(true);
   useEffect(() => {

@@ -1,7 +1,7 @@
 import {__} from '@wordpress/i18n';
 import {
-    formatTime,
-    formatNumber,
+  formatTime,
+  formatNumber, getRelativeTime,
 } from '../utils/formatting';
 import {
     useState,
@@ -16,21 +16,24 @@ import {useTodayStats} from '../data/dashboard/today';
 import {useRef} from 'react';
 
 const TodayBlock = () => {
-  const {liveVisitors, todayData, fetchLiveVisitors, fetchTodayData} = useTodayStats();
+  const liveVisitors = useTodayStats((state) => state.liveVisitors);
+  const todayData = useTodayStats((state) => state.todayData);
+  const fetchLiveVisitors = useTodayStats((state) => state.fetchLiveVisitors);
+  const fetchTodayData = useTodayStats((state) => state.fetchTodayData);
 
   useEffect(() => {
-    // const intervalLive = setInterval(() => {
-    //   fetchLiveVisitors();
-    // }, 3000);
-    //
-    // const intervalToday = setInterval(() => {
-    //   fetchTodayData();
-    // }, 15000);
-    //
-    // return () => {
-    //   clearInterval(intervalLive);
-    //   clearInterval(intervalToday);
-    // };
+    const intervalLive = setInterval(() => {
+      fetchLiveVisitors();
+    }, 3000);
+
+    const intervalToday = setInterval(() => {
+      fetchTodayData();
+    }, 15000);
+
+    return () => {
+      clearInterval(intervalLive);
+      clearInterval(intervalToday);
+    };
   }, []);
 
     // get currentDate
@@ -126,7 +129,11 @@ const TodayBlock = () => {
               </div>
             </Tooltip>
           </div>
+          {/*<div className={'burst-grid-item-footer'}>*/}
+          {/*    <a className={'button button-transparent'} href={'#statistics'}>{ __( "View", "burst-statistics" ) }</a>*/}
+          {/*</div>*/}
         </div>
+
       </>
   );
 };

@@ -8,8 +8,10 @@ import {useFields} from '../../data/settings/fields';
  * Menu block, rendering the entire menu
  */
 const Menu = (props) => {
-  const {subMenuLoaded, subMenu, hasPremiumItems} = useMenu();
-  const {fields} = useFields();
+  const subMenuLoaded = useMenu((state) => state.subMenuLoaded);
+  const subMenu = useMenu((state) => state.subMenu);
+  const hasPremiumItems = useMenu((state) => state.hasPremiumItems);
+  const fields = useFields((state) => state.fields);
 
   if ( !subMenuLoaded ) {
     return(

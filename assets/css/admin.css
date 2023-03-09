@@ -976,6 +976,15 @@
     box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--rsp-black);
 }
 
+.burst a.button.button-transparent, .burst button.button.button-transparent, .burst input.button.button-transparent {
+    border: 1px solid #2271b1;
+    background: transparent;
+}
+
+.burst a.button.button-transparent:hover, .burst a.button.button-transparent:focus, .burst a.button.button-transparent:active, .burst button.button.button-transparent:hover, .burst button.button.button-transparent:focus, .burst button.button.button-transparent:active, .burst input.button.button-transparent:hover, .burst input.button.button-transparent:focus, .burst input.button.button-transparent:active {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 3px #2271b1;
+}
+
 .burst a.button.button-tertiary, .burst a.button.button-red, .burst button.button.button-tertiary, .burst button.button.button-red, .burst input.button.button-tertiary, .burst input.button.button-red {
     border: 0 solid transparent;
     background: var(--rsp-red);
@@ -1391,83 +1400,83 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(1) {
-    width: 87%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(2) {
-    width: 76%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(3) {
-    width: 84%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(4) {
-    width: 67%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(5) {
-    width: 77%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(6) {
-    width: 97%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
-    width: 97%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
-    width: 83%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
-    width: 65%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(10) {
-    width: 61%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(11) {
-    width: 72%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(12) {
-    width: 80%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(13) {
-    width: 80%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(14) {
     width: 62%;
 }
 
-.burst-placeholder .burst-placeholder-line:nth-of-type(15) {
-    width: 72%;
+.burst-placeholder .burst-placeholder-line:nth-of-type(2) {
+    width: 61%;
 }
 
-.burst-placeholder .burst-placeholder-line:nth-of-type(16) {
-    width: 89%;
+.burst-placeholder .burst-placeholder-line:nth-of-type(3) {
+    width: 80%;
 }
 
-.burst-placeholder .burst-placeholder-line:nth-of-type(17) {
-    width: 71%;
+.burst-placeholder .burst-placeholder-line:nth-of-type(4) {
+    width: 66%;
 }
 
-.burst-placeholder .burst-placeholder-line:nth-of-type(18) {
-    width: 85%;
+.burst-placeholder .burst-placeholder-line:nth-of-type(5) {
+    width: 84%;
 }
 
-.burst-placeholder .burst-placeholder-line:nth-of-type(19) {
+.burst-placeholder .burst-placeholder-line:nth-of-type(6) {
+    width: 75%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
+    width: 88%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
+    width: 88%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
+    width: 93%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(10) {
+    width: 98%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(11) {
+    width: 74%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(12) {
     width: 70%;
 }
 
+.burst-placeholder .burst-placeholder-line:nth-of-type(13) {
+    width: 89%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(14) {
+    width: 78%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(15) {
+    width: 74%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(16) {
+    width: 91%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(17) {
+    width: 93%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(18) {
+    width: 65%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(19) {
+    width: 74%;
+}
+
 .burst-placeholder .burst-placeholder-line:nth-of-type(20) {
-    width: 68%;
+    width: 87%;
 }
 
 .burst-placeholder .burst-placeholder-line ~ .burst-placeholder-line {
@@ -1484,17 +1493,13 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
     }
 }
 
-.burst-page-placeholder {
-  /* Shine */
-}
-
-.burst-page-placeholder .burst-grid-item {
+.burst-page-placeholder .burst-grid-item, .burst-grid-item-placeholder {
     overflow: hidden;
     position: relative;
     z-index: 1;
 }
 
-.burst-page-placeholder .burst-grid-item:after {
+.burst-page-placeholder .burst-grid-item:after, .burst-grid-item-placeholder:after {
     content: "";
     top: 0;
     overflow: hidden;
@@ -1507,6 +1512,10 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
     animation: slide 1s infinite;
     background: linear-gradient(103deg, rgba(228, 229, 232, 0) 25%, rgba(228, 229, 232, 0.35) 50%, rgba(128, 186, 232, 0) 99%, rgba(125, 185, 232, 0) 75%);
  /* W3C */
+}
+
+.burst-grid-item-placeholder {
+    min-height: 300px;
 }
 
 /* animation */

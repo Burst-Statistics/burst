@@ -6,7 +6,11 @@ import {
 import useNotices from '../data/dashboard/notices';
 
 const ProgressHeader = (props) => {
-  const {setFilter, filter, notices, filteredNotices} = useNotices();
+  const setFilter = useNotices((state) => state.setFilter);
+  const filter = useNotices((state) => state.filter);
+  const notices = useNotices((state) => state.notices);
+  const filteredNotices = useNotices((state) => state.filteredNotices);
+
   let count = {'all': 0, 'remaining': 0};
 
   // count all tasks

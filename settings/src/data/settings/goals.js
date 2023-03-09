@@ -50,7 +50,6 @@ export const useGoals = create((set, get) => {
   const saveChangedGoalValues = async () => {
     try {
       const changedGoalValues = get().changedGoalValues;
-      console.log(changedGoalValues);
       const response = await burst_api.setGoalFields(changedGoalValues);
       if (response.success) {
         handleShowSavedSettingsNotice();
@@ -102,37 +101,4 @@ const updateGoalsFieldWithConditions = (goalFields) => {
   });
   return newGoalFields;
 };
-
-//
-// export const updateGoalsFieldWithConditions = (goalField, goalValues) => {
-//   console.log(goalValues);
-//   // Check if the field has react_conditions property
-//   if (goalField.react_conditions) {
-//     let disabled = false;
-//     // Loop through the conditions
-//     Object.keys(goalField.react_conditions).forEach(condition => {
-//       if (condition.relation === 'AND') {
-//         // Check if all conditions are met
-//         const andConditions = condition.map(c => {
-//           const [key, values] = Object.entries(c)[0];
-//           return values.includes(goalValues[key]);
-//         });
-//         // If any condition is not met, set disabled to true
-//         disabled = andConditions.includes(false);
-//       }
-//       else if (condition.relation === 'OR') {
-//         // Check if any condition is met
-//         const orConditions = condition.map(c => {
-//           const [key, values] = Object.entries(c)[0];
-//           return values.includes(goalValues[key]);
-//         });
-//         // If all conditions are not met, set disabled to true
-//         disabled = !orConditions.includes(true);
-//       }
-//     });
-//     // Set the conditionallyDisabled property of the field to 1 if the field
-// is disabled and 0 if the field is not disabled console.log(disabled); if
-// (disabled) { console.log(goalField.fieldId, 'disabled'); } else {
-// console.log(goalField.fieldId, 'enabled'); } return disabled; } return 0; }
-
 

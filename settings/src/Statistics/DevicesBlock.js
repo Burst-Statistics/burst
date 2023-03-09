@@ -10,9 +10,14 @@ import {useFilters} from '../data/statistics/filters';
 import {useDate} from '../data/statistics/date';
 
 const DevicesBlock = () => {
-  const {loading, data, fetchDevicesData} = useDevicesStats();
-  const {filters} = useFilters();
-  const {startDate, endDate, range} = useDate();
+  const loading = useDevicesStats((state) => state.loading);
+  const data = useDevicesStats((state) => state.data);
+  const fetchDevicesData = useDevicesStats((state) => state.fetchDevicesData);
+  const filters = useFilters((state) => state.filters);
+  const startDate = useDate((state) => state.startDate);
+  const endDate = useDate((state) => state.endDate);
+  const range = useDate((state) => state.range);
+  
 
   const firstUpdate = useRef(true);
   useEffect(() => {

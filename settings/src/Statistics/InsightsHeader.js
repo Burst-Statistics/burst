@@ -10,7 +10,8 @@ import {useInsightsStats} from '../data/statistics/insights';
 
 const InsightsHeader = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {insightsMetrics, setInsightsMetrics} = useInsightsStats(state => state);
+  const insightsMetrics = useInsightsStats(state => state.insightsMetrics);
+  const setInsightsMetrics = useInsightsStats(state => state.setInsightsMetrics);
   const [pendingMetrics, setPendingMetrics] = useState(insightsMetrics);
   const metricLabels = {
     visitors: __('Unique visitors', 'burst-statistics'),

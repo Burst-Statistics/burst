@@ -3,7 +3,7 @@ import Icon from '../utils/Icon';
 
 export const ClickableRowItem = (props) => {
   const {page, id} = props;
-  const {setFilters} = useFilters();
+  const setFilters = useFilters((state) => state.setFilters);
 
   const handleClick = (e) => {
     let id = e.target.attributes['data-page-id'].value;

@@ -16,7 +16,7 @@ const GoalField = (props) => {
     value = false,
   } = props;
   const [validated, setValidated] = useState(false);
-  const {setGoalValue} = useGoals();
+  const setGoalValue = useGoals((state) => state.setGoalValue);
 
   useEffect(() => {
     validateInput(field, value);

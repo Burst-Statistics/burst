@@ -76,7 +76,7 @@ export const useGoalsStats = create(set => ({
               response[key].value = formatNumber(response[key].value);
             }
             // explain how it is calculated
-            response.conversionPercentage.tooltip = __('Calculated by:', 'burst-statistics') + ' ' + __('Total amount of goals', 'burst-statistics') + ' / ' + __('Total amount of pageviews', 'burst-statistics') + ' (' + response.total.value + ' / ' + response.pageviews.value + ')';
+            response.conversionPercentage.tooltip = __('Calculated by:', 'burst-statistics') + ' ' + __('Total amount of goals reached ', 'burst-statistics') + ' / ' + __('Total amount of pageviews', 'burst-statistics') + ' (' + response.total.value + ' / ' + response.pageviews.value + ')';
           }
         }
       }

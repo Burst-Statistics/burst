@@ -15,6 +15,15 @@
       }
     }
 
+    &.button-transparent {
+      border: 1px solid #2271b1;
+      background: transparent;
+
+      &:hover, &:focus, &:active {
+        box-shadow: 0 0 0 1px #fff, 0 0 0 3px #2271b1;
+      }
+    }
+
     &.button-tertiary, &.button-red {
       border: 0 solid transparent;
       background: var(--rsp-red);

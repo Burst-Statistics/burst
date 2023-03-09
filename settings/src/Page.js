@@ -23,38 +23,42 @@ import {useDevicesStats} from './data/statistics/devices';
 import {usePagesStats} from './data/statistics/pages';
 import {useReferrersStats} from './data/statistics/referrers';
 
-
-
-
 const Page = () => {
-  const {fetchSubMenuData, selectedMainMenuItem, menuLoaded} = useMenu();
-  const {
-    fields,
-    changedFields,
-    fetchFieldsData,
-    updateFieldsData,
-    fieldsLoaded,
-  } = useFields();
-  const {initGoals} = useGoals();
+  const fetchSubMenuData = useMenu((state) => state.fetchSubMenuData);
+  const selectedMainMenuItem = useMenu((state) => state.selectedMainMenuItem);
+  const menuLoaded = useMenu((state) => state.menuLoaded);
+  const fields = useFields((state) => state.fields);
+  const changedFields = useFields((state) => state.changedFields);
+  const fetchFieldsData = useFields((state) => state.fetchFieldsData);
+  const updateFieldsData = useFields((state) => state.updateFieldsData);
+  const fieldsLoaded = useFields((state) => state.fieldsLoaded);
+  const initGoals = useGoals((state) => state.initGoals);
 
   // dashboard stores
-  const {fetchLiveVisitors, fetchTodayData} = useTodayStats();
-  const {selectedGoalId, fetchTodayGoals, fetchTotalGoalsData} = useGoalsStats();
+  const fetchLiveVisitors = useTodayStats((state) => state.fetchLiveVisitors);
+  const fetchTodayData = useTodayStats((state) => state.fetchTodayData);
+  const fetchTodayGoals = useGoalsStats((state) => state.fetchTodayGoals);
+  const fetchTotalGoalsData = useGoalsStats(
+      (state) => state.fetchTotalGoalsData);
+  const selectedGoalId = useGoalsStats((state) => state.selectedGoalId);
 
   // statistics stores
-  const {filters} = useFilters();
-  const {startDate, endDate, range} = useDate();
-  const { fetchChartData, insightsMetrics } = useInsightsStats(state => state);
-  const { fetchCompareData }  = useCompareStats();
-  const { fetchDevicesData } = useDevicesStats();
-  const { fetchPagesData, pagesMetrics } = usePagesStats();
-  const { fetchReferrersData, referrersMetrics } = useReferrersStats();
+  const filters = useFilters((state) => state.filters);
+  const startDate = useDate((state) => state.startDate);
+  const endDate = useDate((state) => state.endDate);
+  const range = useDate((state) => state.range);
+  const insightsMetrics = useInsightsStats(state => state.insightsMetrics);
+  const fetchChartData = useInsightsStats(state => state.fetchChartData);
+  const fetchCompareData = useCompareStats((state) => state.fetchCompareData);
+  const fetchDevicesData = useDevicesStats((state) => state.fetchDevicesData);
+  const fetchPagesData = usePagesStats((state) => state.fetchPagesData);
+  const fetchReferrersData = useReferrersStats(
+      (state) => state.fetchReferrersData);
+  const pagesMetrics = usePagesStats(state => state.pagesMetrics);
+  const referrersMetrics = useReferrersStats(state => state.referrersMetrics);
 
   // change pages
   useEffect(async () => {
-    console.log('fields useEffect');
-    console.log('fieldsLoaded', fieldsLoaded)
-    console.log('fields', fields)
     if (fieldsLoaded) {
       await fetchSubMenuData(fields);
     }
@@ -70,17 +74,10 @@ const Page = () => {
 
   useEffect(async () => {
     let subMenuItem = getAnchor('menu');
-    await fetchFieldsData(subMenuItem);
-  }, []);
-
-  // get goals fields & values
-  useEffect(async () => {
-    await initGoals();
-
-  }, []);
+    fetchFieldsData(subMenuItem);
+    initGoals();
 
   // function to load data in the background after the main data has been loaded.
-  useEffect(async () => {
     const currentAnchor = getAnchor();
     const args = {
       filters: filters,
@@ -93,7 +90,6 @@ const Page = () => {
         fetchPagesData(startDate, endDate, range, {...args, metrics: pagesMetrics}),
         fetchReferrersData(startDate, endDate, range, {...args, metrics: referrersMetrics}),
       ]).then((results) => {
-        console.log('All statistics blocks are loaded', results);
         fetchLiveVisitors();
         fetchTodayData();
         fetchTodayGoals(selectedGoalId);
@@ -108,7 +104,6 @@ const Page = () => {
         fetchTodayGoals(selectedGoalId),
         fetchTotalGoalsData(selectedGoalId),
       ]).then((results) => {
-        console.log('All dashboard blocks are loaded', results);
         fetchChartData(startDate, endDate, range, {...args, metrics: insightsMetrics});
         fetchCompareData(startDate, endDate, range, args);
         fetchDevicesData(startDate, endDate, range, args);
