@@ -31,10 +31,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			$today        = strtotime( 'today midnight' );
 			$goal         = BURST()->goals->get_goal_setup( $goal_id );
 			$goal_url     = $goal['url'];
-			$goal_url_sql = $goal_url ? "AND statistics.page_url = '{$goal_url}'" : "";
-
-			error_log("goal_id: {$goal_id}");
-			error_log('goal: ' . print_r($goal, true));
+			$goal_url_sql = $goal_url === '' || $goal_url === '*' ? '' : $wpdb->prepare( 'AND statistics.page_url = %s', $goal_url );
 
 			$sql = "SELECT COUNT(*)
 					FROM {$wpdb->prefix}burst_statistics as statistics 
@@ -42,7 +39,6 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 					        ON statistics.ID = goals.statistic_id
 					WHERE statistics.bounce = 0 AND goals.goal_id = {$goal_id} AND statistics.time > {$today} {$goal_url_sql}";
 			$val = $wpdb->get_var( $sql );
-			error_log("val: {$val} {$sql}");
 
 			return (int) $val ?: 0;
 		}
@@ -99,7 +95,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			if ( $goal_id !== 0 ) {
 				// Query to get total number of goal completions
 				$goal_end_sql = $goal_end > 0 ? "AND statistics.time < {$goal_end}" : '';
-				$goal_url_sql = $goal_url !== '' ? $wpdb->prepare( 'AND statistics.page_url = %s', $goal_url ) : '';
+				$goal_url_sql = $goal_url === '' || $goal_url === '*' ? '' : $wpdb->prepare( 'AND statistics.page_url = %s', $goal_url );
 				$total_sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics AS statistics
 								INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
 								ON statistics.ID = goals.statistic_id
