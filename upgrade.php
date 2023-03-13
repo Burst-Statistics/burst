@@ -14,6 +14,22 @@ function burst_check_upgrade() {
 	$prev_version = get_option( 'burst-current-version', false );
 	if ( $prev_version === burst_version ) return; // no upgrade
 
+	// always delete transients on upgrade
+	global $wpdb;
+
+	// Find all burst transients in the database
+	$results = $wpdb->get_results("SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%transient_burst%'");
+
+	// Delete each transient found
+	foreach ($results as $result) {
+		$transient_name = substr($result->option_name, 11); // 11 = strlen('_transient_')
+		delete_transient($transient_name);
+	}
+
+	// burst custom transients are not deleted by the above code
+	// so we need to delete them manually, an empty array will do
+	update_option('burst_transients', [], false);
+
 	// add burst capabilities
 	if ( $prev_version
 	     && version_compare( $prev_version, '1.1.1', '<' )
