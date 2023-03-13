@@ -128,6 +128,20 @@ if ( ! class_exists( "burst_notices" ) ) {
 						],
 					],
 				],
+				'beta_goals' => [
+					'callback' => '_true_',
+					'output' => [
+						'true' => [
+							'msg' => burst_sprintf(
+								__( "The beta for our new goals update is now available! Define and keep track of your own goals. %sSign up now to try it out!%s", 'burst-statistics' ),
+								'<a href="https://burst-statistics.com/goals-beta/" target="_blank">',
+								'</a>'),
+							'icon' => 'open',
+							'dismissible' => true,
+							'plusone' => true,
+						],
+					],
+				],
 				'leave-feedback' => [
 					'callback' => '_true_',
 					'score' => 0,
