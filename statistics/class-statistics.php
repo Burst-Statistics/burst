@@ -775,8 +775,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		private function get_metric_color( $metric = 'visitors', $type = 'default' ) {
 			$colors = array(
 				'visitors' => array(
-					'background' => 'rgba(41, 182, 246, 0.2)',
-					'border'     => 'rgba(41, 182, 246, 1)',
+					'background' => 'rgba(0,159,255, 0.2)',
+					'border'     => 'rgba(0,159,255, 1)',
 				),
 				'pageviews' => array(
 					'background' => 'rgba(244, 191, 62, 0.2)',

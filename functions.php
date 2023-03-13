@@ -42,6 +42,22 @@ if ( ! function_exists('burst_add_manage_capability')){
 	}
 }
 
+if ( !function_exists('cmplz_add_role_to_subsite') ) {
+    /**
+     * When a new site is added, add our capability
+     *
+     * @param $site
+     *
+     * @return void
+     */
+    function cmplz_add_role_to_subsite( $site ) {
+        switch_to_blog( $site->blog_id );
+        burst_add_manage_capability( false );
+        restore_current_blog();
+    }
+    add_action('wp_initialize_site', 'cmplz_add_role_to_subsite', 10, 1);
+}
+
 if ( ! function_exists( 'burst_user_can_view' ) ) {
 	/**
 	 * Check if user has Burst permissions
