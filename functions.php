@@ -29,14 +29,28 @@ if ( ! function_exists('burst_add_view_capability')){
 if ( ! function_exists('burst_add_manage_capability')){
 	/**
 	 * Add a user capability to WordPress and add to admin and editor role
+	 *
+	 * @param bool $handle_subsites
 	 */
-	function burst_add_manage_capability(){
+	function burst_add_manage_capability(bool $handle_subsites=true){
 		$capability = 'manage_burst_statistics';
 		$roles = apply_filters('burst_burst_add_manage_capability', array('administrator', 'editor') );
 		foreach( $roles as $role ){
 			$role = get_role( $role );
 			if( $role && !$role->has_cap( $capability ) ){
 				$role->add_cap( $capability );
+			}
+		}
+
+		//we need to add this role across subsites as well.
+		if ( $handle_subsites && is_multisite() ) {
+			$sites = get_sites();
+			if (count($sites)>0) {
+				foreach ($sites as $site) {
+					switch_to_blog($site->blog_id);
+					burst_add_manage_capability(false);
+					restore_current_blog();
+				}
 			}
 		}
 	}
