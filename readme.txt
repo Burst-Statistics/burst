@@ -6,7 +6,7 @@ Requires at least: 5.4
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.1
-Stable tag: 1.3.4
+Stable tag: 1.3.5
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,10 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.3.5 =
+* Fix: Fixed timezone issue where there would be a mismatch between the selected date in the datepicker and the date shown up top.
+* Fix: Fixed issue where referreres would not show up when Czech language was selected.
+
 = 1.3.4 =
 * Fix: Removed caching of statistics due to causing multiple issues and not providing performance benefits.
 * Fix: Timestamp bug where the time for today would be off by the client timezone offset has been resolved.
