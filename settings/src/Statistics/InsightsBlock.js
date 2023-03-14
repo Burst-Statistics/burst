@@ -41,8 +41,8 @@ const InsightsBlock  = (props) => {
               {
                 label: __('Unique visitors', 'burst-statistics'),
                 data: [0, 0, 0, 0, 0, 0, 0],
-                borderColor: 'rgba(41, 182, 246, 1)',
-                backgroundColor: 'rgba(41, 182, 246, 0.2)',
+                borderColor: 'rgba(0,159,255, 1)',
+                backgroundColor: 'rgba(0,159,255, 0.2)',
               },
               {
                 label: __('Pageviews', 'burst-statistics'),

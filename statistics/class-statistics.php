@@ -211,10 +211,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$site_url    = str_replace( $remove, "", site_url() );
 				// get top referrer
 				$sql = "SELECT count(referrer) as value,
-                            CASE
+                           CASE
                                 WHEN referrer = '/' THEN $direct_text
-                                WHEN referrer = '' THEN $direct_text
-                                ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3))
+                                ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
                             END as title
                         FROM $table as t
                         WHERE referrer IS NOT NULL 
@@ -618,7 +617,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				$sql   = "SELECT count(referrer) as count,
 									 CASE
 	                                    WHEN referrer = '/' THEN $direct_text
-	                                    ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3)) 
+	                                    ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
 	                                END as referrer
 									FROM $table as stats
 									WHERE referrer NOT LIKE '%$site_url%' AND referrer NOT LIKE ''
@@ -752,8 +751,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		private function get_metric_color( string $metric = 'visitors', string $type = 'default' ): string {
 			$colors = array(
 				'visitors' => array(
-					'background' => 'rgba(41, 182, 246, 0.2)',
-					'border'     => 'rgba(41, 182, 246, 1)',
+					'background' => 'rgba(0,159,255, 0.2)',
+					'border'     => 'rgba(0,159,255, 1)',
 				),
 				'pageviews' => array(
 					'background' => 'rgba(244, 191, 62, 0.2)',
@@ -823,7 +822,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                     $sql = "SELECT 
                                 CASE
                                     WHEN referrer = '/' THEN $direct_text
-                                    ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3))
+                                    ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
                                 END as val,
                                 COUNT(referrer) AS referrer_count
                             FROM $table_name
