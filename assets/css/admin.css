@@ -43,7 +43,7 @@
     --rsp-black: #333;
     --rsp-white: #fff;
     --rsp-yellow: #f4bf3e;
-    --rsp-blue: #29b6f6;
+    --rsp-blue: #009fff;
     --rsp-dark-blue: #1E73BE;
     --rsp-green: #2e8a37;
     --rsp-red: #D7263D;
@@ -1037,7 +1037,7 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 
 .burst .burst-bullet.rsp-blue-yellow {
     background: var(--rsp-blue);
-    background: linear-gradient(77deg, rgb(41, 182, 246) 0%, rgb(41, 182, 246) 30%, rgb(244, 191, 62) 70%, rgb(244, 191, 62) 100%);
+    background: linear-gradient(77deg, rgb(0, 159, 255) 0%, rgb(0, 159, 255) 30%, rgb(244, 191, 62) 70%, rgb(244, 191, 62) 100%);
     animation: gradient 2s ease infinite;
     background-size: 200% 200%;
 }
@@ -1363,15 +1363,15 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(1) {
-    width: 75%;
+    width: 79%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(2) {
-    width: 94%;
+    width: 86%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(3) {
-    width: 65%;
+    width: 66%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(4) {
@@ -1379,43 +1379,43 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(5) {
-    width: 76%;
+    width: 78%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(6) {
-    width: 91%;
+    width: 74%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(7) {
-    width: 63%;
+    width: 69%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(8) {
-    width: 80%;
+    width: 96%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(9) {
-    width: 73%;
+    width: 75%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(10) {
-    width: 80%;
+    width: 83%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(11) {
-    width: 98%;
+    width: 68%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(12) {
-    width: 81%;
+    width: 62%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(13) {
-    width: 72%;
+    width: 82%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(14) {
-    width: 73%;
+    width: 81%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(15) {
@@ -1423,23 +1423,23 @@ button.shepherd-button.button-secondary:hover, button.shepherd-button.button-sec
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(16) {
-    width: 98%;
+    width: 79%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(17) {
-    width: 96%;
+    width: 71%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(18) {
-    width: 84%;
+    width: 71%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(19) {
-    width: 99%;
+    width: 79%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(20) {
-    width: 80%;
+    width: 89%;
 }
 
 .burst-placeholder .burst-placeholder-line ~ .burst-placeholder-line {

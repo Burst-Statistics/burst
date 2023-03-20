@@ -365,8 +365,6 @@ function burst_get_data($request){
 		case 'insights':
 			$args['interval'] = $request_args['interval'] ?? 'day';
 			$args['interval'] = BURST()->statistics->sanitize_interval($args['interval']);
-            error_log("insights args");
-            error_log(print_r($args, true));
 			$data = BURST()->statistics->get_insights_data($args);
 			break;
 		case 'pages':

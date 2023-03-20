@@ -34,6 +34,14 @@ const DateRange = (props) => {
         key: 'selection',
       },
   );
+  const formatString = 'MMMM d, yyyy';
+  const [displayStart, setDisplayStart] = useState(
+      format( new Date(props.dateRange.startDate),
+          formatString)
+  );
+  const [displayEnd, setDisplayEnd] = useState(
+      format( new Date(props.dateRange.endDate), formatString)
+  );
 
   // get currentDate
   const currentDate = new Date();
@@ -159,24 +167,22 @@ const DateRange = (props) => {
       countClicks.current = 0;
       props.setDateRange(dateRange);
       handleClose();
+      let displayStart = format(ranges.selection.startDate, formatString);
+      let displayEnd = format(ranges.selection.endDate, formatString);
+      setDisplayStart(displayStart);
+      setDisplayEnd(displayEnd);
     }
 
+
   };
 
-  const formatString = 'MMMM d, yyyy';
-  const display = {
-    startDate: props.dateRange.startDate ? format(
-        new Date(props.dateRange.startDate), formatString) : format(
-        defaultStart, formatString),
-    endDate: props.dateRange.endDate ? format(new Date(props.dateRange.endDate),
-        formatString) : format(defaultEnd, formatString),
-  };
+
   return (
       <div className="burst-date-range-container">
         <button onClick={handleClick} id="burst-date-range-picker-open-button"
                 className="button button-input">
           <Icon name="calendar"/>
-          {display.startDate} - {display.endDate}
+          {displayStart} - {displayEnd}
           <Icon name="chevron-down"/>
         </button>
         <Popover
