@@ -68,6 +68,8 @@ Not...yet.
 = 1.3.5 =
 * Fix: Fixed timezone issue where there would be a mismatch between the selected date in the datepicker and the date shown up top.
 * Fix: Fixed issue where referreres would not show up when Czech language was selected.
+* Fix: RTL issue in some languages
+* Improvement: Tested up to WordPress 6.2
 
 = 1.3.4 =
 * Fix: Removed caching of statistics due to causing multiple issues and not providing performance benefits.
