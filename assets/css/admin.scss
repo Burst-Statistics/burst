@@ -40,6 +40,9 @@
   @import "admin/modules/placeholder.scss";
   @import 'admin/modules/other-plugins.scss';
   @import 'admin/modules/tips-tricks.scss';
+
+  @import 'admin/modules/dashboard/goals.scss';
+
   @import 'admin/modules/wizard.scss';
     @import 'admin/modules/wizard/notice.scss';
     @import 'admin/modules/wizard/menu.scss';
@@ -50,6 +53,9 @@
     @import 'admin/modules/statistics/insights.scss';
     @import 'admin/modules/statistics/daterange.scss';
     @import 'admin/modules/statistics/filters.scss';
+
+    @import 'admin/modules/toast/main.scss';
+
   @import 'admin/modules/settings.scss';
   @import 'admin/modules/notices.scss';
   @import 'admin/modules/datatables.scss';

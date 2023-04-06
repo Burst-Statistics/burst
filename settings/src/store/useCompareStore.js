@@ -1,0 +1,131 @@
+import { useCallback } from 'react';
+import {create} from 'zustand';
+import { __ } from '@wordpress/i18n';
+import * as burst_api from '../utils/api';
+import {
+  formatNumber,
+  formatTime,
+  getBouncePercentage,
+  getChangePercentage,
+  getPercentage,
+} from '../utils/formatting';
+
+const metrics = {
+  'pageviews': __('Pageviews', 'burst-statistics'),
+  'sessions': __('Sessions', 'burst-statistics'),
+  'visitors': __('Visitors', 'burst-statistics'),
+  'bounced_sessions': __('Bounce Rate', 'burst-statistics'),
+};
+
+const goalMetrics = {
+  'conversions': __('Conversions', 'burst-statistics'),
+  'pageviews': __('Pageviews', 'burst-statistics'),
+  'sessions': __('Sessions', 'burst-statistics'),
+  'visitors': __('Visitors', 'burst-statistics'),
+
+};
+
+let emptyData = {};
+// loop through metrics and set default values
+Object.keys(metrics).forEach(function (key) {
+  emptyData[key] = {
+    'title': metrics[key],
+    'subtitle': '-',
+    'value': '-',
+    'change': '-',
+    'changeStatus': '',
+  };
+});
+
+const useCompareStore = create((set) => ({
+  loading: true,
+  setLoading: (loading) => set({ loading }),
+  data: emptyData,
+  setData: (data) => set({ data }),
+}));
+
+const templates = {
+  default: {
+    pageviews: (curr, prev) => ({
+      title: __('Pageviews', 'burst-statistics'),
+      subtitle: `${formatNumber(curr.pageviews / curr.sessions)} ${__('pageviews per session', 'burst-statistics')}`,
+      value: formatNumber(curr.pageviews),
+
+    }),
+    sessions: (curr, prev) => ({
+      title: __('Sessions', 'burst-statistics'),
+      subtitle: `${formatTime(curr.pageviews / curr.sessions * curr.avg_time_on_page)} ${__('per session', 'burst-statistics')}`,
+      value: formatNumber(curr.sessions),
+
+    }),
+    visitors: (curr, prev) => ({
+      title: __('Visitors', 'burst-statistics'),
+      subtitle: `${getPercentage(curr.first_time_visitors, curr.visitors)} ${__('are new visitors', 'burst-statistics')}`,
+      value: formatNumber(curr.visitors),
+
+    }),
+    bounced_sessions: (curr, prev) => ({
+      title: __('Bounce Rate', 'burst-statistics'),
+      subtitle: `${curr.bounced_sessions} ${__('visitors bounced', 'burst-statistics')}`,
+      value: getBouncePercentage(curr.bounced_sessions, curr.sessions),
+    }),
+  },
+  goalSelected: {
+    conversions: (curr, prev) => ({
+      title: __('Conversions', 'burst-statistics'),
+      subtitle: `${getPercentage(curr.conversion_rate, 100)} ${__('conversion rate', 'burst-statistics')}`,
+      value: formatNumber(curr.conversions),
+    }),
+    pageviews: (curr, prev) => ({
+      title: __('Pageviews', 'burst-statistics'),
+      subtitle: `${formatNumber(curr.pageviews / curr.sessions)} ${__('pageviews per conversion', 'burst-statistics')}`,
+      value: formatNumber(curr.pageviews),
+    }),
+    sessions: (curr, prev) => ({
+      title: __('Visitors', 'burst-statistics'),
+      subtitle: `${formatNumber(curr.pageviews / curr.sessions)} ${__('pageviews per conversion', 'burst-statistics')}`,
+      value: formatNumber(curr.visitors),
+    }),
+    visitors: (curr, prev) => ({
+      title: __('Visitors', 'burst-statistics'),
+      subtitle: `${formatNumber(curr.pageviews / curr.visitors)} ${__('pageviews per conversion', 'burst-statistics')}`,
+      value: formatNumber(curr.visitors),
+    }),
+  },
+};
+
+const transformCompareData = (response) => {
+    const data = {};
+    const curr = response.current;
+    const prev = response.previous;
+    // const templateType = filters.goal_id > 0 ? 'goalSelected' : 'default'; @tdod fix this
+    // const selectedMetrics = filters.goal_id > 0 ? goalMetrics : metrics;
+    const templateType = 'default';
+    const selectedMetrics = metrics;
+    const selectedTemplate = templates[templateType];
+
+  // const templateType = filters.goal_id > 0 ? 'goalSelected' : 'default';
+  // const selectedMetrics = filters.goal_id > 0 ? goalMetrics : metrics;
+  // const selectedTemplate = templates[templateType];
+
+    Object.entries(selectedMetrics).forEach(([key, value]) => {
+      const templateFunction = selectedTemplate[key] || templates.default[key];
+
+      let change = getChangePercentage(curr[key], prev[key]);
+
+      if (key === 'bounced_sessions') {
+        const bouncePercentage = getBouncePercentage(curr[key], curr['sessions'], false);
+        const bouncePercentagePrev = getBouncePercentage(prev[key], prev['sessions'], false);
+        change = getChangePercentage(bouncePercentage, bouncePercentagePrev);
+        change.status = change.status === 'positive' ? 'negative' : 'positive';
+      }
+      data[key] = {
+        ...templateFunction(curr, prev),
+        change: change.val,
+        changeStatus: change.status,
+      };
+    });
+    return data;
+};
+
+export { useCompareStore, transformCompareData };

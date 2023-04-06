@@ -656,7 +656,6 @@ if ( ! function_exists('burst_sanitize_filters') ) {
                 $filters[ $key ] = sanitize_text_field( $value );
             }
         }
-
         return $filters;
     }
 }

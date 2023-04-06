@@ -1,6 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 import axios from 'axios';
 import {__} from '@wordpress/i18n';
+import {toast} from 'react-toastify';
 
 const usesPlainPermalinks = () => {
 	return burst_settings.site_url.indexOf('?') !==-1;
@@ -40,6 +41,11 @@ const makeRequest = (path, method = 'GET', data) => {
 			}
 		} catch (error) {
 			console.error(error);
+			toast.error(
+					__('Error', 'burst-statistics') + ': ' + error.message,
+					{
+						autoClose: 10000,
+					});
 			reject(error);
 		}
 	});
@@ -47,8 +53,12 @@ const makeRequest = (path, method = 'GET', data) => {
 
 export const getFields = () => makeRequest('burst/v1/fields/get'+glue()+getNonce());
 export const setFields = (data) => makeRequest('burst/v1/fields/set'+glue(), 'POST', [...data, { nonce: burst_settings.burst_nonce }]);
+
 export const getGoalFields = () => makeRequest('burst/v1/goal_fields/get'+glue()+getNonce());
-export const setGoalFields = (data) => makeRequest('burst/v1/goal_fields/set'+glue()+getNonce(), 'POST', [...data, { nonce: burst_settings.burst_nonce }]);
+export const setGoalFields = (data) => { return makeRequest('burst/v1/goal_fields/set'+glue()+getNonce(), 'POST', [...data, { nonce: burst_settings.burst_nonce }])};
+export const deleteGoal = (id) => makeRequest('burst/v1/goal_fields/delete'+glue()+getNonce(), 'POST', {id, nonce: burst_settings.burst_nonce});
+export const addGoal = () => makeRequest('burst/v1/goal_fields/add'+glue()+getNonce(), 'POST', {nonce: burst_settings.burst_nonce});
+
 export const getBlock = (block) => makeRequest('burst/v1/block/'+block+glue()+getNonce());
 export const runTest = (test, state, data) => makeRequest(`burst/v1/tests/${test}${glue()}state=${state}${getNonce()}&data=${encodeURIComponent(JSON.stringify(data))}`);
 export const doAction = (action, data = {}) => makeRequest(`burst/v1/do_action/${action}`, 'POST', {...data, nonce: burst_settings.burst_nonce});

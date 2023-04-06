@@ -181,13 +181,10 @@
   .burst-grid-item.burst-goals {
     position: relative;
 
-    .burst-goals {
-      //filter: blur(1px);
-
-      &-select {
-        background: var(--rsp-grey-300);
-      }
+    .burst-goals-select {
+        background: var(--rsp-yellow-faded);
     }
+
 
     .information-overlay {
       background: rgba(47, 47, 47, 0.15);

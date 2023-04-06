@@ -1,83 +1,108 @@
-.burst {
-  a.button, button.button, input.button {
-    font-size: var(--rsp-fs-300);
-    font-weight: 300;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-
-    &.button-black {
-      border: 0 solid transparent;
-      background: var(--rsp-black);
-      color: var(--rsp-text-color-white);
-
-      &:hover, &:focus, &:active {
-        box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--rsp-black);
-      }
-    }
-
-    &.button-transparent {
-      border: 1px solid #2271b1;
-      background: transparent;
-
-      &:hover, &:focus, &:active {
-        box-shadow: 0 0 0 1px #fff, 0 0 0 3px #2271b1;
-      }
-    }
-
-    &.button-tertiary, &.button-red {
-      border: 0 solid transparent;
-      background: var(--rsp-red);
-      color: var(--rsp-text-color-white);
-
-      &:hover, &:focus, &:active {
-        box-shadow: 0 0 0 1px #fff, 0 0 0 3px var(--rsp-red);
-        background: var(--rsp-red);
-        color: var(--rsp-text-color-white);
-      }
-    }
-  }
-  a.burst-button-small, button.burst-button-small, input.burst-button-small {
-    font-size: var(--rsp-fs-100);
-    font-weight: 300;
-    min-height: auto;
-  }
-}
-/* Documents overview */
-.burst-shortcode {
-  right: 10000px;
-  position: absolute;
-  background-color: #fff;
-  padding: 0;
-  white-space: nowrap;
+/* Global Variables */
+:root {
+  --button-font-size: var(--rsp-fs-300);
+  --button-font-weight: 300;
+  --button-line-height: 2;
+  --button-letter-spacing: 0.5px;
+  --button-transition: all 0.3s ease;
+  --button-min-height: 30px;
+  --button-padding: 0 10px;
+  --button-border-radius: 4px;
+  --button-accent-color: #2271b1;
+  --button-contrast-color: #000;
+  --button-secondary-bg: #fff;
 }
 
-.shortcode {
+/* Button Base Styles */
+a.burst-button, button.burst-button, input.burst-button {
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  line-height: var(--button-line-height);
+  letter-spacing: var(--button-letter-spacing);
+  transition: var(--button-transition);
+  min-height: var(--button-min-height);
+  margin: 0;
+  padding: var(--button-padding);
+  border-radius: var(--button-border-radius);
+  text-align: center;
   cursor: pointer;
-}
+  text-decoration: none;
 
-button.shepherd-button{
-  &.button-primary{
-    background: var(--rsp-white);
-    color: var(--rsp-black);
-    border: 1px solid var(--rsp-white);
-    &:hover, &:focus, &:active{
-      background: var(--rsp-white);
-      color: var(--rsp-black);
-      border-color: var(--rsp-white);
-      outline-offset: 2px;
-      outline: 1px solid var(--rsp-white);
+  &--primary {
+    background: var(--button-accent-color);
+    color: var(--button-secondary-bg);
+    border: 1px solid var(--button-accent-color);
+
+    &:hover {
+      background: var(--button-accent-color);
+      color: var(--button-secondary-bg);
+      border-color: var(--button-accent-color);
+      box-shadow: 0 0 0 3px rgba(34, 113, 177, 0.3);
     }
   }
-  &.button-secondary{
-    background: transparent;
-    color: var(--rsp-white);
-    border-color: var(--rsp-white);
-    &:hover, &:focus, &:active{
-      background: transparent;
-      color: var(--rsp-white);
-      border-color: var(--rsp-white);
-      outline-offset: 2px;
-      outline: 1px solid var(--rsp-white);
+
+  &--secondary {
+    background: var(--button-secondary-bg);
+    color: var(--button-accent-color);
+    border: 1px solid var(--button-accent-color);
+
+    &:hover {
+      background: var(--rsp-grey-200);
+      color: var(--button-accent-color);
+      border-color: var(--button-accent-color);
+    }
+  }
+
+  &--tertiary {
+    // red button
+    background: var(--rsp-red);
+    color: var(--rsp-text-color-white);
+    border: 1px solid var(--rsp-red);
+    &:hover {
+      background: var(--rsp-red-faded);
+      color: var(--rsp-red);
+      border-color: var(--rsp-red);
+      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3);
+    }
+  }
+  &--black{
+    background: var(--button-contrast-color);
+    color: var(--button-secondary-bg);
+    border: 1px solid var(--button-contrast-color);
+    &:hover {
+      background: var(--button-contrast-color);
+      color: var(--button-secondary-bg);
+      border-color: var(--button-contrast-color);
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.burst-button-icon {
+  background: transparent;
+  background: var(--rsp-grey-300);
+  color: #2271b1;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+  padding: 10px;
+  margin: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  &:hover {
+    padding: 15px;
+    margin: 0;
+  }
+  &--delete{
+    &:hover{
+      background: var(--rsp-red-faded);
+      svg path{
+        fill: var(--rsp-red);
+      }
     }
   }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import {
     render,
 } from '@wordpress/element';
-import Page from './Page';
+import Page from './components/Page';
 
 /**
  * Initialize
@@ -20,4 +20,4 @@ document.addEventListener( 'DOMContentLoaded', () => {
 			container
 		);
 	}
-}); 
+});

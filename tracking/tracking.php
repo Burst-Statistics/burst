@@ -147,8 +147,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		}
 
 		$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr );
-		error_log( 'statistic_id: ' . $statistic_id);
-		error_log( 'completed_goals: ' . print_r( $completed_goals, true ));
 		// if $arr['completed_goals'] is not an empty array, update burst_goals table
 		if ( ! empty( $completed_goals ) ) {
 			foreach ( $completed_goals as $goal_id ) {
@@ -669,7 +667,7 @@ if ( ! function_exists( 'burst_create_statistic' ) ) {
 	function burst_create_statistic( $data ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
-		if ( burst_required_values_are_set( $data ) ) {
+		if ( burst_required_values_are_not_set( $data ) ) {
 			error_log( 'burst_create_statistic: required values are not set');
 			return;
 		}
@@ -718,11 +716,9 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 				"select count(*)
 							from {$wpdb->prefix}burst_goal_statistics
 		                    where statistic_id = {$data['statistic_id']} AND goal_id = {$data['goal_id']}");
-		error_log( 'burst_create_goal_statistic: ' . $goal_statistic);
 		if ( $goal_statistic > 0 ) {
 			return;
 		}
-		error_log('insert anyway');
 		$wpdb->insert(
 			$wpdb->prefix . 'burst_goal_statistics',
 			$data
@@ -748,7 +744,7 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 		return $data;
 	}
 }
-if ( ! function_exists( 'burst_required_values_are_set' ) ) {
+if ( ! function_exists( 'burst_required_values_are_not_set' ) ) {
 	/**
 	 * Check if required values are set
 	 *
@@ -756,7 +752,7 @@ if ( ! function_exists( 'burst_required_values_are_set' ) ) {
 	 *
 	 * @return bool
 	 */
-	function burst_required_values_are_set( array $data ): bool {
+	function burst_required_values_are_not_set( array $data ): bool {
 		return ! ( isset( $data['uid'] ) && isset( $data['page_url'] ) && isset( $data['entire_page_url'] ) && isset( $data['user_agent']) && isset( $data['page_id'] ) !== null );
 	}
 }

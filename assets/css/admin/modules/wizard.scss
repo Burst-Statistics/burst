@@ -64,6 +64,22 @@
       min-height: 20px;
       box-sizing: border-box;
       align-self: flex-end;
+      //position: sticky;
+      //bottom: 0;
+      //@include burst-block-padding;
+      //
+      //&:sticky{
+      //  background: #fff;
+      //}
+
+      //position: fixed;
+      //z-index: 1;
+      //bottom: 0;
+      //right: 0;
+      //background: #fff;
+      //padding: 10px 458px 10px 0px;
+      //box-shadow: var(--rsp-box-shadow);
+      //border-top: 1px solid var(--rsp-grey-300);
 
       .burst-legend {
         display: flex;

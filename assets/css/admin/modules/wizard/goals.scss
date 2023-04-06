@@ -30,9 +30,9 @@
           border: 1px solid var(--rsp-grey-300);
 
           summary {
-            padding: var(--rsp-spacing-s) var(--rsp-spacing-s);
+            padding: var(--rsp-spacing-xxs) var(--rsp-spacing-s);
             display: grid;
-            grid-template-columns: 26px 1fr auto auto;
+            grid-template-columns: 26px 1fr auto auto auto;
             align-items: center;
             gap: var(--rsp-spacing-s);
 
@@ -45,6 +45,7 @@
               display: flex;
               align-items: center;
               margin: 0;
+              .components-flex{ gap: 0 }
             }
 
             .burst-icon-chevron-down {
@@ -221,4 +222,7 @@
       min-width: 150px;
     }
   }
+}
+.MuiDialog-container .MuiPaper-rounded{
+  border-radius: var(--rsp-border-radius-s);
 }

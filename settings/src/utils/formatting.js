@@ -1,4 +1,4 @@
-import {intervalToDuration} from 'date-fns';
+import {intervalToDuration, format} from 'date-fns';
 
 const getRelativeTime = (relativeDate, date = new Date()) => {
   // if relativeDate is a number, we assume it is an UTC timestamp
@@ -70,6 +70,10 @@ function getBouncePercentage(bounced_sessions, sessions, format = true){
   return getPercentage(bounced_sessions, sessions + bounced_sessions, format);
 }
 
+const formatUnixToDate = (unixTimestamp, formatStr = 'yyyy-MM-dd') => {
+  return format(new Date(unixTimestamp * 1000), formatStr);
+}
+
 function formatTime(timeInMilliSeconds = 0) {
   let timeInSeconds = Number(timeInMilliSeconds);
   if (isNaN(timeInSeconds)){
@@ -118,6 +122,7 @@ export {
   getPercentage,
   getChangePercentage,
   getBouncePercentage,
+  formatUnixToDate,
   formatTime,
   formatNumber,
   formatPercentage

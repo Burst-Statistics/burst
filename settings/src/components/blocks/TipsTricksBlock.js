@@ -1,0 +1,56 @@
+import GridItem from '../common/GridItem';
+import {__} from '@wordpress/i18n';
+
+const TipsTricksBlock = (props) => {
+  const items = [
+    {
+      content: 'Hidden Features of the Insights Graph',
+      link: 'https://burst-statistics.com/hidden-features-of-the-insights-graph/',
+    },
+    {
+      content: 'What is Cookieless tracking?',
+      link: 'https://burst-statistics.com/what-is-cookieless-tracking/',
+    },
+    {
+      content: 'Why is Burst Privacy-Friendly?',
+      link: 'https://burst-statistics.com/why-is-burst-privacy-friendly/',
+    },
+    {
+      content: 'How can I compare metrics?',
+      link: 'https://burst-statistics.com/how-can-i-compare-metrics/',
+    },
+    {
+      content: 'What is Bounce Rate?',
+      link: 'https://burst-statistics.com/definition/what-is-bounce-rate/',
+    },
+    {
+      content: 'What is Turbo Mode?',
+      link: 'https://burst-statistics.com/definition/turbo-mode/',
+    },
+  ];
+
+  return (
+      <GridItem
+          className={'burst-column-2'}
+          title={__('Tips & Tricks', 'burst-statistics')}
+          footer={
+            <a href="https://burst-statistics.com/docs/" target="_blank"
+               className="burst-button burst-button--secondary">
+              {__("View all" , "burst-statistics" )}
+            </a>
+          }
+      >
+        <div className="burst-tips-tricks-container">
+          {items.map((item, index) => (
+              <div key={index} className="burst-tips-tricks-element">
+                <a href={item.link} target="_blank" rel="noopener noreferrer" title={item.content}>
+                  <div className="burst-bullet medium" />
+                  <div className="burst-tips-tricks-content">{item.content}</div>
+                </a>
+              </div>
+          ))}
+        </div>
+      </GridItem>
+  );
+};
+export default TipsTricksBlock;

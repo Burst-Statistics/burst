@@ -61,6 +61,8 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			$goal_url   = $goal['url'];
 			$goal_start = (int) $goal['date_start'];
 			$goal_end   = (int) $goal['date_end'];
+			$goal_created = (int) $goal['date_created'];
+			$status = $goal['status'] ?? 'inactive';
 
 			// Initialize data array
 			$data = array(
@@ -77,7 +79,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 					'tooltip' => '',
 				),
 				'conversionPercentage' => array(
-					'title'   => __( 'Conversion percentage', 'burst-statistics' ),
+					'title'   => __( 'Conversion rate', 'burst-statistics' ),
 					'value'   => 0,
 					'tooltip' => '',
 				),
@@ -87,8 +89,10 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 					'tooltip' => __('Best performing device', 'burst-statistics'),
 					'icon'   => 'desktop',
 				),
+				'dateCreated'          => $goal_created,
 				'dateStart'            => $goal_start,
 				'dateEnd'              => $goal_end,
+				'status'               => $status,
 				'goalId'               => $goal_id,
 			);
 
@@ -119,7 +123,6 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 				$visitors_sql               = "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics as statistics
 												WHERE statistics.time > {$goal_start} {$goal_end_sql} AND statistics.bounce = 0 {$goal_url_sql}";
 				$data['pageviews']['value'] = $wpdb->get_var( $visitors_sql );
-				error_log("visitors_sql: {$visitors_sql}");
 
 				// Query to get best performing device
 				$device_sql    = "SELECT COUNT(*) AS value, statistics.device AS title FROM {$wpdb->prefix}burst_statistics AS statistics
@@ -134,7 +137,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 											GROUP BY statistics.device ORDER BY value DESC LIMIT 4";
 				$pageviews_per_device_result = $wpdb->get_results($pageviews_per_device);
 
-				// calculate conversion percentage and select the highest percentage
+				// calculate conversion rate and select the highest percentage
 				$highest_percentage = 0;
 				foreach ( $device_result as $device ) {
 					foreach ( $pageviews_per_device_result as $pageviews_per_device ) {
@@ -149,9 +152,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 						}
 					}
 				}
-
 			}
-
 			return $data;
 		}
 	}

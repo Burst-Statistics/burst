@@ -1,5 +1,5 @@
 .burst {
-  ---rsp-filter-padding: 4px 15px;
+  ---rsp-filter-padding: 8px 15px;
 
   .burst-data-filters {
     gap: var(--rsp-spacing-xs);
@@ -41,6 +41,11 @@
         // add custom styling
         padding: auto var(--rsp-spacing-xs);
         height: 100%;
+      }
+
+      &--animate {
+        opacity: 0;
+        transform: scale(0.1);
       }
     }
   }
