@@ -1373,7 +1373,7 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
     color: var(--rsp-text-color-white);
 }
 
-.burst-task-status.burst-premium {
+.burst-task-status.burst-pro {
     background-color: var(--rsp-color-success);
     color: var(--rsp-text-color-white);
 }
@@ -1427,83 +1427,83 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(1) {
-    width: 71%;
+    width: 78%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(2) {
-    width: 82%;
+    width: 86%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(3) {
-    width: 69%;
+    width: 76%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(4) {
-    width: 63%;
+    width: 94%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(5) {
-    width: 77%;
+    width: 86%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(6) {
-    width: 79%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
-    width: 71%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
-    width: 69%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
     width: 62%;
 }
 
+.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
+    width: 83%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
+    width: 88%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
+    width: 85%;
+}
+
 .burst-placeholder .burst-placeholder-line:nth-of-type(10) {
-    width: 71%;
+    width: 72%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(11) {
-    width: 84%;
+    width: 94%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(12) {
-    width: 75%;
+    width: 88%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(13) {
-    width: 82%;
+    width: 61%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(14) {
-    width: 74%;
+    width: 91%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(15) {
-    width: 65%;
+    width: 71%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(16) {
-    width: 73%;
+    width: 77%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(17) {
-    width: 99%;
+    width: 75%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(18) {
-    width: 87%;
+    width: 85%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(19) {
-    width: 93%;
+    width: 97%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(20) {
-    width: 81%;
+    width: 72%;
 }
 
 .burst-placeholder .burst-placeholder-line ~ .burst-placeholder-line {
@@ -1950,12 +1950,12 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
     font-size: var(--rsp-fs-100);
 }
 
-.burst-wizard-menu-items .burst-menu-item.burst-premium a {
+.burst-wizard-menu-items .burst-menu-item.burst-pro a {
     background: var(--rsp-dark-blue-faded);
     flex-wrap: wrap;
 }
 
-.burst-wizard-menu-items .burst-menu-item.burst-premium a .burst-menu-item-featured-pill {
+.burst-wizard-menu-items .burst-menu-item.burst-pro a .burst-menu-item-featured-pill {
     background: var(--rsp-dark-blue);
     color: var(--rsp-text-color-white);
     padding: 2px 9px;
@@ -1963,11 +1963,11 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
     font-size: var(--rsp-fs-100);
 }
 
-.burst-wizard-menu-items .burst-premium-menu-item {
+.burst-wizard-menu-items .burst-pro-menu-item {
     background: var(--rsp-dark-blue-faded);
 }
 
-.burst-wizard-menu-items .burst-premium-menu-item div {
+.burst-wizard-menu-items .burst-pro-menu-item div {
     display: flex;
     align-items: center;
     gap: var(--rsp-spacing-xs);
@@ -1981,7 +1981,7 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
 }
 
 @media screen and (max-width: 1280px) {
-    .burst-wizard-menu-items .burst-premium-menu-item div {
+    .burst-wizard-menu-items .burst-pro-menu-item div {
         padding-inline: var(--rsp-spacing-s);
     }
 }

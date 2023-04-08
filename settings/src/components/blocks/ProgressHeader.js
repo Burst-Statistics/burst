@@ -26,27 +26,6 @@ const ProgressHeader = (props) => {
     }
   }
 
-  // let all_task_count = 0;
-  // let open_task_count = 0;
-  // let notices = [];
-  // if (props.BlockProps && props.BlockProps.notices) {
-  //   notices = props.BlockProps.notices;
-  //   all_task_count = notices.length;
-  //   let openNotices = notices.filter(function(notice) {
-  //     return notice.output.status === 'open';
-  //   });
-  //   open_task_count = openNotices.length;
-  // }
-  //
-  // const onClickHandler = (e) => {
-  //   let filter = e.target.getAttribute('data-filter');
-  //   if (filter === 'all' || filter === 'remaining') {
-  //     setFilter(filter);
-  //     sessionStorage.burst_task_filter = filter;
-  //     // @todo - update the task list
-  //   }
-  // };
-
   return (
       <div className={'burst-task-switcher-container burst-active-filter-' +
           filter}>

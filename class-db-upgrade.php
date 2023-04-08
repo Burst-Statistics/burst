@@ -31,15 +31,12 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			// check if all upgrades are done
 			$do_upgrade = false;
 			foreach ( $db_upgrades as $upgrade ) {
-				error_log( get_option( "burst_db_upgrade_$upgrade"));
 				if ( get_option( "burst_db_upgrade_$upgrade" ) == true ) { // if any upgrade is not done
 					$do_upgrade = $upgrade;
 					// if we need to upgrade break the loop
 					break;
 				}
 			}
-			error_log( 'burst db upgrade init' );
-			error_log( $do_upgrade);
 			// only one upgrade at a time
 			if ( $do_upgrade === 'bounces' ) {
 				$this->upgrade_bounces();
@@ -63,19 +60,12 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 		}
 
 		private function upgrade_bounces() {
-			error_log('db upgrade bounces');
 			if ( ! burst_admin_logged_in() ) {
-				error_log( 'burst db upgrade bounces not logged in');
 				return;
 			}
 			if ( ! get_option( 'burst_db_upgrade_bounces' ) ) {
-				error_log( 'burst db upgrade bounces not needed');
 				return;
 			}
-			error_log( 'burst db upgrade bounces start');
-			// @todo remove
-			//			$limit = (int) apply_filters('burst_db_upgrade_bounces_limit', 10000);
-			//			$offset = (int) get_option('burst_db_upgrade_bounces_offset', 0);
 
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_statistics';
@@ -93,34 +83,19 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 					    ) as t
 					  ))";
 
-
-			// @todo remove
-			$start = microtime(true);
 			$result = $wpdb->query( $sql );
-			$end = microtime(true);
-			error_log( 'burst db upgrade bounces multiple sessions time: ' . ($end - $start) );
-
-			if ( $result !== false ) {
-				error_log( 'burst db upgrade bounces multiple sessions success' );
-			} else {
+			if ( $result === false ) {
 				error_log( 'burst db upgrade bounces multiple sessions failed' );
-
 				return;
 			}
 
 			$sql    = "UPDATE $table_name
 					SET bounce = 0
 					WHERE bounce = 1 AND time_on_page > 5000";
-
-			// @todo remove
-			$start = microtime(true);
 			$result = $wpdb->query( $sql );
-			$end = microtime(true);
-			error_log( 'burst db upgrade bounces time on page time: ' . ($end - $start) );
 
 			// if query is successful
 			if ( $result !== false ) {
-				error_log( 'burst db upgrade bounces success' );
 				update_option( 'burst_db_upgrade_bounces', false);
 			} else {
 				error_log( 'burst db upgrade bounces failed' );
@@ -137,6 +112,14 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_goals';
+
+			// check if columns exist first
+			$columns = $wpdb->get_col( "DESC $table_name", 0 );
+			if ( ! in_array( 'event', $columns ) || ! in_array( 'action', $columns ) ) {
+				update_option( 'burst_db_upgrade_goals_remove_columns', false);
+				return;
+			}
+
 			// run an sql query to remove the columns `event` and `action`
 			$sql    = "ALTER TABLE $table_name
 					DROP COLUMN `event`,

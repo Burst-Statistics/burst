@@ -58,8 +58,8 @@ const GoalField = (props) => {
   let visible;
   let disabled = field.disabled;
 
-  //process premium field
-  if ( burst_settings.is_premium && field.premium ) {
+  //process pro field
+  if ( burst_settings.is_pro && field.pro ) {
     disabled = false;
   }
 

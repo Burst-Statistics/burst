@@ -10,7 +10,7 @@ import {useFields} from '../../../store/useFieldsStore';
 const Menu = (props) => {
   const subMenuLoaded = useMenu((state) => state.subMenuLoaded);
   const subMenu = useMenu((state) => state.subMenu);
-  const hasPremiumItems = useMenu((state) => state.hasPremiumItems);
+  const hasProItems = useMenu((state) => state.hasProItems);
   const fields = useFields((state) => state.fields);
 
   if ( !subMenuLoaded ) {
@@ -33,8 +33,8 @@ const Menu = (props) => {
         <div className="burst-grid-item-content">
           <div className="burst-wizard-menu-items">
             { subMenu.menu_items.map((menuItem, i) => <MenuItem key={i} menuItem={menuItem} /> ) }
-            { hasPremiumItems && !burst_settings.is_premium &&
-                <div className="burst-premium-menu-item"><div><a target="_blank" href={burst_settings.upgrade_link} className='burst-button burst-button--black'>{__('Go Pro', 'burst-statistics')}</a></div></div>
+            { hasProItems && !burst_settings.is_pro &&
+                <div className="burst-pro-menu-item"><div><a target="_blank" href={burst_settings.upgrade_link} className='burst-button burst-button--black'>{__('Go Pro', 'burst-statistics')}</a></div></div>
             }
           </div>
         </div>

@@ -396,8 +396,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		}
 
 		public function get_compare_goals_data($args = []){
-			error_log('get_compare_goals_data');
-			error_log(print_r($args, true));
 			$defaults = [
 				'date_start' => 0,
 				'date_end' => 0,
@@ -413,18 +411,16 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$start_diff = $start - $diff;
 			$end_diff = $end - $diff;
 			$filters = $args['filters'];
-			error_log('filters');
-			error_log(print_r($filters, true));
 
 			$filters_without_goal = $filters;
 			unset($filters_without_goal['goal_id']);
 
-			$select = ['pageviews', 'visitors', 'avg_time_on_page', 'sessions', 'first_time_visitors'];
+			$select = ['pageviews', 'visitors', 'sessions', 'first_time_visitors'];
 			// current data
 			$current = $this->get_data( $select, $start, $end, $filters_without_goal );
 
 
-			$select = ['pageviews', 'visitors'];
+			$select = ['pageviews', 'sessions', 'visitors'];
 			// previous data
 			$previous = $this->get_data( $select, $start_diff, $end_diff, $filters_without_goal );
 
@@ -437,6 +433,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			// combine data
 			$data = [
+				'view' => 'goals',
 				'current' => [
 					'pageviews' => (int) $current['pageviews'],
 					'visitors' => (int) $current['visitors'],
@@ -449,6 +446,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'previous' => [
 					'pageviews' => (int) $previous['pageviews'],
 					'visitors' => (int) $previous['visitors'],
+					'sessions' => (int) $previous['sessions'],
 					'conversions' => $previous_conversions,
 					'conversion_rate' => $previous_conversion_rate
 				],
@@ -476,9 +474,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			// filter is goal id so pageviews returned are the conversions
 			$sql = $this->get_sql_table($start, $end, ['pageviews'], $filters);
-			error_log('get_conversions')   ;
-			error_log(print_r($filters, true));
-			error_log($sql);
 
 			return (int) $wpdb->get_var( $sql );
 		}

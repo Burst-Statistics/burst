@@ -118,7 +118,7 @@ export const useMenu = create(( set, get ) => ({
   nextMenuItem:false,
   selectedMainMenuItem:false,
   selectedSubMenuItem:false,
-  hasPremiumItems:false,
+  hasProItems:false,
   subMenu:[],
   setSelectedSidebarMenuItem: (selectedSubMenuItem) => set(state => ({ selectedSubMenuItem })),
   setSelectedMainMenuItem: (selectedMainMenuItem) => set(state => ({ selectedMainMenuItem })),
@@ -150,8 +150,8 @@ export const useMenu = create(( set, get ) => ({
 
     const { nextMenuItem, previousMenuItem }  = getPreviousAndNextMenuItems(menu, selectedSubMenuItem);
     subMenu.menu_items = dropEmptyMenuItems(subMenu.menu_items, fields, selectedSubMenuItem);
-    const hasPremiumItems =  subMenu.menu_items.filter((item) => {return (item.premium===true)}).length>0;
-    set((state) => ({subMenuLoaded: true, menuLoaded: true, menu: menu, nextMenuItem:nextMenuItem, previousMenuItem:previousMenuItem, selectedMainMenuItem: selectedMainMenuItem, selectedSubMenuItem:selectedSubMenuItem, subMenu: subMenu, hasPremiumItems: hasPremiumItems}));
+    const hasProItems =  subMenu.menu_items.filter((item) => {return (item.pro===true)}).length>0;
+    set((state) => ({subMenuLoaded: true, menuLoaded: true, menu: menu, nextMenuItem:nextMenuItem, previousMenuItem:previousMenuItem, selectedMainMenuItem: selectedMainMenuItem, selectedSubMenuItem:selectedSubMenuItem, subMenu: subMenu, hasProItems: hasProItems}));
   }
 }));
 

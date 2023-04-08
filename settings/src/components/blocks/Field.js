@@ -8,14 +8,13 @@ import {
 } from '@wordpress/components';
 import {useState, useEffect} from "@wordpress/element";
 import {useFields} from '../../store/useFieldsStore';
-
 import Hyperlink from "../../utils/Hyperlink";
 import Icon from "../../utils/Icon";
 import IpBlock from './Fields/IpBlock';
 import UserRoleBlock from './Fields/UserRoleBlock';
 import GoalsSettings from './Goals/GoalsSettings';
 import RadioButtons from './Fields/RadioButtons';
-
+import License from './Fields/License';
 /*
  * https://react-data-table-component.netlify.app
  */
@@ -82,8 +81,8 @@ const Field = (props) => {
 		}
 	}
 
-	//process premium field
-	if ( burst_settings.is_premium && field.premium ) {
+	//process pro field
+	if ( burst_settings.is_pro && field.pro ) {
 		disabled = false;
 	}
 
@@ -127,6 +126,15 @@ const Field = (props) => {
 		);
 	}
 
+	if ( field.type==='license' ){
+		return (
+			<div className={highLightClass}>
+				<License field={field} />
+			</div>
+
+		);
+	}
+
 	if ( field.type==='radio' ){
 		if (Array.isArray(disabled) ) {
 			disabledOptions = disabled;
@@ -142,7 +150,7 @@ const Field = (props) => {
 		return (
 			<div className={highLightClass}>
 			  {field.parent_label && <div className="burst-parent-label"><label>{field.parent_label}</label></div>}
-			  <div className="burst-label-container" htmlFor={field.id}><label>{field.label}</label><Premium field={field} /></div>
+			  <div className="burst-label-container" htmlFor={field.id}><label>{field.label}</label><Pro field={field} /></div>
 			  <RadioControl
 				  label=''
 				  disabled = {disabled}

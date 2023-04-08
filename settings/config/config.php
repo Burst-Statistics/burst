@@ -61,7 +61,7 @@ function burst_menu() {
 	];
 
 
-	return apply_filters( 'cmplz_menu', $menu_items);
+	return apply_filters( 'burst_menu', $menu_items);
 }
 
 function burst_migrate_settings( $prev_version ) {

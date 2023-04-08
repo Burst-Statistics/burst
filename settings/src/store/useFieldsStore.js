@@ -117,15 +117,15 @@ export const useFields = create(( set, get ) => ({
   },
   fetchFieldsData: async ( selectedSubMenuItem ) => {
     const { fields, progress }   = await fetchFields();
-    //process premium field
-    if ( burst_settings.is_premium ) {
+    //process pro field
+    if ( burst_settings.is_pro ) {
       for (const field of fields ){
-        if (field.premium) {
-          if (field.premium.default) field.default = field.premium.default;
-          if (field.premium.label) field.label = field.premium.label;
-          if (field.premium.comment) field.comment = field.premium.comment;
-          if (field.premium.tooltip) field.tooltip = field.premium.tooltip;
-          if (field.premium.react_conditions) field.react_conditions = field.premium.react_conditions;
+        if (field.pro) {
+          if (field.pro.default) field.default = field.pro.default;
+          if (field.pro.label) field.label = field.pro.label;
+          if (field.pro.comment) field.comment = field.pro.comment;
+          if (field.pro.tooltip) field.tooltip = field.pro.tooltip;
+          if (field.pro.react_conditions) field.react_conditions = field.pro.react_conditions;
         }
       }
     }

@@ -51,6 +51,31 @@ if ( ! function_exists('burst_add_view_capability')){
 		}
 	}
 }
+if (!function_exists('burst_is_networkwide_active')) {
+	function burst_is_networkwide_active() {
+		if ( ! is_multisite() ) {
+			return false;
+		}
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		if ( is_plugin_active_for_network( burst_plugin ) ) {
+			return true;
+		}
+
+		return false;
+	}
+}
+
+/**
+ * Check if using multisite plugin on non-multisite environment
+ */
+if (!function_exists('burst_is_multisite_plugin_on_non_multisite_installation')){
+	function burst_is_multisite_plugin_on_non_multisite_installation(){
+		return !is_multisite() && defined('burst_pro_multisite');
+	}
+}
 
 if ( ! function_exists('burst_add_manage_capability')){
 	/**

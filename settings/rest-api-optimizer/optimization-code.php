@@ -21,7 +21,7 @@ if ( ! function_exists( 'burst_exclude_plugins_for_rest_api' ) ) {
 			return $plugins;
 		}
 
-		//Only leave burst and premium add ons active for this request
+		//Only leave burst and pro add ons active for this request
 		foreach ( $plugins as $key => $plugin ) {
 			if ( strpos( $plugin, 'burst-' ) !== false ) {
 				continue;

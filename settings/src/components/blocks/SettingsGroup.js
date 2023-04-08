@@ -53,8 +53,8 @@ const SettingsGroup = (props) => {
     if ( !activeGroup ) {
         return (<></>);
     }
-    let msg = activeGroup.premium_text ? activeGroup.premium_text : __("Learn more about %sPremium%s", "burst-statistics");
-    if ( burst_settings.is_premium ) {
+    let msg = activeGroup.pro_text ? activeGroup.pro_text : __("Learn more about %sPro%s", "burst-statistics");
+    if ( burst_settings.is_pro ) {
         status = getLicenseStatus();
         if ( status === 'empty' || status === 'deactivated' ) {
             msg = burst_settings.messageInactive;
@@ -62,7 +62,7 @@ const SettingsGroup = (props) => {
             msg = burst_settings.messageInvalid;
         }
     }
-    let disabled = status !=='valid' && activeGroup.premium;
+    let disabled = status !=='valid' && activeGroup.pro;
     //if a feature can only be used on networkwide or single site setups, pass that info here.
     upgrade = activeGroup.upgrade ? activeGroup.upgrade : upgrade;
     let helplinkText = activeGroup.helpLink_text ? activeGroup.helpLink_text : __("Instructions","burst-statistics");
@@ -80,10 +80,10 @@ const SettingsGroup = (props) => {
             </div>
             {disabled && <div className="burst-locked">
                 <div className="burst-locked-overlay">
-                    <span className="burst-task-status burst-premium">{__("Upgrade","burst-statistics")}</span>
+                    <span className="burst-task-status burst-pro">{__("Upgrade","burst-statistics")}</span>
                     <span>
-						{ burst_settings.is_premium && <span>{msg}&nbsp;<a className="burst-locked-link" href="settings/src/components/pages/Settings/SettingsGroup#settings/license">{__("Check license", "burst-statistics")}</a></span>}
-                        { !burst_settings.is_premium && <Hyperlink target="_blank" text={msg} url={upgrade}/> }
+						{ burst_settings.is_pro && <span>{msg}&nbsp;<a className="burst-locked-link" href="settings/src/components/pages/Settings/SettingsGroup#settings/license">{__("Check license", "burst-statistics")}</a></span>}
+                        { !burst_settings.is_pro && <Hyperlink target="_blank" text={msg} url={upgrade}/> }
 					</span>
                 </div>
             </div>}

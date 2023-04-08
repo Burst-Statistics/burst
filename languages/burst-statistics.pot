@@ -1,9 +1,9 @@
 # Copyright (C) 2022 Really Simple Plugins
-# This file is distributed under the same license as the Burst Statistics Premium plugin.
+# This file is distributed under the same license as the Burst Statistics Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Burst Statistics Premium 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/burst-premium\n"
+"Project-Id-Version: Burst Statistics Pro 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/burst-pro\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Domain: burst-statistics\n"
 
 #. Plugin Name of the plugin
-msgid "Burst Statistics Premium"
+msgid "Burst Statistics Pro"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -34,11 +34,11 @@ msgstr ""
 msgid "https://www.burst-statistics.com"
 msgstr ""
 
-#: burst-premium.php:41
+#: burst-pro.php:41
 msgid "Burst cannot be activated. The plugin requires PHP 7.2 or higher"
 msgstr ""
 
-#: burst-premium.php:48
+#: burst-pro.php:48
 msgid "Burst cannot be activated. The plugin requires WordPress 5.0 or higher"
 msgstr ""
 
@@ -207,7 +207,7 @@ msgid "Open"
 msgstr ""
 
 #: class-notices.php:74
-msgid "Premium"
+msgid "Pro"
 msgstr ""
 
 #: class-notices.php:109
@@ -919,7 +919,7 @@ msgstr ""
 #: settings/build/index.js:21129
 #: settings/src/Settings/SettingsGroup.js:69
 #: settings/build/index.js:16809
-msgid "Learn more about %sPremium%s"
+msgid "Learn more about %sPro%s"
 msgstr ""
 
 #: settings/build/index.js:21145

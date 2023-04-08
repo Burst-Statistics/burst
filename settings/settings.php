@@ -349,7 +349,7 @@ function burst_other_plugins_data( $slug = false ) {
 		[
 			'slug'             => 'complianz-gdpr',
 			'constant_free'    => 'cmplz_plugin',
-			'constant_premium' => 'cmplz_premium',
+			'constant_pro' => 'cmplz_premium',
 			'wordpress_url'    => 'https://wordpress.org/plugins/complianz-gdpr/',
 			'upgrade_url'      => 'https://complianz.io/pricing?src=burst-plugin',
 			'title'            => __( "Complianz Privacy Suite - Cookie Consent Management as it should be", "burst-statistics" ),
@@ -365,15 +365,15 @@ function burst_other_plugins_data( $slug = false ) {
 
 	foreach ( $plugins as $index => $plugin ) {
 		$installer = new burst_installer( $plugin['slug'] );
-		if ( isset( $plugin['constant_premium'] ) && defined( $plugin['constant_premium'] ) ) {
+		if ( isset( $plugin['constant_pro'] ) && defined( $plugin['constant_pro'] ) ) {
 			$plugins[ $index ]['pluginAction'] = 'installed';
 		} else if ( ! $installer->plugin_is_downloaded() && ! $installer->plugin_is_activated() ) {
 			$plugins[ $index ]['pluginAction'] = 'download';
 		} else if ( $installer->plugin_is_downloaded() && ! $installer->plugin_is_activated() ) {
 			$plugins[ $index ]['pluginAction'] = 'activate';
 		} else {
-			if ( isset( $plugin['constant_premium'] ) ) {
-				$plugins[ $index ]['pluginAction'] = 'upgrade-to-premium';
+			if ( isset( $plugin['constant_pro'] ) ) {
+				$plugins[ $index ]['pluginAction'] = 'upgrade-to-pro';
 			} else {
 				$plugins[ $index ]['pluginAction'] = 'installed';
 			}
@@ -409,13 +409,9 @@ function burst_get_data( $request ) {
 		'date_end'   => BURST()->statistics->convert_date_to_utc( $request->get_param( 'date_end' ) . ' 23:59:59' ),
 		// add 23:59:59 to date
 	];
-    error_log('burst_get_data_for_type: ' . $type);
-
 	$request_args    = json_decode( $request->get_param( 'args' ), true );
-    error_log(print_r($request_args, true));
 	$args['metrics'] = $request_args['metrics'] ?? [];
 	$args['filters'] = burst_sanitize_filters( $request_args['filters'] ?? [] );
-	error_log(print_r($args, true));
 
 	switch ( $type ) {
 		case 'live-visitors':

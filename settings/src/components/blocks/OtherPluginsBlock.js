@@ -36,7 +36,7 @@ const OtherPluginsBlock = (props) => {
     }
     pluginItem.pluginActionNice = pluginActionNice(pluginItem.pluginAction);
     updatePluginData(slug, pluginItem);
-    if (pluginAction==='installed' || pluginAction === 'upgrade-to-premium') {
+    if (pluginAction==='installed' || pluginAction === 'upgrade-to-pro') {
       return;
     }
     burst_api.doAction('plugin_actions', data).then( ( response ) => {
@@ -70,7 +70,7 @@ const OtherPluginsBlock = (props) => {
       'activate': __("Activate", "burst-statistics"),
       'activating': __("Activating...", "burst-statistics"),
       'downloading': __("Downloading...", "burst-statistics"),
-      'upgrade-to-premium': __("Downloading...", "burst-statistics"),
+      'upgrade-to-pro': __("Downloading...", "burst-statistics"),
     };
     return statuses[pluginAction];
   }
@@ -84,8 +84,8 @@ const OtherPluginsBlock = (props) => {
             <div className="burst-other-plugins-content">{plugin.title}</div>
           </a>
           <div className="burst-other-plugin-status">
-            {plugin.pluginAction==='upgrade-to-premium' && <><a target="_blank" href={plugin.upgrade_url}>{__("Upgrade", "burst-statistics")}</a></>}
-            {plugin.pluginAction!=='upgrade-to-premium' && plugin.pluginAction!=='installed' && <>
+            {plugin.pluginAction==='upgrade-to-pro' && <><a target="_blank" href={plugin.upgrade_url}>{__("Upgrade", "burst-statistics")}</a></>}
+            {plugin.pluginAction!=='upgrade-to-pro' && plugin.pluginAction!=='installed' && <>
               <a href="settings/src/components/pages/Dashboard/OtherPlugins#" onClick={ (e) => PluginActions(plugin.slug, plugin.pluginAction, e) } >{plugin.pluginActionNice}</a></>}
             {plugin.pluginAction==='installed' && <>{__("Installed", "burst-statistics")}</>}
           </div>

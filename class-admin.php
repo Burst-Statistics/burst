@@ -106,6 +106,20 @@ if ( ! class_exists( "burst_admin" ) ) {
 				burst_update_option( 'user_role_blocklist', $defaults );
 			}
 
+			// set default goal
+			// if there is no default goal, then insert one
+			$goals = BURST()->goals->get_goals();
+			$count = count( $goals );
+			if ( $count === 0 ) {
+				BURST()->goals->set( array(
+					'title'       => __( 'Default goal', 'burst-statistics' ),
+					'type'        => 'clicks',
+					'status'      => 'inactive',
+					'server_side' => 0,
+					'date_created' => time(),
+				) );
+			}
+
 			update_option( 'burst_setup_defaults', true, false );
 		}
 
@@ -133,10 +147,10 @@ if ( ! class_exists( "burst_admin" ) ) {
 			                . __( 'Support', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $faq_link );
 
-			// if ( ! defined( 'burst_premium' ) ) {
+			// if ( ! defined( 'burst_pro' ) ) {
 			// 	$upgrade_link
 			// 		= '<a style="color:#2DAAE1;font-weight:bold" target="_blank" href="https://burst-statistics.com/l/pricing">'
-			// 		  . __( 'Upgrade to premium', 'burst-statistics' ) . '</a>';
+			// 		  . __( 'Upgrade to pro', 'burst-statistics' ) . '</a>';
 			// 	array_unshift( $links, $upgrade_link );
 			// }
 

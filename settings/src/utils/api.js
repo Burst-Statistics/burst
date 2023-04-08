@@ -17,11 +17,9 @@ const glue = () => {
 const getNonce = () => {
 	return '&nonce='+burst_settings.burst_nonce+'&token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 };
-burst_settings.countRequests = []; // @todo remove this
 const makeRequest = (path, method = 'GET', data) => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			burst_settings.countRequests.push({path, method, data});
 			const config = {
 				headers: {
 					'X-WP-Nonce': burst_settings.nonce,

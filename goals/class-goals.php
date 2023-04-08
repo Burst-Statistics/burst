@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 if ( ! class_exists( "burst_goals" ) ) {
     class burst_goals{
         function __construct( ) {
-			// add field value map
+	        add_action('burst_before_set_goals', array($this, 'check_existing_goals'));
         }
 
 		public function get_available_goal_types() {
@@ -119,6 +119,11 @@ if ( ! class_exists( "burst_goals" ) ) {
 
 		public function set( $args = array() ) {
 			global $wpdb;
+
+			// do_action to add a check if a goal is already set, because only one goal is allowed.
+			do_action('burst_before_set_goals');
+
+
 			$table_name = $wpdb->prefix . 'burst_goals';
 			// sanitize data
 			// if arg exists, then sanitize it
@@ -157,7 +162,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 			$args['date_created'] = time();
 			$args = wp_parse_args( $args, $defaults );
 
-			$insert = $wpdb->insert( $table_name, $args );
+			$wpdb->insert( $table_name, $args );
 
 			// return goal id
 			return $wpdb->insert_id;
@@ -174,6 +179,25 @@ if ( ! class_exists( "burst_goals" ) ) {
 			$table_name = $wpdb->prefix . 'burst_goals';
 			$wpdb->update( $table_name, array( 'status' => 'archived' ), array( 'ID' => $id ) );
 		}
+
+	    public function check_existing_goals() {
+
+		    if (defined('burst_pro_plugin') && burst_pro_plugin) {
+				// @todo add licensing
+			    return; // Allow unlimited goals in the pro version
+		    }
+
+		    global $wpdb;
+		    $table_name = $wpdb->prefix . 'burst_goals';
+
+		    // Check for existing active goals in the database
+		    $existing_goals = $wpdb->get_results("SELECT * FROM {$table_name}", ARRAY_A);
+
+		    // If there's an active goal, display a warning message and prevent the new goal creation
+		    if (count($existing_goals) > 0) {
+			    wp_die(__('Only one active goal is allowed at a time. Please deactivate the existing goal before creating a new one.', 'burst-statistics'));
+		    }
+	    }
 
     } // class closure
 
@@ -206,19 +230,6 @@ function burst_install_goals_table() {
               PRIMARY KEY  (ID)
             ) $charset_collate;";
         dbDelta( $sql );
-
-		// if there is no default goal, then insert one
-	    $goals = BURST()->goals->get_goals();
-		$count = count( $goals );
-		if ( $count === 0 ) {
-			BURST()->goals->set( array(
-				'title'       => __( 'Default goal', 'burst-statistics' ),
-				'type'        => 'clicks',
-				'status'      => 'inactive',
-				'server_side' => 0,
-				'date_created' => time(),
-			) );
-		}
 
 		// insert default goal
         update_option( 'burst_goals_db_version', burst_version );

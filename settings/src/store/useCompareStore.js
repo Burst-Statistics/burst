@@ -73,22 +73,22 @@ const templates = {
   goalSelected: {
     conversions: (curr, prev) => ({
       title: __('Conversions', 'burst-statistics'),
-      subtitle: `${getPercentage(curr.conversion_rate, 100)} ${__('conversion rate', 'burst-statistics')}`,
+      subtitle: `${getPercentage(curr.conversion_rate, 100)} ${__('of pageviews converted', 'burst-statistics')}`,
       value: formatNumber(curr.conversions),
     }),
     pageviews: (curr, prev) => ({
       title: __('Pageviews', 'burst-statistics'),
-      subtitle: `${formatNumber(curr.pageviews / curr.sessions)} ${__('pageviews per conversion', 'burst-statistics')}`,
+      subtitle: `${formatNumber(curr.pageviews / curr.conversions)} ${__('pageviews per conversion', 'burst-statistics')}`,
       value: formatNumber(curr.pageviews),
     }),
     sessions: (curr, prev) => ({
-      title: __('Visitors', 'burst-statistics'),
-      subtitle: `${formatNumber(curr.pageviews / curr.sessions)} ${__('pageviews per conversion', 'burst-statistics')}`,
-      value: formatNumber(curr.visitors),
+      title: __('Sessions', 'burst-statistics'),
+      subtitle: `${formatNumber(curr.sessions / curr.conversions)} ${__('sessions per conversion', 'burst-statistics')}`,
+      value: formatNumber(curr.sessions),
     }),
     visitors: (curr, prev) => ({
       title: __('Visitors', 'burst-statistics'),
-      subtitle: `${formatNumber(curr.pageviews / curr.visitors)} ${__('pageviews per conversion', 'burst-statistics')}`,
+      subtitle: `${formatNumber(curr.visitors / curr.conversions)} ${__('visitors per conversion', 'burst-statistics')}`,
       value: formatNumber(curr.visitors),
     }),
   },
@@ -98,12 +98,15 @@ const transformCompareData = (response) => {
     const data = {};
     const curr = response.current;
     const prev = response.previous;
-    // const templateType = filters.goal_id > 0 ? 'goalSelected' : 'default'; @tdod fix this
-    // const selectedMetrics = filters.goal_id > 0 ? goalMetrics : metrics;
-    const templateType = 'default';
-    const selectedMetrics = metrics;
-    const selectedTemplate = templates[templateType];
 
+  let templateType = 'default';
+  let selectedMetrics = metrics;
+
+  if (response.view === 'goals') {
+    templateType = 'goalSelected';
+    selectedMetrics = goalMetrics;
+  }
+  const selectedTemplate = templates[templateType];
   // const templateType = filters.goal_id > 0 ? 'goalSelected' : 'default';
   // const selectedMetrics = filters.goal_id > 0 ? goalMetrics : metrics;
   // const selectedTemplate = templates[templateType];

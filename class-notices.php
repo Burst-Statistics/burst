@@ -71,12 +71,12 @@ if ( ! class_exists( "burst_notices" ) ) {
 				'warning' => __( "Warning", "burst-statistics" ),
 				'error' => __( "Error", "burst-statistics" ),
 				'open'    => __( "Open", "burst-statistics" ),
-				'premium' => __( "Premium", "burst-statistics" ),
+				'pro' => __( "Pro", "burst-statistics" ),
 			];
 
 			$defaults = array(
 				'admin_notices'      => false,
-				'premium_only'       => false,
+				'pro_only'       => false,
 				'dismiss_on_upgrade' => false,
 				'status'             => 'open', //status can be "all" (all tasks, regardless of dismissed or open), "open" (not success/completed) or "completed"
 			);
@@ -120,8 +120,8 @@ if ( ! class_exists( "burst_notices" ) ) {
 					'output' => [
 						'true' => [
 							'msg' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ),
-							'icon' => 'premium',
-							'url' => burst_premium_url,
+							'icon' => 'pro',
+							'url' => burst_pro_url,
 							'dismissible' => true,
 							'plusone' => true,
 						],
@@ -251,10 +251,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 			}
 			$notices = $warnings + $open + $other;
 
-			//if we only want a list of premium notices
-			if ( $args['premium_only'] ) {
+			//if we only want a list of pro notices
+			if ( $args['pro_only'] ) {
 				foreach ($notices as $key => $notice){
-					if ( !isset($notice['output']['icon']) || $notice['output']['icon'] !== 'premium' ) {
+					if ( !isset($notice['output']['icon']) || $notice['output']['icon'] !== 'pro' ) {
 						unset($notices[$key]);
 					}
 				}
@@ -263,12 +263,12 @@ if ( ! class_exists( "burst_notices" ) ) {
 		}
 
 		/**
-		 * Count number of premium notices we have in the list.
+		 * Count number of pro notices we have in the list.
 		 * @return int
 		 */
 		public function get_lowest_possible_task_count() {
-			$premium_notices = $this->get_notices_list(array('premium_only'=>true));
-			return count($premium_notices) ;
+			$pro_notices = $this->get_notices_list(array('pro_only'=>true));
+			return count($pro_notices) ;
 		}
 
 		/**

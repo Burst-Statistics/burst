@@ -17,7 +17,7 @@ if ( ! class_exists( "burst_review" ) ) {
 //			update_option( 'burst_activation_time', strtotime( "-2 month" ) );
 			
 			//show review notice, only to free users
-			if ( ! defined( "burst_premium" ) && ! is_multisite() ) {
+			if ( ! defined( "burst_pro" ) && ! is_multisite() ) {
 				if ( ! get_option( 'burst_review_notice_shown' )
 				     && get_option( 'burst_activation_time' )
 				     && get_option( 'burst_activation_time' )

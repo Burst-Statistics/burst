@@ -29,8 +29,8 @@ const MenuItem = (props) => {
   }
   let menuClass = menuIsSelected ? ' burst-active' : '';
   menuClass += props.menuItem.featured ? ' burst-featured' : '';
-  menuClass += props.menuItem.premium && !burst_settings.is_premium
-      ? ' burst-premium'
+  menuClass += props.menuItem.pro && !burst_settings.is_pro
+      ? ' burst-pro'
       : '';
 
   //make main clickable if it doesn't have a submenu, OR if the submenu is not
