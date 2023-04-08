@@ -118,7 +118,7 @@ class BURST {
 		define( 'burst_version', '1.4.0' . $debug );
 		define( 'burst_plugin_file', __FILE__ );
 		define( 'burst_main_menu_position', 100 );
-		define( 'burst_premium_url', 'https://burst-statistics.com/premium?src=burst-plugin' );
+		define( 'burst_pro_url', 'https://burst-statistics.com/pro?src=burst-plugin' );
 	}
 
 	/**

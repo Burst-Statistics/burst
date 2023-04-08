@@ -14,7 +14,7 @@ If you're a developer and want to help out, please feel free to contribute anywa
 
 **New Features:** New features can also be assigned to issues. If you don't know how to proceed [leave a feature request](https://burst-statistics.com/feature-requests/)
 
-**Translations:** Looking for your own language to be improved or added? Contact [support](https://burst-statistics.com/#contact) if you want to be a premium contributor, or make your first changes on [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/burst-statistics/).
+**Translations:** Looking for your own language to be improved or added? Contact [support](https://burst-statistics.com/#contact) if you want to be a pro contributor, or make your first changes on [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/burst-statistics/).
 
 ### Support
 
