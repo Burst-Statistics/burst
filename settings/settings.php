@@ -169,6 +169,30 @@ function burst_settings_rest_route() {
 		},
 	) );
 
+	register_rest_route( 'burst/v1', 'goals/get', array(
+		'methods'             => 'GET',
+		'callback'            => 'burst_rest_api_goals_get',
+		'permission_callback' => function() {
+			return burst_user_can_view();
+		},
+	) );
+
+	register_rest_route( 'burst/v1', 'goals/delete', array(
+		'methods'             => 'POST',
+		'callback'            => 'burst_rest_api_goals_delete',
+		'permission_callback' => function() {
+			return burst_user_can_manage();
+		},
+	) );
+
+	register_rest_route( 'burst/v1', 'goals/add', array(
+		'methods'             => 'POST',
+		'callback'            => 'burst_rest_api_goals_add',
+		'permission_callback' => function() {
+			return burst_user_can_manage();
+		},
+	) );
+
 	register_rest_route( 'burst/v1', 'goal_fields/get', array(
 		'methods'             => 'GET',
 		'callback'            => 'burst_rest_api_goal_fields_get',
@@ -180,22 +204,6 @@ function burst_settings_rest_route() {
 	register_rest_route( 'burst/v1', 'goal_fields/set', array(
 		'methods'             => 'POST',
 		'callback'            => 'burst_rest_api_goal_fields_set',
-		'permission_callback' => function() {
-			return burst_user_can_manage();
-		},
-	) );
-
-	register_rest_route( 'burst/v1', 'goal_fields/delete', array(
-		'methods'             => 'POST',
-		'callback'            => 'burst_rest_api_goal_fields_delete',
-		'permission_callback' => function() {
-			return burst_user_can_manage();
-		},
-	) );
-
-	register_rest_route( 'burst/v1', 'goal_fields/add', array(
-		'methods'             => 'POST',
-		'callback'            => 'burst_rest_api_goal_fields_add',
 		'permission_callback' => function() {
 			return burst_user_can_manage();
 		},
@@ -673,6 +681,19 @@ function burst_rest_api_fields_get() {
 	return $response;
 }
 
+function burst_rest_api_goals_get() {
+	if ( ! burst_user_can_manage() ) {
+		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
+	}
+
+	$goals = BURST()->goals->get_goals();
+
+	$response_data = apply_filters( 'burst_rest_api_goals_get', $goals );
+	$response      = new WP_REST_Response( $response_data );
+	$response->set_status( 200 );
+
+	return $response;
+}
 
 /**
  * Get the rest api fields
@@ -690,18 +711,19 @@ function burst_rest_api_goal_fields_get() {
 
 	// loop through goals and add the fields and get field values
 	foreach ( $goals as $goal_id => $goal ) {
+
+		error_log( "Burst Statistics: goal id " . $goal_id );
+		error_log(print_r($goal, true));
 		// add fields to every goal
-		$goal_fields[ $goal['ID'] ] = $fields;
-		$goal_values                = BURST()->goals->get_goal_field_values( $goal['ID'] );
+		$goal_fields[ $goal_id ] = $fields;
+		$goal_values                = BURST()->goals->get_goal_field_values( $goal_id );
 		// loop through fields and set values
-		foreach ( $goal_fields[ $goal['ID'] ] as $field_id => $field ) {
+		foreach ( $goal_fields[ $goal_id ] as $field_id => $field ) {
 			$field_value                                      = isset( $goal_values[ $field_id ] ) ? $goal_values[ $field_id ] : '';
 			$default_value                                    = isset( $fields[ $field_id ]['default'] ) ? $fields[ $field_id ]['default'] : '';
-			$goal_fields[ $goal['ID'] ][ $field_id ]['value'] = $field_value !== '' ? $field_value : $default_value;
+			$goal_fields[ $goal_id ][ $field_id ]['value'] = $field_value !== '' ? $field_value : $default_value;
 		}
 	}
-	// Add an empty goal to the end of the list, with zero as the ID
-	$goal_fields[0] = $fields;
 
 	$response_data = apply_filters( 'burst_rest_api_goal_fields_get', $goal_fields );
 	$response      = new WP_REST_Response( $response_data );
@@ -757,7 +779,7 @@ function burst_rest_api_goal_fields_set( $request ) {
  *
  * @return WP_REST_Response | WP_Error
  */
-function burst_rest_api_goal_fields_delete( $request ) {
+function burst_rest_api_goals_delete( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
@@ -768,7 +790,11 @@ function burst_rest_api_goal_fields_delete( $request ) {
 
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
+
+	error_log( 'nonce verified' );
+
 	$deleted = BURST()->goals->delete( $goal['id'] );
+	error_log( 'deleted: ' . $deleted);
 
 	// if not null return true
 	$response_data = array( 'deleted' => $deleted !== null );
@@ -784,7 +810,7 @@ function burst_rest_api_goal_fields_delete( $request ) {
  * @return WP_REST_Response $response
  */
 
-function burst_rest_api_goal_fields_add( $request ) {
+function burst_rest_api_goals_add( $request ) {
 	if ( ! burst_user_can_manage() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
@@ -794,10 +820,8 @@ function burst_rest_api_goal_fields_add( $request ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	$added_goal    = BURST()->goals->set();
-    error_log('added goal: ' . print_r($added_goal, true));
-	$response_data = array( 'id' => $added_goal );
-	$response      = new WP_REST_Response( $response_data );
+	$goal    = BURST()->goals->set();
+	$response      = new WP_REST_Response( $goal );
 	$response->set_status( 200 );
 
 	return $response;

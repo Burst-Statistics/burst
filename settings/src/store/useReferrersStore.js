@@ -5,7 +5,7 @@ import * as burst_api from '../utils/api';
 export const useReferrersStore = create((set) => ({
   loading: true,
   setLoading: (loading) => set({loading}),
-  referrersMetrics: ['referrers', 'pageviews'],
+  metrics: ['referrers', 'pageviews'],
   data: [],
   setData: (data) => set({data}),
 }));

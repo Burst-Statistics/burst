@@ -24,8 +24,6 @@ const License = (props) => {
     }, [fields] );
 
     const onChangeHandler = (fieldValue) => {
-		console.log("updated fieldValue");
-		console.log(fieldValue);
         setChangedField( field.id, fieldValue )
         updateField(field.id, fieldValue);
     }
@@ -41,7 +39,6 @@ const License = (props) => {
         } else {
             let data = {};
             data.license = props.field.value;
-			console.log(data.license);
 
 			doAction('activate_license', data).then( ( response ) => {
                 setLicenseStatus(response.licenseStatus);

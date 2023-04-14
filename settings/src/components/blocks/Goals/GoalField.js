@@ -2,7 +2,6 @@ import {
   TextControl,
 } from '@wordpress/components';
 import {useState, useEffect} from "@wordpress/element";
-import {useGoals} from '../../../store/useGoalsStore';
 
 import Icon from "../../../utils/Icon";
 import RadioButtons from '../Fields/RadioButtons';
@@ -14,9 +13,9 @@ const GoalField = (props) => {
     field = {},
     goal_id = false,
     value = false,
+    setGoalValue
   } = props;
   const [validated, setValidated] = useState(false);
-  const setGoalValue = useGoals((state) => state.setGoalValue);
 
   useEffect(() => {
     validateInput(field, value);

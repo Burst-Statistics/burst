@@ -11,7 +11,7 @@ import {useDate} from '../store/useDateStore';
 import {useFiltersStore} from '../store/useFiltersStore';
 import {useEffect, useMemo, useState} from 'react';
 import {useFields} from '../store/useFieldsStore';
-import {useGoals} from '../store/useGoalsStore';
+import {useGoalsStore} from '../store/useGoalsStore';
 import {LoadData} from './LoadData';
 import {useInsightsStore} from '../store/useInsightsStore';
 import {useCompareStore, transformCompareData} from '../store/useCompareStore';
@@ -26,7 +26,7 @@ const Page = () => {
   const fields = useFields((state) => state.fields);
   const fieldsLoaded = useFields((state) => state.fieldsLoaded);
   const fetchFieldsData = useFields((state) => state.fetchFieldsData);
-  const initGoals = useGoals((state) => state.initGoals);
+  // const initGoals = useGoalsStore((state) => state.initGoals);
   const [ToastContainer, setToastContainer] = useState(null);
 
   // change pages
@@ -45,7 +45,7 @@ const Page = () => {
   useEffect( () => {
     let subMenuItem = getAnchor('menu');
     fetchFieldsData(subMenuItem);
-    initGoals();
+    // initGoals();
   }, []);
 
   // async load react-toastify

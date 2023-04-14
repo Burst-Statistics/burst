@@ -40,7 +40,7 @@ const makeRequest = (path, method = 'GET', data) => {
 		} catch (error) {
 			console.error(error);
 			toast.error(
-					__('Error', 'burst-statistics') + ': ' + error.message,
+					__('Server error', 'burst-statistics') + ': ' + error.message,
 					{
 						autoClose: 10000,
 					});
@@ -54,8 +54,10 @@ export const setFields = (data) => makeRequest('burst/v1/fields/set'+glue(), 'PO
 
 export const getGoalFields = () => makeRequest('burst/v1/goal_fields/get'+glue()+getNonce());
 export const setGoalFields = (data) => { return makeRequest('burst/v1/goal_fields/set'+glue()+getNonce(), 'POST', [...data, { nonce: burst_settings.burst_nonce }])};
-export const deleteGoal = (id) => makeRequest('burst/v1/goal_fields/delete'+glue()+getNonce(), 'POST', {id, nonce: burst_settings.burst_nonce});
-export const addGoal = () => makeRequest('burst/v1/goal_fields/add'+glue()+getNonce(), 'POST', {nonce: burst_settings.burst_nonce});
+
+export const getGoals = () => makeRequest('burst/v1/goals/get'+glue()+getNonce());
+export const deleteGoal = (id) => makeRequest('burst/v1/goals/delete'+glue()+getNonce(), 'POST', {id, nonce: burst_settings.burst_nonce});
+export const addGoal = () => makeRequest('burst/v1/goals/add'+glue()+getNonce(), 'POST', {nonce: burst_settings.burst_nonce});
 
 export const getBlock = (block) => makeRequest('burst/v1/block/'+block+glue()+getNonce());
 export const runTest = (test, state, data) => makeRequest(`burst/v1/tests/${test}${glue()}state=${state}${getNonce()}&data=${encodeURIComponent(JSON.stringify(data))}`);

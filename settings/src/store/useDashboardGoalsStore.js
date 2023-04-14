@@ -45,16 +45,16 @@ const defaultData = {
   status: 'inactive',
 };
 // define the store
-export const useGoalsStore = create(set => ({
+export const useDashboardGoalsStore = create(set => ({
   goalId: false,
   setGoalId: (goal) => set({goalId: goal}),
   data: defaultData,
   setData: (value) => set({data: value}),
-  updateData: 0,
+  updateData: 1,
   incrementUpdateData: () => set(state => ({updateData: state.updateData + 1})),
   live: '-',
   setLive: (value) => set({live: value}),
-  updateLive: 0,
+  updateLive: 1,
   incrementUpdateLive: () => set(state => ({updateLive: state.updateLive + 1})),
   loading: true,
   setLoading: (value) => set({loading: value}),

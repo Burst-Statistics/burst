@@ -1,6 +1,6 @@
 import React from 'react';
 import {useFiltersStore} from '../../store/useFiltersStore';
-import {useGoals} from '../../store/useGoalsStore';
+import {useGoalFieldsStore} from '../../store/useGoalFieldsStore';
 import {useInsightsStore} from '../../store/useInsightsStore';
 import {useDate} from '../../store/useDateStore';
 import Tooltip from '@mui/material/Tooltip';
@@ -22,7 +22,7 @@ const ClickToFilter = ({
   }
   const setFilters = useFiltersStore((state) => state.setFilters);
   const setAnimate = useFiltersStore((state) => state.setAnimate);
-  const goalFields = useGoals((state) => state.goalFields);
+  const goalFields = useGoalFieldsStore((state) => state.goalFields);
   const setInsightsMetrics = useInsightsStore(
       (state) => state.setMetrics);
   const insightsMetrics = useInsightsStore((state) => state.metrics);
@@ -82,7 +82,6 @@ const ClickToFilter = ({
         setFilters(filter, filterValue);
         toast.info(__('Filtering by goal', 'burst-statistics'));
       }
-      console.log(insightsMetrics);
       if (!insightsMetrics.includes('conversions')) {
         // Add 'conversions' to the array and update the state
         setInsightsMetrics([...insightsMetrics, 'conversions']);

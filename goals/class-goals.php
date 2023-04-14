@@ -60,7 +60,17 @@ if ( ! class_exists( "burst_goals" ) ) {
 		    $query .= " ORDER BY {$args['orderby']} {$args['order']}";
 		    $query .= " LIMIT {$args['offset']}, {$args['limit']}";
 
-		    return $wpdb->get_results( $query, ARRAY_A );
+			$results = $wpdb->get_results($query, ARRAY_A);
+
+		    $goals = array_reduce($results, function($accumulator, $currentValue) {
+			    $id = $currentValue['ID'];
+			    unset($currentValue['ID']);
+			    $accumulator[$id] = $currentValue;
+			    return $accumulator;
+		    }, array());
+
+			return $goals;
+
 	    }
 
 	    public function get_goal_field_values($goal_id){
@@ -114,7 +124,11 @@ if ( ! class_exists( "burst_goals" ) ) {
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_goals';
 			$goal       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID = %d", $id ), ARRAY_A );
-			return $goal;
+			$id = $goal['ID'];
+			unset($goal['ID']);
+
+			$return = [$id => $goal];
+			return $return;
 		}
 
 		public function set( $args = array() ) {
@@ -155,6 +169,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 			// set defaults for new goal
 			$defaults = array(
 				'title'       => __('New goal', 'burst-statistics'),
+				'type'        => 'clicks',
 				'status'     => 'inactive',
 				'date_start' => 0,
 				'date_end'   => 0,
@@ -164,14 +179,16 @@ if ( ! class_exists( "burst_goals" ) ) {
 
 			$wpdb->insert( $table_name, $args );
 
-			// return goal id
-			return $wpdb->insert_id;
+			// return array id => data
+			return $this->get( $wpdb->insert_id);
 		}
 
 		public function delete( $id ) {
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_goals';
 			$wpdb->delete( $table_name, array( 'ID' => $id ) );
+			// if delete was successful, return true
+			return $wpdb->last_error === '' ? true : false;
 		}
 
 		public function archive( $id ) {

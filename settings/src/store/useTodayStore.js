@@ -41,11 +41,11 @@ const defaultData = {
 export const useTodayStore = create(set => ({
   live: '-',
   setLive: (value) => set({live: value}),
-  updateLive: 0,
+  updateLive: 1,
   incrementUpdateLive: () => set(state => ({updateLive: state.updateLive + 1})),
   data: defaultData,
   setData: (value) => set({data: value}),
-  updateData: 0,
+  updateData: 1,
   incrementUpdateData: () => set(state => ({updateData: state.updateData + 1})),
 
   loading: true,

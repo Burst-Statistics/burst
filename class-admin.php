@@ -106,6 +106,11 @@ if ( ! class_exists( "burst_admin" ) ) {
 				burst_update_option( 'user_role_blocklist', $defaults );
 			}
 
+			if ( get_option('burst_goals_db_version') === false) {
+				// if there is no goals db version, then we can assume there are no goals database.
+				// retrun so this code is not executed
+				return;
+			}
 			// set default goal
 			// if there is no default goal, then insert one
 			$goals = BURST()->goals->get_goals();

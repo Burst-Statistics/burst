@@ -14,17 +14,21 @@ import {useFiltersStore} from '../store/useFiltersStore';
 import {useInsightsStore} from '../store/useInsightsStore';
 import {useTodayStore, transformTodayData} from '../store/useTodayStore';
 import {
-  useGoalsStore,
+  useDashboardGoalsStore,
   transformTotalGoalsData,
 } from '../store/useDashboardGoalsStore';
+import {useGoalsStore} from '../store/useGoalsStore';
 import {endOfDay, format, startOfDay} from 'date-fns';
 import {formatNumber} from '../utils/formatting';
 import {useDate} from '../store/useDateStore';
+import {useMenu} from '../store/useMenuStore';
 
 export const LoadData = () => {
+  const selectedMainMenuItem = useMenu((state) => state.selectedMainMenuItem);
   const { filters } = useFiltersStore();
   const { startDate, endDate, range } = useDate();
 
+  // dashboard imports
   const {
     setData: setTodayData,
     setLoading: setTodayLoading,
@@ -33,7 +37,6 @@ export const LoadData = () => {
     updateData: updateDataToday,
   } = useTodayStore();
 
-  // dashnoard imports
   const {
     setData: setGoals,
     setLoading: setGoalsLoading,
@@ -41,7 +44,7 @@ export const LoadData = () => {
     goalId,
     updateData: updateDataGoals,
     updateLive: updateLiveGoals,
-  } = useGoalsStore();
+  } = useDashboardGoalsStore();
 
   // statistics imports
   const { setData: setInsightsData, setLoading: setInsightsLoading, metrics: insightMetrics } = useInsightsStore();
@@ -162,13 +165,14 @@ export const LoadData = () => {
     },
   ]);
 
+  DashboardFetchConfigs.forEach((config) => {
+    useLoadData(config);
+  });
   StatisticsFetchConfigs.forEach((config) => {
     useLoadData(config);
   });
 
-  DashboardFetchConfigs.forEach((config) => {
-    useLoadData(config);
-  });
+
 
 
   return (

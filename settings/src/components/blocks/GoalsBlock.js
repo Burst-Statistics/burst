@@ -15,27 +15,33 @@ import {
   getRelativeTime,
 } from '../../utils/formatting';
 import GoalStatus from './GoalStatus';
-import {useGoalsStore} from '../../store/useDashboardGoalsStore';
+import {useDashboardGoalsStore} from '../../store/useDashboardGoalsStore';
+import {useGoalsStore} from '../../store/useGoalsStore';
 import GridItem from '../common/GridItem';
 import GoalsHeader from './GoalsHeader';
 import {useTodayStore} from '../../store/useTodayStore';
 
 const GoalsBlock = () => {
-  // const fetchTodayGoals = useGoalsStore((state) => state.fetchTodayGoals);
-  // const fetchTotalGoalsData = useGoalsStore(
-  //     (state) => state.fetchTotalGoalsData);
-  // const selectedGoalId = useGoalsStore((state) => state.selectedGoalId);
-  // const todayGoals = useGoalsStore((state) => state.todayGoals);
-  // const totalGoalsData = useGoalsStore((state) => state.totalGoalsData);
-  // const [loading, setLoading] = useState(false);
-  const live = useGoalsStore((state) => state.live);
-  const incrementUpdateLive = useGoalsStore((state) => state.incrementUpdateLive);
+  const live = useDashboardGoalsStore((state) => state.live);
+  const incrementUpdateLive = useDashboardGoalsStore((state) => state.incrementUpdateLive);
 
-  const data = useGoalsStore((state) => state.data);
-  const loading = useGoalsStore((state) => state.loading);
-  const incrementUpdateData = useGoalsStore((state) => state.incrementUpdateData);
+  const data = useDashboardGoalsStore((state) => state.data);
+  const loading = useDashboardGoalsStore((state) => state.loading);
+  const incrementUpdateData = useDashboardGoalsStore((state) => state.incrementUpdateData);
 
-  const goalId = useGoalsStore((state) => state.goalId);
+  const goalId = useDashboardGoalsStore((state) => state.goalId);
+  const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
+  const goals = useGoalsStore((state) => state.goals);
+  useEffect(() => {
+    if (goalId === false) {
+      // get the key of first item from the goals list
+      const firstGoal = Object.keys(goals)[0];
+      if (firstGoal) {
+        setGoalId(firstGoal);
+      }
+    }
+  }, [goalId, goals, setGoalId]);
+
 
   useEffect(() => {
     let timer1, timer2;
@@ -99,7 +105,7 @@ const GoalsBlock = () => {
       <GridItem
           className={'border-to-border burst-goals'}
           title={__('Goals', 'burst-statistics')}
-          controls={<GoalsHeader goalId={goalId} />}
+          controls={<GoalsHeader goalId={goalId} goals={goals} />}
           footer={(
               <>
                 <a className={'burst-button burst-button--secondary'}

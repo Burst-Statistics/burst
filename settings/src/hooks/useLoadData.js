@@ -36,7 +36,10 @@ export const useLoadData = (config) => {
           selectedEndDate = args.endDate;
           delete args.endDate;
         }
-
+        // if one of the dependencies is false return
+        if (dependencies.some((dependency) => !dependency)) {
+          return;
+        }
         const response = await burst_api.getData(
             config.type,
             selectedStartDate,

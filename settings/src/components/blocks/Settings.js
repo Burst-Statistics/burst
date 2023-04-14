@@ -4,7 +4,8 @@ import Help from "./Help";
 import {useState} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import {useFields} from "../../store/useFieldsStore";
-import {useGoals} from '../../store/useGoalsStore';
+
+import {useGoalFieldsStore} from "../../store/useGoalFieldsStore";
 import {useMenu} from "../../store/useMenuStore";
 import {useEffect} from 'react';
 import getAnchor from '../../utils/getAnchor';
@@ -32,8 +33,8 @@ const Settings = (props) => {
   const nextMenuItem = useMenu((state) => state.nextMenuItem);
   const previousMenuItem = useMenu((state) => state.previousMenuItem);
 
-  const saveChangedGoalValues = useGoals((state) => state.saveChangedGoalValues);
-  const setChangedGoalValues = useGoals((state) => state.setChangedGoalValues);
+  const saveChangedGoalValues = useGoalFieldsStore((state) => state.saveChangedGoalValues);
+  const setChangedGoalValues = useGoalFieldsStore((state) => state.setChangedGoalValues);
 
   const toggleNotices = () => {
     setNoticesExpanded(!noticesExpanded);

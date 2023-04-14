@@ -1,19 +1,18 @@
 import {useFiltersStore} from '../../store/useFiltersStore';
 import Icon from '../../utils/Icon';
 import {__} from '@wordpress/i18n';
-import {useGoals} from '../../store/useGoalsStore';
+import {useGoalFieldsStore} from '../../store/useGoalFieldsStore';
 import { useInsightsStore } from '../../store/useInsightsStore';
 
 export const PageFilter = () => {
   const filters = useFiltersStore((state) => state.filters);
   const filtersConf = useFiltersStore((state) => state.filtersConf);
   const setFilters = useFiltersStore((state) => state.setFilters);
-  const goalFields = useGoals((state) => state.goalFields);
+  const goalFields = useGoalFieldsStore((state) => state.goalFields);
   const animate = useFiltersStore((state) => state.animate);
   const setInsightsMetrics = useInsightsStore((state) => state.setMetrics);
   const insightsMetrics = useInsightsStore((state) => state.metrics);
   let title = '';
-
 
   const getGoalsTitle = (id) => {
     if (!goalFields[id]) {
@@ -35,7 +34,6 @@ export const PageFilter = () => {
     setFilters(filter, '')
 
     if (filter === 'goal_id') {
-      console.log('unset goal_id');
       // also remove insight metrics conversions
       setInsightsMetrics(insightsMetrics.filter((metric) => metric !== 'conversions'));
     }

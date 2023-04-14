@@ -1,35 +1,35 @@
 import React from 'react';
-import {useGoals} from '../../store/useGoalsStore';
-import {useGoalsStore} from '../../store/useDashboardGoalsStore';
+import {useGoalsStore} from '../../store/useGoalsStore';
+import {useDashboardGoalsStore} from '../../store/useDashboardGoalsStore';
 import Icon from '../../utils/Icon';
 
 const GoalsHeader = (goalId) => {
-  const setGoalId = useGoalsStore((state) => state.setGoalId);
-  const goalFields = useGoals((state) => state.goalFields);
+  const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
+  const goals = useGoalsStore((state) => state.goals);
 
   // if goalValues is an empty array, return null
-  if (!Object.keys(goalFields).length > 0) {
+  if (!Object.keys(goals).length > 0) {
     return <Icon name={'loading'} />;
   }
 
   // get first item in object which is not 0 index
-  const firstItem = Object.keys(goalFields)[0];
+  const firstItem = Object.keys(goals)[0];
 
   const handleChange = (event) => {
     setGoalId(event.target.value);
   }
 
   return (
-      <div className={"burst-goals-controls-flex"}>
-        {Object.keys(goalFields).length === 1 &&
-            <><p>{goalFields[firstItem].goal_title.value}</p><span
-                className={'burst-divider'}></span> <Icon name={goalFields[firstItem].goal_type.options[goalFields[firstItem].goal_type.value].icon} />
+      <div className={'burst-goals-controls-flex'}>
+        {Object.keys(goals).length === 1 &&
+            <><p>{goals[firstItem].title}</p>
+              {/*<span className={'burst-divider'}></span> <Icon name={goals.icon}/>*/}
             </>}
-        {Object.keys(goalFields).length > 1 &&  <select onChange={handleChange}>
-          {Object.entries(goalFields).map(([key, goal]) => (
-          <option key={key} value={key}>{goal.goal_title.value}</option>
+        {Object.keys(goals).length > 1 && <select onChange={handleChange}>
+          {Object.entries(goals).map(([key, goal]) => (
+              <option key={key} value={key}>{goal.title}</option>
           ))}
-          </select>
+        </select>
         }
       </div>
   );
