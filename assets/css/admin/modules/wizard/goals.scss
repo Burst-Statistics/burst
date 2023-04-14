@@ -35,6 +35,15 @@
             grid-template-columns: 26px 1fr auto auto auto;
             align-items: center;
             gap: var(--rsp-spacing-s);
+            list-style: none;
+
+            &::-webkit-details-marker {
+              display: none;
+            }
+
+            &::marker {
+              display: none;
+            }
 
             h5 {
               font-weight: 600;
