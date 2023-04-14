@@ -29,7 +29,7 @@ const GoalSetup = (props) => {
   let type = goalFields.goal_type.value;
   let iconName = type && goalFields.goal_type.options[type] ? goalFields.goal_type.options[type].icon : 'eye';
   let title = goalFields.goal_title.value ? goalFields.goal_title.value : __('New goal', 'burst-statistics');
-  const dateCreated = goal.date_created ? goal.date_created : '';
+  let dateCreated = goal.date_created > 1 ? goal.date_created : 1;
 
   return (
       <div className="burst-settings-goals__list__item">

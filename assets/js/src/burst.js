@@ -223,6 +223,9 @@ let burst_api_request = obj => {
 				path: '/burst/v1/track/?'+burst_token,
 				keepalive: true,
 				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
 				data: obj.data,
 			}).then(
 					( res ) => {

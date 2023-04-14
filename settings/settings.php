@@ -820,7 +820,7 @@ function burst_rest_api_goals_add( $request ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	$goal    = BURST()->goals->set();
+	$goal    = BURST()->goals->set([], 'insert');
 	$response      = new WP_REST_Response( $goal );
 	$response->set_status( 200 );
 

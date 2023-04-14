@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
 if ( ! class_exists( "burst_goals" ) ) {
     class burst_goals{
         function __construct( ) {
-	        add_action('burst_before_set_goals', array($this, 'check_existing_goals'));
+	        add_action('burst_before_insert_goal', array($this, 'check_existing_goals'));
         }
 
 		public function get_available_goal_types() {
@@ -131,11 +131,16 @@ if ( ! class_exists( "burst_goals" ) ) {
 			return $return;
 		}
 
-		public function set( $args = array() ) {
+		public function set( $args = array(), $action = 'update' ) {
 			global $wpdb;
 
 			// do_action to add a check if a goal is already set, because only one goal is allowed.
-			do_action('burst_before_set_goals');
+			if ($action === 'insert') {
+				do_action('burst_before_insert_goal');
+			} else {
+				do_action('burst_before_set_goals');
+			}
+
 
 
 			$table_name = $wpdb->prefix . 'burst_goals';
