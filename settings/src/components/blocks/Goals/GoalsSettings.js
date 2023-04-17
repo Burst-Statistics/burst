@@ -3,6 +3,7 @@ import {useGoalFieldsStore} from '../../../store/useGoalFieldsStore';
 import {__} from '@wordpress/i18n';
 import Icon from '../../../utils/Icon';
 import GoalSetup from '../Goals/GoalSetup';
+import {useEffect} from 'react';
 
 const GoalsSettings = (props) => {
   const { goals, addGoal, removeGoal, updateGoal } = useGoalsStore();
@@ -13,8 +14,13 @@ const GoalsSettings = (props) => {
   };
 
   const handleRemoveGoal = (id) => {
+    console.log('removing goal', id);
     removeGoal(id);
   };
+
+  useEffect(() => {
+    console.log('goals', goals);
+  }, [goals]);
 
   return (
 

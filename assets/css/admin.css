@@ -888,6 +888,9 @@
 }
 
 .burst .burst-grid-item.burst-goals .information-overlay-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     background: var(--rsp-white);
     box-shadow: var(--rsp-box-shadow);
     padding: var(--rsp-spacing-s);
@@ -895,10 +898,35 @@
     padding-right: var(--rsp-spacing-m);
     border-radius: var(--rsp-border-radius-input);
     margin: var(--rsp-spacing-s) 40px;
+  /* animation */
+    transform: scale(0);
+    animation: scale-in 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s forwards;
 }
 
-.burst .burst-grid-item.burst-goals .information-overlay-container h4, .burst .burst-grid-item.burst-goals .information-overlay-container p {
+@keyframes scale-in {
+    from {
+        transform: scale(0);
+        animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    to {
+        transform: scale(1);
+        animation-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+}
+
+.burst .burst-grid-item.burst-goals .information-overlay-container h4 {
     margin-bottom: var(--rsp-spacing-xs);
+}
+
+.burst .burst-grid-item.burst-goals .information-overlay-container p {
+    margin-bottom: var(--rsp-spacing-s);
+}
+
+.burst .burst-grid-item.burst-goals .information-overlay-container .burst-task-status {
+    margin-bottom: var(--rsp-spacing-xs);
+    margin-left: auto;
+    width: 75px;
 }
 
 .burst .uplift {
@@ -1427,75 +1455,75 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(1) {
-    width: 96%;
+    width: 83%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(2) {
-    width: 74%;
+    width: 81%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(3) {
-    width: 91%;
+    width: 100%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(4) {
-    width: 95%;
+    width: 94%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(5) {
-    width: 76%;
+    width: 96%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(6) {
-    width: 95%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
-    width: 97%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
-    width: 61%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
-    width: 77%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(10) {
-    width: 64%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(11) {
-    width: 91%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(12) {
-    width: 92%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(13) {
-    width: 85%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(14) {
-    width: 61%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(15) {
-    width: 79%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(16) {
-    width: 90%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(17) {
     width: 75%;
 }
 
+.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
+    width: 70%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
+    width: 81%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
+    width: 80%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(10) {
+    width: 96%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(11) {
+    width: 90%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(12) {
+    width: 76%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(13) {
+    width: 98%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(14) {
+    width: 94%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(15) {
+    width: 90%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(16) {
+    width: 98%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(17) {
+    width: 78%;
+}
+
 .burst-placeholder .burst-placeholder-line:nth-of-type(18) {
-    width: 72%;
+    width: 99%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(19) {
@@ -1503,7 +1531,7 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(20) {
-    width: 96%;
+    width: 62%;
 }
 
 .burst-placeholder .burst-placeholder-line ~ .burst-placeholder-line {

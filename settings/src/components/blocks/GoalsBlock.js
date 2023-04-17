@@ -27,11 +27,13 @@ const GoalsBlock = () => {
 
   const data = useDashboardGoalsStore((state) => state.data);
   const loading = useDashboardGoalsStore((state) => state.loading);
+  const setLoading = useDashboardGoalsStore((state) => state.setLoading);
   const incrementUpdateData = useDashboardGoalsStore((state) => state.incrementUpdateData);
 
   const goalId = useDashboardGoalsStore((state) => state.goalId);
   const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
   const goals = useGoalsStore((state) => state.goals);
+  const [noGoals, setNoGoals] = useState(false);
   useEffect(() => {
     if (goalId === false) {
       // get the key of first item from the goals list
@@ -40,40 +42,49 @@ const GoalsBlock = () => {
         setGoalId(firstGoal);
       }
     }
-  }, [goalId, goals, setGoalId]);
-
+    if (Object.keys(goals).length === 0) {
+      setNoGoals(true);
+      setLoading(false);
+    } else {
+      setNoGoals(false);
+    }
+  }, [goalId, goals]);
 
   useEffect(() => {
-    let timer1, timer2;
+    if ( !noGoals ) {
+      let timer1, timer2;
 
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
+      const handleVisibilityChange = () => {
+        if (document.hidden) {
+          clearInterval(timer1);
+          clearInterval(timer2);
+        }
+        else {
+          timer1 = setInterval(() => {
+            incrementUpdateLive();
+          }, 5000);
+
+          timer2 = setInterval(() => {
+            incrementUpdateData();
+          }, 10000);
+        }
+      }
+
+      // add event listener for visibility change
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+
+      // start the intervals
+      handleVisibilityChange();
+
+      // cleanup the event listener
+      return () => {
         clearInterval(timer1);
         clearInterval(timer2);
-      } else {
-        timer1 = setInterval(() => {
-          incrementUpdateLive();
-        }, 5000);
-
-        timer2 = setInterval(() => {
-          incrementUpdateData();
-        }, 10000);
+        document.removeEventListener("visibilitychange",
+            handleVisibilityChange);
       }
     }
-
-    // add event listener for visibility change
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    // start the intervals
-    handleVisibilityChange();
-
-    // cleanup the event listener
-    return () => {
-      clearInterval(timer1);
-      clearInterval(timer2);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    }
-  }, []);
+  }, [noGoals]);
 
   function selectGoalIcon(value) {
     value = parseInt(value);
@@ -106,7 +117,7 @@ const GoalsBlock = () => {
           className={'border-to-border burst-goals'}
           title={__('Goals', 'burst-statistics')}
           controls={<GoalsHeader goalId={goalId} goals={goals} />}
-          footer={(
+          footer={ !noGoals && (
               <>
                 <a className={'burst-button burst-button--secondary'}
                    href={'#settings/goals'}>{__('View setup',
@@ -118,6 +129,16 @@ const GoalsBlock = () => {
           )}
       >
         <div className={'burst-goals burst-loading-container ' + loadingClass}>
+          {noGoals && (
+              <div className="information-overlay">
+                <div className="information-overlay-container">
+                  <h4>{__('Goals', 'burst-statistics')}</h4>
+                  <span className="burst-task-status burst-new">New!</span>
+                  <p>{__('The all new goals! Keep track of customizable goals and get valuable insights. Add your first goal!', 'burst-statistics')}</p>
+                  <a href="#settings/goals" className="burst-button burst-button--primary">{__('Create my first goal', 'burst-statistics')}</a>
+                </div>
+              </div>
+          )}
           <div className="burst-goals-select">
             <ClickToFilter filter="goal_id" filterValue={data.goalId}
                            label={data.today.tooltip+ __('Goal and today', 'burst-statistics')} startDate={today}>

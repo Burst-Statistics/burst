@@ -3,9 +3,13 @@ import {useGoalsStore} from '../../store/useGoalsStore';
 import {useDashboardGoalsStore} from '../../store/useDashboardGoalsStore';
 import Icon from '../../utils/Icon';
 
-const GoalsHeader = (goalId) => {
+const GoalsHeader = ({goalId, goals}) => {
   const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
-  const goals = useGoalsStore((state) => state.goals);
+
+  console.log('goalId', goalId);
+  if (goalId === false) {
+    return null;
+  }
 
   // if goalValues is an empty array, return null
   if (!Object.keys(goals).length > 0) {
