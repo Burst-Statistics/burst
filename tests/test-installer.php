@@ -35,9 +35,9 @@ class RssslInstallerTest extends WP_UnitTestCase {
 
 	public function test_plugin_installation() {
 
-		$complianz_installer           = new cmplz_installer( 'complianz-gdpr' );
-		$really_simple_ssl_installer  = new cmplz_installer( 'really-simple-ssl' );
-		$complianz_terms_installer = new cmplz_installer( 'complianz-terms-conditions' );
+		$complianz_installer           = new burst_installer( 'complianz-gdpr' );
+		$really_simple_ssl_installer  = new burst_installer( 'really-simple-ssl' );
+		$complianz_terms_installer = new burst_installer( 'complianz-terms-conditions' );
 
 		$this->assertTrue( $complianz_installer->download_plugin(), 'Download of complianz-gdpr plugin failed.' );
 		// Get clean after every download, otherwise issues with ob_level going up
