@@ -2,7 +2,7 @@
 
 require( 'class-installer.php' );
 
-class RssslInstallerTest extends WP_UnitTestCase {
+class BurstInstallerTest extends WP_UnitTestCase {
 	/**
 	 * @throws Exception
 	 */
@@ -30,7 +30,7 @@ class RssslInstallerTest extends WP_UnitTestCase {
 		// Set an active user, otherwise capability checks will fail
 		wp_set_current_user(1);
 		// Activate any required plugins
-		activate_plugin('burst.php');
+		activate_plugin('burst/burst.php');
 	}
 
 	public function test_plugin_installation() {
