@@ -29,7 +29,13 @@ class BurstInstallerTest extends WP_UnitTestCase {
 
 
 		// Set an active user, otherwise capability checks will fail
-		wp_set_current_user(1);
+		$user_id = 1;
+		// Create a partial mock of the WP_User class
+		$user_mock = $this->createPartialMock(WP_User::class, ['exists']);
+		$user_mock->method('exists')->willReturn(true);
+
+		// Set the mocked user object as the current user
+		wp_set_current_user($user_id, $user_mock);
 		// Activate any required plugins
 		activate_plugin('burst.php');
 	}
