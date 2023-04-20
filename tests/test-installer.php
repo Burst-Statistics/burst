@@ -36,9 +36,11 @@ class BurstInstallerTest extends WP_UnitTestCase {
 
 		// Set the mocked user object as the current user
 		wp_set_current_user($user_id, $user_mock);
-		$current_user = wp_get_current_user();
-		error_log('Current User ID: ' . $current_user->ID);
-		error_log('Current User exists: ' . ($current_user->exists() ? 'true' : 'false'));
+		// Ensure user 1 has the required capability
+		$user = wp_get_current_user();
+		if ( ! $user->has_cap('manage_burst_statistics') ) {
+			$user->add_cap('manage_burst_statistics');
+		}
 
 		// Activate any required plugins
 		activate_plugin('burst.php');
