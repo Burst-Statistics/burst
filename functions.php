@@ -110,9 +110,11 @@ if ( ! function_exists( 'burst_user_can_manage' ) ) {
 	 */
 	function burst_user_can_manage(): bool {
 		if ( ! is_user_logged_in() ) {
+			error_log('User not logged in');
 			return false;
 		}
 		if ( ! current_user_can( 'manage_burst_statistics' ) ) {
+			error_log('User does not have manage_burst_statistics capability');
 			return false;
 		}
 
