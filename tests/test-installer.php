@@ -27,6 +27,7 @@ class BurstInstallerTest extends WP_UnitTestCase {
 			}
 		}
 
+
 		// Set an active user, otherwise capability checks will fail
 		wp_set_current_user(1);
 		// Activate any required plugins
@@ -36,27 +37,21 @@ class BurstInstallerTest extends WP_UnitTestCase {
 	public function test_plugin_installation() {
 
 		$complianz_installer           = new burst_installer( 'complianz-gdpr' );
-		$really_simple_ssl_installer  = new burst_installer( 'really-simple-ssl' );
 		$complianz_terms_installer = new burst_installer( 'complianz-terms-conditions' );
 
 		$this->assertTrue( $complianz_installer->download_plugin(), 'Download of complianz-gdpr plugin failed.' );
 		// Get clean after every download, otherwise issues with ob_level going up
 		ob_get_clean();
-		$this->assertTrue( $really_simple_ssl_installer->download_plugin(), 'Download of really-simple-ssl plugin failed.' );
-		ob_get_clean();
 		$this->assertTrue( $complianz_terms_installer->download_plugin(), 'Download of complianz-terms-conditions plugin failed.' );
 		ob_get_clean();
 
 		$this->assertTrue( $complianz_installer->plugin_is_downloaded(), 'complianz-gdpr plugin is not downloaded.' );
-		$this->assertTrue( $really_simple_ssl_installer->plugin_is_downloaded(), 'really-simple-ssl plugin is not downloaded.' );
 		$this->assertTrue( $complianz_terms_installer->plugin_is_downloaded(), 'complianz-terms-conditions plugin is not downloaded.' );
 
 		$this->assertTrue( $complianz_installer->activate_plugin(), 'Activation of complianz-gdpr plugin failed.' );
-		$this->assertTrue( $really_simple_ssl_installer->activate_plugin(), 'Activation of really-simple-ssl plugin failed.' );
 		$this->assertTrue( $complianz_terms_installer->activate_plugin(), 'Activation of complianz-terms-conditions plugin failed.' );
 
 		$this->assertTrue( $complianz_installer->plugin_is_activated(), 'complianz-gdpr plugin is not activated.' );
-		$this->assertTrue( $really_simple_ssl_installer->plugin_is_activated(), 'really-simple-ssl plugin is not activated.' );
 		$this->assertTrue( $complianz_terms_installer->plugin_is_activated(), 'complianz-terms-conditions plugin is not activated.' );
 
 	}

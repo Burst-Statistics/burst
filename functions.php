@@ -92,10 +92,7 @@ if ( ! function_exists( 'burst_user_can_view' ) ) {
 	 * @return boolean true or false
 	 */
 	function burst_user_can_view(): bool {
-		if ( ! is_user_logged_in() ) {
-			return false;
-		}
-		if ( ! current_user_can( 'view_burst_statistics' ) ) {
+		if ( ! is_user_logged_in() || ! current_user_can( 'view_burst_statistics' ) ) {
 			return false;
 		}
 
