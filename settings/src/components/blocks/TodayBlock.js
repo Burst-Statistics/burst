@@ -80,7 +80,7 @@ const TodayBlock = () => {
               <div className="burst-today-select-item">
                 <Icon name={liveIcon} size="23"/>
                 <h2>{live}</h2>
-                <span><Icon name="live" size="12" color={'red'}/> Live</span>
+                <span><Icon name="live" size="12" color={'red'}/> {__('Live', 'burst-statistics')}</span>
               </div>
             </Tooltip>
             <Tooltip arrow title={data.today.tooltip}
@@ -89,7 +89,7 @@ const TodayBlock = () => {
                 <Icon name={todayIcon} size="23"/>
                 <h2>{data.today.value}</h2>
                 <span><Icon name="total" size="13"
-                            color={'green'}/> Total</span>
+                            color={'green'}/> {__('Total', 'burst-statistics')}</span>
               </div>
             </Tooltip>
           </div>

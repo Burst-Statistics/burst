@@ -144,7 +144,7 @@ const GoalsBlock = () => {
               <div className="burst-goals-select-item">
                 <Icon name={todayIcon} size="23"/>
                 <h2>{live}</h2>
-                <span><Icon name="sun" color={'yellow'} size="13"/> Today</span>
+                <span><Icon name="sun" color={'yellow'} size="13"/> {__('Today', 'burst-statistics')}</span>
               </div>
             </ClickToFilter>
             <ClickToFilter filter="goal_id" filterValue={data.goalId}
@@ -153,7 +153,7 @@ const GoalsBlock = () => {
                 <Icon name={totalIcon} size="23"/>
                 <h2>{data.total.value}</h2>
                 <span><Icon name="total" size="13"
-                            color={'green'}/> Total</span>
+                            color={'green'}/> {__('Total', 'burst-statistics')}</span>
               </div>
             </ClickToFilter>
           </div>

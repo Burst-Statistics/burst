@@ -53,6 +53,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 							'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
 						),
 						'goals'                 => burst_get_active_goals(),
+						'goals_script_url'	    => burst_get_goals_script_url(),
 					)
 				);
 				wp_enqueue_script( 'burst',

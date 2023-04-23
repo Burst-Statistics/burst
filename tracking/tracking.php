@@ -416,6 +416,15 @@ if ( ! function_exists( 'burst_get_active_goals' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_get_goals_script_url' ) ) {
+	/**
+	 * @return string
+	 */
+	function burst_get_goals_script_url() {
+		return apply_filters( 'burst_goals_script_url', burst_url . '/assets/js/build/burst-goals.js' );
+	}
+}
+
 if ( ! function_exists( 'burst_get_active_goals_ids' ) ) {
 	/**
 	 * @param $server_side

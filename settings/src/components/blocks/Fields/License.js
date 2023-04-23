@@ -1,12 +1,12 @@
 import {doAction} from "../../../utils/api";
 import { __ } from '@wordpress/i18n';
 import {useFields} from '../../../store/useFieldsStore';
-import useLicense from "../../../store/useLicenseStore";
+import useLicenseStore from "../../../store/useLicenseStore";
 import {useState, useEffect} from "@wordpress/element";
 import TaskElement from "../TaskElement";
 const License = (props) => {
     const {fields, setChangedField, updateField} = useFields();
-    const {licenseStatus, setLicenseStatus} = useLicense();
+    const {licenseStatus, setLicenseStatus} = useLicenseStore();
     const [noticesLoaded, setNoticesLoaded] = useState(false);
     const [notices, setNotices] = useState(false);
     const getLicenseNotices = () => {
