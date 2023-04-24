@@ -24,8 +24,8 @@ const TipsTricksBlock = (props) => {
       link: 'https://burst-statistics.com/definition/what-is-bounce-rate/',
     },
     {
-      content: 'What is Turbo Mode?',
-      link: 'https://burst-statistics.com/definition/turbo-mode/',
+      content: 'How to set goals?',
+      link: 'https://burst-statistics.com/how-to-set-goals/',
     },
   ];
 
