@@ -66,7 +66,7 @@ function burst_plugin_admin_scripts() {
 			'upgrade_link'       => is_multisite() ? 'https://burst-statistics.com/pro-multisite' : 'https://burst-statistics.com/pro',
 			'plugin_url'         => burst_url,
 			'network_link'       => network_site_url( 'plugins.php' ),
-			'pro_plugin_active'  => defined( 'burst_pro_version' ),
+			'is_pro'             => burst_is_pro(),
 			'networkwide_active' => ! is_multisite(),//true for single sites and network wide activated
 			'nonce'              => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
 			'burst_nonce'        => wp_create_nonce( 'burst_nonce' ),

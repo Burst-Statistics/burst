@@ -204,7 +204,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 
 	    public function check_existing_goals() {
 
-		    if (defined('burst_pro_plugin') && burst_pro_plugin) {
+		    if (burst_is_pro()) {
 				// @todo add licensing
 			    return; // Allow unlimited goals in the pro version
 		    }

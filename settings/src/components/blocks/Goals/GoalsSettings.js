@@ -56,7 +56,8 @@ const GoalsSettings = (props) => {
                 </button>
               </div>
           )}
-          { !licenseStatus === 'valid' && (
+          {console.log('licenseStatus', licenseStatus)}
+          { burst_settings.is_pro && (
               <div className={'burst-settings-goals__upgrade'}>
                 <Icon name={'goals'} size={24} />
                 <h4>{__('Want more goals?')}</h4>

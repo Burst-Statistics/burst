@@ -22,6 +22,12 @@ if ( ! function_exists( 'burst_is_activation' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_is_pro' ) ) {
+	function burst_is_pro() {
+		return defined( 'burst_pro' );
+	}
+}
+
 if ( ! function_exists('burst_add_view_capability')){
 	/**
 	 * Add a user capability to WordPress and add to admin and editor role
