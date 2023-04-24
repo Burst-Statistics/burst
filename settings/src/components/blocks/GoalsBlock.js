@@ -20,6 +20,7 @@ import {useGoalsStore} from '../../store/useGoalsStore';
 import GridItem from '../common/GridItem';
 import GoalsHeader from './GoalsHeader';
 import {useTodayStore} from '../../store/useTodayStore';
+import {setOption} from '../../utils/api';
 
 const GoalsBlock = () => {
   const live = useDashboardGoalsStore((state) => state.live);
@@ -112,6 +113,17 @@ const GoalsBlock = () => {
   }
 
   let today = format(new Date(), 'yyyy-MM-dd');
+
+  const onGoalsInfoClick = () => {
+    return () => {
+      burst_settings.goals_information_shown = '1';
+      setOption('goals_information_shown', true);
+      // chnage the #settings/goals to #settings/goals/add
+      window.location.hash = '#settings/goals';
+    }
+  }
+
+  console.log(burst_settings.goals_information_shown);
   return (
       <GridItem
           className={'border-to-border burst-goals'}
@@ -129,13 +141,13 @@ const GoalsBlock = () => {
           )}
       >
         <div className={'burst-goals burst-loading-container ' + loadingClass}>
-          {noGoals && (
+          {burst_settings.goals_information_shown !== '1' && (
               <div className="information-overlay">
                 <div className="information-overlay-container">
                   <h4>{__('Goals', 'burst-statistics')}</h4>
                   <p>{__('The all new goals! Keep track of customizable goals and get valuable insights. Add your first goal!', 'burst-statistics')}</p>
                   <p><a href={'https://burst-statistics.com/how-to-set-goals/'}>{__('Learn how to set your first goal', 'burst-statistics')}</a></p>
-                  <a href="#settings/goals" className="burst-button burst-button--primary">{__('Create my first goal', 'burst-statistics')}</a>
+                  <a onClick={onGoalsInfoClick()} className="burst-button burst-button--primary">{__('Create my first goal', 'burst-statistics')}</a>
                 </div>
               </div>
           )}

@@ -49,6 +49,8 @@ const makeRequest = (path, method = 'GET', data) => {
 	});
 }
 
+export const setOption = (option, value) => makeRequest('burst/v1/options/set'+glue()+getNonce(), 'POST', {option, value, nonce: burst_settings.burst_nonce});
+
 export const getFields = () => makeRequest('burst/v1/fields/get'+glue()+getNonce());
 export const setFields = (data) => makeRequest('burst/v1/fields/set'+glue(), 'POST', [...data, { nonce: burst_settings.burst_nonce }]);
 
