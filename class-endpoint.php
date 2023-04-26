@@ -12,6 +12,7 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 			self::$_this = $this;
 			// actions and filters
 			add_action( 'plugins_loaded', array( $this, 'install' ) );
+			add_action( 'burst_on_premium_upgrade', array( $this, 'update' ) );
 		}
 
 		/**
@@ -29,6 +30,21 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		}
 
 		/**
+		 * Update the endpoint
+		 *
+		 * @return void
+		 */
+		public function update(): void {
+			set_transient( 'burst_install_endpoint', 'true', HOUR_IN_SECONDS );
+			if ( file_exists( ABSPATH . '/burst-statistics-endpoint.php' ) ) {
+				unlink( ABSPATH . '/burst-statistics-endpoint.php' );
+			}
+
+			$endpoint_status = $this->install_endpoint_file();
+			update_option( 'burst_endpoint_status', $endpoint_status, false );
+		}
+
+		/**
 		 * @return burst_endpoint
 		 */
 		public static function this(): burst_endpoint {
@@ -40,9 +56,9 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		 *
 		 * @return bool
 		 */
-		public function install_endpoint_file(): bool {
+		public function install_endpoint_file($force = false): bool {
 			$file = ABSPATH . '/burst-statistics-endpoint.php';
-			if ( ! file_exists( $file ) ) {
+			if ( ! file_exists( $file ) || $force ) {
 				$success = @file_put_contents( $file, $this->get_endpoint_file_contents() );
 				if ( $success === false ) {
 					return false;

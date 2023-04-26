@@ -46,6 +46,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'user_agent'        => null,
 			'device_resolution' => null,
 			'time_on_page'      => null,
+			'completed_goals'   => null,
 		);
 		$data            = wp_parse_args( $data, $defaults );
 		// update array

@@ -897,11 +897,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$visitors_uplift_status = $this->calculate_uplift_status( $prev_data[0]->visitors, $visitors );
 
 			// time per session = avg time_on_page / avg pageviews per session
-			$average_pageviews_per_session = ($curr_data[0]->sessions !== 0) ? ($curr_data[0]->pageviews / $curr_data[0]->sessions) : 0;
+			$average_pageviews_per_session = ($curr_data[0]->sessions != 0) ? ($curr_data[0]->pageviews / $curr_data[0]->sessions) : 0;
 			$time_per_session = $curr_data[0]->avg_time_on_page / $average_pageviews_per_session;
 
 			// prev time per session
-			$prev_average_pageviews_per_session = $prev_data[0]->sessions !== 0 ? ($prev_data[0]->pageviews / $prev_data[0]->sessions) : 0;
+			$prev_average_pageviews_per_session = $prev_data[0]->sessions != 0 ? ($prev_data[0]->pageviews / $prev_data[0]->sessions) : 0;
 			$prev_time_per_session = $prev_data[0]->avg_time_on_page / $prev_average_pageviews_per_session;
 
 			// calculate uplift for time per session

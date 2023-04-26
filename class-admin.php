@@ -38,6 +38,9 @@ if ( ! class_exists( "burst_admin" ) ) {
             add_action( 'admin_init', array($this, 'add_burst_admin_columns' ), 1);
             add_action( 'pre_get_posts', array($this, 'posts_orderby_total_pageviews'), 1);
 
+			// activating/upgrading
+			add_action( 'burst_activation', array($this, 'setup_defaults'), 40);
+
 			// deactivating
 			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
 			add_action( 'admin_init', array($this, 'listen_for_deactivation'), 40);
