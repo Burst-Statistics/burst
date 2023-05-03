@@ -8,7 +8,7 @@ const DeleteGoalModal = ({ isOpen, goal, onDelete, onClose }) => {
   return (
       <Modal isOpen={isOpen} title="Delete Goal" onClose={onClose}>
         <DialogContent>
-          <p>{__('Are you sure you want to delete this goal? This action cannot be undone.', 'burst-statistics')}</p>
+          <p>{__('Are you sure you want to delete this goal?', 'burst-statistics')} + ' ' + {__('This action cannot be undone.', 'burst-statistics')}</p>
           <p>
             <strong>{__('Goal name', 'burst-statistics')}:</strong> {goal.name}
             <br />

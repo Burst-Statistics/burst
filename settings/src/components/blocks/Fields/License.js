@@ -49,6 +49,7 @@ const License = (props) => {
     }
 
     let field = props.field;
+    const buttonClass = licenseStatus !== 'valid' ? 'button-primary' : 'button-secondary';
 	/**
      * There is no "PasswordControl" in WordPress react yet, so we create our own license field.
      */
@@ -65,7 +66,7 @@ const License = (props) => {
                             value={field.value}
                             onChange={ ( e ) => onChangeHandler(e.target.value) }
                      />
-                     <button className="button button-default" onClick={ () => toggleActivation() }>
+                     <button className={`button ${buttonClass}`} onClick={ () => toggleActivation() }>
                      {licenseStatus==='valid' && <>{__("Deactivate","really-simple-ssl")}</>}
                      {licenseStatus!=='valid' && <>{__("Activate","really-simple-ssl")}</>}
                      </button>

@@ -70,9 +70,7 @@ const Settings = (props) => {
   const { menu_items: menuItems } = subMenu;
   if ( !subMenuLoaded ||  !fieldsLoaded || menuItems.length ===0  ) {
     return (
-        <>
           <div className="burst-grid-item burst-grid-item-placeholder  burst-column-2"></div>
-        </>
     );
   }
   let selectedFields = fields.filter(field => field.menu_id === selectedSubMenuItem);
@@ -122,6 +120,9 @@ const Settings = (props) => {
   }
   notices = notices.filter(notice => notice.label.toLowerCase()!=='completed');
   let continueLink = nextButtonDisabled ? `#${selectedMainMenuItem}/${selectedSubMenuItem}` : `#${selectedMainMenuItem}/${nextMenuItem}`;
+
+  console.log(selectedFields);
+  const isLicenseBlock = selectedFields[0].id === 'license';
   return (
       <>
         <div className="burst-wizard-settings burst-column-2">
@@ -129,11 +130,11 @@ const Settings = (props) => {
               <SettingsGroup key={i} index={i} group={group} fields={selectedFields}/>)
           }
           <div className="burst-grid-item-footer">
-            <button
+            { ! isLicenseBlock && (<button
                 className="burst-button burst-button--primary"
                 onClick={ ( e ) => saveData(e) }>
               { btnSaveText }
-            </button>
+            </button>)}
           </div>
         </div>
         <div className="burst-wizard-help">

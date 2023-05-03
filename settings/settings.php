@@ -361,6 +361,7 @@ function burst_other_plugins_data( $slug = false ) {
 		[
 			'slug'          => 'burst-statistics',
 			'constant_free' => 'burst_version',
+			'constant_pro' => 'burst_pro',
 			'wordpress_url' => 'https://wordpress.org/plugins/burst-statistics/',
 			'upgrade_url'   => 'https://burst-statistics.com/?src=burst-plugin',
 			'title'         => 'Burst Statistics - ' . __( "Self-hosted, Privacy-friendly analytics tool.", "burst-statistics" ),
