@@ -1,6 +1,7 @@
 import Modal from '../../common/Modal';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import { formatUnixToDate } from '../../../utils/formatting';
 
 const DeleteGoalModal = ({ isOpen, goal, onDelete, onClose }) => {
   return (
@@ -12,7 +13,7 @@ const DeleteGoalModal = ({ isOpen, goal, onDelete, onClose }) => {
             <br />
             <strong>Status:</strong> {goal.status}
             <br />
-            <strong>Date Created:</strong> {goal.dateCreated}
+            <strong>Date Created:</strong> {formatUnixToDate(goal.dateCreated)}
           </p>
         </DialogContent>
         <DialogActions>

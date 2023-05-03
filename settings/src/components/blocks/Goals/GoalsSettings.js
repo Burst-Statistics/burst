@@ -17,16 +17,13 @@ const GoalsSettings = (props) => {
   };
 
   const handleRemoveGoal = (id) => {
-    console.log('removing goal', id);
     removeGoal(id);
   };
 
   useEffect(() => {
-    console.log('goals', goals);
   }, [goals]);
 
   return (
-
       <div className="burst-burst-settings-goals">
         <div className="burst-settings-goals__introduction">
           {__('Goals are a great way to track your progress and keep you motivated.')}
@@ -56,8 +53,7 @@ const GoalsSettings = (props) => {
                 </button>
               </div>
           )}
-          {console.log('licenseStatus', licenseStatus)}
-          { burst_settings.is_pro && (
+          { ! burst_settings.is_pro && (
               <div className={'burst-settings-goals__upgrade'}>
                 <Icon name={'goals'} size={24} />
                 <h4>{__('Want more goals?')}</h4>

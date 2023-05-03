@@ -581,15 +581,18 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$columns   = array();
 			$columns[] = array(
 				'name'     => __( 'Page', 'burst-statistics' ),
+				'id'       => 'page',
 				'sortable' => true,
 				'grow'     => 10,
 			);
+
 			foreach ( $metrics as $metric ) {
 				// if goal_id isset then metric is a conversion
 				$title = $metric_labels[ $metric ];
 
 				$columns[] = array(
 					'name'     => $title,
+					'id'       => $metric,
 					'sortable' => true,
 					"right"    => true,
 					'grow'     => 3,
@@ -643,11 +646,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// add page_url and page_id to metrics array
 			$metrics = [ $metric, 'page_url' ];
 
-
 			$filters  = $args['filters'];
 			$filters['bounce'] = 0;
 
-			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url' );
+			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url', $metric );
 			return $wpdb->get_results( $sql );
 		}
 
@@ -785,7 +787,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					// replace * with ["COUNT(*) AS hit_count",
 					//       "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '+02:00', '-04:00'), '%Y-%m-%d') AS period"]
 					$sql = str_replace('*', 'COUNT(*) AS hit_count, DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), \'+02:00\', \'-04:00\'), \'%Y-%m-%d\') AS period', $sql);
-					error_log($sql);
 					break;
 				default:
 					unset($filters['goal_id']);
@@ -1015,7 +1016,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$table_name .= " AS stats";
 
 			$group_by = $group_by ? "GROUP BY $group_by" : '';
-			$order_by = $order_by ? "ORDER BY $order_by" : '';
+			$order_by = $order_by ? "ORDER BY $order_by DESC" : '';
 			$limit = $limit ? "LIMIT $limit" : '';
 
 			return $wpdb->prepare(

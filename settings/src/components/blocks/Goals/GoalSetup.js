@@ -10,7 +10,6 @@ import DeleteGoalModal from './DeleteGoalModal';
 
 
 const GoalSetup = (props) => {
-  console.log('rendering GoalSetup');
   const { id, goal, goalFields, setGoalValue,onRemove, onUpdate } = props;
   if (!goalFields) {
     return null;

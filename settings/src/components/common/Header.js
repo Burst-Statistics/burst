@@ -9,6 +9,9 @@ const Header = () => {
   const fetchMainMenuData = useMenu((state) => state.fetchMainMenuData);
   const plugin_url = burst_settings.plugin_url;
 
+  // support url is
+  const support_url = burst_settings.is_pro ? 'https://wordpress.org/support/plugin/burst-statistics/' :  'https://burst-statistics.com/support/';
+
   const firstUpdate = useRef(true);
 
   useEffect( () => {
@@ -38,7 +41,7 @@ const Header = () => {
             </nav>
           </div>
           <div className="burst-header-right">
-            <a href="settings/src/components/common/Header"
+            <a href="https://burst-statistics.com/support/"
                className="burst-button burst-button burst-button--black"
                target="_blank">{__('Support', 'burst-statistics')}</a>
           </div>

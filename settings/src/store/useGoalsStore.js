@@ -43,9 +43,7 @@ export const useGoalsStore = create((set) => {
         success: __('Goal deleted successfully!', 'burst-statistics'),
         error: __('Failed to delete goal', 'burst-statistics'),
       });
-      console.log(response);
       if (response.deleted) {
-        console.log('set state deleted', id);
         set(produce((draft) => {
           // if there is only one goal left we need to update to an empty object
           if (Object.keys(draft.goals).length === 1) {

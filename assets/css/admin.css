@@ -1449,67 +1449,67 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(1) {
-    width: 82%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(2) {
-    width: 71%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(3) {
     width: 76%;
 }
 
+.burst-placeholder .burst-placeholder-line:nth-of-type(2) {
+    width: 99%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(3) {
+    width: 96%;
+}
+
 .burst-placeholder .burst-placeholder-line:nth-of-type(4) {
-    width: 61%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(5) {
-    width: 73%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(6) {
-    width: 83%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
-    width: 95%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
-    width: 91%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
-    width: 86%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(10) {
-    width: 61%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(11) {
-    width: 63%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(12) {
-    width: 86%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(13) {
-    width: 97%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(14) {
-    width: 95%;
-}
-
-.burst-placeholder .burst-placeholder-line:nth-of-type(15) {
     width: 80%;
 }
 
+.burst-placeholder .burst-placeholder-line:nth-of-type(5) {
+    width: 84%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(6) {
+    width: 78%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(7) {
+    width: 84%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(8) {
+    width: 81%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(9) {
+    width: 90%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(10) {
+    width: 85%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(11) {
+    width: 87%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(12) {
+    width: 73%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(13) {
+    width: 75%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(14) {
+    width: 70%;
+}
+
+.burst-placeholder .burst-placeholder-line:nth-of-type(15) {
+    width: 96%;
+}
+
 .burst-placeholder .burst-placeholder-line:nth-of-type(16) {
-    width: 72%;
+    width: 84%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(17) {
@@ -1517,15 +1517,15 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(18) {
-    width: 83%;
+    width: 73%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(19) {
-    width: 79%;
+    width: 82%;
 }
 
 .burst-placeholder .burst-placeholder-line:nth-of-type(20) {
-    width: 95%;
+    width: 91%;
 }
 
 .burst-placeholder .burst-placeholder-line ~ .burst-placeholder-line {
@@ -2101,12 +2101,30 @@ a.burst-button--black:hover, button.burst-button--black:hover, input.burst-butto
 }
 
 .burst div[class^=burst-wizard-] .burst-warning {
-    background-color: var(--rsp-red-faded);
-    border: 1px solid var(--rsp-red);
     padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
-    color: var(--rsp-red);
     margin: var(--rsp-spacing-xxs) 0;
     border-radius: var(--rsp-border-radius-input);
+    opacity: 1;
+    transition: opacity 1.3s ease-in-out;
+    color: var(--rsp-red);
+    background-color: var(--rsp-red-faded);
+    border: 1px solid var(--rsp-red);
+}
+
+.burst div[class^=burst-wizard-] .burst-warning.hidden {
+    opacity: 0;
+}
+
+.burst div[class^=burst-wizard-] .burst-warning.success {
+    color: var(--rsp-green);
+    background-color: var(--rsp-green-faded);
+    border: 1px solid var(--rsp-green);
+}
+
+.burst div[class^=burst-wizard-] .burst-warning.warning {
+    color: var(--rsp-text-color);
+    background-color: var(--rsp-yellow-faded);
+    border: 1px solid var(--rsp-yellow);
 }
 
 @-o-keyframes fadeIt {

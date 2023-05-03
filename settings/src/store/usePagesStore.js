@@ -15,20 +15,16 @@ export const usePagesStore = create((set) => ({
 
 export const transformPagesData = (response) => {
   const metrics = response.metrics;
-
   // Update columns
   response.columns = response.columns.map((column, index) => {
-    const name = column.name.toLowerCase();
     if (index > 0) {
       return {
         ...column,
-        selector: (row) => row[name],
-        id: name, // Add id to the column
+        selector: (row) => row[column.id],
       };
     } else {
       return {
         ...column,
-        id: name,
       };
     }
   });

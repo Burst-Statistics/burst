@@ -101,7 +101,7 @@ const GoalsBlock = () => {
   let todayIcon = selectGoalIcon(live);
   let totalIcon = selectGoalIcon(data.total.value);
   const delayTooltip = 200;
-  let loadingClass = loading ? 'burst-loading' : '';
+  // let loadingClass = loading ? 'burst-loading' : '';
 
   let startDate = false;
   let endDate = false;
@@ -123,7 +123,6 @@ const GoalsBlock = () => {
     }
   }
 
-  console.log(burst_settings.goals_information_shown);
   return (
       <GridItem
           className={'border-to-border burst-goals'}
@@ -140,7 +139,7 @@ const GoalsBlock = () => {
               </>
           )}
       >
-        <div className={'burst-goals burst-loading-container ' + loadingClass}>
+        <div className={'burst-goals burst-loading-container'}>
           {burst_settings.goals_information_shown !== '1' && (
               <div className="information-overlay">
                 <div className="information-overlay-container">

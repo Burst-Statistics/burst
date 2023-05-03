@@ -6,7 +6,6 @@ import Icon from '../../utils/Icon';
 const GoalsHeader = ({goalId, goals}) => {
   const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
 
-  console.log('goalId', goalId);
   if (goalId === false) {
     return null;
   }
