@@ -649,7 +649,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$filters  = $args['filters'];
 			$filters['bounce'] = 0;
 
-			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url', $metric );
+			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url DESC', $metric );
 			return $wpdb->get_results( $sql );
 		}
 
@@ -898,12 +898,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$visitors_uplift_status = $this->calculate_uplift_status( $prev_data[0]->visitors, $visitors );
 
 			// time per session = avg time_on_page / avg pageviews per session
-			$average_pageviews_per_session = ($curr_data[0]->sessions != 0) ? ($curr_data[0]->pageviews / $curr_data[0]->sessions) : 0;
-			$time_per_session = $curr_data[0]->avg_time_on_page / $average_pageviews_per_session;
+			$average_pageviews_per_session = ((int) $curr_data[0]->sessions != 0) ? ($curr_data[0]->pageviews / $curr_data[0]->sessions) : 0;
+			$time_per_session = $curr_data[0]->avg_time_on_page / max(1, $average_pageviews_per_session);
 
 			// prev time per session
-			$prev_average_pageviews_per_session = $prev_data[0]->sessions != 0 ? ($prev_data[0]->pageviews / $prev_data[0]->sessions) : 0;
-			$prev_time_per_session = $prev_data[0]->avg_time_on_page / $prev_average_pageviews_per_session;
+			$prev_average_pageviews_per_session = ( (int) $prev_data[0]->sessions != 0) ? ($prev_data[0]->pageviews / $prev_data[0]->sessions) : 0;
+			$prev_time_per_session = $prev_data[0]->avg_time_on_page / max(1, $prev_average_pageviews_per_session);
 
 			// calculate uplift for time per session
 			$time_per_session_uplift = $this->format_uplift( $prev_time_per_session, $time_per_session );
@@ -937,10 +937,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$result['time_per_session']               = $time_per_session;
 			$result['time_per_session_uplift']        = $time_per_session_uplift;
 			$result['time_per_session_uplift_status'] = $time_per_session_uplift_status;
-			$result['top_referrer']                   = $top_referrer[0]->referrer;
-			$result['top_referrer_pageviews']         = $top_referrer[0]->pageviews;
-			$result['most_visited']                   = $most_visited[0]->page_url;
-			$result['most_visited_pageviews']         = $most_visited[0]->pageviews;
+			$result['top_referrer']                   = isset($top_referrer[0]->referrer) ? $top_referrer[0]->referrer : __( 'No referrers', 'burst-statistics' );
+			$result['top_referrer_pageviews']         = isset($top_referrer[0]->pageviews) ? $top_referrer[0]->pageviews : 0;
+			$result['most_visited']                   = isset($most_visited[0]->page_url) ? $most_visited[0]->page_url : __( 'No pageviews', 'burst-statistics' );
+			$result['most_visited_pageviews']         = isset($top_referrer[0]->pageviews) ? $top_referrer[0]->pageviews : 0;
 
 			return $result;
 		}
@@ -1016,7 +1016,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$table_name .= " AS stats";
 
 			$group_by = $group_by ? "GROUP BY $group_by" : '';
-			$order_by = $order_by ? "ORDER BY $order_by DESC" : '';
+			$order_by = $order_by ? "ORDER BY $order_by" : '';
 			$limit = $limit ? "LIMIT $limit" : '';
 
 			return $wpdb->prepare(
