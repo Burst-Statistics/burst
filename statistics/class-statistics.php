@@ -649,12 +649,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$filters  = $args['filters'];
 			$filters['bounce'] = 0;
 
-			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url DESC', $metric );
+			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url', $metric . ' DESC' );
 			return $wpdb->get_results( $sql );
 		}
 
-		public
-		function get_referrers_data( $args = array() ) {
+		public function get_referrers_data( $args = array() ) {
 			global $wpdb;
 			$defaults = array(
 				'date_start' => 0,
