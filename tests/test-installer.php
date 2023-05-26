@@ -49,8 +49,6 @@ class BurstInstallerTest extends WP_UnitTestCase {
             activate_plugin('burst.php', '', true);
         }
 
-		// Activate any required plugins
-		activate_plugin('burst.php');
 	}
 
 	public function test_plugin_installation() {
