@@ -49,10 +49,11 @@ class BurstInstallerTest extends WP_UnitTestCase {
 	public function test_plugin_installation() {
 
 		$complianz_installer           = new burst_installer( 'complianz-gdpr' );
-		$complianz_terms_installer = new burst_installer( 'complianz-terms-conditions' );
+		$complianz_terms_installer     = new burst_installer( 'complianz-terms-conditions' );
 
-		$this->assertTrue( $complianz_installer->download_plugin(), 'Download of complianz-gdpr plugin failed.' );
 		// Get clean after every download, otherwise issues with ob_level going up
+		ob_get_clean();
+        $this->assertTrue( $complianz_installer->download_plugin(), 'Download of complianz-gdpr plugin failed.' );
 		ob_get_clean();
 		$this->assertTrue( $complianz_terms_installer->download_plugin(), 'Download of complianz-terms-conditions plugin failed.' );
 		ob_get_clean();
