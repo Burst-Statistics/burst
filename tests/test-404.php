@@ -59,7 +59,7 @@ class BurstTestUrls extends WP_UnitTestCase {
         // Now filter the links to only include links from the following domains:
         // (scan.)really-simple-ssl.com, complianz.io, burst-statistics.com, really-simple-plugins.com, ziprecipes.net and wordpress.org
         $urls = array_filter( $urls, static function ( $url ) {
-            return preg_match( '/^https?:\/\/(?:really-simple-ssl\.com|scan\.really-simple-ssl\.com|complianz\.io|really-simple-plugins\.com|ziprecipes\.net|wordpress\.org)/', $url );
+            return preg_match('/^https?:\/\/(?:really-simple-ssl\.com|scan\.really-simple-ssl\.com|complianz\.io|really-simple-plugins\.com|ziprecipes\.net|wordpress\.org|burst-statistics\.com)/', $url);
         } );
 
         // Loop through each URL and make an HTTP request
