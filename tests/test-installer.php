@@ -42,6 +42,13 @@ class BurstInstallerTest extends WP_UnitTestCase {
 			$user->add_cap('manage_burst_statistics');
 		}
 
+        // Activate any required plugins, account for multisite
+        if ( ! is_multisite() ) {
+            activate_plugin('burst.php');
+        } else {
+            activate_plugin('burst.php', '', true);
+        }
+
 		// Activate any required plugins
 		activate_plugin('burst.php');
 	}
