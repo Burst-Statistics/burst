@@ -31,30 +31,6 @@
 
 defined( 'ABSPATH' ) or die();
 
-if ( ! function_exists( 'burst_activation_check' ) ) {
-	/**
-	 * Checks if the plugin can safely be activated, at least php 5.6 and wp 4.6
-	 *
-	 * @since 1.0.0
-	 */
-	function burst_activation_check() {
-		if ( version_compare( PHP_VERSION, '7.2', '<' ) ) {
-			deactivate_plugins( plugin_basename( __FILE__ ) );
-			wp_die( __( 'Burst cannot be activated. The plugin requires PHP 7.2 or higher',
-				'burst' ) );
-		}
-
-		global $wp_version;
-		if ( version_compare( $wp_version, '5.0', '<' ) ) {
-			deactivate_plugins( plugin_basename( __FILE__ ) );
-			wp_die( __( 'Burst cannot be activated. The plugin requires WordPress 5.0 or higher',
-				'burst' ) );
-		}
-	}
-
-	register_activation_hook( __FILE__, 'burst_activation_check' );
-}
-
 class BURST {
 	private static $instance;
 	public $endpoint;
@@ -174,10 +150,7 @@ class BURST {
 
 function BURST()
 {
-	global $wp_version;
-	if ( version_compare($wp_version, '4.9', '>=') && version_compare(PHP_VERSION, '7.2', '>=')) {
-		return BURST::instance();
-	}
+	return BURST::instance();
 }
 add_action('plugins_loaded', 'BURST', 8);
 
