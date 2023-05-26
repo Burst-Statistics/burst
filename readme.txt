@@ -65,6 +65,9 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 2.0.0 =
+* Improvement: WP and PHP version checks integrated with WP Core.
+
 = 1.3.5 =
 * Fix: Fixed timezone issue where there would be a mismatch between the selected date in the datepicker and the date shown up top.
 * Fix: Fixed issue where referreres would not show up when Czech language was selected.
