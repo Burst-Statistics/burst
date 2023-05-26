@@ -4,6 +4,8 @@
  * Plugin URI: https://www.wordpress.org/plugins/burst-statistics
  * Description: Get detailed insights into visitors’ behavior with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.
  * Version: 1.3.5
+ * Requires at least: 5.8
+ * Requires PHP: 7.2
  * Text Domain: burst-statistics
  * Domain Path: /languages
  * Author: Really Simple Plugins
