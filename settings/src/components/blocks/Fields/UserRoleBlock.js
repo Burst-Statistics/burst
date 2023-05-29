@@ -11,8 +11,10 @@ const UserRoleBlock = (props) => {
   const onChangeCheckboxHandler = (e) =>  {
     let value = e.target.value;
     let checked = e.target.checked;
-    let fieldValue = props.field.value;
+    let fieldValue = [...props.field.value];  // creating a copy of field value array
     let index = fieldValue.indexOf(value);
+
+    console.log('onChangeCheckboxHandler', value, checked, index, fieldValue);
     if (checked) {
       if (index === -1) {
         fieldValue.push(value);
@@ -22,11 +24,13 @@ const UserRoleBlock = (props) => {
         fieldValue.splice(index, 1);
       }
     }
+    // we are calling this with the updated local fieldValue copy not the prop one.
     props.onChange(fieldValue);
   }
 
 
-    return (
+
+  return (
         <>
           <label>{field.label}</label>
             {radioValue === 'block-selected' && <div className="burst-user-role-checkbox-blocklist">

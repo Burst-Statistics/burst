@@ -71,6 +71,10 @@
         @media(max-width: $rsp-break-s) {
           padding: 10px 15px;
         }
+        &:focus {
+          outline: none;
+          box-shadow: none;
+        }
         &.active {
           border-bottom: 4px solid var(--rsp-brand-primary);
         }

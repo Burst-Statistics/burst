@@ -6,13 +6,14 @@ import {__} from '@wordpress/i18n';
 
 const DeleteGoalModal = ({ isOpen, goal, onDelete, onClose }) => {
   return (
-      <Modal isOpen={isOpen} title="Delete Goal" onClose={onClose}>
+      <Modal isOpen={isOpen} title={__("Delete Goal", 'burst-statistics')} onClose={onClose}>
         <DialogContent>
-          <p>{__('Are you sure you want to delete this goal?', 'burst-statistics')} + ' ' + {__('This action cannot be undone.', 'burst-statistics')}</p>
+          <p>{__('Are you sure you want to delete this goal?', 'burst-statistics') + ' ' + __('This action cannot be undone.', 'burst-statistics')}</p>
           <p>
             <strong>{__('Goal name', 'burst-statistics')}:</strong> {goal.name}
             <br />
             <strong>{__('Status', 'burst-statistics')}:</strong> {goal.status}
+
             <br />
             <strong>{__('Date created', 'burst-statistics')}:</strong> {formatUnixToDate(goal.dateCreated)}
           </p>

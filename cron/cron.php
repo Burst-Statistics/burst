@@ -2,9 +2,9 @@
 defined( 'ABSPATH' ) or die();
 
 /**
-  Schedule cron jobs if useCron is true
-  Else start the functions.
-*/
+ * Schedule cron jobs if useCron is true
+ * Else start the functions.
+ */
 add_action( 'plugins_loaded', 'burst_schedule_cron' );
 function burst_schedule_cron() {
 	$useCron = true;
@@ -15,27 +15,27 @@ function burst_schedule_cron() {
 
 		add_action( 'burst_every_5_minutes', array( BURST()->db_upgrade, 'init' ) );
 	} else {
-		add_action( 'init', array( BURST()->statistics, 'init' ) );
+		//add_action( 'init', array( BURST()->statistics, 'init' ) );
 	}
 }
 
 add_filter( 'cron_schedules', 'burst_filter_cron_schedules' );
 function burst_filter_cron_schedules( $schedules ) {
-	$schedules['burst_weekly']  = array(
+	$schedules['burst_weekly']          = array(
 		'interval' => WEEK_IN_SECONDS,
-		'display'  => __( 'Once every week' )
+		'display'  => __( 'Once every week' ),
 	);
-	$schedules['burst_daily']   = array(
+	$schedules['burst_daily']           = array(
 		'interval' => DAY_IN_SECONDS,
-		'display'  => __( 'Once every day' )
+		'display'  => __( 'Once every day' ),
 	);
-	$schedules['burst_hourly']   = array(
+	$schedules['burst_hourly']          = array(
 		'interval' => HOUR_IN_SECONDS,
-		'display'  => __( 'Once every hour' )
+		'display'  => __( 'Once every hour' ),
 	);
-	$schedules['burst_every_5_minutes']   = array(
+	$schedules['burst_every_5_minutes'] = array(
 		'interval' => 5 * MINUTE_IN_SECONDS,
-		'display'  => __( 'Once every 5 minutes' )
+		'display'  => __( 'Once every 5 minutes' ),
 	);
 
 	return $schedules;

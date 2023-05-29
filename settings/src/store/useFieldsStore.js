@@ -1,8 +1,7 @@
 import {create} from 'zustand';
-import produce from 'immer';
+import {produce} from 'immer';
 import * as burst_api from "../utils/api";
 import {__} from '@wordpress/i18n';
-import {toast} from 'react-toastify';
 
 const fetchFields = () => {
   return burst_api.getFields().then((response) => {

@@ -645,7 +645,6 @@ function burst_update_option( $name, $value ) {
 	$config_field       = $config_fields[ $config_field_index ];
 	if ( $config_field_index === false ) {
 		error_log( "Burst Statistics: exiting " . $name . " as not existing field in burst " );
-
 		return;
 	}
 

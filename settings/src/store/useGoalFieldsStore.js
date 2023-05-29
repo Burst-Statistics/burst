@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as burst_api from '../utils/api';
-import produce from 'immer';
+import {produce} from 'immer';
 import {validateConditions} from './useFieldsStore';
 import {useDashboardGoalsStore} from './useDashboardGoalsStore';
 

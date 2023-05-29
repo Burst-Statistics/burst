@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import produce from 'immer';
+import {produce} from 'immer';
 import {__} from '@wordpress/i18n';
 
 import {useInsightsStore} from './useInsightsStore';

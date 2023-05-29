@@ -7,61 +7,49 @@ import InputWarning from '../../common/InputWarning';
 
 const IpBlock = (props) => {
   const [warning, setWarning] = useState(false);
-  let field = props.field;
-  let fieldValue = field.value;
+  const [fieldValue, setFieldValue] = useState(props.field.value);
   const ip = burst_settings.current_ip;
 
-  const checkInputForWarmings = (fieldValue) => {
-    if (fieldValue.includes(ip)) {
-      setWarning(
-          __('Your IP address is:', 'burst-statistics') +
-          " '" +
-          ip +
-          "'. " +
-          __('Which is already in the list.', 'burst-statistics'),
-      );
-      return true;
+  const checkInputForWarnings = (fieldValue) => {
+    const ipList = fieldValue.split("\n");
+    const ipSet = new Set();
+
+    for(let i = 0; i < ipList.length; i++) {
+      if (ipSet.has(ipList[i])) {
+        setWarning(`Duplicate IP address found: ${ipList[i]}`);
+        return;
+      } else {
+        ipSet.add(ipList[i]);
+      }
     }
 
     setWarning(false);
-    return false;
-  }
-  /**
-   * Check if IP is in a valid format. Or is already in the list.
-   * @param fieldValue
-   */
-  const onChangeIpHandler = (fieldValue) => {
-    const error = checkInputForWarmings(fieldValue);
-    if (error) {
-      return;
-    }
-    props.onChange(fieldValue);
   };
 
-  const onClickAddIPHandler= () => {
-    let input = document.getElementById('ip_address');
-    let inputValue = input.value;
-    const error = checkInputForWarmings(fieldValue);
-    if (error) {
-      return;
-    }
-    if (ip) {
-      if (inputValue) {
-        // update value for input
-        inputValue += "\n" + ip;
-      } else {
-        inputValue = ip;
-      }
-    }
-    props.onChange(inputValue);
-  }
+  const onChangeIpHandler = (fieldValue) => {
+    setFieldValue(fieldValue);
+    checkInputForWarnings(fieldValue);
+  };
 
 
-    return (
+  const onClickAddIPHandler = () => {
+    const ipList = fieldValue.split("\n");
+
+    if(ipList.includes(ip)) {
+      setWarning("Your IP is already in the list.");
+    } else {
+      let updatedIPList = fieldValue;
+      updatedIPList += updatedIPList ? `\n${ip}` : ip;
+      setFieldValue(updatedIPList);
+      setWarning(false);
+    }
+  };
+
+  return (
       <>
         <TextareaControl
-            label={field.label}
-            help={field.comment}
+            label={props.field.label}
+            help={props.field.comment}
             placeholder={"127.0.0.1\n192.168.0.1"}
             value={fieldValue}
             onChange={(fieldValue) => onChangeIpHandler(fieldValue)}
@@ -70,17 +58,18 @@ const IpBlock = (props) => {
         <Button
             className="burst-button burst-button--secondary button-add-ip"
             onClick={onClickAddIPHandler}
+            disabled={fieldValue.includes(ip)}
         >
           {__('Add current IP address', 'burst-statistics')}
         </Button>
-        {warning !== false && (
+        {warning && (
             <InputWarning
                 message={warning}
                 onTimeout={() => setWarning(false)}
             />
         )}
       </>
-    );
-}
+  );
+};
 
 export default IpBlock;

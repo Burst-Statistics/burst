@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import produce from 'immer';
+import {produce} from 'immer';
 import * as burst_api from '../utils/api';
 import {toast} from 'react-toastify';
 import {__} from '@wordpress/i18n';

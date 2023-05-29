@@ -42,7 +42,7 @@ const makeRequest = (path, method = 'GET', data) => {
 			toast.error(
 					__('Server error', 'burst-statistics') + ': ' + error.message,
 					{
-						autoClose: 10000,
+						autoClose: 15000,
 					});
 			reject(error);
 		}

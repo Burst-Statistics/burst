@@ -219,9 +219,9 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// get top referrer
 			$sql = "SELECT count(referrer) as value,
                             CASE
+
                                 WHEN referrer = '/' THEN $direct_text
-                                WHEN referrer = '' THEN $direct_text
-                                ELSE trim( 'www.' from substring(referrer, locate('://', referrer) + 3))
+                                ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
                             END as title
                         FROM ( $table ) as t
                         WHERE referrer IS NOT NULL 
@@ -704,6 +704,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		 *
 		 * @return int
 		 */
+
 		public function convert_date_to_utc( $time_string ): int {
 			$time               = DateTime::createFromFormat( 'Y-m-d H:i:s', $time_string );
 			$utc_time           = $time ? $time->format( 'U' ) : strtotime( $time_string );

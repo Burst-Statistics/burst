@@ -7,6 +7,7 @@ import EditableText from '../Fields/EditableText';
 import {ToggleControl} from '@wordpress/components';
 import {useGoalsStore} from '../../../store/useGoalsStore';
 import DeleteGoalModal from './DeleteGoalModal';
+import {setOption} from '../../../utils/api';
 
 
 const GoalSetup = (props) => {
@@ -18,6 +19,11 @@ const GoalSetup = (props) => {
   const [status, setStatus] = useState(goalFields.goal_status.value === 'active');
 
   function handleStatusToggle(value) {
+    if ( burst_settings.goals_information_shown == '0') {
+      burst_settings.goals_information_shown = '1';
+      setOption('goals_information_shown', true);
+
+    }
     setStatus(value);
     setGoalValue(id, 'goal_status', value ? 'active' : 'inactive');
   }

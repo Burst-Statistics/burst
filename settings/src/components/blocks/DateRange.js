@@ -21,6 +21,41 @@ const DateRange = (props) => {
   const range = useDate((state) => state.range);
   const setRange = useDate((state) => state.setRange);
 
+
+  // const [selectionRange, setSelectionRange] = useState({
+  //       startDate: parseISO(props.dateRange.startDate),
+  //       endDate: parseISO(props.dateRange.endDate),
+  //       key: 'selection',
+  //     },
+  // );
+  // const formatString = 'MMMM d, yyyy';
+  // const [displayStart, setDisplayStart] = useState(
+  //     format( new Date(props.dateRange.startDate),
+  //         formatString)
+  // );
+  // const [displayEnd, setDisplayEnd] = useState(
+  //     format( new Date(props.dateRange.endDate), formatString)
+  // );
+  //
+  // // get currentDate
+  // const currentDate = new Date();
+  //
+  // // get client's timezone offset in minutes
+  // const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
+  //
+  // // convert client's timezone offset from minutes to seconds
+  // const clientTimezoneOffsetSeconds = clientTimezoneOffsetMinutes * -60;
+  //
+  // // get current unix timestamp
+  // const currentUnix = Math.floor(currentDate.getTime() / 1000);
+  // // add burst_settings.gmt_offset x hour and client's timezone offset in
+  // // seconds to currentUnix
+  // const currentUnixWithOffsets = currentUnix +
+  //     (burst_settings.gmt_offset * 3600) - clientTimezoneOffsetSeconds;
+  //
+  // // get current date by currentUnixWithOffsets
+  // const currentDateWithOffset = new Date(currentUnixWithOffsets * 1000);
+
   const selectionRange = {
     startDate:  parseISO(startDate),
     endDate: parseISO(endDate),
@@ -112,7 +147,6 @@ const DateRange = (props) => {
     setAnchorEl(null);
   };
 
-
   const updateDateRange = (ranges) => {
     countClicks.current++
     // setSelectionRange(ranges.selection);
@@ -138,8 +172,11 @@ const DateRange = (props) => {
       setEndDate(endStr);
       setRange(range);
       handleClose();
+      let displayStart = format(ranges.selection.startDate, formatString);
+      let displayEnd = format(ranges.selection.endDate, formatString);
+      setDisplayStart(displayStart);
+      setDisplayEnd(displayEnd);
     }
-
   }
 
   const formatString = 'MMMM d, yyyy';

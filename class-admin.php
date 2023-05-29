@@ -83,7 +83,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 		public function enqueue_assets( $hook ) {
             if ( $hook === 'index.php' || $hook === 'dashboard_page_burst') {
-	            $min  = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+	            $min  = !is_rtl() && ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 	            $rtl  = is_rtl() ? 'rtl/' : '';
 	            $url  = trailingslashit( burst_url ) . "assets/css/{$rtl}admin{$min}.css";
 	            $path = trailingslashit( burst_path ) . "assets/css/{$rtl}admin{$min}.css";
