@@ -75,10 +75,10 @@ const OtherPluginsBlock = (props) => {
     return statuses[pluginAction];
   }
 
-  const otherPluginElement = (plugin, i) => {
+  const otherPluginElement = (plugin) => {
 
     return (
-        <div key={i} className={"burst-other-plugins-element burst-"+plugin.slug}>
+        <div key={plugin.slug} className={"burst-other-plugins-element burst-"+plugin.slug}>
           <a href={plugin.wordpress_url} target="_blank" title={plugin.title}>
             <div className="burst-bullet"></div>
             <div className="burst-other-plugins-content">{plugin.title}</div>
