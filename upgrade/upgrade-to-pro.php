@@ -419,33 +419,39 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 				'success' => false,
 			];
 
+            if (!isset($_GET['token']) || !wp_verify_nonce($_GET['token'], 'upgrade_to_pro_nonce')) {
+                $error = true;
+            }
+
 			if ( !current_user_can('activate_plugins') ) {
 				$error = true;
 			}
 
-			if ( defined($this->plugin_constant) ) {
-				deactivate_plugins( $this->slug );
+            if (!$error) {
+	            if ( defined( $this->plugin_constant ) ) {
+		            deactivate_plugins( $this->slug );
+	            }
+
+	            $file = trailingslashit( WP_CONTENT_DIR ) . 'plugins/' . $this->slug;
+	            if ( file_exists( $file ) ) {
+		            $dir     = dirname( $file );
+		            $new_dir = $dir . '_' . time();
+		            set_transient( 'burst_upgrade_dir', $new_dir, WEEK_IN_SECONDS );
+		            rename( $dir, $new_dir );
+		            //prevent uninstalling code by previous plugin
+		            unlink( trailingslashit( $new_dir ) . 'uninstall.php' );
+	            }
+            }
+
+			if (!$error && file_exists( $file ) ) {
+                $error    = true;
+                $response = [
+                    'success' => false,
+                    'message' => __( "Could not rename folder!", "burst-statistics" ),
+                ];
 			}
 
-			$file = trailingslashit(WP_CONTENT_DIR).'plugins/'.$this->slug;
-			if ( file_exists($file ) ) {
-				$dir = dirname($file);
-				$new_dir = $dir.'_'.time();
-				set_transient('burst_upgrade_dir', $new_dir, WEEK_IN_SECONDS);
-				rename($dir, $new_dir);
-				//prevent uninstalling code by previous plugin
-				unlink(trailingslashit($new_dir).'uninstall.php');
-			}
-
-			if ( file_exists($file ) ) {
-				$error = true;
-				$response = [
-					'success' => false,
-					'message' => __("Could not rename folder!", "burst-statistics"),
-				];
-			}
-
-			if ( !$error && isset($_GET['token']) && wp_verify_nonce($_GET['token'], 'upgrade_to_pro_nonce') && isset($_GET['plugin']) ) {
+			if ( !$error && isset($_GET['plugin']) ) {
 				if ( !file_exists(WP_PLUGIN_DIR . '/' . $this->slug) ) {
 					$response = [
 						'success' => true,

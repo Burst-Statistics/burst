@@ -7,7 +7,7 @@ import {useMenu} from '../../store/useMenuStore';
  * Render a grouped block of settings
  */
 const SettingsGroup = (props) => {
-    let upgrade='https://burst-statistics.com/pricing/';
+    let upgrade='https://burst-statistics.com/pricing/?src=burst-plugin';
     const subMenu = useMenu(state => state.subMenu);
     const selectedSubMenuItem = useMenu(state => state.selectedSubMenuItem);
 

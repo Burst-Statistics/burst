@@ -68,7 +68,6 @@ if ( !class_exists('burst_installer') ){
          */
         public function download_plugin() {
             if ( !burst_user_can_manage() ) {
-				error_log("User cannot manage");
 				return false;
             }
 	        if ( get_transient("burst_plugin_download_active")!==$this->slug ) {

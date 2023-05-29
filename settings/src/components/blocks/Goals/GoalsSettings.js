@@ -60,7 +60,7 @@ const GoalsSettings = (props) => {
                 <div className="burst-divider" />
                 <p>{__('Upgrade to Burst Pro')}</p>
                 <a
-                    href={'https://burst-statistics.com/pricing/'}
+                    href={'https://burst-statistics.com/pricing/?src=burst-plugin'}
                     target={'_blank'}
                     className={'burst-button burst-button--black'}
                 >

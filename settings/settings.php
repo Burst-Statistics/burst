@@ -63,7 +63,7 @@ function burst_plugin_admin_scripts() {
 			'menu'                    => burst_menu(),
 			'site_url'                => get_rest_url(),
 			'dashboard_url'           => add_query_arg( [ 'page' => 'burst' ], burst_admin_url() ),
-			'upgrade_link'            => is_multisite() ? 'https://burst-statistics.com/pro-multisite' : 'https://burst-statistics.com/pro',
+			'upgrade_link'            => is_multisite() ? 'https://burst-statistics.com/pricing/?src=burst-plugin' : 'https://burst-statistics.com/pricing/?src=burst-plugin',
 			'plugin_url'              => burst_url,
 			'network_link'            => network_site_url( 'plugins.php' ),
 			'is_pro'                  => burst_is_pro(),
