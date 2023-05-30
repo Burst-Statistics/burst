@@ -23,7 +23,7 @@ require_once "{$_tests_dir}/includes/functions.php";
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( __FILE__, 2 ) . '/burst-pro.php';
+	require dirname( __FILE__, 2 ) . '/burst.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
