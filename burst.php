@@ -39,6 +39,7 @@ if ( ! class_exists( 'BURST' ) ) {
 		public $statistics;
 		public $sessions;
 		public $goals;
+		public $goal_statistics;
 		public $admin;
 		public $settings;
 		public $frontend;
@@ -66,7 +67,7 @@ if ( ! class_exists( 'BURST' ) ) {
 				self::$instance->frontend        = new burst_frontend();
 
 
-				if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+				if ( burst_admin_logged_in() || burst_is_activation() ) {
 					self::$instance->admin      = new burst_admin();
 					self::$instance->review     = new burst_review();
 					self::$instance->notices    = new burst_notices();
@@ -97,7 +98,9 @@ if ( ! class_exists( 'BURST' ) ) {
 			define( 'burst_version', '1.4.0' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
-			define( 'burst_pro_url', 'https://burst-statistics.com/pro?src=burst-plugin' );
+			define( 'burst_pro_url', 'https://burst-statistics.com/pricing/?src=burst-plugin' );
+			define( 'BURST_ITEM_ID', 889 );
+			define( 'burst_product_name', 'Burst Pro' );
 		}
 
 		/**
@@ -134,7 +137,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			require_once( burst_path . 'class-db-upgrade.php' );
 
 
-			if ( burst_is_logged_in_rest() || is_admin() || wp_doing_cron() || is_multisite() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			if ( burst_admin_logged_in() || burst_is_activation() ) {
 				require_once( burst_path . 'class-admin.php' );
 				require_once( burst_path . 'settings/settings.php' );
 				require_once( burst_path . 'class-review.php' );
