@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.2
-Stable tag: 1.3.5
+Stable tag: 1.4.0
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,7 +65,10 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
-= 2.0.0 =
+= 1.4.0 =
+* Feature: Goals. You can now set goals for your website and track them in the dashboard.
+* Feature: Filter your data by device, pages, referrers, and more.
+* Improvement: Speed performance of statistics dashboard
 * Improvement: WP and PHP version checks integrated with WP Core.
 
 = 1.3.5 =
