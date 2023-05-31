@@ -53,7 +53,7 @@ function burst_plugin_admin_scripts() {
 		$script_asset['dependencies'],
 		$script_asset['version']
 	);
-	wp_set_script_translations( 'burst-settings', 'burst-statistics' );
+	wp_set_script_translations( 'burst-settings', 'burst-statistics', '/languages' );
 
 	global $wpdb;
 	wp_localize_script(
