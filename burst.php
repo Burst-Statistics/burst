@@ -169,7 +169,7 @@ if ( ! function_exists( 'BURST' ) ) {
 	add_action( 'plugins_loaded', 'BURST', 8 );
 }
 
-if ( ! function_exists( 'burst_set_activation_time_stamp' ) ) {
+if ( ! function_exists( 'burst_set_defaults' ) ) {
 	/**
 	 * Set an activation time stamp
 	 *
