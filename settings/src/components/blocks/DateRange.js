@@ -21,40 +21,24 @@ const DateRange = (props) => {
   const range = useDate((state) => state.range);
   const setRange = useDate((state) => state.setRange);
 
+  // get currentDate
+  const currentDate = new Date();
 
-  // const [selectionRange, setSelectionRange] = useState({
-  //       startDate: parseISO(props.dateRange.startDate),
-  //       endDate: parseISO(props.dateRange.endDate),
-  //       key: 'selection',
-  //     },
-  // );
-  // const formatString = 'MMMM d, yyyy';
-  // const [displayStart, setDisplayStart] = useState(
-  //     format( new Date(props.dateRange.startDate),
-  //         formatString)
-  // );
-  // const [displayEnd, setDisplayEnd] = useState(
-  //     format( new Date(props.dateRange.endDate), formatString)
-  // );
-  //
-  // // get currentDate
-  // const currentDate = new Date();
-  //
-  // // get client's timezone offset in minutes
-  // const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
-  //
-  // // convert client's timezone offset from minutes to seconds
-  // const clientTimezoneOffsetSeconds = clientTimezoneOffsetMinutes * -60;
-  //
-  // // get current unix timestamp
-  // const currentUnix = Math.floor(currentDate.getTime() / 1000);
-  // // add burst_settings.gmt_offset x hour and client's timezone offset in
-  // // seconds to currentUnix
-  // const currentUnixWithOffsets = currentUnix +
-  //     (burst_settings.gmt_offset * 3600) - clientTimezoneOffsetSeconds;
-  //
-  // // get current date by currentUnixWithOffsets
-  // const currentDateWithOffset = new Date(currentUnixWithOffsets * 1000);
+  // get client's timezone offset in minutes
+  const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
+
+  // convert client's timezone offset from minutes to seconds
+  const clientTimezoneOffsetSeconds = clientTimezoneOffsetMinutes * -60;
+
+  // get current unix timestamp
+  const currentUnix = Math.floor(currentDate.getTime() / 1000);
+  // add burst_settings.gmt_offset x hour and client's timezone offset in
+  // seconds to currentUnix
+  const currentUnixWithOffsets = currentUnix +
+      (burst_settings.gmt_offset * 3600) - clientTimezoneOffsetSeconds;
+
+  // get current date by currentUnixWithOffsets
+  const currentDateWithOffset = new Date(currentUnixWithOffsets * 1000);
 
   const selectionRange = {
     startDate:  parseISO(startDate),
@@ -68,57 +52,57 @@ const DateRange = (props) => {
     'today': {
       label: __('Today', 'burst-statistics' ),
       range: () => ({
-        startDate: startOfDay(new Date()),
-        endDate: endOfDay(new Date())
+        startDate: startOfDay(currentDateWithOffset),
+        endDate: endOfDay(currentDateWithOffset)
       })
     },
     'yesterday': {
       label: __('Yesterday', 'burst-statistics'),
       range: () => ({
-        startDate: startOfDay(addDays(new Date(), -1)),
-        endDate: endOfDay(addDays(new Date(), -1))
+        startDate: startOfDay(addDays(currentDateWithOffset, -1)),
+        endDate: endOfDay(addDays(currentDateWithOffset, -1))
       })
     },
     'last-7-days': {
       label: __('Last 7 days', 'burst-statistics'),
       range: () => ({
-        startDate: startOfDay(addDays(new Date(), -7)),
-        endDate: endOfDay(addDays(new Date(), -1))
+        startDate: startOfDay(addDays(currentDateWithOffset, -7)),
+        endDate: endOfDay(addDays(currentDateWithOffset, -1))
       })
     },
     'last-30-days': {
       label: __('Last 30 days', 'burst-statistics' ),
       range: () => ({
-        startDate: startOfDay(addDays(new Date(), -30)),
-        endDate: endOfDay(addDays(new Date(), -1))
+        startDate: startOfDay(addDays(currentDateWithOffset, -30)),
+        endDate: endOfDay(addDays(currentDateWithOffset, -1))
       })
     },
     'last-90-days': {
       label: __('Last 90 days', 'burst-statistics'),
       range: () => ({
-        startDate: startOfDay(addDays(new Date(), -90)),
-        endDate: endOfDay(addDays(new Date(), -1))
+        startDate: startOfDay(addDays(currentDateWithOffset, -90)),
+        endDate: endOfDay(addDays(currentDateWithOffset, -1))
       })
     },
     'last-month': {
       label: __('Last month', 'burst-statistics' ),
       range: () => ({
-        startDate: startOfMonth(addMonths(new Date(), -1)),
-        endDate: endOfMonth(addMonths(new Date(), -1))
+        startDate: startOfMonth(addMonths(currentDateWithOffset, -1)),
+        endDate: endOfMonth(addMonths(currentDateWithOffset, -1))
       })
     },
     'year-to-date': {
       label: __('Year to date', 'burst-statistics' ),
       range: () => ({
-        startDate: startOfYear(new Date()),
-        endDate: endOfDay(new Date())
+        startDate: startOfYear(currentDateWithOffset),
+        endDate: endOfDay(currentDateWithOffset)
       })
     },
     'last-year': {
       label: __('Last year', 'burst-statistics' ),
       range: () => ({
-        startDate: startOfYear(addYears(new Date(), -1)),
-        endDate: endOfYear(addYears(new Date(), -1))
+        startDate: startOfYear(addYears(currentDateWithOffset, -1)),
+        endDate: endOfYear(addYears(currentDateWithOffset, -1))
       })
     },
   }
@@ -172,10 +156,6 @@ const DateRange = (props) => {
       setEndDate(endStr);
       setRange(range);
       handleClose();
-      let displayStart = format(ranges.selection.startDate, formatString);
-      let displayEnd = format(ranges.selection.endDate, formatString);
-      setDisplayStart(displayStart);
-      setDisplayEnd(displayEnd);
     }
   }
 
@@ -215,7 +195,7 @@ const DateRange = (props) => {
                 months={2}
                 direction="horizontal"
                 minDate={new Date(2022, 0, 1)}
-                maxDate={ new Date() }
+                maxDate={ currentDateWithOffset }
                 staticRanges={dateRanges}
             />
           </div>
