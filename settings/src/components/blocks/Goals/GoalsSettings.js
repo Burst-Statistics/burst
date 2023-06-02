@@ -26,7 +26,7 @@ const GoalsSettings = (props) => {
   return (
       <div className="burst-burst-settings-goals">
         <div className="burst-settings-goals__introduction">
-          {__('Goals are a great way to track your progress and keep you motivated.')}
+          {__('Goals are a great way to track the most important events on your website.', 'burst-statistics')}
         </div>
         <div className="burst-settings-goals__list">
           {Object.keys(goals).map((id, index) => {

@@ -121,7 +121,6 @@ const Settings = (props) => {
   notices = notices.filter(notice => notice.label.toLowerCase()!=='completed');
   let continueLink = nextButtonDisabled ? `#${selectedMainMenuItem}/${selectedSubMenuItem}` : `#${selectedMainMenuItem}/${nextMenuItem}`;
 
-  console.log(selectedFields);
   const isLicenseBlock = selectedFields[0].id === 'license';
   return (
       <>

@@ -43,11 +43,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 		 *
 		 */
 
-		public function dismiss_notice($id)
+		public function dismiss_notice($data)
 		{
-			if ( !empty($id) ) {
-
-				$id = sanitize_title( $id );
+			if ( isset($data['id']) ) {
+				$id = sanitize_title( $data['id'] );
 				update_option( "burst_".$id."_dismissed", true, false );
 				delete_transient( 'burst_plusone_count' );
 			}
@@ -101,6 +100,22 @@ if ( ! class_exists( "burst_notices" ) ) {
 			);
 
 			$notices = [
+				'ajax_fallback' => array(
+					'condition'  => array(
+						'wp_option_burst_ajax_fallback_active',
+					),
+					'callback' => '_true_',
+					'output' => array(
+						'true' => array(
+							'msg' => __( "Please check if your REST API is loading correctly. Your site currently is using the slower Ajax fallback method to load the settings.", 'really-simple-ssl' ),
+							'icon' => 'warning',
+							'admin_notice' => false,
+							'url' => 'https://burst-statistics.com/instructions/rest-api-error/',
+							'dismissible' => true,
+							'plusone' => true,
+						),
+					),
+				),
 				'tracking-error' => [
 					'callback' => 'burst_tracking_status_error',
 					'output' => array(
@@ -342,7 +357,9 @@ if ( ! class_exists( "burst_notices" ) ) {
 				$invert = true;
 			}
 
-			if ( $func === '_true_') {
+			if ( strpos($func, 'wp_option_')!==false ) {
+				$output = get_option(str_replace('wp_option_', '', $func) )!==false;
+			} else if ( $func === '_true_') {
 				$output = true;
 			} else if ( $func === '_false_' ) {
 				$output = false;

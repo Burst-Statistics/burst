@@ -172,10 +172,11 @@ const DateRange = (props) => {
       setEndDate(endStr);
       setRange(range);
       handleClose();
-      let displayStart = format(ranges.selection.startDate, formatString);
-      let displayEnd = format(ranges.selection.endDate, formatString);
-      setDisplayStart(displayStart);
-      setDisplayEnd(displayEnd);
+      //@todo check if this can be removed. function declarations were commented out so this was causing an error.
+      // let displayStart = format(ranges.selection.startDate, formatString);
+      // let displayEnd = format(ranges.selection.endDate, formatString);
+      // setDisplayStart(displayStart);
+      // setDisplayEnd(displayEnd);
     }
   }
 

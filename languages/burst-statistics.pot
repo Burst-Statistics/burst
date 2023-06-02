@@ -1,21 +1,21 @@
-# Copyright (C) 2022 Really Simple Plugins
-# This file is distributed under the same license as the Burst Statistics Pro plugin.
+# Copyright (C) 2023 Really Simple Plugins
+# This file is distributed under the same license as the Burst Pro plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Burst Statistics Pro 1.0.0\n"
+"Project-Id-Version: Burst Pro 1.4.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/burst-pro\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-11-18T13:53:38+00:00\n"
+"POT-Creation-Date: 2023-05-30T15:01:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: burst-statistics\n"
 
 #. Plugin Name of the plugin
-msgid "Burst Statistics Pro"
+msgid "Burst Pro"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -31,7 +31,7 @@ msgid "Really Simple Plugins"
 msgstr ""
 
 #. Author URI of the plugin
-msgid "https://www.burst-statistics.com"
+msgid "https://burst-statistics.com"
 msgstr ""
 
 #: burst-pro.php:41
@@ -46,147 +46,66 @@ msgstr ""
 msgid "This website uses Burst Statistics, a Privacy-Friendly Statistics Tool to analyze visitor behavior. For this functionality we (this website) collect anonymized data, stored locally without sharing it with other parties. For more information, please read the %s Privacy Statement %s from Burst."
 msgstr ""
 
-#: class-admin.php:171
-#: class-admin.php:298
-#: settings/config/config.php:20
+#: class-admin.php:123
+msgid "Default goal"
+msgstr ""
+
+#: class-admin.php:148
 msgid "Settings"
 msgstr ""
 
-#: class-admin.php:178
-#: settings/build/index.js:19582
-#: settings/src/Header.js:42
-#: settings/build/index.js:15490
+#: class-admin.php:155
+#: settings/src/components/common/Header.js:46
 msgid "Support"
 msgstr ""
 
-#: class-admin.php:284
-msgid "Your notices"
-msgstr ""
-
-#: class-admin.php:291
-#: settings/config/config.php:196
-#: settings/build/index.js:21896
-#: settings/src/Statistics/DateRange/DateRange.js:30
-#: settings/build/index.js:17441
-msgid "Today"
-msgstr ""
-
-#: class-admin.php:304
-#: settings/config/config.php:212
-msgid "Tips & Tricks"
-msgstr ""
-
-#: class-admin.php:310
-#: settings/config/config.php:220
-msgid "Other Plugins"
-msgstr ""
-
-#: class-admin.php:320
-#: settings/config/config.php:229
-msgid "Insights"
-msgstr ""
-
-#: class-admin.php:327
-#: settings/config/config.php:240
-msgid "Compare"
-msgstr ""
-
-#: class-admin.php:338
-#: settings/config/config.php:247
-msgid "Devices"
-msgstr ""
-
-#: class-admin.php:346
-msgid "Most visited"
-msgstr ""
-
-#: class-admin.php:354
-msgid "Top referrers"
-msgstr ""
-
-#: class-admin.php:438
-#: settings/config/config.php:8
-#: settings/templates/wordpress/dashboard-widget.php:53
-msgid "Dashboard"
-msgstr ""
-
-#: class-admin.php:443
-#: class-frontend.php:33
-#: settings/config/config.php:14
-#: settings/settings.php:73
-#: settings/templates/wordpress/dashboard-widget.php:54
-msgid "Statistics"
-msgstr ""
-
-#: class-admin.php:466
-#: upgrade/upgrade-to-pro.php:182
-#: settings/build/index.js:18590
-#: settings/src/Dashboard/OtherPlugins.js:88
-#: settings/build/index.js:14737
-msgid "Installed"
-msgstr ""
-
-#: class-admin.php:469
-msgid "Upgrade to pro"
-msgstr ""
-
-#: class-admin.php:473
-#: upgrade/upgrade-to-pro.php:139
-#: upgrade/upgrade-to-pro.php:152
-#: upgrade/upgrade-to-pro.php:169
-#: settings/build/index.js:18561
-#: settings/src/Dashboard/OtherPlugins.js:67
-#: settings/build/index.js:14716
-msgid "Install"
-msgstr ""
-
-#: class-admin.php:483
-msgid "No data found"
-msgstr ""
-
-#: class-admin.php:571
-#: settings/templates/wordpress/dashboard-widget.php:34
-#: settings/templates/wordpress/dashboard-widget.php:44
-#: statistics/class-statistics.php:133
-#: settings/build/index.js:21703
-#: settings/build/index.js:22302
-#: settings/build/index.js:22418
-#: settings/src/Statistics/CompareBlock.js:18
-#: settings/src/Statistics/InsightsBlock.js:48
-#: settings/src/Statistics/InsightsHeader.js:18
-#: settings/build/index.js:17284
-#: settings/build/index.js:17817
-#: settings/build/index.js:17918
+#: class-admin.php:243
+#: settings/templates/wordpress/dashboard-widget.php:42
+#: settings/templates/wordpress/dashboard-widget.php:52
+#: statistics/class-goal-statistics.php:77
+#: statistics/class-statistics.php:145
+#: settings/src/components/blocks/InsightsHeader.js:14
+#: settings/src/store/useCompareStore.js:14
+#: settings/src/store/useCompareStore.js:22
+#: settings/src/store/useCompareStore.js:50
+#: settings/src/store/useCompareStore.js:80
 msgid "Pageviews"
 msgstr ""
 
-#: class-admin.php:748
+#: class-admin.php:417
 msgid "To deactivate the plugin correctly, please select if you want to:"
 msgstr ""
 
-#: class-admin.php:751
-#: class-admin.php:765
+#: class-admin.php:420
+#: class-admin.php:434
 msgid "Deactivate"
 msgstr ""
 
-#: class-admin.php:753
+#: class-admin.php:422
 msgid "Deactivate, and remove all statistics, experiments and settings."
 msgstr ""
 
-#: class-admin.php:754
+#: class-admin.php:423
 msgid "The data will be gone forever."
 msgstr ""
 
-#: class-admin.php:764
-#: upgrade/upgrade-to-pro.php:363
+#: class-admin.php:433
+#: upgrade/upgrade-to-pro.php:371
+#: settings/src/components/blocks/Goals/DeleteGoalModal.js:23
 msgid "Cancel"
 msgstr ""
 
-#: class-admin.php:766
+#: class-admin.php:435
 msgid "Deactivate and delete all data"
 msgstr ""
 
+#: class-frontend.php:33
+#: settings/templates/wordpress/dashboard-widget.php:62
+msgid "Statistics"
+msgstr ""
+
 #: class-notices.php:69
+#: settings/src/store/useNoticesStore.js:33
 msgid "Completed"
 msgstr ""
 
@@ -195,6 +114,7 @@ msgid "New!"
 msgstr ""
 
 #: class-notices.php:71
+#: pro/class-licensing.php:706
 msgid "Warning"
 msgstr ""
 
@@ -203,22 +123,28 @@ msgid "Error"
 msgstr ""
 
 #: class-notices.php:73
+#: pro/class-licensing.php:707
 msgid "Open"
 msgstr ""
 
 #: class-notices.php:74
+#: pro/class-licensing.php:709
 msgid "Pro"
 msgstr ""
 
-#: class-notices.php:109
+#: class-notices.php:108
 msgid "Due to your server or website configuration it is not possible to track statistics."
 msgstr ""
 
-#: class-notices.php:123
+#: class-notices.php:122
 msgid "Black Friday sale! Get 40% Off Burst Pro."
 msgstr ""
 
-#: class-notices.php:138
+#: class-notices.php:134
+msgid "New! Configure Burst to track your website goals."
+msgstr ""
+
+#: class-notices.php:149
 msgid "If you have any suggestions to improve our plugin, feel free to %sopen a support thread%s."
 msgstr ""
 
@@ -246,989 +172,1063 @@ msgstr ""
 msgid "Don't show again"
 msgstr ""
 
-#: functions.php:64
+#: functions.php:193
 msgid "For more information on this subject, please read this %sarticle%s"
 msgstr ""
 
-#: settings/config/config.php:26
-#: settings/config/config.php:31
-msgid "General"
+#: goals/class-goals.php:13
+msgid "Clicks"
 msgstr ""
 
-#: settings/config/config.php:38
-msgid "Advanced"
+#: goals/class-goals.php:14
+msgid "A click is a single click on an element."
 msgstr ""
 
-#: settings/config/config.php:43
-msgid "Tracking"
+#: goals/class-goals.php:19
+msgid "Views"
 msgstr ""
 
-#: settings/config/config.php:92
-msgid "Enable Turbo mode"
+#: goals/class-goals.php:20
+msgid "A view is a view of an element on your website"
 msgstr ""
 
-#: settings/config/config.php:95
-msgid "What is Turbo mode?"
+#: goals/class-goals.php:25
+msgid "Visits"
 msgstr ""
 
-#: settings/config/config.php:96
-msgid "Turbo mode improves pagespeed. When enabled, the script is no longer loaded in the header asynchronously, but is loaded in the footer and deferred. You could lose data from visitors who leave before the page has fully loaded."
+#: goals/class-goals.php:26
+msgid "A visit is a visit to your a page"
 msgstr ""
 
-#: settings/config/config.php:107
-msgid "Enable Cookieless tracking"
+#: goals/class-goals.php:176
+#: settings/src/components/blocks/Goals/GoalSetup.js:37
+msgid "New goal"
 msgstr ""
 
-#: settings/config/config.php:110
-msgid "What is Cookieless tracking?"
+#: goals/class-goals.php:220
+msgid "Only one active goal is allowed at a time. Please deactivate the existing goal before creating a new one."
 msgstr ""
 
-#: settings/config/config.php:111
-msgid "With cookieless tracking enabled, Burst will not use cookies to match tracking data with users. It will use contextual data, like browser version and device, also called 'fingerprinting'. The latter could be less reliable for some users."
+#: pro/class-licensing.php:58
+msgid "Activate your license for automatic updates."
 msgstr ""
 
-#: settings/config/config.php:123
-msgid "Restart"
+#: pro/class-licensing.php:161
+msgid "Please %senter your license key%s to activate your license."
 msgstr ""
 
-#: settings/config/config.php:124
-msgid "Restart plugin tour"
+#: pro/class-licensing.php:173
+msgid "Your license is activated and valid."
 msgstr ""
 
-#: settings/config/config.php:133
-msgid "Exclude user roles from being tracked"
+#: pro/class-licensing.php:181
+msgid "You have activated the Multisite plugin on a non-Multisite environment. Please download the regular Burst Statistics Pro plugin %svia your account%s and install it instead"
 msgstr ""
 
-#: settings/config/config.php:136
-msgid "Excluding visitors"
+#: pro/class-licensing.php:183
+msgid "Please check your %slicense status%s."
 msgstr ""
 
-#: settings/config/config.php:137
-msgid "You can exclude visitors by user role and IP address. This will affect new data only."
+#: pro/class-licensing.php:214
+#: pro/class-licensing.php:235
+msgid "License"
 msgstr ""
 
-#: settings/config/config.php:148
-msgid "Exclude IP address from tracking, separate with a line break"
+#: pro/class-licensing.php:215
+msgid "Manage your license here."
 msgstr ""
 
-#: settings/config/config.php:185
-msgid "Progress"
+#: pro/class-licensing.php:562
+msgid "unlimited"
 msgstr ""
 
-#: settings/config/config.php:204
-msgid "Goals"
+#: pro/class-licensing.php:569
+msgid "You have a lifetime license."
 msgstr ""
 
-#: settings/config/config.php:254
-msgid "Per page"
+#: pro/class-licensing.php:569
+msgid "Valid until %s."
 msgstr ""
 
-#: settings/config/config.php:261
-msgid "Referrers"
+#: pro/class-licensing.php:573
+msgid "Upgrade your license for more site activations"
 msgstr ""
 
-#: settings/settings.php:283
-msgid "Self-hosted, Privacy-friendly analytics tool."
+#: pro/class-licensing.php:574
+msgid "%sUpgrade your license%s for more site activations."
 msgstr ""
 
-#: settings/settings.php:291
-#: settings/templates/dashboard/other-plugins.php:20
-msgid "Complianz Privacy Suite - Cookie Consent Management as it should be "
+#: pro/class-licensing.php:576
+msgid "You can renew your license on your account."
 msgstr ""
 
-#: settings/settings.php:298
-msgid "Terms and Conditions"
+#: pro/class-licensing.php:580
+msgid "Unlimited activations available."
 msgstr ""
 
-#: settings/templates/dashboard/other-plugins.php:12
-msgid "Easily migrate your website to SSL"
+#: pro/class-licensing.php:583
+#: pro/class-licensing.php:691
+msgid "%s/%s activations available."
 msgstr ""
 
-#: settings/templates/dashboard/other-plugins.php:28
-msgid "Privacy Friendly Statistics"
+#: pro/class-licensing.php:599
+msgid "Valid license for %s."
 msgstr ""
 
-#: settings/templates/dashboard/tips-tricks-footer.php:3
-msgid "View all"
+#: pro/class-licensing.php:625
+msgid "Multisite detected. Please upgrade to multisite."
 msgstr ""
 
-#: settings/templates/wordpress/dashboard-widget.php:13
-#: statistics/class-statistics.php:132
-#: settings/build/index.js:22297
-#: settings/build/index.js:22417
-#: settings/src/Statistics/InsightsBlock.js:42
-#: settings/src/Statistics/InsightsHeader.js:17
-#: settings/build/index.js:17811
-#: settings/build/index.js:17917
+#: pro/class-licensing.php:634
+msgid "The license information could not be retrieved at this moment. Please try again at a later time."
+msgstr ""
+
+#: pro/class-licensing.php:642
+msgid "Please enter your license key. Available in your account."
+msgstr ""
+
+#: pro/class-licensing.php:652
+msgid "Please activate your license key."
+msgstr ""
+
+#: pro/class-licensing.php:659
+msgid "Your license has been revoked. Please contact support."
+msgstr ""
+
+#: pro/class-licensing.php:667
+msgid "Your license could not be found in our system. Please contact support."
+msgstr ""
+
+#: pro/class-licensing.php:675
+msgid "This license is not valid. Find out why on your account."
+msgstr ""
+
+#: pro/class-licensing.php:683
+msgid "This license is not valid for this product. Find out why on your account."
+msgstr ""
+
+#: pro/class-licensing.php:699
+msgid "Your license key has expired. Please renew your license key on your account."
+msgstr ""
+
+#: pro/class-licensing.php:708
+msgid "Success"
+msgstr ""
+
+#: pro/class-licensing.php:751
+msgid "Your Burst Statistics Pro license hasn't been activated."
+msgstr ""
+
+#: pro/class-licensing.php:752
+msgid "Your Burst Statistics Pro license is not valid."
+msgstr ""
+
+#: settings/templates/wordpress/dashboard-widget.php:21
+#: statistics/class-statistics.php:144
+#: settings/src/components/blocks/InsightsHeader.js:13
 msgid "Unique visitors"
 msgstr ""
 
-#: settings/templates/wordpress/dashboard-widget.php:22
+#: settings/templates/wordpress/dashboard-widget.php:30
 msgid "Avg. time per session"
 msgstr ""
 
-#: settings/templates/wordpress/dashboard-widget.php:31
+#: settings/templates/wordpress/dashboard-widget.php:39
 msgid "Top referrer"
 msgstr ""
 
-#: settings/templates/wordpress/dashboard-widget.php:41
+#: settings/templates/wordpress/dashboard-widget.php:49
 msgid "Most visited page"
 msgstr ""
 
-#: statistics/class-statistics.php:134
-#: settings/build/index.js:21704
-#: settings/build/index.js:22420
-#: settings/src/Statistics/CompareBlock.js:19
-#: settings/src/Statistics/InsightsHeader.js:20
-#: settings/build/index.js:17285
-#: settings/build/index.js:17920
+#: settings/templates/wordpress/dashboard-widget.php:61
+msgid "Dashboard"
+msgstr ""
+
+#: statistics/class-goal-statistics.php:74
+msgid "Most goals reached on this page"
+msgstr ""
+
+#: statistics/class-goal-statistics.php:82
+msgid "Conversion rate"
+msgstr ""
+
+#: statistics/class-goal-statistics.php:87
+msgid "Not enough data"
+msgstr ""
+
+#: statistics/class-goal-statistics.php:89
+msgid "Best performing device"
+msgstr ""
+
+#: statistics/class-statistics.php:146
+#: settings/src/components/blocks/InsightsHeader.js:16
+#: settings/src/store/useCompareStore.js:15
+#: settings/src/store/useCompareStore.js:23
+#: settings/src/store/useCompareStore.js:56
+#: settings/src/store/useCompareStore.js:85
 msgid "Sessions"
 msgstr ""
 
-#: statistics/class-statistics.php:135
-#: settings/build/index.js:22419
-#: settings/src/Statistics/InsightsHeader.js:19
-#: settings/build/index.js:17919
+#: statistics/class-statistics.php:147
+#: settings/src/components/blocks/InsightsHeader.js:15
 msgid "Bounces"
 msgstr ""
 
-#: statistics/class-statistics.php:208
-#: statistics/class-statistics.php:636
-#: statistics/class-statistics.php:831
-#: statistics/class-statistics.php:1026
+#: statistics/class-statistics.php:148
+#: settings/src/components/blocks/InsightsHeader.js:21
+#: settings/src/store/useCompareStore.js:21
+#: settings/src/store/useCompareStore.js:75
+#: settings/src/store/usePagesStore.js:40
+msgid "Conversions"
+msgstr ""
+
+#: statistics/class-statistics.php:216
+#: statistics/class-statistics.php:916
+#: statistics/class-statistics.php:1065
 msgid "Direct"
 msgstr ""
 
-#: statistics/class-statistics.php:231
-msgid "Live visitors"
-msgstr ""
-
-#: statistics/class-statistics.php:233
+#: statistics/class-statistics.php:240
 msgid "The amount of people using your website right now. The data updates every 5 seconds."
 msgstr ""
 
-#: statistics/class-statistics.php:236
-msgid "Today visitors"
-msgstr ""
-
-#: statistics/class-statistics.php:238
+#: statistics/class-statistics.php:244
 msgid "This is the total amount of unique visitors for today."
 msgstr ""
 
-#: statistics/class-statistics.php:243
+#: statistics/class-statistics.php:249
 msgid "This is your most viewed page for today."
 msgstr ""
 
-#: statistics/class-statistics.php:248
-msgid "This website referred the most amount of visitors."
+#: statistics/class-statistics.php:254
+msgid "This website referred the most visitors."
 msgstr ""
 
-#: statistics/class-statistics.php:251
+#: statistics/class-statistics.php:257
 msgid "Total pageviews"
 msgstr ""
 
-#: statistics/class-statistics.php:256
+#: statistics/class-statistics.php:262
 msgid "Average time on page"
 msgstr ""
 
-#: statistics/class-statistics.php:540
+#: statistics/class-statistics.php:583
+#: settings/src/store/useFiltersStore.js:20
 msgid "Page"
 msgstr ""
 
-#: statistics/class-statistics.php:619
+#: statistics/class-statistics.php:671
 msgid "Referrer"
 msgstr ""
 
-#: statistics/class-statistics.php:624
+#: statistics/class-statistics.php:676
 msgid "Count"
 msgstr ""
 
-#: statistics/class-statistics.php:851
-#: statistics/class-statistics.php:1034
-msgid "Homepage"
-msgstr ""
-
-#: statistics/class-statistics.php:1025
-#: statistics/class-statistics.php:1026
+#: statistics/class-statistics.php:918
+#: statistics/class-statistics.php:940
 msgid "No referrers"
 msgstr ""
 
-#: statistics/class-statistics.php:1033
+#: statistics/class-statistics.php:927
+msgid "Homepage"
+msgstr ""
+
+#: statistics/class-statistics.php:929
+#: statistics/class-statistics.php:942
 msgid "No pageviews"
 msgstr ""
 
-#: upgrade/upgrade-to-pro.php:72
-msgid "Checking if plugin folder exists..."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:73
-msgid "Able to create destination folder"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:74
-msgid "Destination folder already exists"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:79
-msgid "Validating license..."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:80
-msgid "License valid"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:81
-msgid "License invalid"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:87
-msgid "Retrieving package information..."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:88
-msgid "Package information retrieved"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:89
-msgid "Failed to gather package information"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:94
-msgid "Installing plugin..."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:95
-msgid "Plugin installed"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:96
-msgid "Failed to install plugin"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:101
-msgid "Activating plugin..."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:102
-msgid "Plugin activated"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:103
-msgid "Failed to activate plugin"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:137
-msgid "Self-hosted and privacy-friendly analytics tool."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:141
-msgid "Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:150
-msgid "GDPR/CCPA Privacy Suite"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:154
-msgid "Configure your Cookie Notice, Cookie Consent and Cookie Policy with our Wizard and Cookie Scan. Supports GDPR, DSGVO, TTDSG, LGPD, POPIA, RGPD, CCPA and PIPEDA."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:167
-msgid "One click SSL optimization"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:171
-msgid "Really Simple SSL automatically detects your settings and configures your website to run over HTTPS. To keep it lightweight, we kept the options to a minimum. Your website will move to SSL with one click."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:225
-msgid "Installation finished"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:323
-msgid "Recommended by Really Simple Plugins"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:349
-msgid "Installing"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:360
-msgid "Visit Dashboard"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:365
-#: upgrade/upgrade-to-pro.php:366
-msgid "An Error Occurred:"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:365
-msgid "Install %sManually%s."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:366
-msgid "Check your %slicense%s."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:422
-msgid "Plugin already installed!"
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:522
-#: upgrade/upgrade-to-pro.php:554
-msgid "An error occurred, please try again."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:530
-msgid "Your license key expired on %s."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:536
-msgid "Your license key has been disabled."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:539
-msgid "Missing license."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:542
-msgid "Invalid license."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:545
-msgid "Your license is not active for this URL."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:548
-msgid "This appears to be an invalid license key for this plugin."
-msgstr ""
-
-#: upgrade/upgrade-to-pro.php:551
-msgid "Your license key has reached its activation limit."
-msgstr ""
-
-#: settings/build/index.js:18322
-#: settings/build/index.js:19100
-#: settings/src/Dashboard/GoalsBlock.js:18
-#: settings/src/Dashboard/TodayBlock.js:18
-#: settings/build/index.js:14521
-#: settings/build/index.js:15119
-msgid "Live"
-msgstr ""
-
-#: settings/build/index.js:18327
-#: settings/build/index.js:19105
-#: settings/src/Dashboard/GoalsBlock.js:23
-#: settings/src/Dashboard/TodayBlock.js:23
-#: settings/build/index.js:14526
-#: settings/build/index.js:15124
-msgid "Total"
-msgstr ""
-
-#: settings/build/index.js:18380
-#: settings/src/Dashboard/GoalsBlock.js:80
-#: settings/build/index.js:14583
-msgid "Coming soon: Goals"
-msgstr ""
-
-#: settings/build/index.js:18380
-#: settings/src/Dashboard/GoalsBlock.js:81
-#: settings/build/index.js:14584
-msgid "Know what is happening on your website. Keep track of customizable goals and get valuable insights. Coming soon to Burst Statistics."
-msgstr ""
-
-#: settings/build/index.js:18385
-#: settings/src/Dashboard/GoalsBlock.js:86
-#: settings/build/index.js:14589
-msgid "Leave a suggestion"
-msgstr ""
-
-#: settings/build/index.js:18562
-#: settings/build/index.js:18606
-#: settings/src/Dashboard/OtherPlugins.js:68
-#: settings/src/Dashboard/OtherPlugins.js:103
-#: settings/build/index.js:14717
-#: settings/build/index.js:14752
-msgid "Activate"
-msgstr ""
-
-#: settings/build/index.js:18563
-#: settings/src/Dashboard/OtherPlugins.js:69
-#: settings/build/index.js:14718
-msgid "Activating..."
-msgstr ""
-
-#: settings/build/index.js:18564
-#: settings/build/index.js:18565
-#: settings/src/Dashboard/OtherPlugins.js:70
-#: settings/src/Dashboard/OtherPlugins.js:71
-#: settings/build/index.js:14719
-#: settings/build/index.js:14720
-msgid "Downloading..."
-msgstr ""
-
-#: settings/build/index.js:18587
-#: settings/build/index.js:21199
-#: settings/src/Dashboard/OtherPlugins.js:85
-#: settings/src/Settings/SettingsGroup.js:123
-#: settings/build/index.js:14734
-#: settings/build/index.js:16863
-msgid "Upgrade"
-msgstr ""
-
-#: settings/build/index.js:18604
-#: settings/src/Dashboard/OtherPlugins.js:101
-#: settings/build/index.js:14750
-msgid "Loading.."
-msgstr ""
-
-#: settings/build/index.js:18746
-#: settings/src/Dashboard/ProgressBlock.js:110
-#: settings/build/index.js:14877
-msgid "Loading..."
-msgstr ""
-
-#: settings/build/index.js:18748
-#: settings/src/Dashboard/ProgressBlock.js:111
-#: settings/build/index.js:14878
-msgid "Loading notices..."
-msgstr ""
-
-#: settings/build/index.js:18824
-#: settings/build/index.js:18829
-#: settings/src/Dashboard/ProgressFooter.js:17
-#: settings/src/Dashboard/ProgressFooter.js:22
-#: settings/build/index.js:14923
-#: settings/build/index.js:14928
-msgid "Just now"
-msgstr ""
-
-#: settings/build/index.js:18833
-#: settings/src/Dashboard/ProgressFooter.js:27
-#: settings/build/index.js:14933
-msgid "Last checked:"
-msgstr ""
-
-#: settings/build/index.js:18836
-#: settings/src/Dashboard/ProgressFooter.js:29
-#: settings/build/index.js:14935
-msgid "Loading tracking status..."
-msgstr ""
-
-#: settings/build/index.js:18837
-#: settings/src/Dashboard/ProgressFooter.js:30
-#: settings/build/index.js:14936
-msgid "Error checking tracking status"
-msgstr ""
-
-#: settings/build/index.js:18838
-#: settings/src/Dashboard/ProgressFooter.js:31
-#: settings/build/index.js:14937
-msgid "Tracking with REST API"
-msgstr ""
-
-#: settings/build/index.js:18839
-#: settings/src/Dashboard/ProgressFooter.js:32
-#: settings/build/index.js:14938
-msgid "Tracking with an endpoint"
-msgstr ""
-
-#: settings/build/index.js:18840
-#: settings/build/index.js:18847
-#: settings/src/Dashboard/ProgressFooter.js:33
-#: settings/src/Dashboard/ProgressFooter.js:40
-#: settings/build/index.js:14939
-#: settings/build/index.js:14946
-msgid "Tracking is disabled"
-msgstr ""
-
-#: settings/build/index.js:18844
-#: settings/src/Dashboard/ProgressFooter.js:37
-#: settings/build/index.js:14943
-msgid "Tracking does not seem to work. Check manually or contact support. "
-msgstr ""
-
-#: settings/build/index.js:18845
-#: settings/src/Dashboard/ProgressFooter.js:38
-#: settings/build/index.js:14944
-msgid "Tracking is working. You are using the REST API to collect statistics."
-msgstr ""
-
-#: settings/build/index.js:18846
-#: settings/src/Dashboard/ProgressFooter.js:39
-#: settings/build/index.js:14945
-msgid "Tracking is working. You are using the Burst endpoint to collect statistics. This is type of tracking is accurate and lightweight."
-msgstr ""
-
-#: settings/build/index.js:18883
-#: settings/src/Dashboard/ProgressFooter.js:74
-#: settings/build/index.js:14980
-msgid "View my statistics"
-msgstr ""
-
-#: settings/build/index.js:18969
-#: settings/src/Dashboard/ProgressHeader.js:51
-#: settings/build/index.js:15043
-msgid "All tasks"
-msgstr ""
-
-#: settings/build/index.js:18976
-#: settings/src/Dashboard/ProgressHeader.js:55
-#: settings/build/index.js:15047
-msgid "Remaining tasks"
-msgstr ""
-
-#: settings/build/index.js:19033
-#: settings/build/index.js:20698
-#: settings/src/Dashboard/TaskElement.js:26
-#: settings/src/Settings/Help.js:24
-#: settings/build/index.js:15081
-#: settings/build/index.js:16439
-msgid "More info"
-msgstr ""
-
-#: settings/build/index.js:19036
-#: settings/build/index.js:19860
-#: settings/src/Dashboard/TaskElement.js:27
-#: settings/src/Modal/Modal.js:77
-#: settings/build/index.js:15082
-#: settings/build/index.js:15690
-msgid "Fix"
-msgstr ""
-
-#: settings/build/index.js:19480
-#: settings/src/GridBlock.js:175
-#: settings/build/index.js:15431
-msgid "Instructions"
-msgstr ""
-
-#: settings/build/index.js:19848
-#: settings/src/Modal/Modal.js:74
-#: settings/build/index.js:15687
-msgid "Edit"
-msgstr ""
-
-#: settings/build/index.js:19852
-#: settings/src/Modal/Modal.js:75
-#: settings/build/index.js:15688
-msgid "Help"
-msgstr ""
-
-#: settings/build/index.js:19856
-#: settings/src/Modal/Modal.js:76
-#: settings/build/index.js:15689
-msgid "Ignore"
-msgstr ""
-
-#: settings/build/index.js:20497
-#: settings/build/index.js:21212
-#: settings/src/Settings/Field.js:99
-#: settings/src/Settings/SettingsGroup.js:133
-#: settings/build/index.js:16253
-#: settings/build/index.js:16873
-msgid "This feature is only available networkwide."
-msgstr ""
-
-#: settings/build/index.js:20499
-#: settings/build/index.js:21214
-#: settings/src/Settings/Field.js:99
-#: settings/src/Settings/SettingsGroup.js:133
-#: settings/build/index.js:16253
-#: settings/build/index.js:16873
-msgid "Network settings"
-msgstr ""
-
-#: settings/build/index.js:20748
-#: settings/src/Settings/IpBlock.js:28
-#: settings/build/index.js:16479
-msgid "Your IP address is: "
-msgstr ""
-
-#: settings/build/index.js:20748
-#: settings/src/Settings/IpBlock.js:28
-#: settings/build/index.js:16479
-msgid "Which is already in the list."
-msgstr ""
-
-#: settings/build/index.js:20786
-#: settings/src/Settings/IpBlock.js:64
-#: settings/build/index.js:16515
-msgid "Add current IP address"
-msgstr ""
-
-#: settings/build/index.js:20936
-#: settings/src/Settings/Settings.js:75
-#: settings/build/index.js:16629
-msgid "Save"
-msgstr ""
-
-#: settings/build/index.js:20940
-#: settings/src/Settings/Settings.js:78
-#: settings/build/index.js:16632
-msgid "Refresh"
-msgstr ""
-
-#: settings/build/index.js:21009
-#: settings/build/index.js:22885
-#: settings/build/index.js:22912
-#: settings/build/index.js:22939
-#: settings/build/index.js:22963
-#: settings/build/index.js:22990
-#: settings/build/index.js:23017
-#: settings/src/Settings/Settings.js:147
-#: settings/src/Tour.js:34
-#: settings/src/Tour.js:58
-#: settings/src/Tour.js:82
-#: settings/src/Tour.js:106
-#: settings/src/Tour.js:130
-#: settings/src/Tour.js:154
-#: settings/build/index.js:16701
-#: settings/build/index.js:18311
-#: settings/build/index.js:18335
-#: settings/build/index.js:18359
-#: settings/build/index.js:18383
-#: settings/build/index.js:18407
-#: settings/build/index.js:18431
-msgid "Previous"
-msgstr ""
-
-#: settings/build/index.js:21017
-#: settings/src/Settings/Settings.js:159
-#: settings/build/index.js:16713
-msgid "Save and Continue"
-msgstr ""
-
-#: settings/build/index.js:21023
-#: settings/src/Settings/Settings.js:169
-#: settings/build/index.js:16723
-msgid "Notifications"
-msgstr ""
-
-#: settings/build/index.js:21026
-#: settings/src/Settings/Settings.js:174
-#: settings/build/index.js:16728
-msgid "Expand all"
-msgstr ""
-
-#: settings/build/index.js:21026
-#: settings/src/Settings/Settings.js:176
-#: settings/build/index.js:16730
-msgid "Collapse all"
-msgstr ""
-
-#: settings/build/index.js:21129
-#: settings/src/Settings/SettingsGroup.js:69
-#: settings/build/index.js:16809
-msgid "Learn more about %sPro%s"
-msgstr ""
-
-#: settings/build/index.js:21145
-#: settings/src/Settings/SettingsGroup.js:83
-#: settings/build/index.js:16823
-msgid "Instructions manual"
-msgstr ""
-
-#: settings/build/index.js:21167
-#: settings/src/Settings/SettingsGroup.js:93
-#: settings/build/index.js:16833
-msgid "Reset Let's Encrypt"
-msgstr ""
-
-#: settings/build/index.js:21202
-#: settings/src/Settings/SettingsGroup.js:125
-#: settings/build/index.js:16865
-msgid "Check license"
-msgstr ""
-
-#: settings/build/index.js:21212
-#: settings/src/Settings/SettingsGroup.js:132
-#: settings/build/index.js:16872
-msgid "Network feature"
-msgstr ""
-
-#: settings/build/index.js:21424
-#: settings/src/Settings/SettingsPage.js:166
-#: settings/build/index.js:17048
-msgid "Settings saved"
-msgstr ""
-
-#: settings/build/index.js:21705
-#: settings/src/Statistics/CompareBlock.js:20
-#: settings/build/index.js:17286
-msgid "Visitors"
-msgstr ""
-
-#: settings/build/index.js:21706
-#: settings/src/Statistics/CompareBlock.js:21
-#: settings/build/index.js:17287
-msgid "Bounce Rate"
-msgstr ""
-
-#: settings/build/index.js:21748
-#: settings/src/Statistics/CompareBlock.js:65
-#: settings/build/index.js:17331
-msgid "visitors bounced"
-msgstr ""
-
-#: settings/build/index.js:21756
-#: settings/src/Statistics/CompareBlock.js:73
-#: settings/build/index.js:17339
-msgid "pageviews per session"
-msgstr ""
-
-#: settings/build/index.js:21757
-#: settings/src/Statistics/CompareBlock.js:74
-#: settings/build/index.js:17340
-msgid "per session"
-msgstr ""
-
-#: settings/build/index.js:21758
-#: settings/src/Statistics/CompareBlock.js:75
-#: settings/build/index.js:17341
-msgid "are new visitors"
-msgstr ""
-
-#: settings/build/index.js:21831
-#: settings/src/Statistics/CompareFooter.js:10
-#: settings/build/index.js:17398
-msgid "vs. previous day"
-msgstr ""
-
-#: settings/build/index.js:21831
-#: settings/src/Statistics/CompareFooter.js:10
-#: settings/build/index.js:17398
-msgid "vs. previous %s days"
-msgstr ""
-
-#: settings/build/index.js:21903
-#: settings/src/Statistics/DateRange/DateRange.js:37
-#: settings/build/index.js:17448
-msgid "Yesterday"
-msgstr ""
-
-#: settings/build/index.js:21910
-#: settings/src/Statistics/DateRange/DateRange.js:44
-#: settings/build/index.js:17455
-msgid "Last 7 days"
-msgstr ""
-
-#: settings/build/index.js:21917
-#: settings/src/Statistics/DateRange/DateRange.js:51
-#: settings/build/index.js:17462
-msgid "Last 30 days"
-msgstr ""
-
-#: settings/build/index.js:21924
-#: settings/src/Statistics/DateRange/DateRange.js:58
-#: settings/build/index.js:17469
-msgid "Last 90 days"
-msgstr ""
-
-#: settings/build/index.js:21931
-#: settings/src/Statistics/DateRange/DateRange.js:65
-#: settings/build/index.js:17476
-msgid "Last month"
-msgstr ""
-
-#: settings/build/index.js:21938
-#: settings/src/Statistics/DateRange/DateRange.js:72
-#: settings/build/index.js:17483
-msgid "Year to date"
-msgstr ""
-
-#: settings/build/index.js:22082
-#: settings/src/Statistics/DevicesBlock.js:18
-#: settings/build/index.js:17605
+#: statistics/class-statistics.php:1198
+#: settings/src/store/useDevicesStore.js:11
 msgid "Desktop"
 msgstr ""
 
-#: settings/build/index.js:22083
-#: settings/src/Statistics/DevicesBlock.js:19
-#: settings/build/index.js:17606
-msgid "Tablet"
-msgstr ""
-
-#: settings/build/index.js:22084
-#: settings/src/Statistics/DevicesBlock.js:20
-#: settings/build/index.js:17607
+#: statistics/class-statistics.php:1201
+#: settings/src/store/useDevicesStore.js:13
 msgid "Mobile"
 msgstr ""
 
-#: settings/build/index.js:22085
-#: settings/src/Statistics/DevicesBlock.js:21
-#: settings/build/index.js:17608
+#: statistics/class-statistics.php:1204
+#: settings/src/store/useDevicesStore.js:12
+msgid "Tablet"
+msgstr ""
+
+#: statistics/class-statistics.php:1208
+#: settings/src/store/useDevicesStore.js:14
 msgid "Other"
 msgstr ""
 
-#: settings/build/index.js:22249
-#: settings/src/Statistics/EmptyDataTable.js:10
-#: settings/build/index.js:17761
+#: upgrade/upgrade-to-pro.php:82
+msgid "Checking if plugin folder exists..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:83
+msgid "Able to create destination folder"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:84
+msgid "Destination folder already exists"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:89
+msgid "Validating license..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:90
+msgid "License valid"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:91
+msgid "License invalid"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:96
+msgid "Retrieving package information..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:97
+msgid "Package information retrieved"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:98
+msgid "Failed to gather package information"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:103
+msgid "Installing plugin..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:104
+msgid "Plugin installed"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:105
+msgid "Failed to install plugin"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:110
+msgid "Activating plugin..."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:111
+msgid "Plugin activated"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:112
+msgid "Failed to activate plugin"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:145
+msgid "Self-hosted and privacy-friendly analytics tool."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:147
+#: upgrade/upgrade-to-pro.php:160
+#: upgrade/upgrade-to-pro.php:177
+#: settings/src/components/blocks/OtherPluginsBlock.js:69
+msgid "Install"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:149
+msgid "Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:158
+msgid "GDPR/CCPA Privacy Suite"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:162
+msgid "Configure your Cookie Notice, Cookie Consent and Cookie Policy with our Wizard and Cookie Scan. Supports GDPR, DSGVO, TTDSG, LGPD, POPIA, RGPD, CCPA and PIPEDA."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:175
+msgid "One click SSL optimization"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:179
+msgid "Really Simple SSL automatically detects your settings and configures your website to run over HTTPS. To keep it lightweight, we kept the options to a minimum. Your website will move to SSL with one click."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:191
+#: settings/src/components/blocks/OtherPluginsBlock.js:90
+msgid "Installed"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:234
+msgid "Installation finished"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:332
+msgid "Recommended by Really Simple Plugins"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:357
+msgid "Installing"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:368
+msgid "Visit Dashboard"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:373
+#: upgrade/upgrade-to-pro.php:374
+msgid "An Error Occurred:"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:373
+msgid "Install %sManually%s."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:374
+msgid "Check your %slicense%s."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:450
+msgid "Could not rename folder!"
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:550
+#: upgrade/upgrade-to-pro.php:582
+msgid "An error occurred, please try again."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:558
+msgid "Your license key expired on %s."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:564
+msgid "Your license key has been disabled."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:567
+msgid "Missing license."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:570
+msgid "Invalid license."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:573
+msgid "Your license is not active for this URL."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:576
+msgid "This appears to be an invalid license key for this plugin."
+msgstr ""
+
+#: upgrade/upgrade-to-pro.php:579
+msgid "Your license key has reached its activation limit."
+msgstr ""
+
+#: settings/src/components/blocks/ClickToFilter.js:33
+msgid "Click to filter by:"
+msgstr ""
+
+#: settings/src/components/blocks/ClickToFilter.js:34
+msgid "Click to filter"
+msgstr ""
+
+#: settings/src/components/blocks/ClickToFilter.js:79
+msgid "Filtering by goal & goal specific page"
+msgstr ""
+
+#: settings/src/components/blocks/ClickToFilter.js:83
+msgid "Filtering by goal"
+msgstr ""
+
+#: settings/src/components/blocks/CompareBlock.js:21
+msgid "Compare"
+msgstr ""
+
+#: settings/src/components/blocks/CompareFooter.js:11
+msgid "vs. previous day"
+msgstr ""
+
+#: settings/src/components/blocks/CompareFooter.js:11
+msgid "vs. previous %s days"
+msgstr ""
+
+#: settings/src/components/blocks/DateRange.js:69
+#: settings/src/components/blocks/GoalsBlock.js:159
+#: settings/src/components/blocks/TodayBlock.js:75
+#: settings/src/store/useDashboardGoalsStore.js:17
+msgid "Today"
+msgstr ""
+
+#: settings/src/components/blocks/DateRange.js:76
+msgid "Yesterday"
+msgstr ""
+
+#: settings/src/components/blocks/DateRange.js:83
+msgid "Last 7 days"
+msgstr ""
+
+#: settings/src/components/blocks/DateRange.js:90
+msgid "Last 30 days"
+msgstr ""
+
+#: settings/src/components/blocks/DateRange.js:97
+msgid "Last 90 days"
+msgstr ""
+
+#: settings/src/components/blocks/DateRange.js:104
+msgid "Last month"
+msgstr ""
+
+#: settings/src/components/blocks/DateRange.js:111
+msgid "Year to date"
+msgstr ""
+
+#: settings/src/components/blocks/DateRange.js:118
+msgid "Last year"
+msgstr ""
+
+#: settings/src/components/blocks/DevicesBlock.js:21
+msgid "Devices"
+msgstr ""
+
+#: settings/src/components/blocks/EmptyDataTable.js:6
 msgid "No data available in table"
 msgstr ""
 
-#: settings/build/index.js:22475
-#: settings/src/Statistics/InsightsHeader.js:71
-#: settings/build/index.js:17971
+#: settings/src/components/blocks/Fields/ClassId.js:17
+msgid "Class"
+msgstr ""
+
+#: settings/src/components/blocks/Fields/ClassId.js:18
+msgid "Add a class to the element"
+msgstr ""
+
+#: settings/src/components/blocks/Fields/ClassId.js:23
+msgid "ID"
+msgstr ""
+
+#: settings/src/components/blocks/Fields/ClassId.js:24
+msgid "Add an id to the element"
+msgstr ""
+
+#: settings/src/components/blocks/Fields/ClassId.js:38
+msgid "The character '%s' can not be used."
+msgstr ""
+
+#: settings/src/components/blocks/Fields/ClassId.js:40
+msgid "You don't need to prefix the input with a '%s' character."
+msgstr ""
+
+#: settings/src/components/blocks/Fields/EditableText.js:58
+msgid "Click to edit"
+msgstr ""
+
+#: settings/src/components/blocks/Fields/IpBlock.js:63
+#: settings/src/components/blocks/IpBlock.js:64
+msgid "Add current IP address"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/DeleteGoalModal.js:9
+msgid "Delete Goal"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/DeleteGoalModal.js:11
+msgid "Are you sure you want to delete this goal?"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/DeleteGoalModal.js:11
+msgid "This action cannot be undone."
+msgstr ""
+
+#: settings/src/components/blocks/Goals/DeleteGoalModal.js:13
+msgid "Goal name"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/DeleteGoalModal.js:15
+msgid "Status"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/DeleteGoalModal.js:18
+msgid "Date created"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/DeleteGoalModal.js:26
+msgid "Delete goal"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/GoalSetup.js:57
+msgid "Click to de-activate"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/GoalSetup.js:58
+msgid "Click to activate"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/GoalSetup.js:86
+#: settings/src/components/blocks/GoalStatus.js:19
+msgid "Active"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/GoalSetup.js:86
+#: settings/src/components/blocks/GoalStatus.js:21
+msgid "Inactive"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/GoalsSettings.js:52
+msgid "Add goal"
+msgstr ""
+
+#: settings/src/components/blocks/Goals/GoalsSettings.js:67
+msgid "Upgrade to Pro"
+msgstr ""
+
+#: settings/src/components/blocks/GoalsBlock.js:129
+#: settings/src/components/blocks/GoalsBlock.js:146
+msgid "Goals"
+msgstr ""
+
+#: settings/src/components/blocks/GoalsBlock.js:134
+msgid "View setup"
+msgstr ""
+
+#: settings/src/components/blocks/GoalsBlock.js:147
+msgid "The all new goals! Keep track of customizable goals and get valuable insights. Add your first goal!"
+msgstr ""
+
+#: settings/src/components/blocks/GoalsBlock.js:148
+msgid "Learn how to set your first goal"
+msgstr ""
+
+#: settings/src/components/blocks/GoalsBlock.js:149
+msgid "Create my first goal"
+msgstr ""
+
+#: settings/src/components/blocks/GoalsBlock.js:155
+msgid "Goal and today"
+msgstr ""
+
+#: settings/src/components/blocks/GoalsBlock.js:163
+msgid "Goal and the start date"
+msgstr ""
+
+#: settings/src/components/blocks/GoalsBlock.js:168
+#: settings/src/components/blocks/TodayBlock.js:92
+#: settings/src/store/useDashboardGoalsStore.js:21
+#: settings/src/store/useTodayStore.js:19
+msgid "Total"
+msgstr ""
+
+#: settings/src/components/blocks/GoalStatus.js:23
+msgid "Unknown"
+msgstr ""
+
+#: settings/src/components/blocks/GoalStatus.js:31
+msgid "Started"
+msgstr ""
+
+#: settings/src/components/blocks/GoalStatus.js:31
+msgid "Created"
+msgstr ""
+
+#: settings/src/components/blocks/Help.js:23
+#: settings/src/components/blocks/TaskElement.js:16
+msgid "More info"
+msgstr ""
+
+#: settings/src/components/blocks/InsightsBlock.js:16
+msgid "Insights"
+msgstr ""
+
+#: settings/src/components/blocks/InsightsHeader.js:68
 msgid "Select metrics"
 msgstr ""
 
-#: settings/build/index.js:22496
-#: settings/src/Statistics/InsightsHeader.js:82
-#: settings/build/index.js:17982
+#: settings/src/components/blocks/InsightsHeader.js:84
 msgid "Apply"
 msgstr ""
 
-#: settings/build/index.js:22692
-#: settings/build/index.js:22780
-#: settings/src/Statistics/PagesBlock.js:64
-#: settings/src/Statistics/ReferrersBlock.js:57
-#: settings/build/index.js:18165
-#: settings/build/index.js:18235
+#: settings/src/components/blocks/IpBlock.js:28
+msgid "Your IP address is:"
+msgstr ""
+
+#: settings/src/components/blocks/IpBlock.js:28
+msgid "Which is already in the list."
+msgstr ""
+
+#: settings/src/components/blocks/Menu/Menu.js:37
+msgid "Go Pro"
+msgstr ""
+
+#: settings/src/components/blocks/Menu/MenuItem.js:54
+msgid "New"
+msgstr ""
+
+#: settings/src/components/blocks/OtherPluginsBlock.js:70
+#: settings/src/components/blocks/OtherPluginsBlock.js:109
+msgid "Activate"
+msgstr ""
+
+#: settings/src/components/blocks/OtherPluginsBlock.js:71
+msgid "Activating..."
+msgstr ""
+
+#: settings/src/components/blocks/OtherPluginsBlock.js:72
+#: settings/src/components/blocks/OtherPluginsBlock.js:73
+msgid "Downloading..."
+msgstr ""
+
+#: settings/src/components/blocks/OtherPluginsBlock.js:87
+#: settings/src/components/blocks/SettingsGroup.js:83
+msgid "Upgrade"
+msgstr ""
+
+#: settings/src/components/blocks/OtherPluginsBlock.js:100
+#: settings/src/components/blocks/OtherPluginsBlock.js:120
+msgid "Other plugins"
+msgstr ""
+
+#: settings/src/components/blocks/OtherPluginsBlock.js:107
+msgid "Loading.."
+msgstr ""
+
+#: settings/src/components/blocks/PagesBlock.js:34
+msgid "Per page"
+msgstr ""
+
+#: settings/src/components/blocks/PagesBlock.js:47
+#: settings/src/components/blocks/ReferrersBlock.js:46
 msgid "of"
 msgstr ""
 
-#: settings/build/index.js:22695
-#: settings/build/index.js:22783
-#: settings/src/Statistics/PagesBlock.js:67
-#: settings/src/Statistics/ReferrersBlock.js:60
-#: settings/build/index.js:18168
-#: settings/build/index.js:18238
+#: settings/src/components/blocks/PagesBlock.js:50
+#: settings/src/components/blocks/ReferrersBlock.js:49
 msgid "All"
 msgstr ""
 
-#: settings/build/index.js:22862
-#: settings/src/Tour.js:8
-#: settings/build/index.js:18285
+#: settings/src/components/blocks/ProgressBlock.js:31
+msgid "Progress"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressBlock.js:39
+msgid "Loading..."
+msgstr ""
+
+#: settings/src/components/blocks/ProgressBlock.js:41
+msgid "Loading notices..."
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:17
+msgid "Just now"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:27
+msgid "Last checked:"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:29
+msgid "Loading tracking status..."
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:30
+msgid "Error checking tracking status"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:31
+msgid "Tracking with REST API"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:32
+msgid "Tracking with an endpoint"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:33
+#: settings/src/components/blocks/ProgressFooter.js:40
+msgid "Tracking is disabled"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:37
+msgid "Tracking does not seem to work. Check manually or contact support."
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:38
+msgid "Tracking is working. You are using the REST API to collect statistics."
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:39
+msgid "Tracking is working. You are using the Burst endpoint to collect statistics. This type of tracking is accurate and lightweight."
+msgstr ""
+
+#: settings/src/components/blocks/ProgressFooter.js:74
+msgid "View my statistics"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressHeader.js:35
+msgid "All tasks"
+msgstr ""
+
+#: settings/src/components/blocks/ProgressHeader.js:41
+msgid "Remaining tasks"
+msgstr ""
+
+#: settings/src/components/blocks/ReferrersBlock.js:33
+msgid "Acquisition"
+msgstr ""
+
+#: settings/src/components/blocks/Settings.js:49
+msgid "Saving settings..."
+msgstr ""
+
+#: settings/src/components/blocks/Settings.js:50
+msgid "Settings saved"
+msgstr ""
+
+#: settings/src/components/blocks/Settings.js:51
+#: settings/src/store/useGoalsStore.js:35
+#: settings/src/store/useGoalsStore.js:60
+msgid "Something went wrong"
+msgstr ""
+
+#: settings/src/components/blocks/Settings.js:83
+msgid "Save"
+msgstr ""
+
+#: settings/src/components/blocks/Settings.js:143
+msgid "Notifications"
+msgstr ""
+
+#: settings/src/components/blocks/Settings.js:146
+msgid "Expand all"
+msgstr ""
+
+#: settings/src/components/blocks/Settings.js:147
+msgid "Collapse all"
+msgstr ""
+
+#: settings/src/components/blocks/SettingsGroup.js:56
+msgid "Learn more about %sPro%s"
+msgstr ""
+
+#: settings/src/components/blocks/SettingsGroup.js:68
+msgid "Instructions"
+msgstr ""
+
+#: settings/src/components/blocks/SettingsGroup.js:85
+msgid "Check license"
+msgstr ""
+
+#: settings/src/components/blocks/TaskElement.js:17
+msgid "Fix"
+msgstr ""
+
+#: settings/src/components/blocks/TipsTricksBlock.js:35
+msgid "Tips & Tricks"
+msgstr ""
+
+#: settings/src/components/blocks/TipsTricksBlock.js:39
+msgid "View all"
+msgstr ""
+
+#: settings/src/components/blocks/TodayBlock.js:83
+#: settings/src/store/useTodayStore.js:15
+msgid "Live"
+msgstr ""
+
+#: settings/src/components/common/Tour.js:8
 msgid "Welcome to Burst Statistics"
 msgstr ""
 
-#: settings/build/index.js:22863
-#: settings/src/Tour.js:9
-#: settings/build/index.js:18286
+#: settings/src/components/common/Tour.js:9
 msgid "The plugin is now active."
 msgstr ""
 
-#: settings/build/index.js:22863
-#: settings/src/Tour.js:9
-#: settings/build/index.js:18286
+#: settings/src/components/common/Tour.js:9
 msgid "Follow a quick tour and make sure everything works."
 msgstr ""
 
-#: settings/build/index.js:22868
-#: settings/build/index.js:23027
-#: settings/src/Tour.js:15
-#: settings/src/Tour.js:163
-#: settings/build/index.js:18292
-#: settings/build/index.js:18440
+#: settings/src/components/common/Tour.js:15
+#: settings/src/components/common/Tour.js:163
 msgid "Exit tour"
 msgstr ""
 
-#: settings/build/index.js:22871
-#: settings/src/Tour.js:19
-#: settings/build/index.js:18296
+#: settings/src/components/common/Tour.js:19
 msgid "Start tour"
 msgstr ""
 
-#: settings/build/index.js:22880
-#: settings/src/Tour.js:28
-#: settings/build/index.js:18305
+#: settings/src/components/common/Tour.js:28
 msgid "Your dashboard"
 msgstr ""
 
-#: settings/build/index.js:22881
-#: settings/src/Tour.js:29
-#: settings/build/index.js:18306
+#: settings/src/components/common/Tour.js:29
 msgid "This is your Dashboard. This will give you an overview of notices, real time data, and settings."
 msgstr ""
 
-#: settings/build/index.js:22894
-#: settings/build/index.js:22921
-#: settings/build/index.js:22948
-#: settings/build/index.js:22972
-#: settings/build/index.js:22999
-#: settings/src/Tour.js:42
-#: settings/src/Tour.js:66
-#: settings/src/Tour.js:90
-#: settings/src/Tour.js:114
-#: settings/src/Tour.js:138
-#: settings/build/index.js:18319
-#: settings/build/index.js:18343
-#: settings/build/index.js:18367
-#: settings/build/index.js:18391
-#: settings/build/index.js:18415
+#: settings/src/components/common/Tour.js:34
+#: settings/src/components/common/Tour.js:58
+#: settings/src/components/common/Tour.js:82
+#: settings/src/components/common/Tour.js:106
+#: settings/src/components/common/Tour.js:130
+#: settings/src/components/common/Tour.js:154
+msgid "Previous"
+msgstr ""
+
+#: settings/src/components/common/Tour.js:42
+#: settings/src/components/common/Tour.js:66
+#: settings/src/components/common/Tour.js:90
+#: settings/src/components/common/Tour.js:114
+#: settings/src/components/common/Tour.js:138
 msgid "Next"
 msgstr ""
 
-#: settings/build/index.js:22907
-#: settings/src/Tour.js:52
-#: settings/build/index.js:18329
+#: settings/src/components/common/Tour.js:52
 msgid "Real time data"
 msgstr ""
 
-#: settings/build/index.js:22908
-#: settings/src/Tour.js:53
-#: settings/build/index.js:18330
+#: settings/src/components/common/Tour.js:53
 msgid "This block will show you real time visitors."
 msgstr ""
 
-#: settings/build/index.js:22908
-#: settings/src/Tour.js:53
-#: settings/build/index.js:18330
+#: settings/src/components/common/Tour.js:53
 msgid "To make sure Burst Statistics is setup properly, try visiting this website on another device or open a private window."
 msgstr ""
 
-#: settings/build/index.js:22934
-#: settings/src/Tour.js:76
-#: settings/build/index.js:18353
+#: settings/src/components/common/Tour.js:76
 msgid "Your website statistics"
 msgstr ""
 
-#: settings/build/index.js:22935
-#: settings/src/Tour.js:77
-#: settings/build/index.js:18354
+#: settings/src/components/common/Tour.js:77
 msgid "This page is probably quite empty at the moment. The data from your website will show up here in a few days. So be sure to come back soon."
 msgstr ""
 
-#: settings/build/index.js:22958
-#: settings/src/Tour.js:100
-#: settings/build/index.js:18377
+#: settings/src/components/common/Tour.js:100
 msgid "Changing the date range"
 msgstr ""
 
-#: settings/build/index.js:22959
-#: settings/src/Tour.js:101
-#: settings/build/index.js:18378
+#: settings/src/components/common/Tour.js:101
 msgid "Over here you can change the date range for the data being shown. Click on two different days or click twice on a single day to show the data for that period."
 msgstr ""
 
-#: settings/build/index.js:22985
-#: settings/src/Tour.js:124
-#: settings/build/index.js:18401
+#: settings/src/components/common/Tour.js:124
 msgid "Your configuration"
 msgstr ""
 
-#: settings/build/index.js:22986
-#: settings/src/Tour.js:125
-#: settings/build/index.js:18402
+#: settings/src/components/common/Tour.js:125
 msgid "You can customize Burst to your liking. Change settings to meet your needs."
 msgstr ""
 
-#: settings/build/index.js:23012
-#: settings/src/Tour.js:148
-#: settings/build/index.js:18425
+#: settings/src/components/common/Tour.js:148
 msgid "Support & feedback"
 msgstr ""
 
-#: settings/build/index.js:23013
-#: settings/src/Tour.js:149
-#: settings/build/index.js:18426
+#: settings/src/components/common/Tour.js:149
 msgid "Feel free to post your questions or feedback on the WordPress forums. We are happy to help!"
 msgstr ""
 
-#: settings/src/Settings/ChangeStatus.js:12
-msgid "Revoke"
+#: settings/src/store/useCompareStore.js:16
+#: settings/src/store/useCompareStore.js:24
+#: settings/src/store/useCompareStore.js:62
+#: settings/src/store/useCompareStore.js:90
+msgid "Visitors"
 msgstr ""
 
-#: settings/src/Settings/ChangeStatus.js:12
-msgid "Allow"
+#: settings/src/store/useCompareStore.js:17
+#: settings/src/store/useCompareStore.js:68
+msgid "Bounce Rate"
+msgstr ""
+
+#: settings/src/store/useCompareStore.js:51
+msgid "pageviews per session"
+msgstr ""
+
+#: settings/src/store/useCompareStore.js:57
+msgid "per session"
+msgstr ""
+
+#: settings/src/store/useCompareStore.js:63
+msgid "are new visitors"
+msgstr ""
+
+#: settings/src/store/useCompareStore.js:69
+msgid "visitors bounced"
+msgstr ""
+
+#: settings/src/store/useCompareStore.js:76
+msgid "of pageviews converted"
+msgstr ""
+
+#: settings/src/store/useCompareStore.js:81
+msgid "pageviews per conversion"
+msgstr ""
+
+#: settings/src/store/useCompareStore.js:86
+msgid "sessions per conversion"
+msgstr ""
+
+#: settings/src/store/useCompareStore.js:91
+msgid "visitors per conversion"
+msgstr ""
+
+#: settings/src/store/useDashboardGoalsStore.js:80
+msgid "Calculated by:"
+msgstr ""
+
+#: settings/src/store/useDashboardGoalsStore.js:82
+msgid "Total amount of goals reached "
+msgstr ""
+
+#: settings/src/store/useDashboardGoalsStore.js:83
+msgid "Total amount of pageviews"
+msgstr ""
+
+#: settings/src/store/useFiltersStore.js:24
+msgid "Goal"
+msgstr ""
+
+#: settings/src/store/useFiltersStore.js:28
+msgid "Referrer URL"
+msgstr ""
+
+#: settings/src/store/useFiltersStore.js:32
+msgid "Device"
+msgstr ""
+
+#: settings/src/store/useFiltersStore.js:36
+msgid "Browser"
+msgstr ""
+
+#: settings/src/store/useFiltersStore.js:40
+msgid "Operating System"
+msgstr ""
+
+#: settings/src/store/useGoalsStore.js:15
+msgid "Failed to load goals"
+msgstr ""
+
+#: settings/src/store/useGoalsStore.js:22
+msgid "Adding goal..."
+msgstr ""
+
+#: settings/src/store/useGoalsStore.js:23
+msgid "Goal added successfully!"
+msgstr ""
+
+#: settings/src/store/useGoalsStore.js:24
+msgid "Failed to add goal"
+msgstr ""
+
+#: settings/src/store/useGoalsStore.js:42
+msgid "Deleting goal..."
+msgstr ""
+
+#: settings/src/store/useGoalsStore.js:43
+msgid "Goal deleted successfully!"
+msgstr ""
+
+#: settings/src/store/useGoalsStore.js:44
+msgid "Failed to delete goal"
+msgstr ""
+
+#: settings/src/store/useNoticesStore.js:34
+msgid "No remaining tasks to show"
+msgstr ""
+
+#: settings/src/utils/api.js:43
+msgid "Server error"
 msgstr ""

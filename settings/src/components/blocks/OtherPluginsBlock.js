@@ -1,9 +1,9 @@
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect} from "react";
 import { __ } from '@wordpress/i18n';
 import * as burst_api from "../../utils/api";
 import useOtherPlugins from "../../store/useOtherPluginsStore";
 import GridItem from "../common/GridItem";
-const OtherPluginsBlock = (props) => {
+const OtherPluginsBlock = () => {
   const [dataUpdated, setDataUpdated] = useState('');
   const dataLoaded = useOtherPlugins((state) => state.dataLoaded);
   const setDataLoaded = useOtherPlugins((state) => state.setDataLoaded);
@@ -12,7 +12,7 @@ const OtherPluginsBlock = (props) => {
 
   useEffect(()=>{
     if ( !dataLoaded ) {
-      burst_api.runTest('otherpluginsdata').then( ( response ) => {
+      burst_api.doAction('otherpluginsdata').then( ( response ) => {
         response.forEach(function(pluginItem, i) {
           response[i].pluginActionNice = pluginActionNice(pluginItem.pluginAction);
         });
@@ -113,7 +113,6 @@ const OtherPluginsBlock = (props) => {
         </GridItem>
       )
   }
-
   return (
       <GridItem
           className={'burst-column-2 no-border no-background'}

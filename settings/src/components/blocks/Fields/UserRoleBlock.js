@@ -14,7 +14,6 @@ const UserRoleBlock = (props) => {
     let fieldValue = [...props.field.value];  // creating a copy of field value array
     let index = fieldValue.indexOf(value);
 
-    console.log('onChangeCheckboxHandler', value, checked, index, fieldValue);
     if (checked) {
       if (index === -1) {
         fieldValue.push(value);
