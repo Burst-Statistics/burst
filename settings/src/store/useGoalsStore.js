@@ -8,10 +8,9 @@ import { useGoalFieldsStore } from './useGoalFieldsStore';
 export const useGoalsStore = create((set) => {
   const loadGoals = async () => {
     try {
-      const response = await burst_api.getGoals();
-      set({goals: response});
+      const {goals} = await burst_api.getGoals();
+      set({goals: goals});
     } catch (error) {
-      console.error(error);
       toast.error(__('Failed to load goals', 'burst-statistics'));
     }
   };
@@ -23,8 +22,8 @@ export const useGoalsStore = create((set) => {
         success: __('Goal added successfully!', 'burst-statistics'),
         error: __('Failed to add goal', 'burst-statistics'),
       });
-      const data = response[Object.keys(response)[0]];
-      const id = Object.keys(response)[0]; // extract the id from the response
+      const data = response.goal[Object.keys(response)[0]];
+      const id = Object.keys(response.goal)[0]; // extract the id from the response
       await useGoalFieldsStore.getState().loadGoalFields();
 
       set(produce((state) => {

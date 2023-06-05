@@ -1,14 +1,22 @@
 import {__} from '@wordpress/i18n';
 import GridItem from '../common/GridItem';
-import InsightsGraph from './InsightsGraph';
 import InsightsHeader from './InsightsHeader';
 import {useInsightsStore} from '../../store/useInsightsStore';
-import {useEffectAfterMount} from '../../hooks/useEffectAfterMount';
+import {useEffect, useState} from "react";
 
 const InsightsBlock = ({filters}) => {
   const data = useInsightsStore((state) => state.data);
   const metrics = useInsightsStore((state) => state.metrics);
   const loading = useInsightsStore((state) => state.loading);
+  const [InsightsGraph, setInsightsGraph] = useState(null);
+
+  useEffect(() => {
+    if (!InsightsGraph){
+        import ('./InsightsGraph').then(({default: InsightsGraph}) => {
+            setInsightsGraph(() => InsightsGraph);
+        });
+    }
+  }, []);
 
   return (
       <GridItem
@@ -16,7 +24,7 @@ const InsightsBlock = ({filters}) => {
           title={__('Insights', 'burst-statistics')}
           controls={<InsightsHeader metrics={metrics} filters={filters}/>}
       >
-          { data && <InsightsGraph loading={loading} data={data}/> }
+          { data && InsightsGraph && <InsightsGraph loading={loading} data={data}/> }
       </GridItem>
   );
 };

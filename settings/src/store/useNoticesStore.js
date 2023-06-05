@@ -39,7 +39,7 @@ const useNotices = create(( set, get ) => ({
     set(state => ({ filteredNotices:filteredNotices }))
   },
   getNotices: async () => {
-    const {error, notices} = await burst_api.runTest('notices').then( ( response ) => {
+    const {error, notices} = await burst_api.doAction('notices').then( ( response ) => {
       return response;
     });
     if ( error ) {
@@ -60,7 +60,7 @@ const useNotices = create(( set, get ) => ({
     });
     set(state => ({ notices:notices }))
 
-    await burst_api.runTest('dismiss_task', noticeId).then(( response ) => {
+    await burst_api.doAction('dismiss_task', {id:noticeId}).then(( response ) => {
       // error handling
       response.error && console.error(response.error);
     });

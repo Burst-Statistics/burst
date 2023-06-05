@@ -678,7 +678,7 @@ if ( ! function_exists( 'burst_create_statistic' ) ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
 		if ( burst_required_values_are_not_set( $data ) ) {
-			error_log( 'burst_create_statistic: required values are not set');
+			error_log( 'Burst Statistics: burst_create_statistic->required values are not set');
 			return;
 		}
 		$id = $wpdb->insert(

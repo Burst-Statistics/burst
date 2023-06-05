@@ -7,7 +7,7 @@ import {useDashboardGoalsStore} from './useDashboardGoalsStore';
 export const useGoalFieldsStore = create((set, get) => {
   const loadGoalFields = async () => {
       burst_api.getGoalFields().then((response) => {
-        const goalFields = updateGoalsFieldWithConditions(response);
+        const goalFields = updateGoalsFieldWithConditions(response.goal_fields);
         set({goalFields: goalFields});
       }).catch((error) => {
         console.error(error);
@@ -79,6 +79,9 @@ export const useGoalFieldsStore = create((set, get) => {
 });
 
 const updateGoalsFieldWithConditions = (goalFields) => {
+  if (!goalFields) {
+    return {};
+  }
   let newGoalFields = {};
   Object.keys(goalFields).forEach((goalId) => {
     let newFields = {};

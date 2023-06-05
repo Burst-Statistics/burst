@@ -19,7 +19,6 @@ import {useDashboardGoalsStore} from '../../store/useDashboardGoalsStore';
 import {useGoalsStore} from '../../store/useGoalsStore';
 import GridItem from '../common/GridItem';
 import GoalsHeader from './GoalsHeader';
-import {useTodayStore} from '../../store/useTodayStore';
 import {setOption} from '../../utils/api';
 
 const GoalsBlock = () => {

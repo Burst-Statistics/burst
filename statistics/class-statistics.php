@@ -189,9 +189,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'date_end'   => 0,
 			);
 			$args     = wp_parse_args( $args, $defaults );
-
-			$start = $args['date_start'];
-			$end   = $args['date_end'];
+			$start = (int) $args['date_start'];
+			$end   = (int) $args['date_end'];
 			$sql = $this->get_sql_table( $start, $end, [
 				'visitors',
 				'pageviews',
@@ -287,8 +286,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// generate labels for dataset
 			$labels   = array();
 			// if not interval is a string and string is not ''
-			$date_start    = $args['date_start'];
-			$date_end      = $args['date_end'];
+			$date_start    = (int) $args['date_start'];
+			$date_end      = (int) $args['date_end'];
 			$nr_of_days = $this->get_nr_of_periods( 'day', $date_start, $date_end );
 
 			$interval = 'hour';
@@ -328,7 +327,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'date_start' => $date_start,
 					'date_end'   => $date_end,
 					'interval'   => $interval,
-					'filters'    => $args['filters'],
+					'filters'    => burst_sanitize_filters($args['filters']),
 				);
 				$hits       = $this->get_chart_data_by_metric( $args );
 				$datasets[] = array(
@@ -356,12 +355,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$args = wp_parse_args( $args, $defaults );
 			$args['filters']['bounce'] = 0;
 
-			$start = $args['date_start'];
-			$end = $args['date_end'];
+			$start = (int) $args['date_start'];
+			$end = (int) $args['date_end'];
 			$diff = $end - $start;
 			$start_diff = $start - $diff;
 			$end_diff = $end - $diff;
-			$filters = $args['filters'];
+			$filters = burst_sanitize_filters($args['filters']);
 			$select = ['visitors', 'pageviews', 'sessions', 'first_time_visitors', 'avg_time_on_page'];
 
 			// current data
@@ -406,12 +405,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$args = wp_parse_args( $args, $defaults );
 			$args['filters']['bounce'] = 0;
 
-			$start = $args['date_start'];
-			$end = $args['date_end'];
+			$start = (int) $args['date_start'];
+			$end = (int) $args['date_end'];
 			$diff = $end - $start;
 			$start_diff = $start - $diff;
 			$end_diff = $end - $diff;
-			$filters = $args['filters'];
+			$filters = burst_sanitize_filters($args['filters']);
 
 			$filters_without_goal = $filters;
 			unset($filters_without_goal['goal_id']);
@@ -491,7 +490,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$start    = (int) $args['date_start'];
 			$end      = (int) $args['date_end'];
 			$devices  = [];
-			$filters  = $args['filters'];
+			$filters  = burst_sanitize_filters($args['filters']);
 			$filters['bounce'] = 0;
 
 
@@ -614,7 +613,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'metric'     => $metric,
 					'date_start' => $date_start,
 					'date_end'   => $date_end,
-					'filters'    => $args['filters']
+					'filters'    => burst_sanitize_filters($args['filters']),
 				);
 				$data = $this->get_pages_by_metric( $args );
 			}
@@ -646,7 +645,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// add page_url and page_id to metrics array
 			$metrics = [ $metric, 'page_url' ];
 
-			$filters  = $args['filters'];
+			$filters  = burst_sanitize_filters($args['filters']);
 			$filters['bounce'] = 0;
 
 			$sql   = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url', $metric . ' DESC' );
@@ -663,7 +662,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'filters'    => [],
 			);
 			$args     = wp_parse_args( $args, $defaults );
-			$filters  = $args['filters'];
+			$filters  = burst_sanitize_filters($args['filters']);
 			$filters['bounce'] = 0;
 
 			$columns = [
@@ -734,7 +733,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$interval     = $this->sanitize_interval( $args['interval'] );
 			$start        = (int) $args['date_start'];
 			$end          = (int) $args['date_end'];
-			$filters      = $args['filters'] ?? [];
+			$filters      = burst_sanitize_filters($args['filters']) ?? [];
 
 			// first we get the data from the db
 			if ( $interval === 'hour' ) {

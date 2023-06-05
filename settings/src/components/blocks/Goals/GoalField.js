@@ -78,7 +78,7 @@ const GoalField = (props) => {
   if ( field.type==='text' || field.type==='url' ){
     return (
         <div className={className}>
-          {field.parent_label && <div className="burst-parent-label"><label>{field.parent_label}</label></div>}
+          { field.parent_label && <div className="burst-parent-label"><label>{field.parent_label}</label></div>}
           { validated && <Icon name='success' color='green'/>}
           { !validated && <Icon name='times'/>}
           <TextControl
@@ -135,7 +135,7 @@ const GoalField = (props) => {
               goal_id={props.goal_id}
               label={field.label}
               help={field.comment}
-              value={value}
+              value={value===false ? '' : value}
               onChangeHandler={ ( value ) => onChangeHandler(value) }
           />
         </div>

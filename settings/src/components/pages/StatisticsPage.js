@@ -6,13 +6,12 @@ import DevicesBlock from '../blocks/DevicesBlock';
 import PagesBlock from '../blocks/PagesBlock';
 import ReferrersBlock from '../blocks/ReferrersBlock';
 
-import {__} from '@wordpress/i18n';
 import {PageFilter} from '../blocks/PageFilter';
 import DateRange from '../blocks/DateRange';
 import {useFiltersStore} from '../../store/useFiltersStore';
 import {useDate} from '../../store/useDateStore';
 
-const StatisticsPage = (props) => {
+const StatisticsPage = () => {
   const { filters } = useFiltersStore((state) => ({
     filters: state.filters,
   }));

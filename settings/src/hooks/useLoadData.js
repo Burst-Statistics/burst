@@ -40,14 +40,14 @@ export const useLoadData = (config) => {
         if (dependencies.some((dependency) => !dependency)) {
           return;
         }
-        const response = await burst_api.getData(
+        const {data} = await burst_api.getData(
             config.type,
             selectedStartDate,
             selectedEndDate,
             range,
             args
         );
-        const transformedData = config.transformData(response);
+        const transformedData = config.transformData(data);
         config.setLoading(false);
         config.setData(transformedData);
       } catch (error) {

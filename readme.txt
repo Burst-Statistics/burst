@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.2
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,12 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+
+= 1.4.1 =
+* Fix: Added a fallback for when the REST API does not return a valid response.
+* Fix: Translation strings were not being loaded properly.
+* Fix: Date picker caused the dashboard to crash for some users. This has been resolved.
+
 = 1.4.0 =
 * Feature: Goals. You can now set goals for your website and track them in the dashboard.
 * Feature: Filter your data by device, pages, referrers, and more.

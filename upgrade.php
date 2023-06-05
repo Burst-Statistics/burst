@@ -6,6 +6,7 @@ add_action( 'init', 'burst_check_upgrade', 10, 2 );
  * Run an upgrade procedure if the version has changed
  */
 function burst_check_upgrade() {
+	return;
 	#only run upgrade check if cron, or if admin.
 	if ( !is_admin() && !wp_doing_cron() ) {
 		return;
@@ -13,7 +14,6 @@ function burst_check_upgrade() {
 
 	$prev_version = get_option( 'burst-current-version', false );
 	if ( $prev_version === burst_version ) return; // no upgrade
-	error_log( "Burst upgrade from $prev_version to " . burst_version );
 
 	// add burst capabilities
 	if ( $prev_version
