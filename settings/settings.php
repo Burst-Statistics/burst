@@ -72,6 +72,7 @@ function burst_rest_api_fallback()
 	$requestData = json_decode(file_get_contents('php://input'), true);
 	if ($requestData) {
 		$action = $requestData['path'] ?? false;
+
 		$action = sanitize_text_field($action);
 		$data = $requestData['data'] ?? false;
 		if (strpos($action, 'burst/v1/do_action/') !== false) {
@@ -121,6 +122,7 @@ function burst_rest_api_fallback()
 	exit;
 }
 add_action('wp_ajax_burst_rest_api_fallback', 'burst_rest_api_fallback');
+
 function burst_add_option_menu() {
 	if ( ! burst_user_can_view() ) {
 		return;
@@ -312,7 +314,7 @@ function burst_do_action( $request, $ajax_data = false ) {
 	}
 
 	$data = $data['action_data'];
-    if (!$ajax_data){
+    if ( !$ajax_data ){
 	    burst_remove_fallback_notice();
     }
 
@@ -333,7 +335,7 @@ function burst_do_action( $request, $ajax_data = false ) {
 			$data = BURST()->endpoint->get_tracking_status_and_time();
 			break;
 		default:
-			$data = apply_filters( "burst_do_action", [], $action, $request );
+			$data = apply_filters( "burst_do_action", [], $action, $data );
 	}
 
 	return new WP_REST_Response( array( 'data' => $data, 'request_success' => true ), 200 );

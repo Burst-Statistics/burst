@@ -51,7 +51,9 @@ const makeRequest = (path, method = 'GET', data) => {
 				let response = method === 'GET' ? await ajaxGet(path) : await ajaxPost(path, data);
 				resolve(response);
 			} catch (error) {
-				console.log(error);
+				let response = {};
+				response.errors = [error];
+				generateError(response);
 				reject(error);
 			}
 		}
