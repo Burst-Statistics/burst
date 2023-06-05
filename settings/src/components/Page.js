@@ -1,4 +1,4 @@
-// without the temp var, it doesn't update in time
+
 import getAnchor from '../utils/getAnchor';
 import Header from './common/Header';
 import Tour from './common/Tour';
@@ -26,7 +26,6 @@ const Page = () => {
   const fields = useFields((state) => state.fields);
   const fieldsLoaded = useFields((state) => state.fieldsLoaded);
   const fetchFieldsData = useFields((state) => state.fetchFieldsData);
-  // const initGoals = useGoalsStore((state) => state.initGoals);
   const [ToastContainer, setToastContainer] = useState(null);
 
   // change pages
