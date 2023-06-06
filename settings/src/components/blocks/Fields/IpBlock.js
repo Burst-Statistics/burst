@@ -5,9 +5,9 @@ import {
 } from 'react';
 import InputWarning from '../../common/InputWarning';
 
-const IpBlock = (props) => {
+const IpBlock = ({value, onChange, label, comment}) => {
   const [warning, setWarning] = useState(false);
-  const [fieldValue, setFieldValue] = useState(props.field.value);
+  const fieldValue = value;
   const ip = burst_settings.current_ip;
 
   const checkInputForWarnings = (fieldValue) => {
@@ -27,7 +27,9 @@ const IpBlock = (props) => {
   };
 
   const onChangeIpHandler = (fieldValue) => {
-    setFieldValue(fieldValue);
+    console.log('onChangeIpHandler');
+    console.log(fieldValue);
+    onChange(fieldValue);
     checkInputForWarnings(fieldValue);
   };
 
@@ -40,7 +42,7 @@ const IpBlock = (props) => {
     } else {
       let updatedIPList = fieldValue;
       updatedIPList += updatedIPList ? `\n${ip}` : ip;
-      setFieldValue(updatedIPList);
+      onChange(updatedIPList);
       setWarning(false);
     }
   };
@@ -48,8 +50,8 @@ const IpBlock = (props) => {
   return (
       <>
         <TextareaControl
-            label={props.field.label}
-            help={props.field.comment}
+            label={label}
+            help={comment}
             placeholder={"127.0.0.1\n192.168.0.1"}
             value={fieldValue}
             onChange={(fieldValue) => onChangeIpHandler(fieldValue)}

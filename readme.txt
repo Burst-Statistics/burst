@@ -70,6 +70,8 @@ Not...yet.
 * Fix: Added a fallback for when the REST API does not return a valid response.
 * Fix: Translation strings were not being loaded properly.
 * Fix: Date picker caused the dashboard to crash for some users. This has been resolved.
+* Fix: IP block did not save IP addresses properly. This has been resolved.
+* Fix: Datepicker did not select the right timezone. This has been fixed.
 
 = 1.4.0 =
 * Feature: Goals. You can now set goals for your website and track them in the dashboard.
@@ -79,7 +81,7 @@ Not...yet.
 
 = 1.3.5 =
 * Fix: Fixed timezone issue where there would be a mismatch between the selected date in the datepicker and the date shown up top.
-* Fix: Fixed issue where referreres would not show up when Czech language was selected.
+* Fix: Fixed issue where referrers would not show up when Czech language was selected.
 * Fix: RTL issue in some languages
 * Improvement: Tested up to WordPress 6.2
 
