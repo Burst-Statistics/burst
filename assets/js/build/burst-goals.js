@@ -111,7 +111,6 @@ const burst_goal_triggered = (goal) => {
   console.log(`[Burst Statistics] The ${goal.title} goal was triggered.`);
   // if burst_completed_goals does not contain goal.id, add it
   if (burst_completed_goals.indexOf(goal.ID) === -1) {
-    console.log(goal);
     burst_completed_goals.push(goal.ID);
   }
 };

@@ -676,8 +676,8 @@ if ( ! function_exists( 'burst_get_date_ranges' ) ) {
 if ( ! function_exists('burst_sanitize_filters') ) {
     function burst_sanitize_filters( $filters ) {
         // sanitize key value pairs, but value can also be an array. Just one layer deep though. Also remove keys where value is empty. Also add comments to explain the code
-        $filters = array_filter( $filters, function( $item ) {
-            return ! empty( $item );
+        $filters = array_filter( $filters, static function( $item ) {
+            return $item !== false && $item !== '';
         } );
 
         foreach ( $filters as $key => $value ) {
@@ -687,6 +687,7 @@ if ( ! function_exists('burst_sanitize_filters') ) {
                 $filters[ $key ] = sanitize_text_field( $value );
             }
         }
+
         return $filters;
     }
 }

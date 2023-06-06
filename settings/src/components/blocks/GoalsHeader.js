@@ -24,10 +24,9 @@ const GoalsHeader = ({goalId, goals}) => {
 
   return (
       <div className={'burst-goals-controls-flex'}>
-        {Object.keys(goals).length === 1 &&
-            <><p>{goals[firstItem].title}</p>
-              {/*<span className={'burst-divider'}></span> <Icon name={goals.icon}/>*/}
-            </>}
+        {Object.keys(goals).length === 1 && goals[firstItem] &&
+            <p>{goals[firstItem].title}</p>
+        }
         {Object.keys(goals).length > 1 && <select onChange={handleChange}>
           {Object.entries(goals).map(([key, goal]) => (
               <option key={key} value={key}>{goal.title}</option>
