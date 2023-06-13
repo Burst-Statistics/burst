@@ -195,6 +195,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 				'visitors',
 				'pageviews',
 				'avg_time_on_page',
+			], [
+				'bounce' => 0,
 			] );
 			$table = $this->get_sql_table( $start, $end );
 
@@ -205,7 +207,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			// get most visited page
 			$sql                = "SELECT page_url as title, count(*) as value
-						FROM ( $table ) as t
+						FROM ( $table ) as t 
+						WHERE page_url IS NOT NULL 
+						  AND page_url <> ''
+						  AND bounce = 0
 						GROUP BY title
 						ORDER BY value DESC
 					";
@@ -226,6 +231,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
                         WHERE referrer IS NOT NULL 
                           AND referrer <> ''
                           AND referrer NOT LIKE '%$site_url%'
+                          AND bounce = 0
                         GROUP BY referrer
                         ORDER BY value DESC
                         LIMIT 1";
@@ -360,6 +366,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$diff = $end - $start;
 			$start_diff = $start - $diff;
 			$end_diff = $end - $diff;
+
 			$filters = burst_sanitize_filters($args['filters']);
 			$select = ['visitors', 'pageviews', 'sessions', 'first_time_visitors', 'avg_time_on_page'];
 
@@ -763,6 +770,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$server_timezone = sprintf( "%s%02d:%02d", ( $time_diff >= 0 ? '+' : '-' ), abs( $hours ), abs( $minutes ) );
 
 			$sqlperiod = "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '$server_timezone', '" . $timezone . "'), '" . $sqlformat . "')"; // this is the sql format for the period
+			$filters['bounce'] = 0;
 
 			switch ( $metric ) {
 				case 'bounces':
@@ -781,7 +789,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'on' => 'stats.ID = goals.statistic_id',
 						'type' => 'INNER' // Optional, default is INNER JOIN
 					];
-
+					$filters['bounce'] = 0;
 					$sql = $this->get_sql_table($start, $end, ['*'], $filters, 'period', 'period', '', $join);
 					// replace * with ["COUNT(*) AS hit_count",
 					//       "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '+02:00', '-04:00'), '%Y-%m-%d') AS period"]
@@ -789,6 +797,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					break;
 				default:
 					unset($filters['goal_id']);
+					$filters['bounce'] = 0;
 					$select            = $this->get_sql_select_for_metric( $metric );
 					$table             = $this->get_sql_table( $start, $end, [ '*' ], $filters );
 					$sql               = "SELECT $select as hit_count,

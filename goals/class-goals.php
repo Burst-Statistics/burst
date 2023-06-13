@@ -42,7 +42,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 		    global $wpdb;
 		    $default_args = [
 			    'status'  => 'all',
-			    'limit'   => 10,
+			    'limit'   => 9999,
 			    'offset'  => 0,
 			    'orderby' => 'ID',
 			    'order'   => 'DESC',

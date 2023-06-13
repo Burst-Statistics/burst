@@ -721,11 +721,17 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 	 */
 	function burst_create_goal_statistic( $data ) {
 		global $wpdb;
+		// do not create goal statistic if statistic_id or goal_id is not set
+		if ( ! isset( $data['statistic_id'] ) || ! isset( $data['goal_id'] ) ) {
+			return;
+		}
+
 		// first get row with same statistics_id and goal_id
 		$goal_statistic = $wpdb->get_var(
-				"select count(*)
+			"select count(*)
 							from {$wpdb->prefix}burst_goal_statistics
 		                    where statistic_id = {$data['statistic_id']} AND goal_id = {$data['goal_id']}");
+		// goal already exists
 		if ( $goal_statistic > 0 ) {
 			return;
 		}
