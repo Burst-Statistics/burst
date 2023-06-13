@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.2
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,11 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+
+= 1.4.2 =
+* Fix: Fixed an issue where data was shown with bounces, even when bounces should be excluded.
+* Fix: Fixed a fatal error in the REST API fallback. Props @helmar
+* Fix: When inserting a goal, the statistics_id could be empty resulting in an error. This has been resolved.
 
 = 1.4.1 =
 * Fix: Added a fallback for when the REST API does not return a valid response.
