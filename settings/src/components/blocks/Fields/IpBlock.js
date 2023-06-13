@@ -27,8 +27,6 @@ const IpBlock = ({value, onChange, label, comment}) => {
   };
 
   const onChangeIpHandler = (fieldValue) => {
-    console.log('onChangeIpHandler');
-    console.log(fieldValue);
     onChange(fieldValue);
     checkInputForWarnings(fieldValue);
   };
