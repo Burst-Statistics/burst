@@ -557,7 +557,7 @@ function burst_get_data( WP_REST_Request $request ) {
 }
 
 
-function burst_rest_api_options_set( $request, $ajax_data = false ){
+function burst_rest_api_options_set( $request, $ajax_data ){
 	if ( ! burst_user_can_manage() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}

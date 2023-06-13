@@ -781,7 +781,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'on' => 'stats.ID = goals.statistic_id',
 						'type' => 'INNER' // Optional, default is INNER JOIN
 					];
-
+					$filters['bounce'] = 0;
 					$sql = $this->get_sql_table($start, $end, ['*'], $filters, 'period', 'period', '', $join);
 					// replace * with ["COUNT(*) AS hit_count",
 					//       "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '+02:00', '-04:00'), '%Y-%m-%d') AS period"]
@@ -789,6 +789,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					break;
 				default:
 					unset($filters['goal_id']);
+					$filters['bounce'] = 0;
 					$select            = $this->get_sql_select_for_metric( $metric );
 					$table             = $this->get_sql_table( $start, $end, [ '*' ], $filters );
 					$sql               = "SELECT $select as hit_count,
