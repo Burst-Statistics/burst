@@ -50,7 +50,7 @@ function burst_check_upgrade() {
 	// - Upgrade to remove `event` and `action` columns from `burst_statistics` table
 
 	if ( $prev_version
-	     && version_compare( $prev_version, '1.4.3', '<' ) ) {
+	     && version_compare( $prev_version, '1.4.2.1', '<' ) ) {
 		update_option( "burst_db_upgrade_bounces", true );
 		update_option( 'burst_db_upgrade_goals_remove_columns', true);
 	}
