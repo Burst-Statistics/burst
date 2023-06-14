@@ -95,7 +95,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			$burst_plugin = implode( '/', $burst_plugin );
 			define( 'burst_plugin_folder', $burst_plugin );
 			$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
-			define( 'burst_version', '1.4.1' . $debug );
+			define( 'burst_version', '1.4.2' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
 			define( 'burst_pro_url', 'https://burst-statistics.com/pricing/?src=burst-plugin' );
