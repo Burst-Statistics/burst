@@ -153,9 +153,9 @@ function burst_fields( $load_values = true ) {
 			'label'    => __( 'Goals', 'burst-statistics' ),
 			'help'     => [
 				'label' => 'default',
-				'title' => __( 'How to select goals?', 'burst-statistics' ),
+				'title' => __( 'How to set goals?', 'burst-statistics' ),
 				'text'  => __( "To set goals for a website, you need to identify the purpose of the site and the key actions you want visitors to take. Set measurable and achievable goals for each action and track your progress.", 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
+				'url'   => 'https://burst-statistics.com/how-to-set-goals/',
 			],
 			'default' => [],
 		],
