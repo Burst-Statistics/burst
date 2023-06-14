@@ -66,7 +66,7 @@ Not...yet.
 
 == Change log ==
 
-= 1.4.3 =
+= 1.4.2.1 =
 * Fix: Upgrade script for 1.4.0 did not run properly. This has been resolved. The upgrade will run again.
 
 = 1.4.2 =
