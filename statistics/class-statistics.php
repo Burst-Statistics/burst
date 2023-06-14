@@ -217,16 +217,19 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			$data['mostViewed'] = $wpdb->get_row( $sql, ARRAY_A );
 
+			$direct_text = "'" . __( "Direct", "burst-statistics" ) . "'";
 			$remove      = array( "http://www.", "https://www.", "http://", "https://" );
 			$site_url    = str_replace( $remove, "", site_url() );
 			// get top referrer
 			$sql = "SELECT count(referrer) as value,
                             CASE
-                                WHEN referrer = '' THEN 'Direct'
+
+                                WHEN referrer = '/' THEN $direct_text
                                 ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
                             END as title
                         FROM ( $table ) as t
                         WHERE referrer IS NOT NULL 
+                          AND referrer <> ''
                           AND referrer NOT LIKE '%$site_url%'
                           AND bounce = 0
                         GROUP BY referrer
@@ -234,10 +237,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
                         LIMIT 1";
 
 			$data['referrer'] = $wpdb->get_row( $sql, ARRAY_A );
-
-			if ( $data['referrer']['title'] == 'Direct' ) {
-				$data['referrer']['title'] = __( "Direct", "burst-statistics" );
-			}
 
 			// setup defaults
 			$default_data = [
@@ -691,20 +690,12 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$start = (int) $args['date_start'];
 			$end   = (int) $args['date_end'];
 
+
 			$remove      = array( "http://www.", "https://www.", "http://", "https://" );
 			$site_url    = str_replace( $remove, "", site_url() );
 			$sql   = $this->get_sql_table( $start, $end, ['count', 'referrer'], $filters );
-			$sql .= "AND referrer NOT LIKE '%$site_url%' GROUP BY referrer";
-
-			$data  = $wpdb->get_results( $sql , ARRAY_A);
-
-			$direct_text = __( "Direct", "burst-statistics" );
-			// find 'Direct in the data and replace with $direct_text. Use fastest method possible
-			foreach ( $data as $key => $row ) {
-				if ( $row['referrer'] == 'Direct' ) {
-					$data[ $key ]['referrer'] = $direct_text;
-				}
-			}
+			$sql .= "AND referrer NOT LIKE '%$site_url%' AND referrer NOT LIKE '' GROUP BY referrer";
+			$data  = $wpdb->get_results( $sql );
 
 			return [
 				"columns" => $columns,
@@ -929,7 +920,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// get top referrer
 			$top_referrer = $wpdb->get_results($this->get_sql_table( $date_start, $date_end, ['pageviews', 'referrer'], ['bounce' => 0], 'referrer', 'pageviews DESC', 1 ));
 			if ( isset( $top_referrer[0] ) ) {
-				if ( $top_referrer[0]->referrer == 'Direct' ) {
+				if ( $top_referrer[0]->referrer == '' ) {
 					$top_referrer[0]->referrer = __( 'Direct', 'burst-statistics' );
 				} else if ( $top_referrer[0]->pageviews === 0 ) {
 					$top_referrer[0]->referrer = __( 'No referrers', 'burst-statistics' );
@@ -1005,11 +996,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						$where .= "AND {$filter} = {$filters[$filter]} ";
 					} else {
 						if ( $filter === 'referrer' ) {
-							if ( $filters[ $filter ] === __('Direct', 'burst-statistics') ) {
-								$where .= "AND {$filter} = '' ";
-							} else {
-								$where .= "AND {$filter} LIKE '%{$filters[$filter]}' ";
-							}
+							$where .= "AND {$filter} LIKE '%{$filters[$filter]}' ";
 						} else {
 							$where .= "AND {$filter} = '{$filters[$filter]}' ";
 						}
@@ -1049,7 +1036,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 
 		function get_sql_select_for_metric( $metric ) {
-			global $wpdb;
 			// if metric starts with  'count(' and ends with ')', then it's a custom metric
 			//so we sanitize it and return it
 			if ( substr( $metric, 0, 6 ) === 'count(' && substr( $metric, - 1 ) === ')' ) {
@@ -1084,11 +1070,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					$sql = "stats.page_id";
 					break;
 				case 'referrer':
-					$direct_text = 'Direct';
-					$sql         = $wpdb->prepare("CASE
-                            WHEN stats.referrer = '' THEN '%s'
+					$direct_text = "'" . __( "Direct", "burst-statistics" ) . "'";
+					$sql         = "CASE
+                            WHEN stats.referrer = '/' THEN $direct_text
                             ELSE trim( 'www.' from substring(stats.referrer, locate('://', stats.referrer) + 3)) 
-                        END", $direct_text);
+                        END";
 					break;
 				case '*':
 				default:
