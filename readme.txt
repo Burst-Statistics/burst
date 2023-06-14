@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.2
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,9 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+
+= 1.4.3 =
+* Fix: Upgrade script for 1.4.0 did not run properly. This has been resolved. The upgrade will run again.
 
 = 1.4.2 =
 * Fix: Fixed an issue where data was shown with bounces, even when bounces should be excluded.
