@@ -51,45 +51,15 @@ const makeRequest = (path, method = 'GET', data) => {
 				let response = method === 'GET' ? await ajaxGet(path) : await ajaxPost(path, data);
 				resolve(response);
 			} catch (error) {
-				let response = {};
-				// if error isset add ro response errors
-				if (error) {
-					response.errors = [error];
-				}
-				generateError(response);
 				reject(error);
 			}
 		}
 	});
 }
-export const setOption = (option, value) => makeRequest('burst/v1/options/set'+glue()+getNonce(), 'POST', {option: {option, value} });
-
-export const getFields = () => makeRequest('burst/v1/fields/get'+glue()+getNonce());
-export const setFields = (data) => {
-	return makeRequest('burst/v1/fields/set'+glue(), 'POST', {fields:data});
-}
-
-export const getGoalFields = () => makeRequest('burst/v1/goal_fields/get'+glue()+getNonce());
-export const setGoalFields = (data) => { return makeRequest('burst/v1/goal_fields/set'+glue()+getNonce(), 'POST', {fields:data} )};
-
-export const getGoals = () => makeRequest('burst/v1/goals/get'+glue()+getNonce());
-export const deleteGoal = (id) => makeRequest('burst/v1/goals/delete'+glue()+getNonce(), 'POST', {id:id});
-export const addGoal = () => makeRequest('burst/v1/goals/add'+glue()+getNonce(), 'POST', {});
-
-export const getBlock = (block) => makeRequest('burst/v1/block/'+block+glue()+getNonce());
-export const doAction = (action, data = {}) => makeRequest(`burst/v1/do_action/${action}`, 'POST', {action_data:data}).then(response => {
-	return response.hasOwnProperty('data') ? response.data : [];
-});
-export const getData = (type, startDate, endDate, range, args) => {
-	return makeRequest(`burst/v1/data/${type}${glue()+getNonce()}&date_start=${startDate}&date_end=${endDate}&date_range=${range}&args=${encodeURIComponent(JSON.stringify(args))}`);
-};
-export const getMenu = () => makeRequest('burst/v1/menu/'+glue()+getNonce());
-export const getPosts = (search) => makeRequest(`burst/v1/posts/${glue()}${getNonce()}&search=${search}`).then(response => {
-	return response.hasOwnProperty('posts') ? response.posts : [];
-});
 
 const ajaxGet = (path) => {
 	return new Promise(function (resolve, reject) {
+		const pathExclParams = path.split('?')[0];
 		let url = siteUrl('ajax');
 		url+='&rest_action='+path.replace('?', '&');
 		let xhr = new XMLHttpRequest();
@@ -99,29 +69,31 @@ const ajaxGet = (path) => {
 			try {
 				response = JSON.parse(xhr.response);
 			} catch (error) {
-				generateError(false, xhr.statusText);
+				console.error("Error in ajaxGet parsing response for", pathExclParams, ":", error);
+				generateError(false, "Error in ajaxGet parsing response for" + pathExclParams+  ":" + error);
 				reject(xhr.statusText);
 			}
-
 			if ( xhr.status >= 200 && xhr.status < 300 ) {
 				if ( !response.data || !response.data.hasOwnProperty('request_success') ) {
-					generateError(response);
+					console.error("Error in ajaxGet invalid data for", pathExclParams, ":", response.message)
+					generateError(response, response.status + '. Check the console log for more information.');
 					reject('invalid data error');
 				} else {
 					delete response.data.request_success;
 					resolve(response.data);
 				}
 			} else {
+				console.error("Error in ajaxGet xhr status for", pathExclParams, ":", xhr.statusText);
 				reject(xhr.statusText);
 			}
 		};
 		xhr.onerror = function () {
+			console.error("Error in ajaxGet xhr error for", pathExclParams, ":", xhr.statusText);
 			generateError(false, xhr.statusText);
 			reject(xhr.statusText);
 		};
 		xhr.send();
 	});
-
 }
 
 const ajaxPost = (path, requestData) => {
@@ -134,6 +106,7 @@ const ajaxPost = (path, requestData) => {
 			try {
 				response = JSON.parse(xhr.response);
 			} catch (error) {
+				console.error("Error in ajaxPost parsing response for", pathExclParams, ":", error);
 				generateError(false, xhr.statusText);
 				reject(xhr.statusText);
 			}
@@ -148,6 +121,7 @@ const ajaxPost = (path, requestData) => {
 			}
 		};
 		xhr.onerror = function () {
+			console.error("Error in ajaxPost xhr error for", pathExclParams, ":", xhr.statusText);
 			generateError(false, xhr.statusText);
 			reject(xhr.statusText);
 		};
@@ -218,3 +192,29 @@ const generateError = (response, errorMsg) => {
 		autoClose: 15000,
 	});
 }
+
+export const setOption = (option, value) => makeRequest('burst/v1/options/set'+glue()+getNonce(), 'POST', {option: {option, value} });
+
+export const getFields = () => makeRequest('burst/v1/fields/get'+glue()+getNonce());
+export const setFields = (data) => {
+	return makeRequest('burst/v1/fields/set'+glue(), 'POST', {fields:data});
+}
+
+export const getGoalFields = () => makeRequest('burst/v1/goal_fields/get'+glue()+getNonce());
+export const setGoalFields = (data) => { return makeRequest('burst/v1/goal_fields/set'+glue()+getNonce(), 'POST', {fields:data} )};
+
+export const getGoals = () => makeRequest('burst/v1/goals/get'+glue()+getNonce());
+export const deleteGoal = (id) => makeRequest('burst/v1/goals/delete'+glue()+getNonce(), 'POST', {id:id});
+export const addGoal = () => makeRequest('burst/v1/goals/add'+glue()+getNonce(), 'POST', {});
+
+export const getBlock = (block) => makeRequest('burst/v1/block/'+block+glue()+getNonce());
+export const doAction = (action, data = {}) => makeRequest(`burst/v1/do_action/${action}`, 'POST', {action_data:data}).then(response => {
+	return response.hasOwnProperty('data') ? response.data : [];
+});
+export const getData = (type, startDate, endDate, range, args) => {
+	return makeRequest(`burst/v1/data/${type}${glue()+getNonce()}&date_start=${startDate}&date_end=${endDate}&date_range=${range}&args=${encodeURIComponent(JSON.stringify(args))}`);
+};
+export const getMenu = () => makeRequest('burst/v1/menu/'+glue()+getNonce());
+export const getPosts = (search) => makeRequest(`burst/v1/posts/${glue()}${getNonce()}&search=${search}`).then(response => {
+	return response.hasOwnProperty('posts') ? response.posts : [];
+});

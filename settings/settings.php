@@ -114,9 +114,13 @@ function burst_plugin_admin_scripts() {
 function burst_rest_api_fallback()
 {
 	$response = [];
-	$error = $action = $do_action = $data = $data_type = false;
+	$error = []; // Define error as an array
+	$action = $do_action = $data = $data_type = false;
 	if ( !burst_user_can_manage() ) {
-		$error = true;
+		$error = [
+			"message" => "User does not have the necessary permissions",
+			"status" => "403"
+		]; // Set the error message
 	}
 
 	//if the site is using this fallback, we want to show a notice
@@ -148,33 +152,51 @@ function burst_rest_api_fallback()
 	}
 
 	if ( !$error ) {
-		if (strpos($action, '/fields/get') !== false) {
-			$response = burst_rest_api_fields_get($request);
-		} else if (strpos($action, '/fields/set') !== false) {
-			$response = burst_rest_api_fields_set( $request, $data);
-        } else if (strpos($action, '/options/set') !== false) {
-			$response = burst_rest_api_options_set( $request, $data);
-		} else if (strpos($action, '/goals/get') !==false ) {
-			$response = burst_rest_api_goals_get($request);
-        } else if (strpos($action, '/goals/add') !==false ) {
-			$response = burst_rest_api_goals_add($request, $data);
-		} else if (strpos($action, '/goals/delete') !==false ) {
-			$response = burst_rest_api_goals_delete($request, $data);
-        } else if (strpos($action, '/goal_fields/get') !==false ) {
-			$response = burst_rest_api_goal_fields_get($request);
-        } else if (strpos($action, '/goal_fields/set') !==false ) {
-			$response = burst_rest_api_goal_fields_set($request, $data);
-        } else if (strpos($action, '/posts/') !==false ) {
-			$response = burst_get_posts($request, $data);
-		} else if (strpos($action, '/data/')){
-            $request->set_param('type', $data_type);
-			$response = burst_get_data($request);
-		} else if ($do_action) {
-			$request = new WP_REST_Request();
-			$request->set_param('action', $do_action);
-			$response = burst_do_action($request, $data);
-		}
+			ob_start();
+			if ( strpos( $action, '/fields/get' ) !== false ) {
+				$response = burst_rest_api_fields_get( $request );
+			} else if ( strpos( $action, '/fields/set' ) !== false ) {
+				$response = burst_rest_api_fields_set( $request, $data );
+			} else if ( strpos( $action, '/options/set' ) !== false ) {
+				$response = burst_rest_api_options_set( $request, $data );
+			} else if ( strpos( $action, '/goals/get' ) !== false ) {
+				$response = burst_rest_api_goals_get( $request );
+			} else if ( strpos( $action, '/goals/add' ) !== false ) {
+				$response = burst_rest_api_goals_add( $request, $data );
+			} else if ( strpos( $action, '/goals/delete' ) !== false ) {
+				$response = burst_rest_api_goals_delete( $request, $data );
+			} else if ( strpos( $action, '/goal_fields/get' ) !== false ) {
+				$response = burst_rest_api_goal_fields_get( $request );
+			} else if ( strpos( $action, '/goal_fields/set' ) !== false ) {
+				$response = burst_rest_api_goal_fields_set( $request, $data );
+			} else if ( strpos( $action, '/posts/' ) !== false ) {
+				$response = burst_get_posts( $request, $data );
+			} else if ( strpos( $action, '/data/' ) ) {
+				$request->set_param( 'type', $data_type );
+				$response = burst_get_data( $request );
+			} else if ( $do_action ) {
+				$request = new WP_REST_Request();
+				$request->set_param( 'action', $do_action );
+				$response = burst_do_action( $request, $data );
+			}
+			$errorMsg = ob_get_clean();
 	}
+	// if $errorMsg is not empty, then there is an error
+	if ( $errorMsg ) {
+		// remove the html tags from the error message
+		$errorMsg = strip_tags( $errorMsg );
+		error_log('$errorMsg: '.print_r($errorMsg, true));
+		$error = [
+			"message" => $errorMsg,
+			"status" => "500"
+		]; // Set the error message
+	}
+
+	if ( $error ) {
+		$response = $error;
+	}
+
+	error_log('response: '.print_r($response, true));
 
 	header("Content-Type: application/json");
 	echo json_encode($response);
