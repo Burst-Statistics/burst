@@ -16,12 +16,6 @@ if ( ! function_exists( 'burst_admin_logged_in' ) ) {
     }
 }
 
-if ( ! function_exists( 'burst_is_activation' ) ) {
-	function burst_is_activation() {
-		return current_user_can( 'activate_plugins') && isset( $_GET['action'] ) && $_GET['action'] === 'activate';
-	}
-}
-
 if ( ! function_exists( 'burst_is_pro' ) ) {
 	function burst_is_pro() {
 		return defined( 'burst_pro' );
