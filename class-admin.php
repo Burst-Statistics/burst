@@ -38,8 +38,7 @@ if ( ! class_exists( "burst_admin" ) ) {
             add_action( 'admin_init', array($this, 'add_burst_admin_columns' ), 1);
             add_action( 'pre_get_posts', array($this, 'posts_orderby_total_pageviews'), 1);
 
-			// activating/upgrading
-			add_action( 'burst_activation', array($this, 'setup_defaults'), 40);
+            add_action( 'admin_init', array($this, 'setup_defaults'));
 
 			// deactivating
 			add_action( 'admin_footer', array($this, 'deactivate_popup'), 40);
@@ -97,38 +96,37 @@ if ( ! class_exists( "burst_admin" ) ) {
 		 */
 
 		public function setup_defaults(): void {
-			update_option( 'burst_activation_time', time(), false );
-			burst_add_view_capability();
-			burst_add_manage_capability();
+            if ( get_option('burst_set_defaults') ){
+                update_option( 'burst_activation_time', time(), false );
+                burst_add_view_capability();
+                burst_add_manage_capability();
 
-			$setup_defaults = get_option( 'burst_setup_defaults');
-			if ($setup_defaults) return;
-			$exclude_roles = burst_get_option('user_role_blocklist');
-			if ( ! $exclude_roles ) {
-				$defaults = [ 'administrator' ];
-				burst_update_option( 'user_role_blocklist', $defaults );
-			}
+                $exclude_roles = burst_get_option( 'user_role_blocklist' );
+                if ( ! $exclude_roles ) {
+                    $defaults = [ 'administrator' ];
+                    burst_update_option( 'user_role_blocklist', $defaults );
+                }
 
-			if ( get_option('burst_goals_db_version') === false) {
-				// if there is no goals db version, then we can assume there are no goals database.
-				// retrun so this code is not executed
-				return;
-			}
-			// set default goal
-			// if there is no default goal, then insert one
-			$goals = BURST()->goals->get_goals();
-			$count = count( $goals );
-			if ( $count === 0 ) {
-				BURST()->goals->set( array(
-					'title'       => __( 'Default goal', 'burst-statistics' ),
-					'type'        => 'clicks',
-					'status'      => 'inactive',
-					'server_side' => 0,
-					'date_created' => time(),
-				) );
-			}
-
-			update_option( 'burst_setup_defaults', true, false );
+                if ( get_option( 'burst_goals_db_version' ) === false ) {
+                    // if there is no goals db version, then we can assume there are no goals database.
+                    // rerun so this code is not executed
+                    return;
+                }
+                // set default goal
+                // if there is no default goal, then insert one
+                $goals = BURST()->goals->get_goals();
+                $count = count( $goals );
+                if ( $count === 0 ) {
+                    BURST()->goals->set( array(
+                        'title'        => __( 'Default goal', 'burst-statistics' ),
+                        'type'         => 'clicks',
+                        'status'       => 'inactive',
+                        'server_side'  => 0,
+                        'date_created' => time(),
+                    ) );
+                }
+	            delete_option('burst_set_defaults');
+		    }
 		}
 
 		/**
