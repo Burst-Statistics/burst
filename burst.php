@@ -67,7 +67,7 @@ if ( ! class_exists( 'BURST' ) ) {
 				self::$instance->frontend        = new burst_frontend();
 
 
-				if ( burst_admin_logged_in() || burst_is_activation() ) {
+				if ( burst_admin_logged_in() ) {
 					self::$instance->admin      = new burst_admin();
 					self::$instance->review     = new burst_review();
 					self::$instance->notices    = new burst_notices();
@@ -137,7 +137,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			require_once( burst_path . 'class-db-upgrade.php' );
 
 
-			if ( burst_admin_logged_in() || burst_is_activation() ) {
+			if ( burst_admin_logged_in() ) {
 				require_once( burst_path . 'class-admin.php' );
 				require_once( burst_path . 'settings/settings.php' );
 				require_once( burst_path . 'class-review.php' );
