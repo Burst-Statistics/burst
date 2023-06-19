@@ -235,7 +235,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			$data['referrer'] = $wpdb->get_row( $sql, ARRAY_A );
 
-			if ( $data['referrer']['title'] == 'Direct' ) {
+			if (isset($data['referrer']['title']) && $data['referrer']['title'] == '') {
 				$data['referrer']['title'] = __( "Direct", "burst-statistics" );
 			}
 
