@@ -640,7 +640,9 @@ function burst_rest_api_fields_set( $request, $ajax_data = false ) {
 		$config_field_index = array_search( $field['id'], $config_ids );
 		$config_field       = $config_fields[ $config_field_index ];
 		if ( ! $config_field_index ) {
-			error_log( "Burst Statistics: unsetting " . $field['id'] . " as not existing field in BURST " );
+			if ( WP_DEBUG ) {
+				error_log( "Burst Statistics: unsetting " . $field['id'] . " as not existing field in BURST " );
+			}
 			unset( $fields[ $index ] );
 			continue;
 		}
@@ -719,13 +721,17 @@ function burst_update_option( $name, $value ) {
 	$config_field_index = array_search( $name, $config_ids );
 	$config_field       = $config_fields[ $config_field_index ];
 	if ( $config_field_index === false ) {
-		error_log( "Burst Statistics: exiting " . $name . " as not existing field in burst " );
+		if ( WP_DEBUG ) {
+			error_log( "Burst Statistics: exiting " . $name . " as not existing field in burst " );
+		}
 		return;
 	}
 
 	$type = isset( $config_field['type'] ) ? $config_field['type'] : false;
 	if ( ! $type ) {
-		error_log( "Burst Statistics: exiting " . $name . " has not existing type " );
+		if ( WP_DEBUG ) {
+			error_log( "Burst Statistics: exiting " . $name . " has not existing type " );
+		}
 
 		return;
 	}

@@ -1399,7 +1399,6 @@ async function burst_track_hit () {
  *
  */
 function burst_init_events() {
-	console.log('[Burst Statistics] Initialize events')
 	// Initial track hit
 	let turbo_mode = burst.options.enable_turbo_mode;
 	if ( turbo_mode ) { // if turbo mode is enabled, we track the hit after the whole page has loaded

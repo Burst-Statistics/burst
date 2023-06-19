@@ -85,7 +85,9 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			$result = $wpdb->query( $sql );
 			if ( $result === false ) {
-				error_log( 'Burst Statistics: db upgrade bounces multiple sessions failed' );
+				if ( WP_DEBUG ) {
+					error_log( 'Burst Statistics: db upgrade bounces multiple sessions failed' );
+				}
 				return;
 			}
 
@@ -98,7 +100,9 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $result !== false ) {
 				update_option( 'burst_db_upgrade_bounces', false);
 			} else {
-				error_log( 'Burst Statistics: db upgrade bounces failed' );
+				if ( WP_DEBUG ) {
+					error_log( 'Burst Statistics: db upgrade bounces failed' );
+				}
 			}
 		}
 

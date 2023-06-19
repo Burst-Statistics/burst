@@ -2,7 +2,6 @@
  * Setup event listeners for goals.
  */
 const burst_goals_setup = () => {
-  console.log('[Burst Statistics] Initialize goal trackers')
   // loop through goals and remove any that don't match the current path or
   // don't have a path
   for (let i = 0; i < burst.goals.length; i++) {
@@ -31,7 +30,6 @@ const burst_goals_setup = () => {
  * @param goal
  */
 const burst_setup_viewport_tracker = (goal) => {
-  console.log(`[Burst Statistics] Setup viewport tracker for goal: ${goal.title}`)
   let selector = goal.setup.attribute === 'id' ? '#' : '.';
   let elements = document.querySelectorAll( selector + goal.setup.value);
 
@@ -82,7 +80,6 @@ const burst_listener_view = (element, goal) => {
  * @param goal
  */
 const burst_setup_click_tracker = (goal) => {
-  console.log(`[Burst Statistics] Setup click tracker for goal: ${goal.title}`)
   let selector = goal.setup.attribute === 'id' ? '#' : '.';
   let elements = document.querySelectorAll(selector + goal.setup.value);
   for (let i = 0; i < elements.length; i++) {
@@ -108,7 +105,6 @@ const burst_listener_click = (element, goal) => {
  * @param goal
  */
 const burst_goal_triggered = (goal) => {
-  console.log(`[Burst Statistics] The ${goal.title} goal was triggered.`);
   // if burst_completed_goals does not contain goal.id, add it
   if (burst_completed_goals.indexOf(goal.ID) === -1) {
     burst_completed_goals.push(goal.ID);
@@ -119,6 +115,5 @@ const burst_goal_triggered = (goal) => {
  * Default export for goals.
  */
 export default () => {
-  console.log('[Burst Statistics] Goals imported');
   burst_goals_setup();
 };

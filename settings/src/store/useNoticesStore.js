@@ -25,32 +25,18 @@ const useNotices = create(( set, get ) => ({
         filteredNotices.push(notice);
       }
     });
-    if (filteredNotices.length === 0) {
-      filteredNotices[0] = {
-        id: 'no-notices',
-        output: {
-          icon: 'completed',
-          label: __('Completed', 'burst-statistics'),
-          msg: __('No remaining tasks to show', 'burst-statistics'),
-
-        }
-      }
-    }
     set(state => ({ filteredNotices:filteredNotices }))
   },
   getNotices: async () => {
-    const {error, notices} = await burst_api.doAction('notices').then( ( response ) => {
-      return response;
-    });
-    if ( error ) {
-      set(state => ({ error:error }))
-    } else {
+    try {
+      const { notices } = await burst_api.doAction('notices');
       set(state => ({
-        notices:notices,
+        notices: notices,
         loading: false
-      }))
-      // run function filteredNotices();
+      }));
       get().filterNotices();
+    } catch (error) {
+      set(state => ({ error: error.message }))
     }
   },
   dismissNotice: async (noticeId) => {

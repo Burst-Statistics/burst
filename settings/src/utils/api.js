@@ -1,5 +1,4 @@
 import apiFetch from '@wordpress/api-fetch';
-import axios from 'axios';
 import {__} from '@wordpress/i18n';
 import {toast} from 'react-toastify';
 
@@ -17,148 +16,78 @@ const glue = () => {
 const getNonce = () => {
 	return 'nonce='+burst_settings.burst_nonce+'&token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 };
-const makeRequest = (path, method = 'GET', data) => {
-	if (!data) data= {};
-	if (method==='POST') data.nonce = burst_settings.burst_nonce;
-	return new Promise(async (resolve, reject) => {
-		try {
-			const config = {
-				headers: {
-					'X-WP-Nonce': burst_settings.nonce,
-				}
-			}
-			if ( usesPlainPermalinks() ) {
-				const url = burst_settings.site_url + path;
-				let response = method=== 'POST' ? await axios.post(url, data, config) : await axios.get(url, config);
-				if (!response.request_success) {
-					response = method ==='GET' ? await ajaxGet(path) : await ajaxPost(path, data);
-					resolve(response);
-				} else {
-					delete response.request_success;
-					resolve(response);
-				}
-			} else {
-				const response = await apiFetch({
-					path,
-					method,
-					data
-				});
-				delete response.request_success;
-				resolve(response);
-			}
-		} catch (error) {
-			try {
-				let response = method === 'GET' ? await ajaxGet(path) : await ajaxPost(path, data);
-				resolve(response);
-			} catch (error) {
-				let response = {};
-				// if error isset add ro response errors
-				if (error) {
-					response.errors = [error];
-				}
-				generateError(response);
-				reject(error);
-			}
+
+const makeRequest = async (path, method = 'GET', data = {}) => {
+	let args = {
+		path,
+		method,
+	};
+
+	if (method === 'POST') {
+		data.nonce = burst_settings.burst_nonce
+		args.data = data;
+	}
+
+	try {
+		const response = await apiFetch(args);
+		if (!response.request_success) {
+			// throw error
+			throw new Error('invalid data error');
 		}
-	});
-}
-export const setOption = (option, value) => makeRequest('burst/v1/options/set'+glue()+getNonce(), 'POST', {option: {option, value} });
+		delete response.request_success;
+		return response;
+	} catch (error) {
+		console.error(error);
 
-export const getFields = () => makeRequest('burst/v1/fields/get'+glue()+getNonce());
-export const setFields = (data) => {
-	return makeRequest('burst/v1/fields/set'+glue(), 'POST', {fields:data});
-}
-
-export const getGoalFields = () => makeRequest('burst/v1/goal_fields/get'+glue()+getNonce());
-export const setGoalFields = (data) => { return makeRequest('burst/v1/goal_fields/set'+glue()+getNonce(), 'POST', {fields:data} )};
-
-export const getGoals = () => makeRequest('burst/v1/goals/get'+glue()+getNonce());
-export const deleteGoal = (id) => makeRequest('burst/v1/goals/delete'+glue()+getNonce(), 'POST', {id:id});
-export const addGoal = () => makeRequest('burst/v1/goals/add'+glue()+getNonce(), 'POST', {});
-
-export const getBlock = (block) => makeRequest('burst/v1/block/'+block+glue()+getNonce());
-export const doAction = (action, data = {}) => makeRequest(`burst/v1/do_action/${action}`, 'POST', {action_data:data}).then(response => {
-	return response.hasOwnProperty('data') ? response.data : [];
-});
-export const getData = (type, startDate, endDate, range, args) => {
-	return makeRequest(`burst/v1/data/${type}${glue()+getNonce()}&date_start=${startDate}&date_end=${endDate}&date_range=${range}&args=${encodeURIComponent(JSON.stringify(args))}`);
-};
-export const getMenu = () => makeRequest('burst/v1/menu/'+glue()+getNonce());
-export const getPosts = (search) => makeRequest(`burst/v1/posts/${glue()}${getNonce()}&search=${search}`).then(response => {
-	return response.hasOwnProperty('posts') ? response.posts : [];
-});
-
-const ajaxGet = (path) => {
-	return new Promise(function (resolve, reject) {
-		let url = siteUrl('ajax');
-		url+='&rest_action='+path.replace('?', '&');
-		let xhr = new XMLHttpRequest();
-		xhr.open('GET', url);
-		xhr.onload = function () {
-			let response;
-			try {
-				response = JSON.parse(xhr.response);
-			} catch (error) {
-				generateError(false, xhr.statusText);
-				reject(xhr.statusText);
-			}
-
-			if ( xhr.status >= 200 && xhr.status < 300 ) {
-				if ( !response.data || !response.data.hasOwnProperty('request_success') ) {
-					generateError(response);
-					reject('invalid data error');
-				} else {
-					delete response.data.request_success;
-					resolve(response.data);
-				}
-			} else {
-				reject(xhr.statusText);
-			}
-		};
-		xhr.onerror = function () {
-			generateError(false, xhr.statusText);
-			reject(xhr.statusText);
-		};
-		xhr.send();
-	});
-
+		// Fallback to AJAX in case of error in the REST API
+		try {
+			return ajaxRequest(method, path, data);
+		} catch (fallbackError) {
+			console.error(fallbackError);
+			// if error isset add ro response errors
+			let response = {
+				errors: [fallbackError]
+			};
+			generateError(response);
+			throw fallbackError;
+		}
+	}
 }
 
-const ajaxPost = (path, requestData) => {
-	return new Promise(function (resolve, reject) {
-		let url = siteUrl('ajax');
-		let xhr = new XMLHttpRequest();
-		xhr.open('POST', url );
-		xhr.onload = function () {
-			let response;
-			try {
-				response = JSON.parse(xhr.response);
-			} catch (error) {
-				generateError(false, xhr.statusText);
-				reject(xhr.statusText);
-			}
-			if (xhr.status >= 200 && xhr.status < 300) {
-				if ( !response.data || !response.data.hasOwnProperty('request_success') ) {
-					generateError(response);
-					reject('invalid data error');
-				} else {
-					delete response.data.request_success;
-					resolve(response.data);
-				}
-			}
-		};
-		xhr.onerror = function () {
-			generateError(false, xhr.statusText);
-			reject(xhr.statusText);
-		};
+const ajaxRequest = async (method, path, requestData = null) => {
+	const url = method === 'GET'
+			? `${siteUrl('ajax')}&rest_action=${path.replace('?', '&')}`
+			: siteUrl('ajax');
 
-		let data = {};
-		data['path'] = path;
-		data['data'] = requestData;
-		data = JSON.stringify(data, stripControls);
-		xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-		xhr.send(data);
-	});
+	const options = {
+		method,
+		headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+	};
+
+	if (method === 'POST') {
+		options.body = JSON.stringify({ path, data: requestData }, stripControls);
+	}
+
+	try {
+		const response = await fetch(url, options);
+
+		if (!response.ok) {
+			generateError(false, response.statusText);
+			throw new Error(response.statusText);
+		}
+
+		const responseData = await response.json();
+
+		if (!responseData.data || !responseData.data.hasOwnProperty('request_success')) {
+			generateError(responseData);
+			throw new Error('Invalid data error');
+		}
+
+		delete responseData.data.request_success;
+		return responseData.data;
+	} catch (error) {
+		throw error;
+	}
 }
 
 /**
@@ -218,3 +147,29 @@ const generateError = (response, errorMsg) => {
 		autoClose: 15000,
 	});
 }
+
+export const setOption = (option, value) => makeRequest('burst/v1/options/set'+glue()+getNonce(), 'POST', {option: {option, value} });
+
+export const getFields = () => makeRequest('burst/v1/fields/get'+glue()+getNonce());
+export const setFields = (data) => {
+	return makeRequest('burst/v1/fields/set'+glue(), 'POST', {fields:data});
+}
+
+export const getGoalFields = () => makeRequest('burst/v1/goal_fields/get'+glue()+getNonce());
+export const setGoalFields = (data) => { return makeRequest('burst/v1/goal_fields/set'+glue()+getNonce(), 'POST', {fields:data} )};
+
+export const getGoals = () => makeRequest('burst/v1/goals/get'+glue()+getNonce());
+export const deleteGoal = (id) => makeRequest('burst/v1/goals/delete'+glue()+getNonce(), 'POST', {id:id});
+export const addGoal = () => makeRequest('burst/v1/goals/add'+glue()+getNonce(), 'POST', {});
+
+export const getBlock = (block) => makeRequest('burst/v1/block/'+block+glue()+getNonce());
+export const doAction = (action, data = {}) => makeRequest(`burst/v1/do_action/${action}`, 'POST', {action_data:data}).then(response => {
+	return response.hasOwnProperty('data') ? response.data : [];
+});
+export const getData = (type, startDate, endDate, range, args) => {
+	return makeRequest(`burst/v1/data/${type}${glue()+getNonce()}&date_start=${startDate}&date_end=${endDate}&date_range=${range}&args=${encodeURIComponent(JSON.stringify(args))}`);
+};
+export const getMenu = () => makeRequest('burst/v1/menu/'+glue()+getNonce());
+export const getPosts = (search) => makeRequest(`burst/v1/posts/${glue()}${getNonce()}&search=${search}`).then(response => {
+	return response.hasOwnProperty('posts') ? response.posts : [];
+});

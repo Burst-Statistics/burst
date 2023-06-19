@@ -1,5 +1,4 @@
 import {
-  useState,
   useEffect,
 } from 'react';
 
@@ -10,43 +9,72 @@ import GridItem from '../common/GridItem';
 import ProgressHeader from './ProgressHeader';
 import ProgressFooter from './ProgressFooter';
 
-const ProgressBlock = (props) => {
+const LoadingComponent = () => (
+    <div className="burst-task-element">
+    <span className={'burst-task-status burst-loading'}>
+      {__('Loading...', 'burst-statistics')}
+    </span>
+      <p className="burst-task-message">
+        {__('Loading notices...', 'burst-statistics')}
+      </p>
+    </div>
+);
+
+const NoTasksComponent = () => (
+    <div className="burst-task-element">
+    <span className={'burst-task-status burst-completed'}>
+      {__('Completed', 'burst-statistics')}
+    </span>
+      <p className="burst-task-message">
+        {__('No remaining tasks to show', 'burst-statistics')}
+      </p>
+    </div>
+);
+
+const ProgressBlock = ({ highLightField }) => {
   const loading = useNotices((state) => state.loading);
   const filter = useNotices((state) => state.filter);
   const notices = useNotices((state) => state.notices);
   const getNotices = useNotices((state) => state.getNotices);
   const filteredNotices = useNotices((state) => state.filteredNotices);
-  const setFilter = useNotices((state) => state.setFilter);
   const dismissNotice = useNotices((state) => state.dismissNotice);
 
   useEffect(() => {
     getNotices();
-  }, []);
+  }, [getNotices]);
 
   const displayNotices = filter === 'remaining' ? filteredNotices : notices;
+
+  const renderTasks = () => {
+    if (loading) {
+      return <LoadingComponent />;
+    }
+
+    if (displayNotices.length === 0) {
+      return <NoTasksComponent />;
+    }
+
+
+    return displayNotices.map((notice) =>
+        <TaskElement
+            key={notice.id}
+            notice={notice}
+            onCloseTaskHandler={() => dismissNotice(notice.id)}
+            highLightField={highLightField}
+        />,
+    );
+  }
 
   return (
       <GridItem
           className={'burst-column-2 burst-progress'}
           title={__('Progress', 'burst-statistics')}
-          controls={<ProgressHeader/>}
+          controls={<ProgressHeader countAll={notices.length} countRemaining={filteredNotices.length}/>}
           footer={<ProgressFooter/>}
       >
         <div className="burst-progress-block">
           <div className="burst-scroll-container">
-            {loading && <div className="burst-task-element">
-                            <span
-                                className={'burst-task-status burst-loading'}>{__(
-                                'Loading...', 'burst-statistics')}</span>
-              <p className="burst-task-message">{__(
-                  'Loading notices...', 'burst-statistics')}</p>
-            </div>}
-            {!loading && displayNotices.map(
-                (notice, i) => <TaskElement key={i} index={i} notice={notice}
-                                            onCloseTaskHandler={() => dismissNotice(
-                                                notice.id)}
-                                            highLightField={props.highLightField}/>,
-            )}
+            {renderTasks()}
           </div>
         </div>
       </GridItem>
