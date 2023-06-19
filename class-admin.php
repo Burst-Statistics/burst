@@ -143,7 +143,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 		public function plugin_settings_link( $links ) {
 			$settings_link = '<a href="'
-			                 . admin_url( "admin.php?page=burst" )
+			                 . admin_url( "index.php?page=burst" )
 			                 . '" class="burst-settings-link">'
 			                 . __( "Settings", 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $settings_link );
