@@ -176,9 +176,8 @@ if ( ! function_exists( 'burst_set_defaults' ) ) {
 	 * @param $networkwide
 	 */
 	function burst_set_defaults( $networkwide ) {
-		BURST()->admin->setup_defaults();
+		update_option('burst_set_defaults', true, false);
 	}
-
 	register_activation_hook( __FILE__, 'burst_set_defaults' );
 }
 
