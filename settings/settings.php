@@ -93,8 +93,6 @@ function burst_plugin_admin_scripts() {
 		$assetFilePath = $buildDirPath . '/' . $assetFilename;
 		$assetFile     = require( $assetFilePath );
 
-		error_log( print_r( $assetFile, true ) );
-
 		wp_enqueue_script(
 			'burst-settings',
 			plugins_url( 'build/' . $jsFilename, __FILE__ ),
