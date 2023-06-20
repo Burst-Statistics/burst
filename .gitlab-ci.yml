@@ -51,18 +51,32 @@ before_script:
 
   # Zip current plugin to allow it to be installed using wp-cli
   - zip -r burst-statistics.zip .
-  # Install the new plugin in our WP installation
+  # Install the plugin from the .zip file of the current branch. This is the branch we're testing.
   - wp plugin install burst-statistics.zip --allow-root --force
+  # Activate the plugin that we just installed.
   - wp plugin activate burst-statistics --allow-root
+  # Deactivate the plugin. This might be done to simulate a user deactivating the plugin, or to ensure a clean state before testing other functionality.
   - wp plugin deactivate burst-statistics --allow-root
+  # Uninstall the plugin. This removes the plugin's files and data from the WordPress site.
   - wp plugin uninstall burst-statistics --allow-root
-  # Now test an upgrade
+  # Now we're going to test an upgrade. Since Burst Statistics is a free plugin, we can install the current live version directly from the WordPress plugin repository.
+  # Install the live version of the plugin from the WordPress plugin repository.
   - wp plugin install burst-statistics --allow-root
+  # Activate the live version of the plugin.
   - wp plugin activate burst-statistics --allow-root
+  # Get the version of the live plugin and store it in a variable named OLD_VERSION.
+  - export OLD_VERSION=$(wp plugin get burst-statistics --field=version --allow-root)
+  # Now install the version of the plugin from the .zip file again. This simulates updating the plugin from the live version to the new version contained in the .zip file.
   - wp plugin install burst-statistics.zip --allow-root --force
+  # Get the version of the newly updated plugin and store it in a variable named NEW_VERSION.
+  - export NEW_VERSION=$(wp plugin get burst-statistics --field=version --allow-root)
+  # Deactivate the updated plugin.
   - wp plugin deactivate burst-statistics --allow-root
-  # WP plugin uninstall because otherwise uninstall.php won't run!
+  # Uninstall the updated plugin. This will trigger the uninstall.php script if present.
   - wp plugin uninstall burst-statistics --allow-root
+
+  # Check if the plugin update was successful by comparing the old and new version numbers. If they're different, the update was successful; if not, the update failed.
+  #  - if [ "$NEW_VERSION" != "$OLD_VERSION" ]; then echo "Update successful"; else echo "Update failed"; fi
 
 variables:
   # Configure mysql service (https://hub.docker.com/_/mysql/)
