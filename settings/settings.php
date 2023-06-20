@@ -68,42 +68,69 @@ function burst_get_chunk_translations($path) {
 }
 
 function burst_plugin_admin_scripts() {
-	$script_asset_path = __DIR__ . "/build/index.asset.php";
-	$script_asset      = require( $script_asset_path );
-	wp_enqueue_script(
-		'burst-settings',
-		plugins_url( 'build/index.js', __FILE__ ),
-		$script_asset['dependencies'],
-		$script_asset['version']
-	);
-	$path = defined('burst_pro') ? burst_path.'languages' : false;
-	wp_set_script_translations( 'burst-settings', 'burst-statistics', $path );
+	// replace with the actual path to your build directory
+	$buildDirPath = plugin_dir_path(__FILE__) . '/build';
 
-	wp_localize_script(
-		'burst-settings',
-		'burst_settings',
-		apply_filters( 'burst_localize_script', array(
-			'json_translations'       => burst_get_chunk_translations($path),
-			'menu'                    => burst_menu(),
-			'site_url'                => get_rest_url(),
-			'admin_ajax_url'          => add_query_arg( array( 'action' => 'burst_rest_api_fallback' ), admin_url('admin-ajax.php')),
-			'dashboard_url'           => add_query_arg( [ 'page' => 'burst' ], burst_admin_url() ),
-			'upgrade_link'            => is_multisite() ? 'https://burst-statistics.com/pricing/?src=burst-plugin' : 'https://burst-statistics.com/pricing/?src=burst-plugin',
-			'plugin_url'              => burst_url,
-			'network_link'            => network_site_url( 'plugins.php' ),
-			'is_pro'                  => burst_is_pro(),
-			'networkwide_active'      => ! is_multisite(),//true for single sites and network wide activated
-			'nonce'                   => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
-			'burst_nonce'             => wp_create_nonce( 'burst_nonce' ),
-			'current_ip'              => burst_get_ip_address(),
-			'user_roles'              => burst_get_user_roles(),
-			'date_ranges'             => burst_get_date_ranges(),
-			'date_format'             => get_option( 'date_format' ),
-			'tour_shown'              => burst_get_option( 'burst_tour_shown_once' ),
-			'gmt_offset'              => get_option( 'gmt_offset' ),
-			'goals_information_shown' => (int) get_option( 'burst_goals_information_shown' ),
-		) )
-	);
+	// get the filenames in the build directory
+	$filenames = scandir($buildDirPath);
+
+	// filter the filenames to get the JavaScript and asset filenames
+	$jsFilename = '';
+	$assetFilename = '';
+	foreach ($filenames as $filename) {
+		if (strpos($filename, 'index.') === 0) {
+			if (substr($filename, -3) === '.js') {
+				$jsFilename = $filename;
+			} elseif (substr($filename, -10) === '.asset.php') {
+				$assetFilename = $filename;
+			}
+		}
+	}
+
+
+	// check if the necessary files are found
+	if ($jsFilename !== '' && $assetFilename !== '') {
+		$assetFilePath = $buildDirPath . '/' . $assetFilename;
+		$assetFile     = require( $assetFilePath );
+
+		error_log( print_r( $assetFile, true ) );
+
+		wp_enqueue_script(
+			'burst-settings',
+			plugins_url( 'build/' . $jsFilename, __FILE__ ),
+			$assetFile['dependencies'],
+			$assetFile['version'],
+			true
+		);
+		$path = defined( 'burst_pro' ) ? burst_path . 'languages' : false;
+		wp_set_script_translations( 'burst-settings', 'burst-statistics', $path );
+
+		wp_localize_script(
+			'burst-settings',
+			'burst_settings',
+			apply_filters( 'burst_localize_script', array(
+				'json_translations'       => burst_get_chunk_translations( $path ),
+				'menu'                    => burst_menu(),
+				'site_url'                => get_rest_url(),
+				'admin_ajax_url'          => add_query_arg( array( 'action' => 'burst_rest_api_fallback' ), admin_url( 'admin-ajax.php' ) ),
+				'dashboard_url'           => add_query_arg( [ 'page' => 'burst' ], burst_admin_url() ),
+				'upgrade_link'            => is_multisite() ? 'https://burst-statistics.com/pricing/?src=burst-plugin' : 'https://burst-statistics.com/pricing/?src=burst-plugin',
+				'plugin_url'              => burst_url,
+				'network_link'            => network_site_url( 'plugins.php' ),
+				'is_pro'                  => burst_is_pro(),
+				'networkwide_active'      => ! is_multisite(),//true for single sites and network wide activated
+				'nonce'                   => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
+				'burst_nonce'             => wp_create_nonce( 'burst_nonce' ),
+				'current_ip'              => burst_get_ip_address(),
+				'user_roles'              => burst_get_user_roles(),
+				'date_ranges'             => burst_get_date_ranges(),
+				'date_format'             => get_option( 'date_format' ),
+				'tour_shown'              => burst_get_option( 'burst_tour_shown_once' ),
+				'gmt_offset'              => get_option( 'gmt_offset' ),
+				'goals_information_shown' => (int) get_option( 'burst_goals_information_shown' ),
+			) )
+		);
+	}
 }
 
 /**
