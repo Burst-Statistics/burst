@@ -662,6 +662,8 @@ if ( ! function_exists( 'burst_get_date_ranges' ) ) {
 			'last-90-days',
 			'last-month',
             'last-year',
+			'week-to-date',
+			'month-to-date',
             'year-to-date',
 		) );
 	}
