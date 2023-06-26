@@ -677,9 +677,9 @@ if ( ! function_exists( 'burst_create_statistic' ) ) {
 	function burst_create_statistic( $data ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
-		if ( burst_required_values_are_not_set( $data ) ) {
+		if ( ! burst_required_values_set( $data ) ) {
 			if ( WP_DEBUG ) {
-				error_log( 'Burst Statistics: burst_create_statistic->required values are not set' );
+				error_log( 'Burst Statistics: burst_create_statistic->required values are not set. Stats: ' . print_r( $data, true ) );
 			}
 			return;
 		}
@@ -753,6 +753,7 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 	 * @return array
 	 */
 	function burst_remove_empty_values( array $data ): array {
+		error_log( 'Burst Statistics: burst_remove_empty_values->' . print_r( $data, true ) );
 		foreach ( $data as $key => $value ) {
 			if ( $value === null || $value === '' ) {
 				unset( $data[ $key ] );
@@ -762,7 +763,7 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 		return $data;
 	}
 }
-if ( ! function_exists( 'burst_required_values_are_not_set' ) ) {
+if ( ! function_exists( 'burst_required_values_set' ) ) {
 	/**
 	 * Check if required values are set
 	 *
@@ -770,8 +771,13 @@ if ( ! function_exists( 'burst_required_values_are_not_set' ) ) {
 	 *
 	 * @return bool
 	 */
-	function burst_required_values_are_not_set( array $data ): bool {
-		return ! ( isset($data['uid']) && isset($data['page_url']) && isset($data['entire_page_url']) && isset($data['user_agent']) && isset($data['page_id']) );
+	function burst_required_values_set( array $data ): bool {
+		return (
+			isset($data['uid']) &&
+			isset($data['page_url']) &&
+			isset($data['entire_page_url']) &&
+			isset($data['user_agent'])
+		);
 	}
 }
 
