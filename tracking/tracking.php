@@ -253,7 +253,7 @@ if ( ! function_exists( 'burst_sanitize_page_id' ) ) {
 	 */
 	function burst_sanitize_page_id( $page_id ) {
 
-		return (int) $page_id > 0 ? (int) $page_id : null;
+		return (int) $page_id > 0 ? (int) $page_id : 0;
 	}
 }
 
@@ -771,7 +771,7 @@ if ( ! function_exists( 'burst_required_values_are_not_set' ) ) {
 	 * @return bool
 	 */
 	function burst_required_values_are_not_set( array $data ): bool {
-		return ! ( isset( $data['uid'] ) && isset( $data['page_url'] ) && isset( $data['entire_page_url'] ) && isset( $data['user_agent']) && isset( $data['page_id'] ) !== null );
+		return ! ( isset($data['uid']) && isset($data['page_url']) && isset($data['entire_page_url']) && isset($data['user_agent']) && isset($data['page_id']) );
 	}
 }
 
