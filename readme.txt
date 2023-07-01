@@ -65,6 +65,8 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.4.4 =
+* Improvement: For checking if the endpoint works, we changed file_get_contents to wp_remote_get to prevent issues with some hosts. props @ov3rfly
 
 = 1.4.3 =
 * Fix: Fixed an issue where the REST API would not work properly and the AJAX fallback was used. This has been resolved.
