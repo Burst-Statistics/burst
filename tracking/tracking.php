@@ -511,6 +511,7 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 	 * @return null[]|string[]
 	 */
 	function burst_get_user_agent_data( $user_agent ): array {
+
 		$ua = parse_user_agent( $user_agent );
 
 		switch ( $ua['platform'] ) {
@@ -557,10 +558,10 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 		}
 
 		return array_merge( array(
-			'browser'  => '',
-			'version'  => '',
-			'platform' => '',
-			'device'   => '',
+			'browser'  => 'unknown',
+			'version'  => '0',
+			'platform' => 'unknown',
+			'device'   => 'unknown',
 		), $ua );
 	}
 }
@@ -753,7 +754,6 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 	 * @return array
 	 */
 	function burst_remove_empty_values( array $data ): array {
-		error_log( 'Burst Statistics: burst_remove_empty_values->' . print_r( $data, true ) );
 		foreach ( $data as $key => $value ) {
 			if ( $value === null || $value === '' ) {
 				unset( $data[ $key ] );
