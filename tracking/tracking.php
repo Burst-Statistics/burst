@@ -558,10 +558,10 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 		}
 
 		return array_merge( array(
-			'browser'  => 'unknown',
-			'version'  => '0',
-			'platform' => 'unknown',
-			'device'   => 'unknown',
+			'browser'  => null,
+			'version'  => null,
+			'platform' => null,
+			'device'   => null,
 		), $ua );
 	}
 }
