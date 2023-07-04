@@ -10,9 +10,20 @@ export const useLoadData = (config) => {
   // merge dependencies from config with default dependencies
   let dependencies = config.dependencies || [];
 
+  const delay = ms => new Promise(res => setTimeout(res, ms));
 
   useEffect(() => {
     const loadData = async () => {
+      if (
+          config.type === 'insights' ||
+          config.type === 'compare' ||
+          config.type === 'devices' ||
+          config.type === 'pages' ||
+          config.type === 'referrers'
+      ) {
+        // timeout to prevent loading state from flashing
+        await delay( 10000);
+      }
       try {
         config.setLoading(true);
 
