@@ -68,7 +68,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		// if user agent is not set then this is an update hit
 		$is_update_hit = empty( $arr['user_agent'] );
-
 		$arr = apply_filters( 'burst_before_track_hit', $arr );
 
 		$session_arr = array(
@@ -82,7 +81,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		} else {
 			$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'] );
 		}
-
 
 		// Determine if hit is a bounce
 		// - check if previous page was not a bounce, then this is also not a bounce
@@ -111,14 +109,14 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		// update burst_statistics table
 		// Get the last record with the same uid and page_url. If it exists update it. If not, create a new record and add time() to $arr['time']
-		if ( $last_statistic['page_url'] === $arr['page_url'] || $last_statistic['session_id'] === '' ) {
+		if ( $is_update_hit && ( $last_statistic['page_url'] === $arr['page_url'] || $last_statistic['session_id'] === '' ) ) { // if update hit, make sure that the URL matches.
 			// add up time_on_page to the existing record
 			if ( $last_statistic ) {
 				$arr['time_on_page'] += $last_statistic['time_on_page'];
 			}
 			$arr['ID'] = $last_statistic['ID'];
 			burst_update_statistic( $arr );
-		} else {
+		} else if ( ! $is_update_hit ) {
 			$arr['time']             = time();
 			$arr['first_time_visit'] = burst_get_first_time_visit( $arr['uid'] );
 
@@ -141,21 +139,24 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 				$wpdb->query( $sql );
 			}
 		}
+
 		if ( array_key_exists( 'ID', $arr ) && $arr['ID'] > 0 ) {
 			$statistic_id = $arr['ID'];
-		} else {
-			$statistic_id = $insert_id;
+		} else  {
+			$statistic_id = $insert_id ?? 0;
 		}
 
-		$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr );
-		// if $arr['completed_goals'] is not an empty array, update burst_goals table
-		if ( ! empty( $completed_goals ) ) {
-			foreach ( $completed_goals as $goal_id ) {
-				$goal_arr = array(
-					'goal_id'      => $goal_id,
-					'statistic_id' => $statistic_id,
-				);
-				burst_create_goal_statistic( $goal_arr );
+		if ( $statistic_id > 0 ) {
+			$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr );
+			// if $arr['completed_goals'] is not an empty array, update burst_goals table
+			if ( ! empty( $completed_goals ) ) {
+				foreach ( $completed_goals as $goal_id ) {
+					$goal_arr = array(
+						'goal_id'      => $goal_id,
+						'statistic_id' => $statistic_id,
+					);
+					burst_create_goal_statistic( $goal_arr );
+				}
 			}
 		}
 
