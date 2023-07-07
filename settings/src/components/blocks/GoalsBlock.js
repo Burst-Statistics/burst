@@ -169,7 +169,7 @@ const GoalsBlock = () => {
             </ClickToFilter>
           </div>
           <div className="burst-goals-list">
-            <Tooltip arrow title={data.topPerformer.tooltip}
+            <Tooltip arrow title={decodeURI(data.topPerformer.tooltip)}
                      enterDelay={delayTooltip}>
               <div className="burst-goals-list-item">
                 <Icon name="winner"/>

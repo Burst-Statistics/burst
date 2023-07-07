@@ -20,7 +20,7 @@ const ReferrersBlock = (props) => {
     data.columns[0].cell = (row) => {
       return (
           <ClickToFilter filter="referrer" filterValue={row.referrer}>
-            {row.referrer}
+            {decodeURI(row.referrer)}
           </ClickToFilter>
       );
     };

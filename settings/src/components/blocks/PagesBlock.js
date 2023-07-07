@@ -18,7 +18,7 @@ const PagesBlock = () => {
   if (data.length !== 0) {
     const renderPageUrlCell = (row) => (
         <ClickToFilter filter="page_url" filterValue={row.page_url}>
-          {row.page_url}
+          {decodeURI(row.page_url)}
         </ClickToFilter>
     );
 

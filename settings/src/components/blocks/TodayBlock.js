@@ -98,7 +98,7 @@ const TodayBlock = () => {
                      enterDelay={delayTooltip}>
               <div className="burst-today-list-item">
                 <Icon name="winner"/>
-                <p className="burst-today-list-item-text">{data.mostViewed.title}</p>
+                <p className="burst-today-list-item-text">{decodeURI(data.mostViewed.title)}</p>
                 <p className="burst-today-list-item-number">{data.mostViewed.value}</p>
               </div>
             </Tooltip>
@@ -106,7 +106,7 @@ const TodayBlock = () => {
                      enterDelay={delayTooltip}>
               <div className="burst-today-list-item">
                 <Icon name="referrer"/>
-                <p className="burst-today-list-item-text">{data.referrer.title}</p>
+                <p className="burst-today-list-item-text">{decodeURI(data.referrer.title)}</p>
                 <p className="burst-today-list-item-number">{data.referrer.value}</p>
               </div>
             </Tooltip>
