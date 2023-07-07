@@ -55,7 +55,7 @@ export const PageFilter = () => {
                   <Icon name={filtersConf[filter].icon} size="16"/>
                   <p className={"burst-data-filter__label"}>{filtersConf[filter].label}</p>
                   <span className={"burst-data-filter-divider"}></span>
-                  <p className={"burst-data-filter__value"}>{title}</p>
+                  <p className={"burst-data-filter__value"}>{decodeURI(title)}</p>
                   <button onClick={() => removeFilter(filter)}><Icon name="times" color={'var(--rsp-grey-500)'} size="16"/></button>
                 </div>
             );
