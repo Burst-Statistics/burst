@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.2
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 
 Self-hosted and privacy-friendly analytics tool. 
 
@@ -65,6 +65,13 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.4.4 =
+* Improvement: For checking if the endpoint works, we changed file_get_contents to wp_remote_get to prevent issues with some hosts. props @ov3rfly
+* Fix: Tracking would sometimes not work properly when some data was missing like the user agent information. This has been resolved. props @ov3rfly
+* Improvement: Added month to date and week to date to the datepicker. props @daanvandenbergh
+* Fix: When tracking page visits as a goal, tracking would in some cases not work. This is now fixed.
+* Fix: Some users could not load data due to a firewall issue. This has been resolved.
+* Fix: Persian URLs would not show properly in the dashboard. This has been resolved.
 
 = 1.4.3 =
 * Fix: Fixed an issue where the REST API would not work properly and the AJAX fallback was used. This has been resolved.
