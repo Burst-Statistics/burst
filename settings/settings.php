@@ -349,7 +349,7 @@ function burst_settings_rest_route() {
 	) );
 
 	register_rest_route( 'burst/v1', 'data/(?P<type>[a-z\_\-]+)', array(
-		'methods'             => 'GET',
+		'methods'             => 'POST',
 		'callback'            => 'burst_get_data',
 		'permission_callback' => function() {
 			return burst_user_can_view();
@@ -520,10 +520,13 @@ function burst_other_plugins_data( $slug = false ) {
  * @return WP_Error | WP_REST_Response
  */
 function burst_get_data( WP_REST_Request $request ) {
+	// request get [JSON] args
+	$nonce  = $request->get_param( 'filters' );
+
+
 	if ( ! burst_user_can_view() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
-
 	$nonce  = $request->get_param( 'nonce' );
 	if ( ! wp_verify_nonce( $nonce, 'burst_nonce' ) ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
@@ -536,7 +539,16 @@ function burst_get_data( WP_REST_Request $request ) {
 		'date_end'   => BURST()->statistics->convert_date_to_utc( $request->get_param( 'date_end' ) . ' 23:59:59' ),
 		// add 23:59:59 to date
 	];
-	$request_args    = json_decode( $request->get_param( 'args' ), true );
+	if ( isset( $request->get_params()['args'])) {
+		$request_args    = json_decode( $request->get_param( 'args' ), true );
+	} else {
+		$request_args = [];
+	}
+	// merge get_json_params with request_args
+	$post_args = $request->get_json_params();
+	$request_args = array_merge( $request_args, $post_args );
+
+
 	$args['metrics'] = $request_args['metrics'] ?? [];
 	$args['filters'] = burst_sanitize_filters( $request_args['filters'] ?? [] );
 	switch ( $type ) {
@@ -665,9 +677,6 @@ function burst_rest_api_fields_set( $request, $ajax_data = false ) {
 		$config_field_index = array_search( $field['id'], $config_ids );
 		$config_field       = $config_fields[ $config_field_index ];
 		if ( ! $config_field_index ) {
-			if ( WP_DEBUG ) {
-				error_log( "Burst Statistics: unsetting " . $field['id'] . " as not existing field in BURST " );
-			}
 			unset( $fields[ $index ] );
 			continue;
 		}
@@ -746,18 +755,11 @@ function burst_update_option( $name, $value ) {
 	$config_field_index = array_search( $name, $config_ids );
 	$config_field       = $config_fields[ $config_field_index ];
 	if ( $config_field_index === false ) {
-		if ( WP_DEBUG ) {
-			error_log( "Burst Statistics: exiting " . $name . " as not existing field in burst " );
-		}
 		return;
 	}
 
 	$type = isset( $config_field['type'] ) ? $config_field['type'] : false;
 	if ( ! $type ) {
-		if ( WP_DEBUG ) {
-			error_log( "Burst Statistics: exiting " . $name . " has not existing type " );
-		}
-
 		return;
 	}
 	$options = get_option( 'burst_options_settings', [] );

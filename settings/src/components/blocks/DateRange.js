@@ -76,6 +76,20 @@ const availableRanges = {
       endDate: endOfMonth(addMonths(currentDateWithOffset, -1))
     })
   },
+  'week-to-date': {
+    label: __('Week to date', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfDay(addDays(currentDateWithOffset, -currentDateWithOffset.getDay())),
+      endDate: endOfDay(currentDateWithOffset)
+    })
+  },
+  'month-to-date': {
+    label: __('Month to date', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfMonth(currentDateWithOffset),
+      endDate: endOfDay(currentDateWithOffset)
+    })
+  },
   'year-to-date': {
     label: __('Year to date', 'burst-statistics' ),
     range: () => ({

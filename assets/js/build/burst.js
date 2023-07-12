@@ -297,7 +297,7 @@ async function burst_track_hit () {
 		'url': location.href,
 		'page_id': burst.page_id,
 		'referrer_url': document.referrer,
-		'user_agent': navigator.userAgent,
+		'user_agent': navigator.userAgent || 'unknown',
 		'device_resolution': window.screen.width * window.devicePixelRatio + "x" + window.screen.height * window.devicePixelRatio,
 		'time_on_page': await burst_get_time_on_page(),
 		'completed_goals': burst_completed_goals,

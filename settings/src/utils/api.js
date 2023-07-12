@@ -38,6 +38,7 @@ const makeRequest = async (path, method = 'GET', data = {}) => {
 		return response;
 	} catch (error) {
 		console.error(error);
+		generateError(false, error.message);
 
 		// Fallback to AJAX in case of error in the REST API
 		try {
@@ -70,7 +71,6 @@ const ajaxRequest = async (method, path, requestData = null) => {
 
 	try {
 		const response = await fetch(url, options);
-
 		if (!response.ok) {
 			generateError(false, response.statusText);
 			throw new Error(response.statusText);
@@ -128,24 +128,30 @@ const siteUrl = (type) => {
 
 const generateError = (response, errorMsg) => {
 	let error = __("Unexpected error", "burst-statistics");
-	if (response && response.errors) {
-		//get first entry of the errors object.
-		//This is the error message
-		for (let key in response.errors) {
-			if (response.errors.hasOwnProperty(key) && typeof response.errors[key] === 'string' && response.errors[key].length > 0) {
-				error = response.errors[key];
-				break;
+
+	if (response) {
+		if (response.errors) {
+			// get first entry of the errors object.
+			// this is the error message
+			for (let key in response.errors) {
+				if (response.errors.hasOwnProperty(key) && typeof response.errors[key] === 'string' && response.errors[key].length > 0) {
+					error = response.errors[key];
+					break;
+				}
 			}
+		} else if (typeof response === 'string' && response.length > 0) {
+			// If the response itself is an error message
+			error = response;
 		}
 	} else if (errorMsg) {
 		error = errorMsg;
 	}
 
 	toast.error(
-	__('Server error', 'burst-statistics') + ': ' + error,
-	{
-		autoClose: 15000,
-	});
+			__('Server error', 'burst-statistics') + ': ' + error,
+			{
+				autoClose: 15000,
+			});
 }
 
 export const setOption = (option, value) => makeRequest('burst/v1/options/set'+glue()+getNonce(), 'POST', {option: {option, value} });
@@ -167,7 +173,7 @@ export const doAction = (action, data = {}) => makeRequest(`burst/v1/do_action/$
 	return response.hasOwnProperty('data') ? response.data : [];
 });
 export const getData = (type, startDate, endDate, range, args) => {
-	return makeRequest(`burst/v1/data/${type}${glue()+getNonce()}&date_start=${startDate}&date_end=${endDate}&date_range=${range}&args=${encodeURIComponent(JSON.stringify(args))}`);
+	return makeRequest(`burst/v1/data/${type}${glue()+getNonce()}&date_start=${startDate}&date_end=${endDate}&date_range=${range}`, 'POST', args);
 };
 export const getMenu = () => makeRequest('burst/v1/menu/'+glue()+getNonce());
 export const getPosts = (search) => makeRequest(`burst/v1/posts/${glue()}${getNonce()}&search=${search}`).then(response => {
