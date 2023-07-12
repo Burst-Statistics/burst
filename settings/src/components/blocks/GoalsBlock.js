@@ -173,7 +173,7 @@ const GoalsBlock = () => {
                      enterDelay={delayTooltip}>
               <div className="burst-goals-list-item">
                 <Icon name="winner"/>
-                <p className="burst-goals-list-item-text">{data.topPerformer.title}</p>
+                <p className="burst-goals-list-item-text">{decodeURI(data.topPerformer.title)}</p>
                 <p className="burst-goals-list-item-number">{data.topPerformer.value}</p>
               </div>
             </Tooltip>

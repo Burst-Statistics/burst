@@ -150,34 +150,17 @@ EOT;
 			$url  = burst_get_beacon_url();
 			$data = array( 'request' => 'test' );
 
-			// use key 'http' even if you send the request to https://...
-			$options = array(
-				'http' => array(
-					'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-					'method'  => 'POST',
-					'content' => http_build_query( $data ),
-				),
-				"ssl" => array(
-					"verify_peer"=>false,
-					"verify_peer_name"=>false,
-				),
-			);
-			$context = stream_context_create( $options );
-			@file_get_contents( $url, false, $context );
-			$status_line = $http_response_header[0] ?? '';
-
+			$response = wp_remote_post( $url, array(
+				'method'      => 'POST',
+				'headers'     => array( "Content-type" => "application/x-www-form-urlencoded" ),
+				'body'        => $data,
+				'sslverify'   => false
+			));
 			$status = false;
-			if ( preg_match('{HTTP\/\S*\s(\d{3})}', $status_line, $matches) ) {
-				$status = $matches[1];
+			if ( !is_wp_error( $response ) && !empty( $response['response']['code'] ) ) {
+				$status = $response['response']['code'];
 			}
-
-			if ( $status !== "200") {
-				if ( WP_DEBUG ) {
-					error_log( 'Burst Statistics: Endpoint error, does not respond with 200. Response given: ' . $status );
-				}
-				return false;
-			}
-			return true;
+			return $status === 200;
 		}
 
 		/**

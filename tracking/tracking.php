@@ -68,7 +68,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		// if user agent is not set then this is an update hit
 		$is_update_hit = empty( $arr['user_agent'] );
-
 		$arr = apply_filters( 'burst_before_track_hit', $arr );
 
 		$session_arr = array(
@@ -82,7 +81,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		} else {
 			$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'] );
 		}
-
 
 		// Determine if hit is a bounce
 		// - check if previous page was not a bounce, then this is also not a bounce
@@ -111,14 +109,14 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		// update burst_statistics table
 		// Get the last record with the same uid and page_url. If it exists update it. If not, create a new record and add time() to $arr['time']
-		if ( $last_statistic['page_url'] === $arr['page_url'] || $last_statistic['session_id'] === '' ) {
+		if ( $is_update_hit && ( $last_statistic['page_url'] === $arr['page_url'] || $last_statistic['session_id'] === '' ) ) { // if update hit, make sure that the URL matches.
 			// add up time_on_page to the existing record
 			if ( $last_statistic ) {
 				$arr['time_on_page'] += $last_statistic['time_on_page'];
 			}
 			$arr['ID'] = $last_statistic['ID'];
 			burst_update_statistic( $arr );
-		} else {
+		} else if ( ! $is_update_hit ) {
 			$arr['time']             = time();
 			$arr['first_time_visit'] = burst_get_first_time_visit( $arr['uid'] );
 
@@ -141,21 +139,24 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 				$wpdb->query( $sql );
 			}
 		}
+
 		if ( array_key_exists( 'ID', $arr ) && $arr['ID'] > 0 ) {
 			$statistic_id = $arr['ID'];
-		} else {
-			$statistic_id = $insert_id;
+		} else  {
+			$statistic_id = $insert_id ?? 0;
 		}
 
-		$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr );
-		// if $arr['completed_goals'] is not an empty array, update burst_goals table
-		if ( ! empty( $completed_goals ) ) {
-			foreach ( $completed_goals as $goal_id ) {
-				$goal_arr = array(
-					'goal_id'      => $goal_id,
-					'statistic_id' => $statistic_id,
-				);
-				burst_create_goal_statistic( $goal_arr );
+		if ( $statistic_id > 0 ) {
+			$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr );
+			// if $arr['completed_goals'] is not an empty array, update burst_goals table
+			if ( ! empty( $completed_goals ) ) {
+				foreach ( $completed_goals as $goal_id ) {
+					$goal_arr = array(
+						'goal_id'      => $goal_id,
+						'statistic_id' => $statistic_id,
+					);
+					burst_create_goal_statistic( $goal_arr );
+				}
 			}
 		}
 
@@ -253,7 +254,7 @@ if ( ! function_exists( 'burst_sanitize_page_id' ) ) {
 	 */
 	function burst_sanitize_page_id( $page_id ) {
 
-		return (int) $page_id > 0 ? (int) $page_id : null;
+		return (int) $page_id > 0 ? (int) $page_id : 0;
 	}
 }
 
@@ -454,22 +455,19 @@ if ( ! function_exists( 'burst_goal_is_completed' ) ) {
 		if (
 			! isset( $goal['type'] ) ||
 			! isset( $goal['setup']['url'] ) ||
-			! isset( $hit_data['entire_page_url'] )
+			! isset( $hit_data['page_url'] )
 		) {
-			return false;
-		}
-
-
-		switch ( $goal['type'] ) {
-			case 'visit':
-				// @todo maybe add support to compare parts of url (e.g. /hello-world/ and /hello-world/?utm_source=google)
-				// if url in hit data is equal to goal url
-				if ( $hit_data['page_url'] === $goal['url'] ) {
-					return true;
-				}
-				break;
-			default:
-				return false;
+			switch ( $goal['type'] ) {
+				case 'visits':
+					// @todo maybe add support to compare parts of url (e.g. /hello-world/ and /hello-world/?utm_source=google)
+					// if url in hit data is equal to goal url
+					if ( $hit_data['page_url'] === $goal['url'] ) {
+						return true;
+					}
+					break;
+				default:
+					return false;
+			}
 		}
 	}
 }
@@ -493,7 +491,7 @@ if ( ! function_exists( 'burst_get_completed_goals' ) ) {
 				// if goal is completed
 				if ( burst_goal_is_completed( $goal, $hit_data ) ) {
 					// add goal id to completed goals array
-					$completed_server_goals[] = $goal['id'];
+					$completed_server_goals[] = $goal['ID'];
 				}
 			}
 		}
@@ -511,6 +509,7 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 	 * @return null[]|string[]
 	 */
 	function burst_get_user_agent_data( $user_agent ): array {
+
 		$ua = parse_user_agent( $user_agent );
 
 		switch ( $ua['platform'] ) {
@@ -557,10 +556,10 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 		}
 
 		return array_merge( array(
-			'browser'  => '',
-			'version'  => '',
-			'platform' => '',
-			'device'   => '',
+			'browser'  => null,
+			'version'  => null,
+			'platform' => null,
+			'device'   => null,
 		), $ua );
 	}
 }
@@ -677,9 +676,9 @@ if ( ! function_exists( 'burst_create_statistic' ) ) {
 	function burst_create_statistic( $data ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
-		if ( burst_required_values_are_not_set( $data ) ) {
+		if ( ! burst_required_values_set( $data ) ) {
 			if ( WP_DEBUG ) {
-				error_log( 'Burst Statistics: burst_create_statistic->required values are not set' );
+				error_log( 'Burst Statistics: burst_create_statistic->required values are not set. Stats: ' . print_r( $data, true ) );
 			}
 			return;
 		}
@@ -762,7 +761,7 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 		return $data;
 	}
 }
-if ( ! function_exists( 'burst_required_values_are_not_set' ) ) {
+if ( ! function_exists( 'burst_required_values_set' ) ) {
 	/**
 	 * Check if required values are set
 	 *
@@ -770,8 +769,13 @@ if ( ! function_exists( 'burst_required_values_are_not_set' ) ) {
 	 *
 	 * @return bool
 	 */
-	function burst_required_values_are_not_set( array $data ): bool {
-		return ! ( isset( $data['uid'] ) && isset( $data['page_url'] ) && isset( $data['entire_page_url'] ) && isset( $data['user_agent']) && isset( $data['page_id'] ) !== null );
+	function burst_required_values_set( array $data ): bool {
+		return (
+			isset($data['uid']) &&
+			isset($data['page_url']) &&
+			isset($data['entire_page_url']) &&
+			isset($data['user_agent'])
+		);
 	}
 }
 
