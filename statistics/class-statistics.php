@@ -446,7 +446,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'pageviews' => (int) $current['pageviews'],
 					'visitors' => (int) $current['visitors'],
 					'sessions' => (int) $current['sessions'],
-					'avg_time_on_page' => (int) $current['avg_time_on_page'],
 					'first_time_visitors' => (int) $current['first_time_visitors'],
 					'conversions' => $current_conversions,
 					'conversion_rate' => $current_conversion_rate
