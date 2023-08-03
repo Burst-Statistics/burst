@@ -65,6 +65,10 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+
+= 1.4.5 =
+* Improvement: Tested up to WordPress 6.3
+
 = 1.4.4 =
 * Improvement: For checking if the endpoint works, we changed file_get_contents to wp_remote_get to prevent issues with some hosts. props @ov3rfly
 * Fix: Tracking would sometimes not work properly when some data was missing like the user agent information. This has been resolved. props @ov3rfly
