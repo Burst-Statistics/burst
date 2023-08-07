@@ -1,5 +1,4 @@
 stages:
-  - build
   - test
 
 # Select what we should cache
