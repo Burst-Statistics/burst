@@ -5,10 +5,10 @@ Tags: statistics, analytics, privacy, analytics alternative
 Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
-Tested up to: 6.2
-Stable tag: 1.4.4
+Tested up to: 6.3
+Stable tag: 1.4.5
 
-Self-hosted and privacy-friendly analytics tool. 
+Self-hosted and privacy-friendly analytics tool.
 
 == Description ==
 Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.
@@ -65,6 +65,10 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+
+= 1.4.5 =
+* Improvement: Tested up to WordPress 6.3
+
 = 1.4.4 =
 * Improvement: For checking if the endpoint works, we changed file_get_contents to wp_remote_get to prevent issues with some hosts. props @ov3rfly
 * Fix: Tracking would sometimes not work properly when some data was missing like the user agent information. This has been resolved. props @ov3rfly
@@ -197,7 +201,7 @@ Not...yet.
 
 = 1.0.2 =
 * Fix: typo fix in generate_cached_data, props @seath
-* Fix: some strings with wrong text domain 
+* Fix: some strings with wrong text domain
 * Improvement: link in readme, props @8725z4twhugias
 
 = 1.0.1 =
