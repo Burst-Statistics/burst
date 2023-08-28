@@ -37,13 +37,10 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
 			$in_footer       = burst_get_option( 'enable_turbo_mode' );
 			if ( ! $this->exclude_from_tracking() ) {
-
-				global $post;
-				//set some defaults;
 				$localize_args = apply_filters( 'burst_tracking_options',
 					array(
 						'url'                   => get_rest_url(),
-						'page_id'               => isset( $post->ID ) ? (int) $post->ID : 0,
+						'page_id'               => get_queried_object_id(),
 						'cookie_retention_days' => 30,
 						'beacon_url'            => burst_get_beacon_url(),
 						'options'               => array(
