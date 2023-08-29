@@ -36,6 +36,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
 			$in_footer       = burst_get_option( 'enable_turbo_mode' );
+			$beacon_enabled = (int) burst_tracking_status_beacon();
+
 			if ( ! $this->exclude_from_tracking() ) {
 
 				global $post;
@@ -47,7 +49,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'cookie_retention_days' => 30,
 						'beacon_url'            => burst_get_beacon_url(),
 						'options'               => array(
-							'beacon_enabled'             => (int) burst_tracking_status_beacon(),
+							'beacon_enabled'             => $beacon_enabled,
 							'enable_cookieless_tracking' => (int) $cookieless,
 							'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
 							'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
@@ -56,11 +58,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'goals_script_url'	    => burst_get_goals_script_url(),
 					)
 				);
+
+				$deps = $beacon_enabled ? ['burst-timeme' ] : ['burst-timeme', 'wp-api-fetch'];
+
 				wp_enqueue_script( 'burst',
-					burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', array(
-						'burst-timeme',
-						'wp-api-fetch',
-					) ),
+					burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', $deps ),
 					burst_version, $in_footer );
 				wp_localize_script(
 					'burst',
