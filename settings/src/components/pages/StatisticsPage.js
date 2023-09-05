@@ -4,7 +4,7 @@ import InsightsBlock from '../blocks/InsightsBlock';
 import CompareBlock from '../blocks/CompareBlock';
 import DevicesBlock from '../blocks/DevicesBlock';
 import PagesBlock from '../blocks/PagesBlock';
-import ReferrersBlock from '../blocks/ReferrersBlock';
+import AcquisitionBlock from '../blocks/AcquisitionBlock';
 
 import {PageFilter} from '../blocks/PageFilter';
 import DateRange from '../blocks/DateRange';
@@ -34,7 +34,7 @@ const StatisticsPage = () => {
         <CompareBlock {...commonProps} />
         <DevicesBlock {...commonProps} />
         <PagesBlock {...commonProps} />
-        <ReferrersBlock {...commonProps} />
+        <AcquisitionBlock {...commonProps} />
       </div>
   );
 };

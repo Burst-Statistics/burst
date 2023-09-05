@@ -4,7 +4,7 @@
     input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="email"], input[type="month"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="week"] {
       background-color: var(--rsp-input-background-color);
       border: 1px solid var(--rsp-input-border-color);
-      border-radius: var(--rsp-border-radius-input);
+      border-radius: var(--rsp-border-radius-xs);
       color: var(--rsp-input-text-color);
     }
 
@@ -91,7 +91,7 @@
     .burst-warning {
       padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
       margin: var(--rsp-spacing-xxs) 0;
-      border-radius: var(--rsp-border-radius-input);
+      border-radius: var(--rsp-border-radius-xs);
       opacity: 1;
       transition: opacity 1.3s ease-in-out;
 
@@ -179,14 +179,14 @@
         button {
           background-color: var(--rsp-input-background-color);
           border: 1px solid var(--rsp-input-border-color);
-          border-radius: var(--rsp-border-radius-input) 0 0 var(--rsp-border-radius-input);
+          border-radius: var(--rsp-border-radius-xs) 0 0 var(--rsp-border-radius-xs);
           border-right: 0;
           cursor: pointer;
         }
 
         input {
           margin-left: 0;
-          border-radius: 0 var(--rsp-border-radius-input) var(--rsp-border-radius-input) 0
+          border-radius: 0 var(--rsp-border-radius-xs) var(--rsp-border-radius-xs) 0
         }
       }
     }

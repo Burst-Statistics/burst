@@ -758,3 +758,86 @@ if ( ! function_exists( 'burst_get_beacon_url' ) ) {
 
     }
 }
+
+if ( ! function_exists( 'burst_remote_file_exists' ) ) {
+	function burst_remote_file_exists( $url ) {
+		$ch = curl_init();
+		curl_setopt( $ch, CURLOPT_URL, $url );
+		// don't download content
+		curl_setopt( $ch, CURLOPT_NOBODY, 1 );
+		curl_setopt( $ch, CURLOPT_FAILONERROR, 1 );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+		$result = curl_exec( $ch );
+		curl_close( $ch );
+		if ( $result !== false ) {
+			return true;
+		}
+
+		return false;
+	}
+}
+
+if ( ! function_exists('burst_upload_dir')) {
+	/**
+	 * Get the upload dir
+	 *
+	 * @param string $path
+	 *
+	 * @return string
+	 */
+	function burst_upload_dir( string $path=''): string {
+		$uploads    = wp_upload_dir();
+		$upload_dir = trailingslashit( apply_filters( 'burst_upload_dir', $uploads['basedir'] ) ).'burst/'.$path;
+		if ( !is_dir( $upload_dir)  ) {
+			burst_create_missing_directories_recursively($upload_dir);
+		}
+
+		return trailingslashit( $upload_dir );
+	}
+}
+
+
+/**
+ * Create directories recursively
+ *
+ * @param string $path
+ */
+
+if ( !function_exists('burst_create_missing_directories_recursively') ) {
+	function burst_create_missing_directories_recursively( string $path ) {
+		if ( ! burst_user_can_manage() ) {
+			return;
+		}
+
+		$parts = explode( '/', $path );
+		$dir   = '';
+		foreach ( $parts as $part ) {
+			$dir .= $part . '/';
+			if (burst_has_open_basedir_restriction($dir)) {
+				continue;
+			}
+			if ( ! is_dir( $dir ) && strlen( $dir ) > 0 && is_writable( dirname( $dir, 1 ) ) ) {
+				if ( ! mkdir( $dir ) && ! is_dir( $dir ) ) {
+					throw new \RuntimeException( sprintf( 'Directory "%s" was not created', $dir ) );
+				}
+			}
+		}
+	}
+}
+
+
+if (!function_exists('burst_has_open_basedir_restriction')) {
+	function burst_has_open_basedir_restriction($path) {
+		// Default error handler is required
+		set_error_handler(null);
+		// Clean last error info.
+		error_clear_last();
+		// Testing...
+		@file_exists($path);
+		// Restore previous error handler
+		restore_error_handler();
+		// Return `true` if error has occurred
+		return ($error = error_get_last()) && $error['message'] !== '__clean_error_info';
+	}
+}

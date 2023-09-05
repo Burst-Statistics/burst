@@ -79,8 +79,9 @@ $animation-duration: 1.6s;
     background: linear-gradient(103deg, rgba(228, 229, 232, 0) 25%, rgba(228, 229, 232, 0.35) 50%, rgba(128, 186, 232, 0) 99%, rgba(125, 185, 232, 0) 75%); /* W3C */
   }
 }
-.burst-grid-item-placeholder{
+.burst .burst-grid-item.burst-grid-item-placeholder{
   min-height: 300px;
+  overflow: hidden;
 }
 
 /* animation */

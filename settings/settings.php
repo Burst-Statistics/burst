@@ -520,10 +520,6 @@ function burst_other_plugins_data( $slug = false ) {
  * @return WP_Error | WP_REST_Response
  */
 function burst_get_data( WP_REST_Request $request ) {
-	// request get [JSON] args
-	$nonce  = $request->get_param( 'filters' );
-
-
 	if ( ! burst_user_can_view() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
@@ -546,9 +542,8 @@ function burst_get_data( WP_REST_Request $request ) {
 	}
 	// merge get_json_params with request_args
 	$post_args = $request->get_json_params();
-    if ( $post_args ) {
-	    $request_args = array_merge( $request_args, $post_args );
-    }
+	$request_args = array_merge( $request_args, $post_args );
+
 
 	$args['metrics'] = $request_args['metrics'] ?? [];
 	$args['filters'] = burst_sanitize_filters( $request_args['filters'] ?? [] );

@@ -1,20 +1,50 @@
 import Icon from '../../utils/Icon';
 import {useEffect, useRef} from 'react';
-import {useCompareStore} from '../../store/useCompareStore';
 import {useFiltersStore} from '../../store/useFiltersStore';
 import {useDate} from '../../store/useDateStore';
 import ExplanationAndStatsItem from '../common/ExplanationAndStatsItem';
 import {__} from '@wordpress/i18n';
 import GridItem from '../common/GridItem';
 import CompareFooter from './CompareFooter';
+import {useInsightsStore} from '../../store/useInsightsStore';
+import {useQuery} from '@tanstack/react-query';
+import getInsightsData from '../../api/getInsightsData';
+import getCompareData from '../../api/getCompareData';
 
-const CompareBlock = (props) => {
-  const { startDate, endDate } = props;
-  const {data, loading } = useCompareStore((state) => ({
-    data: state.data,
-    loading: state.loading,
-  }));
+const CompareBlock = () => {
+  // const {startDate, endDate, range} = useDate( (state) => state);
+  const {startDate, endDate, range} = useDate( (state) => state);
+  const filters = useFiltersStore((state) => state.filters);
+  const args = { 'filters': filters};
 
+  const metrics = {
+    'pageviews': __('Pageviews', 'burst-statistics'),
+    'sessions': __('Sessions', 'burst-statistics'),
+    'visitors': __('Visitors', 'burst-statistics'),
+    'bounced_sessions': __('Bounce Rate', 'burst-statistics'),
+  };
+  let emptyData = {};
+// loop through metrics and set default values
+  Object.keys(metrics).forEach(function (key) {
+    emptyData[key] = {
+      'title': metrics[key],
+      'subtitle': '-',
+      'value': '-',
+      'change': '-',
+      'changeStatus': '',
+    };
+  });
+
+  const query = useQuery({
+    queryKey: ['compare', startDate, endDate, args],
+    queryFn: () => getCompareData({startDate, endDate, range, args}),
+    placeholderData: emptyData,
+  });
+
+  query.isLoading
+  const data = query.data || {};
+
+  const loading = query.isLoading || query.isFetching;
   let loadingClass = loading ? 'burst-loading' : '';
   return (
       <GridItem

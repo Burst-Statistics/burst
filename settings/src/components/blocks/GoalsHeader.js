@@ -6,10 +6,6 @@ import Icon from '../../utils/Icon';
 const GoalsHeader = ({goalId, goals}) => {
   const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
 
-  if (goalId === false) {
-    return null;
-  }
-
   // if goalValues is an empty array, return null
   if (!Object.keys(goals).length > 0) {
     return <Icon name={'loading'} />;

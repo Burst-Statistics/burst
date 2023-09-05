@@ -5,7 +5,7 @@
   background-color: var(--rsp-background-block-color);
   box-shadow: var(--rsp-box-shadow);
   z-index: 1;
-  border-radius: var(--rsp-border-radius-input);
+  border-radius: var(--rsp-border-radius-xs);
   &.burst-date-range-picker-open {
     display: flex;
   }
@@ -22,7 +22,7 @@
   background-color: var(--rsp-input-background-color);
   background: var(--rsp-grey-200);
   border: 1px solid var(--rsp-input-border-color);
-  border-radius: var(--rsp-border-radius-input);
+  border-radius: var(--rsp-border-radius-xs);
   .burst-icon{
     height: max-content;
   }
@@ -234,41 +234,41 @@
 .rdrInRange{}
 
 .rdrStartEdge{
-  border-top-left-radius: var(--rsp-border-radius-input);
-  border-bottom-left-radius: var(--rsp-border-radius-input);
+  border-top-left-radius: var(--rsp-border-radius-xs);
+  border-bottom-left-radius: var(--rsp-border-radius-xs);
   left: 2px;
 }
 
 .rdrEndEdge{
-  border-top-right-radius: var(--rsp-border-radius-input);
-  border-bottom-right-radius: var(--rsp-border-radius-input);
+  border-top-right-radius: var(--rsp-border-radius-xs);
+  border-bottom-right-radius: var(--rsp-border-radius-xs);
   right: 2px;
 }
 
 .rdrSelected{
-  border-radius: var(--rsp-border-radius-input);
+  border-radius: var(--rsp-border-radius-xs);
 }
 
 .rdrDayStartOfMonth, .rdrDayStartOfWeek{
   .rdrInRange, .rdrEndEdge{
-    border-top-left-radius: var(--rsp-border-radius-input);
-    border-bottom-left-radius: var(--rsp-border-radius-input);
+    border-top-left-radius: var(--rsp-border-radius-xs);
+    border-bottom-left-radius: var(--rsp-border-radius-xs);
     left: 2px;
   }
 }
 
 .rdrDayEndOfMonth, .rdrDayEndOfWeek{
   .rdrInRange,  .rdrStartEdge{
-    border-top-right-radius: var(--rsp-border-radius-input);
-    border-bottom-right-radius: var(--rsp-border-radius-input);
+    border-top-right-radius: var(--rsp-border-radius-xs);
+    border-bottom-right-radius: var(--rsp-border-radius-xs);
     right: 2px;
   }
 }
 
 .rdrDayStartOfMonth, .rdrDayStartOfWeek{
   .rdrDayInPreview, .rdrDayEndPreview{
-    border-top-left-radius: var(--rsp-border-radius-input);
-    border-bottom-left-radius: var(--rsp-border-radius-input);
+    border-top-left-radius: var(--rsp-border-radius-xs);
+    border-bottom-left-radius: var(--rsp-border-radius-xs);
     border-left-width: 2px;
     left: 0;
   }
@@ -276,8 +276,8 @@
 
 .rdrDayEndOfMonth, .rdrDayEndOfWeek{
   .rdrDayInPreview, .rdrDayStartPreview{
-    border-top-right-radius: var(--rsp-border-radius-input);
-    border-bottom-right-radius: var(--rsp-border-radius-input);
+    border-top-right-radius: var(--rsp-border-radius-xs);
+    border-bottom-right-radius: var(--rsp-border-radius-xs);
     border-right-width: 2px;
     right: 0;
   }
@@ -301,8 +301,8 @@
   border-top-width: 2px;
   border-left-width: 2px;
   border-bottom-width: 2px;
-  border-top-left-radius: var(--rsp-border-radius-input);
-  border-bottom-left-radius: var(--rsp-border-radius-input);
+  border-top-left-radius: var(--rsp-border-radius-xs);
+  border-bottom-left-radius: var(--rsp-border-radius-xs);
   left: 0;
 }
 
@@ -315,8 +315,8 @@
   border-top-width: 2px;
   border-right-width: 2px;
   border-bottom-width: 2px;
-  border-top-right-radius: var(--rsp-border-radius-input);
-  border-bottom-right-radius: var(--rsp-border-radius-input);
+  border-top-right-radius: var(--rsp-border-radius-xs);
+  border-bottom-right-radius: var(--rsp-border-radius-xs);
   right: 0;
 }
 

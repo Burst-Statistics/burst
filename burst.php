@@ -132,7 +132,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			require_once( burst_path . 'statistics/class-goal-statistics.php' );
 			require_once( burst_path . 'sessions/class-sessions.php' );
 			require_once( burst_path . 'goals/class-goals.php' );
-			require_once( burst_path . 'cron/cron.php' );
+			require_once( burst_path . 'cron.php' );
 			require_once( burst_path . 'upgrade.php' );
 			require_once( burst_path . 'class-db-upgrade.php' );
 

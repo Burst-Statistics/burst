@@ -5,25 +5,10 @@ import { format, parseISO, startOfDay, endOfDay, addDays, addMonths, isSameDay, 
 import Icon from '../../utils/Icon';
 import { __ } from '@wordpress/i18n';
 import { useDate } from '../../store/useDateStore';
-
-// get currentDate
-const currentDate = new Date();
-
-// get client's timezone offset in minutes
-const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
-
-// convert client's timezone offset from minutes to seconds
-const clientTimezoneOffsetSeconds = clientTimezoneOffsetMinutes * -60;
-
-// get current unix timestamp
-const currentUnix = Math.floor(currentDate.getTime() / 1000);
-
-// add burst_settings.gmt_offset x hour and client's timezone offset in
-// seconds to currentUnix
-const currentUnixWithOffsets = currentUnix + (burst_settings.gmt_offset * 3600) - clientTimezoneOffsetSeconds;
+import {getDateWithOffset} from '../../utils/formatting';
 
 // get current date by currentUnixWithOffsets
-const currentDateWithOffset = new Date(currentUnixWithOffsets * 1000);
+const currentDateWithOffset = getDateWithOffset();
 
 function isSelected(range) {
   const definedRange = this.range();

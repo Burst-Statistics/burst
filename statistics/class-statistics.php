@@ -446,6 +446,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'pageviews' => (int) $current['pageviews'],
 					'visitors' => (int) $current['visitors'],
 					'sessions' => (int) $current['sessions'],
+					'avg_time_on_page' => (int) $current['avg_time_on_page'],
 					'first_time_visitors' => (int) $current['first_time_visitors'],
 					'conversions' => $current_conversions,
 					'conversion_rate' => $current_conversion_rate
@@ -698,13 +699,28 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$data  = $wpdb->get_results( $sql , ARRAY_A);
 
 			$direct_text = __( "Direct", "burst-statistics" );
-			// find 'Direct in the data and replace with $direct_text. Use fastest method possible
-			foreach ( $data as $key => $row ) {
-				if ( $row['referrer'] == 'Direct' ) {
-					$data[ $key ]['referrer'] = $direct_text;
+
+			// Create a new array to hold the updated data
+			$updated_data = [];
+
+			foreach ($data as $row) {
+				if ($row['referrer'] == 'Direct') {
+					$row['referrer'] = $direct_text;
 				}
+
+				// Change the 'referrer' key to 'value'
+				$row['value'] = $row['referrer'];
+				$row['count'] = (int) $row['count'];
+				unset($row['referrer']);
+
+				// Add the updated row to the new data array
+				$updated_data[] = $row;
 			}
 
+			// Replace the original data array with the updated one
+			$data = $updated_data;
+
+			error_log(print_r($data, true));
 			return [
 				"columns" => $columns,
 				"data"    => $data,

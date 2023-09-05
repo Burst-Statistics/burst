@@ -23,7 +23,7 @@ ChartJS.register(
 
 const InsightsGraph = ({data, loading}) => {
   const options = useMemo(() => ({
-    responsive: true,
+    responsive: "true",
     maintainAspectRatio: false,
     cubicInterpolationMode: 'monotone',
     plugins: {

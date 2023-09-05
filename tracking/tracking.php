@@ -863,6 +863,13 @@ if ( ! function_exists( 'burst_get_ip_address' ) ) {
 			$current_ip = $ips[0];
 		}
 
+		// for testing purposes @todo delete
+//		$current_ip = "128.101.101.101"; //US ip
+//		$current_ip = "94.214.200.105"; //EU ip
+//		$current_ip = '185.86.151.11'; // UK ip
+//		$current_ip = '45.44.129.152'; // CA ip
+		$current_ip = "189.189.111.174"; //Mexico
+
 		return apply_filters( "burst_visitor_ip", $current_ip );
 	}
 }

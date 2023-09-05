@@ -1,17 +1,5 @@
-import {create} from 'zustand';
-import * as burst_api from '../utils/api';
-import {ClickableRowItem} from '../components/blocks/ClickableRowItem';
 import {__} from '@wordpress/i18n';
-
-
-// define the store
-export const usePagesStore = create((set) => ({
-  loading: true,
-  setLoading: (loading) => set({loading}),
-  metrics: ['page_url', 'pageviews'],
-  data: [],
-  setData: (data) => set({data}),
-}));
+import {getData} from '../utils/api';
 
 export const transformPagesData = (response) => {
   const metrics = response.metrics;
@@ -42,3 +30,15 @@ export const transformPagesData = (response) => {
 
   return response;
 };
+
+const getPagesData = async ({startDate, endDate, range, args}) => {
+  const { data } = await getData(
+      'pages',
+      startDate,
+      endDate,
+      range,
+      args
+  );
+  return transformPagesData(data);
+}
+export default getPagesData;
