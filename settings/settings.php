@@ -542,8 +542,9 @@ function burst_get_data( WP_REST_Request $request ) {
 	}
 	// merge get_json_params with request_args
 	$post_args = $request->get_json_params();
-	$request_args = array_merge( $request_args, $post_args );
-
+    if ( $post_args ) {
+	    $request_args = array_merge( $request_args, $post_args );
+    }
 
 	$args['metrics'] = $request_args['metrics'] ?? [];
 	$args['filters'] = burst_sanitize_filters( $request_args['filters'] ?? [] );
@@ -583,7 +584,7 @@ function burst_get_data( WP_REST_Request $request ) {
 			$data = BURST()->statistics->get_referrers_data( $args );
 			break;
 		default:
-			$data = apply_filters( "burst_get_data", [], $type, $request );
+			$data = apply_filters( "burst_get_data", $type, $args, $request );
 	}
 
 	return new WP_REST_Response( array( 'data' => $data, 'request_success' => true ), 200 );

@@ -36,18 +36,17 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
 			$in_footer       = burst_get_option( 'enable_turbo_mode' );
-			if ( ! $this->exclude_from_tracking() ) {
+			$beacon_enabled = (int) burst_tracking_status_beacon();
 
-				global $post;
-				//set some defaults;
+			if ( ! $this->exclude_from_tracking() ) {
 				$localize_args = apply_filters( 'burst_tracking_options',
 					array(
 						'url'                   => get_rest_url(),
-						'page_id'               => isset( $post->ID ) ? (int) $post->ID : 0,
+						'page_id'               => get_queried_object_id(),
 						'cookie_retention_days' => 30,
 						'beacon_url'            => burst_get_beacon_url(),
 						'options'               => array(
-							'beacon_enabled'             => (int) burst_tracking_status_beacon(),
+							'beacon_enabled'             => $beacon_enabled,
 							'enable_cookieless_tracking' => (int) $cookieless,
 							'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
 							'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
@@ -56,11 +55,11 @@ if ( ! class_exists( "burst_statistics" ) ) {
 						'goals_script_url'	    => burst_get_goals_script_url(),
 					)
 				);
+
+				$deps = $beacon_enabled ? ['burst-timeme' ] : ['burst-timeme', 'wp-api-fetch'];
+
 				wp_enqueue_script( 'burst',
-					burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', array(
-						'burst-timeme',
-						'wp-api-fetch',
-					) ),
+					burst_url . "assets/js/build/burst$cookieless_text$minified.js", apply_filters( 'burst_script_dependencies', $deps ),
 					burst_version, $in_footer );
 				wp_localize_script(
 					'burst',
@@ -446,7 +445,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'pageviews' => (int) $current['pageviews'],
 					'visitors' => (int) $current['visitors'],
 					'sessions' => (int) $current['sessions'],
-					'avg_time_on_page' => (int) $current['avg_time_on_page'],
 					'first_time_visitors' => (int) $current['first_time_visitors'],
 					'conversions' => $current_conversions,
 					'conversion_rate' => $current_conversion_rate
@@ -719,8 +717,6 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			// Replace the original data array with the updated one
 			$data = $updated_data;
-
-			error_log(print_r($data, true));
 			return [
 				"columns" => $columns,
 				"data"    => $data,
@@ -1107,7 +1103,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					break;
 				case '*':
 				default:
-					$sql = "*";
+					$sql = false;
 					break;
 			}
 
@@ -1125,7 +1121,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$i      = 1;
 			foreach ( $metrics as $metric ) {
 				$sql    = $this->get_sql_select_for_metric( $metric );
-				if ($sql !== '*') {
+				if ($sql !== false) {
 					// if metric starts with  'count(' and ends with ')', then it's a custom metric
 					// so we change the $metric name to 'metric'_count
 					if ( substr( $metric, 0, 6 ) === 'count(' && substr( $metric, - 1 ) === ')' ) {
@@ -1136,7 +1132,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 					$select .= $sql . ' as ' . $metric;
 				} else { // if it's a wildcard, then we don't need to add the alias
-					$select .= $sql;
+					$select .= $metric;
 				}
 				if ( $count !== $i ) { // if it's not the last metric, then we need to add a comma
 					$select .= ', ';

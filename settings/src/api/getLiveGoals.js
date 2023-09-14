@@ -11,6 +11,9 @@ import {formatNumber} from '../utils/formatting';
  */
 const getLiveGoals = async (args) => {
   const { startDate, endDate, range, filters, goal_id } = args;
+  if (!goal_id) {
+    return '-';
+  }
   const { data } = await getData(
       'live-goals',
       startDate,

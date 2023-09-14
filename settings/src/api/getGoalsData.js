@@ -31,6 +31,39 @@ export const transformTotalGoalsData = (response) => {
 };
 
 
+const placeholderData = {
+  today: {
+    title: __('Today', 'burst-statistics'),
+    icon: 'goals',
+  },
+  total: {
+    title: __('Total', 'burst-statistics'),
+    value: '-',
+    icon: 'goals',
+  },
+  topPerformer: {
+    title: '-',
+    value: '-',
+  },
+  pageviews: {
+    title: '-',
+    value: '-',
+  },
+  conversionPercentage: {
+    title: '-',
+    value: '-',
+  },
+  bestDevice: {
+    title: '-',
+    value: '-',
+    icon: 'desktop',
+  },
+  dateCreated: 0,
+  dateStart: 0,
+  dateEnd: 0,
+  status: 'inactive',
+}
+
 import {getData} from '../utils/api';
 /**
  * Get live goals
@@ -43,6 +76,9 @@ import {getData} from '../utils/api';
  */
 const getGoalsData = async (args) => {
   const { startDate, endDate, range, filters, goal_id } = args;
+  if (!goal_id) {
+    return placeholderData;
+  }
   const { data } = await getData(
       'goals',
       startDate,

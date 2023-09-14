@@ -9,7 +9,7 @@ import {useQuery} from '@tanstack/react-query';
 import getAcquisitionData from '../../api/getAcquisitionData';
 import {useAcquisitionStore} from '../../store/useAcquisitionStore';
 import Flag from './Flag';
-import SelectInput from './Fields/SelectInput';
+import AcquisitionSwitch from './Fields/AcquisitionSwitch';
 
 /**
  * Acquisition block, shows referrers, country or language  based on the filters
@@ -44,11 +44,8 @@ const AcquisitionBlock = (props) => {
     // make cell clickable
     if (type === 'countries') {
       data.columns[0].cell = (row) => {
-        console.log('row', row);
         return (
-            <ClickToFilter filter="country_code" filterValue={row.country_code} label={row.value}>
-              <Flag country={row.country_code} countryNiceName={row.value} />
-            </ClickToFilter>
+            <Flag country={row.country_code} countryNiceName={row.value} />
         );
       };
     } else {
@@ -64,8 +61,6 @@ const AcquisitionBlock = (props) => {
 
   let tableData = data.data;
   let columns = data.columns;
-  console.log('type', type);
-  console.log('tableData', tableData);
 
   function onChangeType(value) {
     setType(value);
@@ -75,7 +70,7 @@ const AcquisitionBlock = (props) => {
       <GridItem
           className={'burst-column-2 border-to-border datatable'}
           title={__('Acquisition', 'burst-statistics')}
-          controls={ <SelectInput value={type} onChange={(value) => onChangeType(value) } options={availableTypes} disabled={disabledTypes} /> }
+          controls={ <AcquisitionSwitch value={type} onChange={(value) => onChangeType(value) } options={availableTypes} disabled={disabledTypes} /> }
       >
         <div className={'burst-loading-container ' + loadingClass}>
           <DataTable

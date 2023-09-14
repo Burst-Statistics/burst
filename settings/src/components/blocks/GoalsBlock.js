@@ -81,6 +81,7 @@ const GoalsBlock = () => {
     dateEnd: 0,
     status: 'inactive',
   }
+  
   const queries = useQueries({
         queries: [
           {
@@ -104,6 +105,16 @@ const GoalsBlock = () => {
         ]
       }
   );
+
+  const onGoalsInfoClick = () => {
+    return () => {
+      burst_settings.goals_information_shown = '1';
+      setOption('goals_information_shown', true);
+      // chnage the #settings/goals to #settings/goals/add
+      window.location.hash = '#settings/goals';
+    }
+  }
+
 
 
   const live = queries[0].data;

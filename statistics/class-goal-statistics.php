@@ -30,7 +30,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			$goal_id      = $this->get_goal_id( $args['goal_id'] );
 			$today        = strtotime( 'today midnight' );
 			$goal         = BURST()->goals->get_goal_setup( $goal_id );
-			$goal_url     = $goal['url'];
+			$goal_url     = $goal['url'] ?? '';
 			$goal_url_sql = $goal_url === '' || $goal_url === '*' ? '' : $wpdb->prepare( 'AND statistics.page_url = %s', $goal_url );
 
 			$sql = "SELECT COUNT(*)
@@ -58,10 +58,10 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			// Sanitize input
 			$goal_id    = (int) $this->get_goal_id( $args['goal_id'] );
 			$goal       = BURST()->goals->get_goal_setup( $goal_id );
-			$goal_url   = $goal['url'];
-			$goal_start = (int) $goal['date_start'];
-			$goal_end   = (int) $goal['date_end'];
-			$goal_created = (int) $goal['date_created'];
+			$goal_url   = $goal['url'] ?? '';
+			$goal_start = (int) $goal['date_start'] ?? 0;
+			$goal_end   = (int) $goal['date_end'] ?? 0;
+			$goal_created = (int) $goal['date_created'] ?? 0;
 			$status = $goal['status'] ?? 'inactive';
 
 			// Initialize data array
