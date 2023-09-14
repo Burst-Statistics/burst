@@ -45,6 +45,25 @@ function burst_menu() {
 					],
 				],
 				[
+					'id'       => 'data',
+					'group_id' => 'archiving',
+					'title'    => __( 'Data', 'burst-statistics' ),
+					'step'     => 1,
+					'groups'   => [
+						[
+							'id'    => 'data_archiving',
+							'title' => __( 'Archiving', 'burst-statistics' ),
+						],
+						[
+							'id'    => 'restore_archives',
+							'title' => __( 'Archived Data', 'burst-statistics' ),
+							'pro'      => true,
+							'upgrade'     => 'https://complianz.io/pricing',
+							'pro_text' => __( "Manage your archived data with %sBurst Pro%s", 'burst-statistics' ),
+						],
+					],
+				],
+				[
 					'id'       => 'advanced',
 					'group_id' => 'tracking',
 					'title'    => __( 'Advanced', 'burst-statistics' ),
@@ -56,6 +75,7 @@ function burst_menu() {
 						],
 					],
 				],
+
 			],
 		],
 	];
@@ -183,6 +203,184 @@ function burst_fields( $load_values = true ) {
 			'disabled' => false,
 			'default'  => false,
 		],
+		[
+			'id'       => 'archive_data',
+			'menu_id'  => 'data',
+			'group_id' => 'data_archiving',
+			'options'  => [
+
+				'none' 	 => __('Don\'t manage',"burst-statistics"),
+				'archive' => __('Automatically Archive',"burst-statistics"),
+				'delete' => __('Automatically Delete',"burst-statistics"),
+			],
+			'pro' => [
+				'url' => 'https://burst-statistics.com/pricing/',
+				'disabled' => false,
+			],
+			'help'     => [
+				'label' => 'default',
+				'title' => __( 'Why should I manage old data?', 'burst-statistics' ),
+				'text'  => __( 'Managing old data can optimize storage and improve site performance. Choose to archive or delete based on your needs.', 'burst-statistics' ),
+				'url'   => 'https://burst-statistics.com/do-I-need-to-archive-my-data/',
+			],
+			'disabled' => ['archive'],
+			'type'     => 'select',
+			'label'    => __( 'Choose how to manage old statistics', 'burst-statistics' ),
+			'comment' => burst_admin_logged_in() ? sprintf(_x('Burst currently uses %s of your database.','e.g. Burst currently uses 10 MB of your database.', "burst-statistics"), get_option('burst_table_size')) : '',
+			'default'  => false,
+		],
+		[
+			'id'       => 'archive_after_months',
+			'menu_id'  => 'data',
+			'group_id' => 'data_archiving',
+			'min'   	 => 1,
+			'type'     => 'number',
+			'label'    => __( 'Retain data for how many months?', 'burst-statistics' ),
+			'disabled' => false,
+			'default'  => 24,
+			'react_conditions' => [
+				'relation' => 'AND',
+				[
+					'archive_data' => ['archive', 'delete'],
+				],
+			],
+		],
+
+		[
+			'id'       => 'confirm_delete_data',
+			'menu_id'  => 'data',
+			'group_id' => 'data_archiving',
+			'type'     => 'checkbox',
+			'label'    => __( 'Please confirm the deletion, without the possibility to restore.', 'burst-statistics' ),
+			'disabled' => false,
+			'default'  => false,
+			'react_conditions' => [
+				'relation' => 'AND',
+				[
+					'archive_data' => ['delete'],
+				],
+			],
+		],
+//		[
+//			'id'       => 'archive_data',
+//			'menu_id'  => 'data',
+//			'group_id' => 'data_archiving',
+//			'options'  => [
+//				'none' 	 => __('Never',"burst-statistics"),
+//				'archive' => __('Archive',"burst-statistics"),
+//				'delete' => __('Delete',"burst-statistics"),
+//			],
+//			'pro' => [
+//				'url' => 'https://burst-statistics.com/pricing/',
+//				'disabled' => false,
+//			],
+//			'help'     => [
+//				'label' => 'default',
+//				'title' => __( 'Do I need to archive my data?', 'burst-statistics' ),
+//				'text'  => __( 'In general, your hosting peformance and storage is related to your website traffic. In some cases, this might be skewed and you might want to minimize data stored in your database.', 'burst-statistics' ),
+//				'url'   => 'https://burst-statistics.com/do-I-need-to-archive-my-data/',
+//			],
+//			'disabled' => ['archive'],
+//			'type'     => 'select',
+//			'label'    => __( 'Do you want to automatically archive or delete statistics?', 'burst-statistics' ),
+//			'comment' => burst_admin_logged_in() ? sprintf(_x('Burst currently uses %s of your database.','e.g. Burst currently uses 10 MB of your database.', "burst-statistics"), get_option('burst_table_size')) : 'test',
+//			'default'  => false,
+//		],
+
+//		[
+//			'id'       => 'enable_automatic_archiving',
+//			'menu_id'  => 'data',
+//			'group_id' => 'data_archiving',
+//			'type'     => 'checkbox',
+//			'label'    => __( 'Enable monthly data archiving', 'burst-statistics' ),
+//			'pro' => [
+//				'url' => 'https://burst-statistics.com/pricing/',
+//				'disabled' => false,
+//			],
+//			'help'     => [
+//				'label' => 'default',
+//				'title' => __( 'Do I need to archive or delete my data?', 'burst-statistics' ),
+//				'text'  => __( 'In general, your hosting performance and storage is related to your website traffic. In some cases, this might be skewed and you might want to minimize data stored in your database.', 'burst-statistics' ),
+//				'url'   => 'https://burst-statistics.com/do-I-need-to-archive-my-data/',
+//			],
+//			'comment' => burst_admin_logged_in() ? sprintf(_x('Burst currently uses %s of your database.','e.g. Burst currently uses 10 MB of your database.', "burst-statistics"), get_option('burst_table_size')) : 'test',
+//			'disabled' => false,
+//			'default'  => false,
+//		],
+//
+//		[
+//			'id'       => 'archive_after_months',
+//			'menu_id'  => 'data',
+//			'group_id' => 'data_archiving',
+//			'min'   	 => 1,
+//			'type'     => 'select',
+//			'label'    => __( 'Archive data older than', 'burst-statistics' ),
+//			'disabled' => false,
+//			'default'  => '24',
+//			'options'  => [
+//				'3' 	 => __('3 months',"burst-statistics"),
+//				'6' => __('6 months',"burst-statistics"),
+//				'12' => __('1 year',"burst-statistics"),
+//				'24' => __('2 years',"burst-statistics"),
+//				'36' => __('3 years',"burst-statistics"),
+//				'48' => __('4 years',"burst-statistics"),
+//			],
+//			'react_conditions' => [
+//				'relation' => 'AND',
+//				[
+//					'enable_automatic_archiving' => true,
+//				],
+//			],
+//		],
+//
+		[
+			'id'       => 'restore_archives',
+			'menu_id'  => 'data',
+			'group_id' => 'restore_archives',
+			'type'     => 'restore_archives',
+			'disabled' => false,
+			'default'  => false,
+		],
+//
+//		[
+//			'id'       => 'enable_automatic_deletion',
+//			'menu_id'  => 'data',
+//			'group_id' => 'data_deleting',
+//			'type'     => 'checkbox',
+//			'label'    => __( 'Enable monthly data deleting', 'burst-statistics' ),
+//			'pro' => [
+//				'url' => 'https://burst-statistics.com/pricing/',
+//				'disabled' => false,
+//			],
+//			'disabled' => false,
+//			'default'  => false,
+//		],
+//
+//		[
+//			'id'       => 'delete_after_months',
+//			'menu_id'  => 'data',
+//			'group_id' => 'data_deleting',
+//			'min'   	 => 1,
+//			'type'     => 'select',
+//			'label'    => __( 'Delete data older than', 'burst-statistics' ),
+//			'warning' => __('This will delete all data older than the selected period. This cannot be undone.', 'burst-statistics'),
+//			'disabled' => false,
+//			'default'  => '24',
+//			'options'  => [
+//				'3' 	 => __('3 months',"burst-statistics"),
+//				'6' => __('6 months',"burst-statistics"),
+//				'12' => __('1 year',"burst-statistics"),
+//				'24' => __('2 years',"burst-statistics"),
+//				'36' => __('3 years',"burst-statistics"),
+//				'48' => __('4 years',"burst-statistics"),
+//			],
+//			'react_conditions' => [
+//				'relation' => 'AND',
+//				[
+//					'enable_automatic_deletion' => true,
+//				],
+//			],
+//		],
 	];
 
 	$fields = apply_filters( 'burst_fields', $fields );
@@ -327,5 +525,3 @@ function burst_get_template( $template ) {
 
 	return $html;
 }
-
-

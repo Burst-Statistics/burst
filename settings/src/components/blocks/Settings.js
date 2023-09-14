@@ -21,18 +21,9 @@ const Settings = (props) => {
   const fieldsLoaded = useFields((state) => state.fieldsLoaded);
   const saveFields = useFields((state) => state.saveFields);
   const fields = useFields((state) => state.fields);
-  const nextButtonDisabled = useFields((state) => state.nextButtonDisabled);
-  const changedFields = useFields((state) => state.changedFields);
-  const updateFieldsData = useFields((state) => state.updateFieldsData);
-
   const subMenuLoaded = useMenu((state) => state.subMenuLoaded);
   const subMenu = useMenu((state) => state.subMenu);
-  const setSelectedSidebarMenuItem = useMenu((state) => state.setSelectedSidebarMenuItem);
   const selectedSubMenuItem = useMenu((state) => state.selectedSubMenuItem);
-  const selectedMainMenuItem = useMenu((state) => state.selectedMainMenuItem);
-  const nextMenuItem = useMenu((state) => state.nextMenuItem);
-  const previousMenuItem = useMenu((state) => state.previousMenuItem);
-
   const saveChangedGoalValues = useGoalFieldsStore((state) => state.saveChangedGoalValues);
   const setChangedGoalValues = useGoalFieldsStore((state) => state.setChangedGoalValues);
 
@@ -57,20 +48,10 @@ const Settings = (props) => {
     // await saveCookies(); // save goals
   }
 
-  const saveAndContinue = async () => {
-    if ( !nextButtonDisabled) {
-      await saveData();
-      setSelectedSidebarMenuItem(nextMenuItem);
-    }
-  }
-
-  const previousStep = () => {
-    setSelectedSidebarMenuItem(previousMenuItem);
-  }
   const { menu_items: menuItems } = subMenu;
   if ( !subMenuLoaded ||  !fieldsLoaded || menuItems.length ===0  ) {
     return (
-          <div className="burst-grid-item burst-grid-item-placeholder  burst-column-2"></div>
+          <div className="burst-grid-item burst-grid-item-placeholder burst-column-2"></div>
     );
   }
   let selectedFields = fields.filter(field => field.menu_id === selectedSubMenuItem);
@@ -119,8 +100,6 @@ const Settings = (props) => {
     }
   }
   notices = notices.filter(notice => notice.label.toLowerCase()!=='completed');
-  let continueLink = nextButtonDisabled ? `#${selectedMainMenuItem}/${selectedSubMenuItem}` : `#${selectedMainMenuItem}/${nextMenuItem}`;
-
   const isLicenseBlock = selectedFields[0].id === 'license';
   return (
       <>
@@ -146,7 +125,7 @@ const Settings = (props) => {
               {noticesExpanded && __("Collapse all","burst-statistics")}
             </div>
           </div>
-          {notices.map((field, i) => <Help key={i} noticesExpanded={noticesExpanded} index={i} help={field} fieldId={field.id}/>)}
+          {notices.map((field, i) => <Help key={i} noticesExpanded={noticesExpanded} index={i} help={field} fieldId={field.id} item={field.help}/>)}
         </div>
       </>
   )

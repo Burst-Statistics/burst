@@ -3,6 +3,9 @@
 .burst {
   .burst {
     &-select-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       .burst-icon > div {
         margin-top: 2px;
         margin-bottom: -2px;

@@ -1,7 +1,6 @@
 import {
     TextControl,
     RadioControl,
-    SelectControl,
     TextareaControl,
     __experimentalNumberControl as NumberControl,
     ToggleControl,
@@ -14,7 +13,10 @@ import IpBlock from './Fields/IpBlock';
 import UserRoleBlock from './Fields/UserRoleBlock';
 import GoalsSettings from './Goals/GoalsSettings';
 import RadioButtons from './Fields/RadioButtons';
+import SelectInput from './Fields/SelectInput';
 import License from './Fields/License';
+import RestoreArchivesControl from './Fields/RestoreArchivesControl';
+import LabelWrapper from './Fields/LabelWrapper';
 /*
  * https://react-data-table-component.netlify.app
  */
@@ -103,6 +105,10 @@ const Field = (props) => {
 				  onChange={ ( fieldValue ) => onChangeHandler(fieldValue) }
 			  />
 			  {field.comment && <div dangerouslySetInnerHTML={{__html:field.comment}}></div>}
+				{field.warning && <div className={'burst-warning'}>
+					<Icon name={'warning'} color={'red'}/>
+					<span>{field.warning}</span>
+				</div>}
 			</div>
 		);
 	}
@@ -184,23 +190,6 @@ const Field = (props) => {
 		);
 	}
 
-	if ( field.type==='phone' ){
-		return (
-			<div className={highLightClass}>
-			  { validated && <Icon name='success' color='green'/>}
-			  { !validated && <Icon name='times'/>}
-			  <TextControl
-				  autoComplete="tel"
-				  help={ field.comment }
-				  placeholder={ field.placeholder }
-				  label={ field.label }
-				  onChange={ ( fieldValue ) => onChangeHandler(fieldValue) }
-				  value= { fieldValue }
-				  disabled={disabled}
-			  />
-			</div>
-		);
-	}
 
 	if ( field.type==='button' ){
 		return (
@@ -236,6 +225,7 @@ const Field = (props) => {
 					label={ field.label }
 					value= { fieldValue }
 					disabled={disabled}
+					min={field.min ? field.min : 0}
 				/>
 			</div>
 		);
@@ -258,15 +248,27 @@ const Field = (props) => {
 
 	if ( field.type==='select') {
 		return (
+			<div className={highLightClass} >
+				<SelectInput
+					disabled={ disabled }
+					label={<LabelWrapper field={field} />}
+					onChange={ ( fieldValue ) => onChangeHandler(fieldValue) }
+					value= { fieldValue }
+					options={ options }
+					field={field}
+				/>
+				{field.warning && <div className={'burst-warning'}>
+					<Icon name={'warning'} color={'red'}/>
+					<span>{field.warning}</span>
+				</div>}
+			</div>
+		)
+	}
+
+	if ( field.type==='restore_archives') {
+		return (
 			<div className={highLightClass}>
-			  <SelectControl
-				  disabled={ disabled }
-				  help={ field.comment }
-				  label={ field.label }
-				  onChange={ ( fieldValue ) => onChangeHandler(fieldValue) }
-				  value= { fieldValue }
-				  options={ options }
-			  />
+			  <RestoreArchivesControl disabled={ disabled }/>
 			</div>
 		)
 	}

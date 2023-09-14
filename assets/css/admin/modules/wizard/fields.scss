@@ -89,7 +89,7 @@
 
     // warning shown below the input field
     .burst-warning {
-      padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
+      padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
       margin: var(--rsp-spacing-xxs) 0;
       border-radius: var(--rsp-border-radius-xs);
       opacity: 1;
@@ -98,6 +98,10 @@
       color: var(--rsp-red);
       background-color: var(--rsp-red-faded);
       border: 1px solid var(--rsp-red);
+
+      display: flex;
+      gap: var(--rsp-spacing-xs);
+      align-items: center;
     }
 
     .burst-warning.hidden {

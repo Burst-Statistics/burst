@@ -2,6 +2,7 @@ import Field from "./Field";
 import Hyperlink from "../../utils/Hyperlink";
 import { __ } from '@wordpress/i18n';
 import {useMenu} from '../../store/useMenuStore';
+import useLicenseStore from "../../store/useLicenseStore";
 
 /**
  * Render a grouped block of settings
@@ -10,13 +11,7 @@ const SettingsGroup = (props) => {
     let upgrade='https://burst-statistics.com/pricing/?src=burst-plugin';
     const subMenu = useMenu(state => state.subMenu);
     const selectedSubMenuItem = useMenu(state => state.selectedSubMenuItem);
-
-    const getLicenseStatus = () => {
-//         if ( props.pageProps.hasOwnProperty('licenseStatus') ){
-//             return props.pageProps['licenseStatus'];
-//         }
-        return 'invalid';
-    }
+    const {licenseStatus} = useLicenseStore();
 
     let selectedFields = [];
     //get all fields with group_id props.group_id
@@ -55,7 +50,7 @@ const SettingsGroup = (props) => {
     }
     let msg = activeGroup.pro_text ? activeGroup.pro_text : __("Learn more about %sPro%s", "burst-statistics");
     if ( burst_settings.is_pro ) {
-        status = getLicenseStatus();
+        status = licenseStatus;
         if ( status === 'empty' || status === 'deactivated' ) {
             msg = burst_settings.messageInactive;
         } else {
@@ -82,7 +77,7 @@ const SettingsGroup = (props) => {
                 <div className="burst-locked-overlay">
                     <span className="burst-task-status burst-pro">{__("Upgrade","burst-statistics")}</span>
                     <span>
-						{ burst_settings.is_pro && <span>{msg}&nbsp;<a className="burst-locked-link" href="settings/src/components/pages/Settings/SettingsGroup#settings/license">{__("Check license", "burst-statistics")}</a></span>}
+						{ burst_settings.is_pro && <span>{msg}&nbsp;<a className="burst-locked-link" href="#settings/license">{__("Check license", "burst-statistics")}</a></span>}
                         { !burst_settings.is_pro && <Hyperlink target="_blank" text={msg} url={upgrade}/> }
 					</span>
                 </div>

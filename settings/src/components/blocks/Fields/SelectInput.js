@@ -41,6 +41,7 @@ const SelectInput = ({
 
   return (
       <div className="burst-input-group burst-select-group" key={label}>
+        <label className="burst-input-group__label">{label}</label>
         <Select.Root
             //ref={innerRef}
             value={value}
