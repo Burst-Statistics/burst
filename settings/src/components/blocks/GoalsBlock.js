@@ -146,7 +146,7 @@ const GoalsBlock = () => {
               <div className="information-overlay">
                 <div className="information-overlay-container">
                   <h4>{__('Goals', 'burst-statistics')}</h4>
-                  <p>{__('The all new goals! Keep track of customizable goals and get valuable insights. Add your first goal!', 'burst-statistics')}</p>
+                  <p>{__('Keep track of customizable goals and get valuable insights. Add your first goal!', 'burst-statistics')}</p>
                   <p><a href={'https://burst-statistics.com/how-to-set-goals/'}>{__('Learn how to set your first goal', 'burst-statistics')}</a></p>
                   <a onClick={onGoalsInfoClick()} className="burst-button burst-button--primary">{__('Create my first goal', 'burst-statistics')}</a>
                 </div>

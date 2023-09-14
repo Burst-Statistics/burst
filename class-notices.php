@@ -142,19 +142,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 						],
 					],
 				],
-				'new_feature_goals' => [
-					'callback'  => '_true_',
-					'output'    => [
-						'true' => [
-							'msg'         => __( "New! Configure Burst to track your website goals.", 'burst-statistics' ),
-							'icon'        => 'new',
-							'url'         => 'https://burst-statistics.com/new-feature-goals/',
-							'dismissible' => true,
-							'plusone'     => true,
-						],
-					],
-
-				],
 				'leave-feedback' => [
 					'callback' => '_true_',
 					'status' => 'all',
