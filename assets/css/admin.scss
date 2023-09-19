@@ -53,7 +53,6 @@
     @import 'admin/modules/statistics/insights.scss';
     @import 'admin/modules/statistics/daterange.scss';
     @import 'admin/modules/statistics/filters.scss';
-
     @import 'admin/modules/toast/main.scss';
 
   @import 'admin/modules/settings.scss';
@@ -62,5 +61,7 @@
   @import 'admin/modules/animations.scss';
   @import 'admin/modules/tooltip.scss';
   @import "admin/modules/tour.scss";
+  @import "admin/modules/archives.scss";
+  @import "admin/modules/premium.scss";
 @import 'admin/states.scss';
 @import 'admin/theme.scss';

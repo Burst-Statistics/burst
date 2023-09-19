@@ -39,6 +39,10 @@ export const useFields = create(( set, get ) => ({
           state.changedFields.push(field);
         })
     )
+
+    let conditionallyEnabledFields = updateFieldsListWithConditions(get().fields);
+    set((state) => ({fields: conditionallyEnabledFields}));
+
   },
   updateField: (id, value) => {
     set(
@@ -54,23 +58,24 @@ export const useFields = create(( set, get ) => ({
     )
   },
 
-  addHelpNotice : (id, label, text, title) => {
+  addHelpNotice : (id, label, text, title, url) => {
     //create help object
+
     let help = {};
     help.label=label;
     help.text=text;
+    if (url) help.url=url;
     if (title) help.title=title;
-    let fields = get().fields;
-
-    //add to selected field
-    fields.forEach(function(fieldItem, i) {
-      if (fieldItem.id === id && !fieldItem.help ){
-        fieldItem.help = help
-        fields[i] = fieldItem;
-        set((state) => ({fields: fields}));
-      }
-    });
-
+    set(
+        produce((state) => {
+          const fieldIndex = state.fields.findIndex(field => {
+            return field.id===id;
+          });
+          if (fieldIndex!==-1) {
+            state.fields[fieldIndex].help = help;
+          }
+        })
+    )
   },
   saveFields: async () => {
     try {
@@ -90,7 +95,8 @@ export const useFields = create(( set, get ) => ({
 
       const response = await burst_api.setFields(saveFields);
       progress = response.progress;
-      fields = response.fields;
+      fields = updateFieldsListWithConditions(response.fields);
+
       set((state) => ({changedFields: [], fields:fields, progress:progress}));
       return Promise.resolve(response);
     }
@@ -147,87 +153,197 @@ const isNextButtonDisabled = (fields, selectedMenuItem) => {
   return requiredFields.length > 0;
 }
 
+// export const updateFieldsListWithConditions = (fields) => {
+//   let newFields = [];
+//   fields.forEach(function(field, i  ) {
+//     let enabled = !( field.hasOwnProperty('react_conditions') && !validateConditions(field.react_conditions, fields, field.id) );
+//     //we want to update the changed fields if this field has just become visible. Otherwise the new field won't get saved.
+//     const newField = {...field};
+//     newField.conditionallyDisabled = !enabled;
+//     newFields.push(newField);
+//   });
+//   return newFields;
+// }
 export const updateFieldsListWithConditions = (fields) => {
-  let newFields = [];
-  fields.forEach(function(field, i  ) {
-    let enabled = !( field.hasOwnProperty('react_conditions') && !validateConditions(field.react_conditions, fields) );
-    //we want to update the changed fields if this field has just become visible. Otherwise the new field won't get saved.
+  return fields.map(field => {
+    const enabled = !(field.hasOwnProperty('react_conditions') && !validateConditions(field.react_conditions, fields, field.id));
     const newField = {...field};
-    newField.conditionallyDisabled = !enabled;
-    newFields.push(newField);
+
+    if (newField.condition_action === 'disable') {
+      newField.disabled = !enabled;
+    } else {
+      newField.conditionallyDisabled = !enabled;
+    }
+
+    return newField;
   });
-  return newFields;
 }
-export const validateConditions = (conditions, fields) => {
+// export const validateConditions = (conditions, fields) => {
+//   let relation = conditions.relation === 'OR' ? 'OR' : 'AND';
+//   let conditionApplies = relation==='AND';
+//   let result = {};
+//
+//   for (const key in conditions) {
+//     if ( conditions.hasOwnProperty(key) ) {
+//       let thisConditionApplies = relation==='AND';
+//       let subConditionsArray = conditions[key];
+//       if ( subConditionsArray.hasOwnProperty('relation') ) {
+//         let subConditionsResult = validateConditions(subConditionsArray, fields);
+//         thisConditionApplies = subConditionsResult.conditionApplies;
+//       } else {
+//         for ( let conditionField in subConditionsArray ) {
+//           let invert = conditionField.indexOf('!')===0;
+//           if ( subConditionsArray.hasOwnProperty(conditionField) ) {
+//             let conditionValue = subConditionsArray[conditionField];
+//             conditionField = conditionField.replace('!','');
+//             let conditionFields = Array.isArray(fields) ? fields.filter(field => field.id === conditionField) : [];
+//             if (conditionFields.length > 0) {
+//               let field = conditionFields[0];
+//               let actualValue = field.value;
+//               if ( field.type==='checkbox' ) {
+//                 thisConditionApplies = actualValue === conditionValue;
+//               } else if ( field.type==='multicheckbox' ) {
+//                 thisConditionApplies = false;
+//                 let arrayValue = actualValue;
+//                 if ( arrayValue.length===0 ) {
+//                   thisConditionApplies = false;
+//                 } else {
+//                   for (const key of Object.keys(arrayValue)) {
+//                     if ( !Array.isArray(conditionValue) ) conditionValue = [conditionValue];
+//                     if ( conditionValue.includes(arrayValue[key])){
+//                       thisConditionApplies = true;
+//                       break;
+//                     }
+//                   }
+//                 }
+//               } else if ( field.type==='radio' ) {
+//                 if ( Array.isArray(conditionValue) ) {
+//                   thisConditionApplies = conditionValue.includes(actualValue);
+//                 } else {
+//                   thisConditionApplies = conditionValue === actualValue;
+//                 }
+//               } else {
+//                 if (typeof conditionValue === 'string' && conditionValue.indexOf('EMPTY')!==-1){
+//                   thisConditionApplies = actualValue.length===0;
+//                 } else if (Array.isArray(conditionValue)) {
+//                   thisConditionApplies = false;
+//                   for (const value of conditionValue) {
+//                     if (String(actualValue).toLowerCase() === value.toLowerCase()) {
+//                       thisConditionApplies = true;
+//                       break;
+//                     }
+//                   }
+//                 } else {
+//                   thisConditionApplies = String(actualValue).toLowerCase() === conditionValue.toLowerCase();
+//                 }
+//               }
+//             }
+//           }
+//           if ( invert ){
+//             thisConditionApplies = !thisConditionApplies;
+//           }
+//           if ( relation === 'AND' ) {
+//             conditionApplies = conditionApplies && thisConditionApplies;
+//           } else {
+//             conditionApplies = conditionApplies || thisConditionApplies;
+//           }
+//         }
+//       }
+//     }
+//   }
+//
+//   return conditionApplies ? 1 : 0;
+// }
+
+export const validateConditions = (conditions, fields, fieldId, isSub) => {
   let relation = conditions.relation === 'OR' ? 'OR' : 'AND';
   let conditionApplies = relation==='AND';
-  let result = {};
-
   for (const key in conditions) {
     if ( conditions.hasOwnProperty(key) ) {
       let thisConditionApplies = relation==='AND';
       let subConditionsArray = conditions[key];
+      //check if there's a subcondition
       if ( subConditionsArray.hasOwnProperty('relation') ) {
-        let subConditionsResult = validateConditions(subConditionsArray, fields);
-        thisConditionApplies = subConditionsResult.conditionApplies;
-      } else {
-        for ( let conditionField in subConditionsArray ) {
-          let invert = conditionField.indexOf('!')===0;
-          if ( subConditionsArray.hasOwnProperty(conditionField) ) {
-            let conditionValue = subConditionsArray[conditionField];
-            conditionField = conditionField.replace('!','');
-            let conditionFields = Array.isArray(fields) ? fields.filter(field => field.id === conditionField) : [];
-            if (conditionFields.length > 0) {
-              let field = conditionFields[0];
-              let actualValue = field.value;
-              if ( field.type==='checkbox' ) {
-                thisConditionApplies = actualValue === conditionValue;
-              } else if ( field.type==='multicheckbox' ) {
+        thisConditionApplies = validateConditions(subConditionsArray, fields, fieldId, true)===1;
+        if ( relation === 'AND' ) {
+          conditionApplies = conditionApplies && thisConditionApplies;
+        } else {
+          conditionApplies = conditionApplies || thisConditionApplies;
+        }
+      }
+      for ( let conditionField in subConditionsArray ) {
+        if (conditionField==='hidden') {
+          thisConditionApplies = false;
+          continue;
+        }
+        let invert = conditionField.indexOf('!')===0;
+        if ( subConditionsArray.hasOwnProperty(conditionField) ) {
+          let conditionValue = subConditionsArray[conditionField];
+          conditionField = conditionField.replace('!','');
+          let conditionFields = fields.filter(field => field.id === conditionField);
+
+          if ( conditionFields.hasOwnProperty(0) ){
+            let field = conditionFields[0];
+            let actualValue = field.value;
+
+            if ( field.type==='text_checkbox' ) {
+              thisConditionApplies = actualValue.hasOwnProperty('show') && actualValue['show'] == conditionValue;
+            } else if ( field.type==='checkbox' ) {
+              thisConditionApplies = actualValue == conditionValue; //with == it can be either true or 1
+            } else if ( field.type==='multicheckbox' ) {
+              //multicheckbox conditions
+              //loop through objects
+              thisConditionApplies = false;
+              let arrayValue = actualValue;
+              if ( !Array.isArray(arrayValue) ){
+                arrayValue = arrayValue !== '' ? [] : [arrayValue];
+              }
+              if ( arrayValue.length===0 ) {
                 thisConditionApplies = false;
-                let arrayValue = actualValue;
-                if ( arrayValue.length===0 ) {
-                  thisConditionApplies = false;
-                } else {
-                  for (const key of Object.keys(arrayValue)) {
-                    if ( !Array.isArray(conditionValue) ) conditionValue = [conditionValue];
-                    if ( conditionValue.includes(arrayValue[key])){
-                      thisConditionApplies = true;
-                      break;
-                    }
-                  }
-                }
-              } else if ( field.type==='radio' ) {
-                if ( Array.isArray(conditionValue) ) {
-                  thisConditionApplies = conditionValue.includes(actualValue);
-                } else {
-                  thisConditionApplies = conditionValue === actualValue;
-                }
               } else {
-                if (typeof conditionValue === 'string' && conditionValue.indexOf('EMPTY')!==-1){
-                  thisConditionApplies = actualValue.length===0;
-                } else if (Array.isArray(conditionValue)) {
-                  thisConditionApplies = false;
-                  for (const value of conditionValue) {
-                    if (String(actualValue).toLowerCase() === value.toLowerCase()) {
-                      thisConditionApplies = true;
-                      break;
-                    }
+                for (const key of Object.keys(arrayValue)) {
+                  if ( !Array.isArray(conditionValue) ) conditionValue = [conditionValue];
+                  if ( conditionValue.includes(arrayValue[key])){
+                    thisConditionApplies = true;
+                    break;
                   }
-                } else {
-                  thisConditionApplies = String(actualValue).toLowerCase() === conditionValue.toLowerCase();
                 }
+              }
+            } else if ( field.type==='radio' || field.type==='document') {
+              //as the regions field can be both radio and multicheckbox, an array is possible for a radio field
+              if ( Array.isArray(conditionValue) ) {
+                thisConditionApplies = conditionValue.includes(actualValue);
+              } else {
+                thisConditionApplies = conditionValue === actualValue;
+              }
+            } else {
+              if (conditionValue === true ) {
+                thisConditionApplies = actualValue===1 || actualValue === "1" || actualValue === true;
+              } else if (conditionValue === false ) {
+                thisConditionApplies = actualValue === 0 || actualValue === "0" || actualValue === false;
+              } else if (conditionValue.indexOf('EMPTY')!==-1) {
+                thisConditionApplies = actualValue.length === 0;
+              } else if (Array.isArray(conditionValue)) {
+                thisConditionApplies = conditionValue.includes(actualValue);
+              } else {
+                thisConditionApplies = String(actualValue).toLowerCase() === conditionValue.toLowerCase();
               }
             }
           }
-          if ( invert ){
-            thisConditionApplies = !thisConditionApplies;
-          }
-          if ( relation === 'AND' ) {
-            conditionApplies = conditionApplies && thisConditionApplies;
-          } else {
-            conditionApplies = conditionApplies || thisConditionApplies;
-          }
         }
+        if ( invert ){
+          thisConditionApplies = !thisConditionApplies;
+        }
+        if ( relation === 'AND' ) {
+          conditionApplies = conditionApplies && thisConditionApplies;
+        } else {
+          conditionApplies = conditionApplies || thisConditionApplies;
+        }
+      }
+      if ( relation === 'AND' ) {
+        conditionApplies = conditionApplies && thisConditionApplies;
+      } else {
+        conditionApplies = conditionApplies || thisConditionApplies;
       }
     }
   }

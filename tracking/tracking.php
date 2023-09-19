@@ -702,6 +702,8 @@ if ( ! function_exists( 'burst_update_statistic' ) ) {
 	function burst_update_statistic( $data ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
+		// if page_id is set, unset it, because it should already be in the db. Otherwise it will be overwritten with 0
+		unset($data['page_id']);
 		$wpdb->update(
 			$wpdb->prefix . 'burst_statistics',
 			(array) $data,

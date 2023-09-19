@@ -210,7 +210,7 @@ let burst_api_request = obj => {
 	// generate a new token every request
 	return new Promise((resolve, reject) => {
 		// if browser supports sendBeacon use it
-		if (window.navigator.sendBeacon && burst.options.beacon_enabled) {
+		if (burst.options.beacon_enabled) {
 			// send the request using sendBeacon
 			window.navigator.sendBeacon(burst.beacon_url, JSON.stringify( obj.data) );
 			resolve('ok');

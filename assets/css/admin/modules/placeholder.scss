@@ -60,8 +60,8 @@ $animation-duration: 1.6s;
   }
 }
 
-.burst-page-placeholder .burst-grid-item, .burst-grid-item-placeholder {
-  overflow: hidden;
+.burst .burst-page-placeholder .burst-grid-item, .burst-grid-item-placeholder {
+  overflow: hidden !important;
   position: relative;
   z-index: 1;
 
@@ -75,7 +75,7 @@ $animation-duration: 1.6s;
     position: absolute;
     display: inline-block;
     z-index: 1;
-    animation: slide 1s infinite;
+    animation: slide 2s infinite;
     background: linear-gradient(103deg, rgba(228, 229, 232, 0) 25%, rgba(228, 229, 232, 0.35) 50%, rgba(128, 186, 232, 0) 99%, rgba(125, 185, 232, 0) 75%); /* W3C */
   }
 }
