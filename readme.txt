@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.3
-Stable tag: 1.4.5
+Stable tag: 1.4.6
 
 Self-hosted and privacy-friendly analytics tool.
 
@@ -65,6 +65,12 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+
+= 1.4.6 =
+* New: Delete old data to manage your database disk usage.
+* Improvement: Don't add WordPress script dependencies if endpoint is working correctly, props @gauravtiwari.
+* Improvement: Use fallback method for Burst endpoint test, props @ov3rfly.
+* Fix: For when page id was always empty, props @huubl.
 
 = 1.4.5 =
 * Improvement: Tested up to WordPress 6.3
