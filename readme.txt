@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.3
-Stable tag: 1.4.6
+Stable tag: 1.4.6.1
 
 Self-hosted and privacy-friendly analytics tool.
 
@@ -65,6 +65,8 @@ We really want your feedback, please use the "Useful Links" section to get in co
 Not...yet.
 
 == Change log ==
+= 1.4.6.1 =
+Fix: Build issue for our dashboard.
 
 = 1.4.6 =
 * New: Delete old data to manage your database disk usage.
