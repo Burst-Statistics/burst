@@ -58,7 +58,7 @@ function burst_menu() {
 							'id'    => 'restore_archives',
 							'title' => __( 'Archived Data', 'burst-statistics' ),
 							'pro'      => true,
-							'upgrade'     => 'https://complianz.io/pricing',
+							'upgrade'     => 'https://burst-statistics.com/pricing?src=plugin-archive-data',
 							'pro_text' => __( "Manage your archived data with %sBurst Pro%s", 'burst-statistics' ),
 						],
 					],
