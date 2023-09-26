@@ -185,6 +185,14 @@ if ( ! function_exists( 'burst_set_defaults' ) ) {
 	}
 	register_activation_hook( __FILE__, 'burst_set_defaults' );
 }
+if ( ! function_exists( 'cancel_activation_when_pro_active') ) {
+	function cancel_activation_when_pro_active() {
+		if ( defined('burst_pro') ) {
+			wp_die( __( 'Burst Pro is already active. Please deactivate the pro version before activating the free version.', 'burst-statistics' ) );
+		}
+	}
+	register_activation_hook( __FILE__, 'cancel_activation_when_pro_active' );
+}
 
 if ( !function_exists( 'burst_clear_scheduled_hooks' )) {
 	register_deactivation_hook( __FILE__, 'burst_clear_scheduled_hooks' );
