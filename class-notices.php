@@ -150,20 +150,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 							'icon'        => 'new',
 							'url'         => 'https://burst-statistics.com/new-feature-goals/',
 							'dismissible' => true,
-						],
-					],
-				],
-				'new_delete_old_data' => [
-					'callback'  => '_true_',
-					'output'    => [
-						'true' => [
-							'msg'         => __( "New! Automatically remove outdated data to optimize your database size.", 'burst-statistics' ),
-							'icon'        => 'new',
-							'url'         => '#settings/data',
-							'dismissible' => true,
 							'plusone'     => true,
 						],
 					],
+
 				],
 				'leave-feedback' => [
 					'callback' => '_true_',

@@ -58,7 +58,7 @@ function burst_menu() {
 							'id'    => 'restore_archives',
 							'title' => __( 'Archived Data', 'burst-statistics' ),
 							'pro'      => true,
-							'upgrade'     => 'https://burst-statistics.com/pricing?src=plugin-archive-data',
+							'upgrade'     => 'https://complianz.io/pricing',
 							'pro_text' => __( "Manage your archived data with %sBurst Pro%s", 'burst-statistics' ),
 						],
 					],
@@ -226,10 +226,8 @@ function burst_fields( $load_values = true ) {
 			'disabled' => ['archive'],
 			'type'     => 'select',
 			'label'    => __( 'Choose how to manage old statistics', 'burst-statistics' ),
-			// option is string with more than 1 letter
-			'comment' => burst_admin_logged_in() && strlen( get_option( 'burst_table_size' ) ) > 1
-				? sprintf( _x( 'Burst currently uses %s of your database.', 'e.g. Burst currently uses 10 MB of your database.', "burst-statistics" ), get_option( 'burst_table_size' ) ) : '',
-			'default' => false,
+			'comment' => burst_admin_logged_in() ? sprintf(_x('Burst currently uses %s of your database.','e.g. Burst currently uses 10 MB of your database.', "burst-statistics"), get_option('burst_table_size')) : '',
+			'default'  => false,
 		],
 		[
 			'id'       => 'archive_after_months',

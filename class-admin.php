@@ -265,14 +265,13 @@ if ( ! class_exists( "burst_admin" ) ) {
 			if ( defined("burst_pro_version" ) ) {
 				return false;
 			}
-			$start_day = 20;
-			$end_day = 27;
+			$start_day = 21;
+			$end_day = 28;
 			$current_year = date("Y");//e.g. 2021
 			$current_month = date("n");//e.g. 3
 			$current_day = date("j");//e.g. 4
 
-			if ( $current_year == 2023 &&
-                 $current_month == 11 &&
+			if ( $current_year == 2022 && $current_month == 11 &&
 			     $current_day >=$start_day &&
 			     $current_day <= $end_day
 			) {

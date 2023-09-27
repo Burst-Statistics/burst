@@ -161,7 +161,7 @@
 
     &.burst-column-2 {
       grid-column: span 2;
-      @media(max-width: $rsp-break-m) {
+      @media(max-width: $rsp-break-s) {
         grid-column: span 4;
       }
     }
