@@ -34,7 +34,7 @@ const GoalSetup = (props) => {
 
   let type = goalFields.goal_type.value;
   let iconName = type && goalFields.goal_type.options[type] ? goalFields.goal_type.options[type].icon : 'eye';
-  let title = goalFields.goal_title.value ? goalFields.goal_title.value : __('New goal', 'burst-statistics');
+  let title = goalFields.goal_title.value ? goalFields.goal_title.value : '';
   let dateCreated = goal && goal.date_created !== undefined && goal.date_created > 1 ? goal.date_created : 1;
 
   return (
@@ -45,6 +45,7 @@ const GoalSetup = (props) => {
 
             <span>
               <EditableText value={title}
+                            defaultValue={__('New goal', 'burst-statistics')}
                             onChange={handleTitleChange}/>
             </span>
             <button

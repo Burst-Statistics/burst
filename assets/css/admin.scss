@@ -39,9 +39,14 @@
   @import 'admin/modules/progress.scss';
   @import "admin/modules/placeholder.scss";
   @import 'admin/modules/other-plugins.scss';
-  @import 'admin/modules/tips-tricks.scss';
 
+  @import 'admin/modules/tips-tricks.scss';
+  @import 'admin/modules/pro-popover.scss';
+  @import 'admin/modules/inputs/AcquisitionSwitch.scss';
+  @import 'admin/modules/pill.scss';
   @import 'admin/modules/dashboard/goals.scss';
+
+  @import 'admin/modules/inputs/SelectInput.scss';
 
   @import 'admin/modules/wizard.scss';
     @import 'admin/modules/wizard/notice.scss';
@@ -53,6 +58,7 @@
     @import 'admin/modules/statistics/insights.scss';
     @import 'admin/modules/statistics/daterange.scss';
     @import 'admin/modules/statistics/filters.scss';
+    @import 'admin/modules/statistics/countries.scss';
     @import 'admin/modules/toast/main.scss';
 
   @import 'admin/modules/settings.scss';

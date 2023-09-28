@@ -485,7 +485,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 		}
 
 
-		public function get_devices_data( $args = array() ) {
+		public function get_devices_title_and_value_data( $args = array() ) {
 			global $wpdb;
 			$defaults = array(
 				'date_start' => 0,
@@ -512,21 +512,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			// loop through results and add count to array
 			foreach ( $devicesResult as $key => $data ) {
 				$name       = $data['device'];
-				$device_sql = " device='$name' ";
-				$sql        = "SELECT browser from (SELECT browser, COUNT(*) as count, device
-	                        FROM ($from) as without_bounces WHERE device IS NOT NULL AND device <> '' AND browser is not null
-	                        GROUP BY browser, device ) as grouped_devices where $device_sql order by count desc limit 1";
-				$browser    = $wpdb->get_var( $sql );
-
-				$sql = "SELECT platform from (SELECT platform, COUNT(*) as count, device
-	                        FROM ($from) as without_bounces where device IS NOT NULL AND device <> '' AND platform is not null
-	                        GROUP BY platform, device ) as grouped_devices where $device_sql order by count desc limit 1";
-				$os  = $wpdb->get_var( $sql );
-
 				$devices[ $name ] = [
 					'count'   => $data['count'],
-					'browser' => $browser,
-					'os'      => $os,
 				];
 				$total            += $data['count'];
 			}
@@ -538,32 +525,84 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$default_data = [
 				'all'     => [
 					'count'   => 0,
-					'os'      => '',
-					'browser' => '',
 				],
 				'desktop' => [
 					'count'   => 0,
+				],
+				'tablet'  => [
+					'count'   => 0,
+				],
+				'mobile'  => [
+					'count'   => 0,
+				],
+				'other'   => [
+					'count'   => 0,
+				],
+			];
+
+			return wp_parse_args( $devices, $default_data );
+
+		}
+
+		public function get_devices_subtitle_data( $args = array() ) {
+			global $wpdb;
+			$defaults = array(
+				'date_start' => 0,
+				'date_end'   => 0,
+				'filters'    => [],
+			);
+			$args     = wp_parse_args( $args, $defaults );
+			$start    = (int) $args['date_start'];
+			$end      = (int) $args['date_end'];
+			$devices  = [];
+			$filters  = burst_sanitize_filters($args['filters']);
+			$filters['bounce'] = 0;
+
+
+			$from          = $this->get_sql_table( $start, $end, ['*'], $filters );
+
+			$devices = ['desktop', 'tablet', 'mobile', 'other'];
+
+			// loop through results and add count to array
+			foreach ( $devices as $device )  {
+				$device_sql = " device='$device' ";
+				$sql        = "SELECT browser from (SELECT browser, COUNT(*) as count, device
+	                        FROM ($from) as without_bounces WHERE device IS NOT NULL AND device <> '' AND browser is not null
+	                        GROUP BY browser, device ) as grouped_devices where $device_sql order by count desc limit 1";
+				$browser    = $wpdb->get_var( $sql );
+
+				$sql = "SELECT platform from (SELECT platform, COUNT(*) as count, device
+	                        FROM ($from) as without_bounces where device IS NOT NULL AND device <> '' AND platform is not null
+	                        GROUP BY platform, device ) as grouped_devices where $device_sql order by count desc limit 1";
+				$os  = $wpdb->get_var( $sql );
+
+				$results[ $device ] = [
+					'browser' => $browser,
+					'os'      => $os,
+				];
+			}
+
+			// setup defaults
+			$default_data = [
+				'desktop' => [
 					'os'      => '',
 					'browser' => '',
 				],
 				'tablet'  => [
-					'count'   => 0,
 					'os'      => '',
 					'browser' => '',
 				],
 				'mobile'  => [
-					'count'   => 0,
 					'os'      => '',
 					'browser' => '',
 				],
 				'other'   => [
-					'count'   => 0,
 					'os'      => '',
 					'browser' => '',
 				],
 			];
 
-			return wp_parse_args( $devices, $default_data );
+			return wp_parse_args( $results, $default_data );
 
 		}
 
@@ -697,13 +736,26 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$data  = $wpdb->get_results( $sql , ARRAY_A);
 
 			$direct_text = __( "Direct", "burst-statistics" );
-			// find 'Direct in the data and replace with $direct_text. Use fastest method possible
-			foreach ( $data as $key => $row ) {
-				if ( $row['referrer'] == 'Direct' ) {
-					$data[ $key ]['referrer'] = $direct_text;
+
+			// Create a new array to hold the updated data
+			$updated_data = [];
+
+			foreach ($data as $row) {
+				if ($row['referrer'] == 'Direct') {
+					$row['referrer'] = $direct_text;
 				}
+
+				// Change the 'referrer' key to 'value'
+				$row['value'] = $row['referrer'];
+				$row['count'] = (int) $row['count'];
+				unset($row['referrer']);
+
+				// Add the updated row to the new data array
+				$updated_data[] = $row;
 			}
 
+			// Replace the original data array with the updated one
+			$data = $updated_data;
 			return [
 				"columns" => $columns,
 				"data"    => $data,
@@ -798,9 +850,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					];
 					$filters['bounce'] = 0;
 					$sql = $this->get_sql_table($start, $end, ['*'], $filters, 'period', 'period', '', $join);
-					// replace * with ["COUNT(*) AS hit_count",
-					//       "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '+02:00', '-04:00'), '%Y-%m-%d') AS period"]
-					$sql = str_replace('*', 'COUNT(*) AS hit_count, DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), \'+02:00\', \'-04:00\'), \'%Y-%m-%d\') AS period', $sql);
+					$sql = str_replace('*', 'COUNT(*) AS hit_count, ' . $sqlperiod . ' AS period', $sql);
 					break;
 				default:
 					unset($filters['goal_id']);
@@ -880,8 +930,8 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'border'     => 'rgba(215, 38, 61, 1)',
 				),
 				'sessions'  => array(
-					'background' => 'rgba(46, 138, 55, 0.2)',
-					'border'     => 'rgba(46, 138, 55, 1)',
+					'background' => 'rgba(128, 0, 128, 0.2)',
+					'border'     => 'rgba(128, 0, 128, 1)',
 				),
 				'conversions'  => array(
 					'background' => 'rgba(46, 138, 55, 0.2)',
@@ -1090,7 +1140,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					break;
 				case '*':
 				default:
-					$sql = "*";
+					$sql = false;
 					break;
 			}
 
@@ -1108,7 +1158,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$i      = 1;
 			foreach ( $metrics as $metric ) {
 				$sql    = $this->get_sql_select_for_metric( $metric );
-				if ($sql !== '*') {
+				if ($sql !== false) {
 					// if metric starts with  'count(' and ends with ')', then it's a custom metric
 					// so we change the $metric name to 'metric'_count
 					if ( substr( $metric, 0, 6 ) === 'count(' && substr( $metric, - 1 ) === ')' ) {
@@ -1119,7 +1169,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 					$select .= $sql . ' as ' . $metric;
 				} else { // if it's a wildcard, then we don't need to add the alias
-					$select .= $sql;
+					$select .= $metric;
 				}
 				if ( $count !== $i ) { // if it's not the last metric, then we need to add a comma
 					$select .= ', ';

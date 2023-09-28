@@ -84,7 +84,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 			$goal_field_values['goal_type'] = $goal_raw_values['type'] ?? 'clicks';
 			$goal_field_values['goal_page_or_website'] = $goal_raw_values['url'] !== '*' ? 'page' : 'website';
 			$goal_field_values['goal_specific_page'] = $goal_raw_values['url'] !== '*' ? $goal_raw_values['url'] : '';
-
+			$goal_field_values['goal_conversion_metric'] = $goal_raw_values['conversion_metric'] ?? 'visitors';
 			$goal_field_values['goal_element'] = $goal_raw_values['setup'] ? json_decode($goal_raw_values['setup']) : [
 					'attribute' => '',
 					'value'     => '',
@@ -112,6 +112,8 @@ if ( ! class_exists( "burst_goals" ) ) {
 
 		    if ( isset( $goal_field_values['goal_specific_page'] ) ) $args['url'] = $goal_field_values['goal_specific_page'];
 		    if ( isset( $goal_field_values['goal_page_or_website'] ) ) $args['url'] = $goal_field_values['goal_page_or_website'] === 'website' ? '' : $args['url'] ?? '';
+
+		    if ( isset( $goal_field_values['goal_conversion_metric'] ) ) $args['conversion_metric'] = $goal_field_values['goal_conversion_metric'] ?? 'visitors';
 
 		    if ( isset( $goal_field_values['goal_element'] ) ) $args['setup']['attribute'] = $goal_field_values['goal_element']['attribute'] ?? '';
 		    if ( isset( $goal_field_values['goal_element'] ) ) $args['setup']['value'] = $goal_field_values['goal_element']['value'] ?? '';
@@ -151,6 +153,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 			if ( isset( $args['status'] ) ) $args['status'] = sanitize_text_field( $args['status'] );
 			if ( isset( $args['server_side'] ) ) $args['server_side'] =  (int) $args['server_side'];
 			if ( isset( $args['url'] ) ) $args['url']  = burst_sanitize_relative_url( $args['url'] );
+			if ( isset( $args['conversion_metric'] ) ) $args['conversion_metric']  = sanitize_text_field( $args['conversion_metric'] );
 			if ( isset( $args['date_start'] ) ) $args['date_start'] = (int) $args['date_start'];
 			if ( isset( $args['date_end'] ) ) $args['date_end'] = (int) $args['date_end'];
 			if ( isset( $args['date_created'] ) ) $args['date_created'] = (int) $args['date_created'];
@@ -174,6 +177,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 				'title'       => __('New goal', 'burst-statistics'),
 				'type'        => 'clicks',
 				'status'     => 'inactive',
+				'conversion_metric' => 'visitors',
 				'date_start' => 0,
 				'date_end'   => 0,
 			);
@@ -243,6 +247,7 @@ function burst_install_goals_table() {
             `status` varchar(30) NOT NULL,
             `server_side` tinyint NOT NULL,
             `url` varchar(255) NOT NULL,
+            `conversion_metric` varchar(255) NOT NULL,
             `date_created` int(11) NOT NULL,
             `date_start` int(11) NOT NULL,
             `date_end` int(11) NOT NULL,

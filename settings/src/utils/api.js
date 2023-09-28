@@ -17,6 +17,33 @@ const getNonce = () => {
 	return 'nonce='+burst_settings.burst_nonce+'&token='+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
 };
 
+const generateError = (error, path = false) => {
+	let message = __('Server error', 'burst-statistics');
+	error = error.replace(/(<([^>]+)>)/gi, "");
+
+	if (path) {
+		const urlWithoutQueryParams = path.split('?')[0];
+
+		const urlParts = urlWithoutQueryParams.split('/');
+		const index = urlParts.indexOf('v1') + 1;
+		message = __('Server error in', 'burst-statistics') + ' ' + urlParts[index] + '/' + urlParts[index + 1];
+	}
+	message += ': ' + error;
+	// wrap the message in a div react component and give it an onclick to copy the text to the clipboard
+	// this way the user can easily copy the error message and send it to us
+	const messageDiv = <div title={__('Click to copy', 'burst-statistics')} onClick={() => {
+		navigator.clipboard.writeText(message);
+		toast.success(__('Error copied to clipboard', 'burst-statistics'));
+	}}>{message}</div>;
+
+	toast.error(
+			messageDiv,
+			{
+				autoClose: 15000,
+			}
+	);
+}
+
 const makeRequest = async (path, method = 'GET', data = {}) => {
 	let args = {
 		path,
@@ -24,35 +51,30 @@ const makeRequest = async (path, method = 'GET', data = {}) => {
 	};
 
 	if (method === 'POST') {
-		data.nonce = burst_settings.burst_nonce
+		data.nonce = burst_settings.burst_nonce;
 		args.data = data;
 	}
 
-	try {
-		const response = await apiFetch(args);
+	return apiFetch(args)
+	.then(response => {
 		if (!response.request_success) {
-			// throw error
 			throw new Error('invalid data error');
+		}
+		if(response.code){
+			throw new Error(response.message);
 		}
 		delete response.request_success;
 		return response;
-	} catch (error) {
-		console.error(error);
-		generateError(false, error.message);
-
-		// Fallback to AJAX in case of error in the REST API
-		try {
-			return ajaxRequest(method, path, data);
-		} catch (fallbackError) {
-			console.error(fallbackError);
-			// if error isset add ro response errors
-			let response = {
-				errors: [fallbackError]
-			};
-			generateError(response);
-			throw fallbackError;
-		}
-	}
+	})
+	.catch(error => {
+		// If REST API fails, try AJAX request
+		return ajaxRequest(method, path, data)
+		.catch(() => {
+			// If AJAX also fails, generate error
+			generateError(error.message, args.path);
+			throw error;
+		});
+	});
 }
 
 const ajaxRequest = async (method, path, requestData = null) => {
@@ -79,15 +101,15 @@ const ajaxRequest = async (method, path, requestData = null) => {
 		const responseData = await response.json();
 
 		if (!responseData.data || !responseData.data.hasOwnProperty('request_success')) {
-			generateError(responseData);
 			throw new Error('Invalid data error');
 		}
 
 		delete responseData.data.request_success;
-		return responseData.data;
+		// return promise with the data object
+		return Promise.resolve(responseData.data);
 	} catch (error) {
-		throw error;
-	}
+		return Promise.reject(new Error('AJAX request failed'));
+	};
 }
 
 /**
@@ -126,34 +148,6 @@ const siteUrl = (type) => {
 	return  url;
 }
 
-const generateError = (response, errorMsg) => {
-	let error = __("Unexpected error", "burst-statistics");
-
-	if (response) {
-		if (response.errors) {
-			// get first entry of the errors object.
-			// this is the error message
-			for (let key in response.errors) {
-				if (response.errors.hasOwnProperty(key) && typeof response.errors[key] === 'string' && response.errors[key].length > 0) {
-					error = response.errors[key];
-					break;
-				}
-			}
-		} else if (typeof response === 'string' && response.length > 0) {
-			// If the response itself is an error message
-			error = response;
-		}
-	} else if (errorMsg) {
-		error = errorMsg;
-	}
-
-	toast.error(
-			__('Server error', 'burst-statistics') + ': ' + error,
-			{
-				autoClose: 15000,
-			});
-}
-
 export const setOption = (option, value) => makeRequest('burst/v1/options/set'+glue()+getNonce(), 'POST', {option: {option, value} });
 
 export const getFields = () => makeRequest('burst/v1/fields/get'+glue()+getNonce());
@@ -172,8 +166,8 @@ export const getBlock = (block) => makeRequest('burst/v1/block/'+block+glue()+ge
 export const doAction = (action, data = {}) => makeRequest(`burst/v1/do_action/${action}`, 'POST', {action_data:data}).then(response => {
 	return response.hasOwnProperty('data') ? response.data : [];
 });
-export const getData = (type, startDate, endDate, range, args) => {
-	return makeRequest(`burst/v1/data/${type}${glue()+getNonce()}&date_start=${startDate}&date_end=${endDate}&date_range=${range}`, 'POST', args);
+export const getData = async (type, startDate, endDate, range, args) => {
+	return await makeRequest(`burst/v1/data/${type}${glue()+getNonce()}&date_start=${startDate}&date_end=${endDate}&date_range=${range}`, 'POST', args);
 };
 export const getMenu = () => makeRequest('burst/v1/menu/'+glue()+getNonce());
 export const getPosts = (search) => makeRequest(`burst/v1/posts/${glue()}${getNonce()}&search=${search}`).then(response => {

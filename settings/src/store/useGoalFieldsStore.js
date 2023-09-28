@@ -52,10 +52,6 @@ export const useGoalFieldsStore = create((set, get) => {
       const response = await burst_api.setGoalFields(changedGoalValues);
       set({changedGoalValues: []});
 
-      // update the dashboard goals store
-      useDashboardGoalsStore.getState().incrementUpdateData();
-      useDashboardGoalsStore.getState().incrementUpdateLive();
-
       loadGoalFields();
       return Promise.resolve(response);
     }

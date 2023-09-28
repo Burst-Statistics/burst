@@ -3,19 +3,62 @@ import {useState, useEffect, useRef} from 'react';
 import * as burst_api from '../../utils/api';
 import {getPercentage} from '../../utils/formatting';
 import Icon from '../../utils/Icon';
-import {useDevicesStore} from '../../store/useDevicesStore';
 import ClickToFilter from './ClickToFilter';
 import {useFiltersStore} from '../../store/useFiltersStore';
 import {useDate} from '../../store/useDateStore';
 import GridItem from '../common/GridItem';
 import ExplanationAndStatsItem from '../common/ExplanationAndStatsItem';
-import {fetchDevicesData} from '../../store/useDevicesStore';
+import {useQuery} from '@tanstack/react-query';
+import {getDevicesTitleAndValueData, getDevicesSubtitleData} from '../../api/getDevicesData';
+
 
 const DevicesBlock = () => {
-  const loading = useDevicesStore((state) => state.loading);
-  const data = useDevicesStore((state) => state.data);
+  const {startDate, endDate, range} = useDate( (state) => state);
+  const filters = useFiltersStore((state) => state.filters);
+  const args = { 'filters': filters};
+
+  const deviceNames = {
+    'desktop': __('Desktop', 'burst-statistics'),
+    'tablet': __('Tablet', 'burst-statistics'),
+    'mobile': __('Mobile', 'burst-statistics'),
+    'other': __('Other', 'burst-statistics'),
+  };
+  let emptyDataTitleValue = {};
+  let emptyDataSubtitle = {};
+// loop through metrics and set default values
+  Object.keys(deviceNames).forEach(function(key) {
+    emptyDataTitleValue[key] = {
+      'title': deviceNames[key],
+      'value': '-%',
+    };
+    emptyDataSubtitle[key] = {
+      'subtitle': '-',
+    }
+  });
+
+  const titleAndValueQuery = useQuery({
+    queryKey: ['devicesTitleAndValue', startDate, endDate, args],
+    queryFn: () => getDevicesTitleAndValueData({startDate, endDate, range, args}),
+    placeholderData: emptyDataTitleValue,
+  });
+
+  const subtitleQuery = useQuery({
+    queryKey: ['devicesSubtitle', startDate, endDate, args],
+    queryFn: () => getDevicesSubtitleData({startDate, endDate, range, args}),
+    placeholderData: emptyDataSubtitle,
+  });
+
+  let mergedData = titleAndValueQuery.data;
+  Object.keys(mergedData).map((key) => {
+    mergedData[key] = { ...mergedData[key], ...subtitleQuery.data[key] };
+  });
+
+  const data = mergedData || {};
+  // const loading = query.isLoading || query.isFetching;
+  const loading = titleAndValueQuery.isLoading || titleAndValueQuery.isFetching;
 
   let loadingClass = loading ? 'burst-loading' : '';
+
   return (
       <GridItem
           title={__('Devices', 'burst-statistics')}

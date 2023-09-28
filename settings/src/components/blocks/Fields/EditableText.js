@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import Tooltip from '@mui/material/Tooltip';
 
-export default function EditableText({ value, onChange }) {
+export default function EditableText({ value, defaultValue, onChange }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [tempValue, setTempValue] = useState(value); // Temporary value
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -13,20 +14,23 @@ export default function EditableText({ value, onChange }) {
   }, [isEditing]);
 
   function handleClick(e) {
-    // prevent default click behavior
     e.preventDefault();
     setIsEditing(true);
   }
 
   function handleBlur() {
+    if (tempValue === '') {
+      onChange(defaultValue);
+    } else {
+      onChange(tempValue); // Update the actual value when focus is lost
+    }
     setIsEditing(false);
   }
 
   function handleKeyDown(event) {
     if (event.key === ' ') {
       event.preventDefault();
-      // add space to input
-      onChange(value + ' ');
+      setTempValue(tempValue + ' '); // Update temporary value
     }
     if (event.key === 'Enter') {
       event.preventDefault();
@@ -36,7 +40,7 @@ export default function EditableText({ value, onChange }) {
 
   function handleTextChange(event) {
     event.preventDefault();
-    onChange(event.target.value);
+    setTempValue(event.target.value); // Update temporary value
   }
 
   function handleFocus() {
@@ -48,7 +52,7 @@ export default function EditableText({ value, onChange }) {
         {isEditing ? (
             <input
                 type="text"
-                value={value}
+                value={tempValue} // Use temporary value
                 onChange={handleTextChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}

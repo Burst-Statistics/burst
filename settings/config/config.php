@@ -500,6 +500,40 @@ function burst_goal_fields() {
 				],
 			],
 		],
+		'goal_conversion_metric' => [
+			'id'               => 'goal_conversion_metric',
+			'type'             => 'radio-buttons',
+			// label for selecting which metric you want to select to calculate the conversion rate
+			'label'            => __( 'What metric do you want to use to calculate the conversion rate?', 'burst-statistics' ),
+			'options'          => [
+				'visitors'    => [
+					'label'       => __( 'Visitors', 'burst-statistics' ),
+//					'description' => __( 'Track page specific', 'burst-statistics' ),
+					'type'        => 'visitors',
+					'icon'        => 'visitors',
+				],
+				'sessions' => [
+					'label'       => __( 'Sessions', 'burst-statistics' ),
+//					'description' => __( 'Track on whole site', 'burst-statistics' ),
+					'type'        => 'sessions',
+					'icon'        => 'sessions',
+				],
+				'pageviews' => [
+					'label'       => __( 'Pageviews', 'burst-statistics' ),
+//					'description' => __( 'Track on whole site', 'burst-statistics' ),
+					'type'        => 'pageviews',
+					'icon'        => 'pageviews',
+				],
+			],
+//			'react_conditions' => [
+//				'relation' => 'AND',
+//				[
+//					'goal_type' => ['clicks', 'views'],
+//				],
+//			],
+			'disabled'         => false,
+			'default'          => 'visitors',
+		],
 	];
 
 	return apply_filters( 'burst_goal_fields', $goals );

@@ -1,6 +1,7 @@
 import {Fragment} from "react";
 import Icon from "../../utils/Icon";
 import { __ } from '@wordpress/i18n';
+import ErrorBoundary from "../ErrorBoundary";
 
 /**
  * Render a help notice in the sidebar
@@ -14,7 +15,7 @@ const Help = (props) => {
         let openStatus = props.noticesExpanded ? 'open' : '';
         let target = notice.url && notice.url.indexOf("really-simple-ssl.com") !==-1 ? "_blank" : '_self';
         return (
-            <Fragment>
+            <ErrorBoundary fallback={'Could not load notice'}>
                 { notice.title && notice.text &&
                     <details className={"burst-wizard-help-notice burst-" + notice.label.toLowerCase()} open={openStatus}>
                         <summary>{notice.title} <Icon name='chevron-down' /></summary>
@@ -26,7 +27,7 @@ const Help = (props) => {
                 { notice.title && !notice.text &&
                     <div className={"burst-wizard-help-notice  burst-" + notice.label.toLowerCase()}><p>{notice.title}</p></div>
                 }
-            </Fragment>
+            </ErrorBoundary>
 
         );
 }

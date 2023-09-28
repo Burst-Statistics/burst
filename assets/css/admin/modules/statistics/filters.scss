@@ -11,7 +11,7 @@
       padding: var(---rsp-filter-padding);
       box-shadow: var(--rsp-box-shadow);
       background: var(--rsp-grey-200);
-      border-radius: var(--rsp-border-radius-input);
+      border-radius: var(--rsp-border-radius-xs);
       border: 1px solid var(--rsp-input-border-color);
 
       .burst-data-filter__label {
@@ -52,7 +52,7 @@
   .burst-click-to-filter{
     cursor: pointer;
     //display: block;
-    //border-radius: var(--rsp-border-radius-input);
+    //border-radius: var(--rsp-border-radius-xs);
     //padding: var(--rsp-spacing-l) var(--rsp-spacing-xs);
     //transition: background-color 0.2s ease-in-out;
     //&:hover{

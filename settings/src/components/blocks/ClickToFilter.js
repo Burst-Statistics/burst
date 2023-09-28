@@ -6,9 +6,19 @@ import {useDate} from '../../store/useDateStore';
 import Tooltip from '@mui/material/Tooltip';
 import {__} from '@wordpress/i18n';
 import {toast} from 'react-toastify';
-import {endOfDay, format, subDays} from 'date-fns';
-import {formatUnixToDate} from '../../utils/formatting';
+import {isValidDate, toUnixTimestampMillis} from '../../utils/formatting';
 
+/**
+ *
+ * @param filter
+ * @param filterValue
+ * @param label
+ * @param children
+ * @param startDate
+ * @param endDate
+ * @return {Element}
+ * @constructor
+ */
 const ClickToFilter = ({
   filter,
   filterValue,
@@ -20,6 +30,7 @@ const ClickToFilter = ({
   if (!filter || !filterValue) {
     return <>{children}</>;
   }
+
   const setFilters = useFiltersStore((state) => state.setFilters);
   const setAnimate = useFiltersStore((state) => state.setAnimate);
   const goalFields = useGoalFieldsStore((state) => state.goalFields);
@@ -99,21 +110,40 @@ const ClickToFilter = ({
 
       setAnimate(false);
     }
+    handleDateRange();
+  };
 
-    const MIN_START_DATE = 1640995200; // January 1, 2022 in Unix timestamp format
+  const handleDateRange = () => {
+    let formattedStartDate = "";
+    let formattedEndDate = "";
 
-    let selectedStartDate;
-    if (startDate && (typeof startDate === 'number' || Date.parse(startDate) >= MIN_START_DATE * 1000)) {
-      selectedStartDate = typeof startDate === 'number' ? formatUnixToDate(startDate) : startDate;
+    // Check if startDate is in Unix, Unix in milliseconds, or yyyy-MM-dd format
+    if (/^\d+$/.test(startDate)) {
+      // Unix or Unix in milliseconds
+      const unixTime = startDate.toString().length === 10 ? startDate * 1000 : startDate;
+      formattedStartDate = new Date(unixTime).toISOString().split('T')[0];
+    } else if (/\d{4}-\d{2}-\d{2}/.test(startDate)) {
+      // Already in yyyy-MM-dd format
+      formattedStartDate = startDate;
     }
 
-    if (selectedStartDate) {
-      const selectedEndDate = endDate ? (endDate > 0 ? formatUnixToDate(endDate) : endDate) : format(new Date(), 'yyyy-MM-dd');
-      setStartDate(selectedStartDate);
-      setEndDate(selectedEndDate);
+    // If endDate is not set, set to today
+    if (!endDate) {
+      formattedEndDate = new Date().toISOString().split('T')[0];
+    } else if (/^\d+$/.test(endDate)) {
+      // Unix or Unix in milliseconds
+      const unixTime = endDate.toString().length === 10 ? endDate * 1000 : endDate;
+      formattedEndDate = new Date(unixTime).toISOString().split('T')[0];
+    } else if (/\d{4}-\d{2}-\d{2}/.test(endDate)) {
+      // Already in yyyy-MM-dd format
+      formattedEndDate = endDate;
+    }
+
+    if (isValidDate(formattedStartDate) && isValidDate(formattedEndDate)) {
+      setStartDate(formattedStartDate);
+      setEndDate(formattedEndDate);
       setRange('custom');
     }
-
   };
 
   return (

@@ -15,13 +15,13 @@ const ClassId = (props) => {
       type: 'class',
       icon: 'period',
       label: __('Class', 'burst-statistics'),
-      description: __( 'Add a class to the element', 'burst-statistics' )
+      // description: __( '', 'burst-statistics' )
     },
     'id': {
       type: 'id',
       icon: 'hashtag',
       label: __('ID', 'burst-statistics'),
-      description: __('Add an id to the element', 'burst-statistics')
+      // description: __('Add an id to the element', 'burst-statistics')
     }
   }
 

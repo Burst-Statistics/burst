@@ -1,21 +1,30 @@
 import {__} from '@wordpress/i18n';
 import DataTable from 'react-data-table-component';
 import EmptyDataTable from './EmptyDataTable';
-import {usePagesStore} from '../../store/usePagesStore';
 import {useFiltersStore} from '../../store/useFiltersStore';
 import {useDate} from '../../store/useDateStore';
-import {useEffect, useRef} from 'react';
 import ClickToFilter from './ClickToFilter';
-import InsightsHeader from './InsightsHeader';
 import GridItem from '../common/GridItem';
+import {useQuery} from '@tanstack/react-query';
+import getPagesData from '../../api/getPagesData';
 
 const PagesBlock = () => {
-  const loading = usePagesStore((state) => state.loading);
-  const data = usePagesStore((state) => state.data);
+  const {startDate, endDate, range} = useDate((state) => state);
+  const filters = useFiltersStore((state) => state.filters);
+
+  const args = {'filters': filters, 'metrics': ['page_url', 'pageviews']};
+  const query = useQuery({
+    queryKey: ['pages', startDate, endDate, args],
+    queryFn: () => getPagesData({startDate, endDate, range, args})
+  });
+
+  const data = query.data || {};
+
+  const loading = query.isLoading || query.isFetching;
 
   const loadingClass = loading ? 'burst-loading' : '';
   // if data is an empty array, show the empty data table
-  if (data.length !== 0) {
+  if (query.isFetched && data.length !== 0 && data.columns) {
     const renderPageUrlCell = (row) => (
         <ClickToFilter filter="page_url" filterValue={row.page_url}>
           {decodeURI(row.page_url)}

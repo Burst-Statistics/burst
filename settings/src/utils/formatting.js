@@ -1,4 +1,6 @@
 import { dateI18n } from '@wordpress/date';
+import { format, isSameDay, startOfDay, endOfDay, addDays, addMonths, startOfMonth, endOfMonth, startOfYear, endOfYear, addYears } from 'date-fns';
+import {__} from '@wordpress/i18n';
 
 /**
  * Returns a formatted string that represents the relative time between two dates
@@ -107,6 +109,30 @@ const formatUnixToDate = (unixTimestamp) => {
 };
 
 /**
+ * Check if a date is valid
+ * @param {string | number} date - The date to check
+ * @return {boolean}
+ */
+const  isValidDate = (date) => {
+  const MIN_START_DATE = 1640995200 * 1000; // January 1, 2022 in Unix timestamp
+  return date && (typeof date === 'number' || Date.parse(date) >= MIN_START_DATE);
+}
+
+/**
+ * Converts a date to a Unix timestamp in milliseconds
+ * @param {string | number} date - The date to convert
+ * @return {number|number|number}
+ */
+const toUnixTimestampMillis = (date) => {
+  if (typeof date === 'number') {
+    // If the number is 10 digits long, assume it's in seconds and convert to milliseconds
+    return date.toString().length === 10 ? date * 1000 : date;
+  }
+  // If it's a string, parse it to get milliseconds
+  return Date.parse(date);
+}
+
+/**
  * Formats a duration given in milliseconds as a time string in the format 'HH:mm:ss'
  * @param {number} timeInMilliSeconds - The duration in milliseconds
  * @returns {string} The formatted time string
@@ -175,13 +201,137 @@ function formatPercentage(value, decimals = 1){
   }).format(value);
 }
 
+function getDateWithOffset(currentDate = new Date()) {
+  // get client's timezone offset in minutes
+  const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
+
+  // convert client's timezone offset from minutes to seconds
+  const clientTimezoneOffsetSeconds = clientTimezoneOffsetMinutes * -60;
+
+  // get current unix timestamp
+  const currentUnix = Math.floor(currentDate.getTime() / 1000);
+  // add burst_settings.gmt_offset x hour and client's timezone offset in
+  // seconds to currentUnix
+  const currentUnixWithOffsets = currentUnix +
+      (burst_settings.gmt_offset * 3600) - clientTimezoneOffsetSeconds;
+
+  const currentDateWithOffset = new Date(currentUnixWithOffsets * 1000);
+
+  return currentDateWithOffset;
+}
+const currentDateWithOffset = getDateWithOffset();
+
+const availableRanges = {
+  'today': {
+    label: __('Today', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfDay(currentDateWithOffset),
+      endDate: endOfDay(currentDateWithOffset)
+    })
+  },
+  'yesterday': {
+    label: __('Yesterday', 'burst-statistics'),
+    range: () => ({
+      startDate: startOfDay(addDays(currentDateWithOffset, -1)),
+      endDate: endOfDay(addDays(currentDateWithOffset, -1))
+    })
+  },
+  'last-7-days': {
+    label: __('Last 7 days', 'burst-statistics'),
+    range: () => ({
+      startDate: startOfDay(addDays(currentDateWithOffset, -7)),
+      endDate: endOfDay(addDays(currentDateWithOffset, -1))
+    })
+  },
+  'last-30-days': {
+    label: __('Last 30 days', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfDay(addDays(currentDateWithOffset, -30)),
+      endDate: endOfDay(addDays(currentDateWithOffset, -1))
+    })
+  },
+  'last-90-days': {
+    label: __('Last 90 days', 'burst-statistics'),
+    range: () => ({
+      startDate: startOfDay(addDays(currentDateWithOffset, -90)),
+      endDate: endOfDay(addDays(currentDateWithOffset, -1))
+    })
+  },
+  'last-month': {
+    label: __('Last month', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfMonth(addMonths(currentDateWithOffset, -1)),
+      endDate: endOfMonth(addMonths(currentDateWithOffset, -1))
+    })
+  },
+  'week-to-date': {
+    label: __('Week to date', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfDay(addDays(currentDateWithOffset, -currentDateWithOffset.getDay())),
+      endDate: endOfDay(currentDateWithOffset)
+    })
+  },
+  'month-to-date': {
+    label: __('Month to date', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfMonth(currentDateWithOffset),
+      endDate: endOfDay(currentDateWithOffset)
+    })
+  },
+  'year-to-date': {
+    label: __('Year to date', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfYear(currentDateWithOffset),
+      endDate: endOfDay(currentDateWithOffset)
+    })
+  },
+  'last-year': {
+    label: __('Last year', 'burst-statistics' ),
+    range: () => ({
+      startDate: startOfYear(addYears(currentDateWithOffset, -1)),
+      endDate: endOfYear(addYears(currentDateWithOffset, -1))
+    })
+  },
+}
+
+const getAvailableRanges = (selectedRanges) => {
+  return Object.values(selectedRanges).filter(Boolean).map((value) => {
+    const range = availableRanges[value];
+    range.isSelected = isSelected;
+    return range;
+  });
+};
+
+const getDisplayDates = (startDate, endDate) => {
+  const formatString = 'MMMM d, yyyy';
+  return {
+    startDate: startDate ? format(new Date(startDate), formatString) : format(defaultStart, formatString),
+    endDate: endDate ? format(new Date(endDate), formatString) : format(defaultEnd, formatString),
+  };
+};
+
+function isSelected(range) {
+  const definedRange = this.range();
+  return (
+      isSameDay(range.startDate, definedRange.startDate) &&
+      isSameDay(range.endDate, definedRange.endDate)
+  );
+}
+
 export {
   getRelativeTime,
   getPercentage,
   getChangePercentage,
   getBouncePercentage,
   formatUnixToDate,
+  isValidDate,
+  toUnixTimestampMillis,
   formatTime,
   formatNumber,
-  formatPercentage
+  formatPercentage,
+  getDateWithOffset,
+  availableRanges,
+  getAvailableRanges,
+  getDisplayDates,
+  isSelected
 };

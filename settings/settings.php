@@ -461,12 +461,12 @@ function burst_other_plugins_data( $slug = false ) {
 	}
 	$plugins = array(
 		[
-			'slug'          => 'burst-statistics',
-			'constant_free' => 'burst_version',
-			'constant_pro' => 'burst_pro',
-			'wordpress_url' => 'https://wordpress.org/plugins/burst-statistics/',
-			'upgrade_url'   => 'https://burst-statistics.com/?src=burst-plugin',
-			'title'         => 'Burst Statistics - ' . __( "Self-hosted, Privacy-friendly analytics tool.", "burst-statistics" ),
+			'slug' => 'really-simple-ssl',
+			'constant_free' => 'rsssl_version',
+			'constant_pro' => 'rsssl_pro_version',
+			'wordpress_url' => 'https://wordpress.org/plugins/really-simple-ssl/',
+			'upgrade_url' => 'https://really-simple-ssl.com/pro?src=burst-plugin',
+			'title' => "Really Simple SSL - ".__("Lightweight plugin. Heavyweight security features.", "complianz-gdpr" ),
 		],
 		[
 			'slug'             => 'complianz-gdpr',
@@ -520,10 +520,6 @@ function burst_other_plugins_data( $slug = false ) {
  * @return WP_Error | WP_REST_Response
  */
 function burst_get_data( WP_REST_Request $request ) {
-	// request get [JSON] args
-	$nonce  = $request->get_param( 'filters' );
-
-
 	if ( ! burst_user_can_view() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
@@ -577,10 +573,14 @@ function burst_get_data( WP_REST_Request $request ) {
                 $data = BURST()->statistics->get_compare_data( $args );
             }
 			break;
-		case 'devices':
+		case 'devicestitleandvalue':
             unset($args['filters']['goal_id']);
-			$data = BURST()->statistics->get_devices_data( $args );
+			$data = BURST()->statistics->get_devices_title_and_value_data( $args );
 			break;
+        case 'devicessubtitle':
+            unset($args['filters']['goal_id']);
+            $data = BURST()->statistics->get_devices_subtitle_data( $args );
+            break;
 		case 'pages':
 			$data = BURST()->statistics->get_pages_data( $args );
 			break;
@@ -588,7 +588,7 @@ function burst_get_data( WP_REST_Request $request ) {
 			$data = BURST()->statistics->get_referrers_data( $args );
 			break;
 		default:
-			$data = apply_filters( "burst_get_data", [], $type, $request );
+			$data = apply_filters( "burst_get_data", $type, $args, $request );
 	}
 
 	return new WP_REST_Response( array( 'data' => $data, 'request_success' => true ), 200 );
@@ -1089,38 +1089,70 @@ function burst_get_user_roles(): array {
 	return $wp_roles->get_names();
 }
 
-function burst_get_posts( $request, $ajax_data = false ) {
-	if ( ! burst_user_can_view() ) {
-		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
+function burst_get_posts($request, $ajax_data = false) {
+	if (! burst_user_can_view()) {
+		return new WP_Error('rest_forbidden', 'You do not have permission to perform this action.', ['status' => 403]);
 	}
+
 	global $wpdb;
-	$data = $ajax_data ?:$request->get_params();
+	$data = $ajax_data ?: $request->get_params();
 	$nonce = $data['nonce'];
-	if ( ! wp_verify_nonce( $nonce, 'burst_nonce' ) ) {
-		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
+	$search = isset($data['search']) ? $data['search'] : '';
+
+	if (!wp_verify_nonce($nonce, 'burst_nonce')) {
+		return new WP_Error('rest_invalid_nonce', 'The provided nonce is not valid.', ['status' => 400]);
 	}
 
-	if ( $data['search'] !== '' ) {
-		$search = sanitize_text_field($data['search']);
-		$sql    = "SELECT page_url, page_id, count(*) as pageviews FROM {$wpdb->prefix}burst_statistics WHERE bounce = 0 AND page_url LIKE '%$search%' GROUP BY page_url ORDER BY pageviews DESC LIMIT 10";
-	} else {
-		// get the most viewed posts from wp_burst_statistics
-		$sql = "SELECT page_url, page_id, count(*) as pageviews FROM {$wpdb->prefix}burst_statistics WHERE bounce = 0 GROUP BY page_url ORDER BY pageviews DESC LIMIT 10";
+	// Initialize an empty array for results
+	$resultArray = [];
+
+	// Base query for wp_posts
+	$posts_query = "
+    SELECT REPLACE(p.guid, %s, '') AS stripped_url, p.post_title, p.ID as page_id, 0 AS pageviews
+    FROM wp_posts p
+    LEFT JOIN wp_burst_statistics s ON p.guid = CONCAT(%s, s.page_url)
+    WHERE p.post_title LIKE %s AND p.post_status = 'publish'
+    GROUP BY stripped_url
+";
+
+	// Base query for wp_burst_statistics
+	$stats_query = "
+    SELECT s.page_url AS stripped_url, NULL AS post_title, s.page_id as page_id, COUNT(s.page_url) AS pageviews
+    FROM wp_burst_statistics s
+    WHERE s.page_url LIKE %s AND s.bounce = 0
+    GROUP BY s.page_url
+";
+
+	// Combine the two queries using UNION and sort by pageviews
+	$site_url = get_site_url();
+	$final_query = $wpdb->prepare(
+		"SELECT stripped_url, SUM(pageviews) as total_pageviews, MAX(page_id) as page_id, MAX(post_title) as post_title FROM (
+        (" . $posts_query . ") UNION ALL (" . $stats_query . ")
+    ) AS combined
+    GROUP BY stripped_url
+    ORDER BY total_pageviews DESC
+    LIMIT 10",
+		$site_url, $site_url, '%' . $wpdb->esc_like($search) . '%', '%' . $wpdb->esc_like($search) . '%'
+	);
+
+	$results = $wpdb->get_results($final_query, ARRAY_A);
+
+	foreach ($results as $row) {
+		$page_url = $row['stripped_url'];
+		$resultArray[] = [
+			'page_url' => $page_url,
+			'page_id' => $row['page_id'] ?? 0,
+			'post_title' => $row['post_title'],
+			'pageviews' => (int) $row['total_pageviews']
+		];
 	}
 
-	$posts = $wpdb->get_results( $sql, 'ARRAY_A' );
-	// get the post title from wp_posts
-	foreach ( $posts as $key => $post ) {
-		$post_id                     = $post['page_id'];
-		$post_title                  = get_the_title( $post_id );
-		$posts[ $key ]['post_title'] = $post_title;
+	if (!empty($resultArray)) {
+		return new WP_REST_Response(['request_success' => true, 'posts' => $resultArray], 200);
 	}
 
-	//$sql = "SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'publish' ORDER BY post_title ASC";
-	if ( ! empty( $posts ) ) {
-		return new WP_REST_Response( ['request_success' => true, 'posts' => $posts], 200 );
-	}
-
-	return new WP_REST_Response( ['request_success' => true, 'posts' => []], 200 );
+	return new WP_REST_Response(['request_success' => true, 'posts' => []], 200);
 }
+
+
 

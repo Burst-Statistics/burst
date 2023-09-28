@@ -187,8 +187,8 @@
   font-weight: 600;
 
   &.burst-completed, &.burst-success {
-    background-color: var(--rsp-color-success);
-    color: var(--rsp-text-color-white);
+    background-color: var(--rsp-white);
+    color: var(--rsp-text-color-light);
   }
 
   &.burst-open {
@@ -214,7 +214,8 @@
     color: var(--rsp-text-color-white);
   }
   &.burst-loading{
-    background-color: var(--rsp-grey-200);;
+    background-color: var(--rsp-white);
+    color: var(--rsp-text-color-light);
   }
 }
 

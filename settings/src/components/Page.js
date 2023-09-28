@@ -5,8 +5,8 @@ import PagePlaceholder from './pages/PagePlaceholder';
 import {useMenu} from '../store/useMenuStore';
 import {useEffect, useMemo, useState} from 'react';
 import {useFields} from '../store/useFieldsStore';
-import {LoadData} from './LoadData';
 import {setLocaleData} from "@wordpress/i18n";
+import ErrorBoundary from "./ErrorBoundary";
 
 const Page = () => {
   const menuLoaded = useMenu((state) => state.menuLoaded);
@@ -85,9 +85,11 @@ const Page = () => {
         {menuLoaded ? (
             <>
                 { Tour && <Tour />}
+              <ErrorBoundary fallback={'Could not load page'}>
                 {selectedMainMenuItem === 'dashboard' && DashboardPage && <DashboardPage />}
                 {selectedMainMenuItem === 'statistics' && StatisticsPage && <StatisticsPage />}
                 {selectedMainMenuItem === 'settings' && SettingsPage && <SettingsPage />}
+              </ErrorBoundary>
             </>
         ) : (
             <PagePlaceholder />
@@ -96,7 +98,7 @@ const Page = () => {
             <ToastContainer
                 position="bottom-right"
                 autoClose={2000}
-                limit={3}
+                limit={5}
                 hideProgressBar
                 newestOnTop
                 closeOnClick
@@ -105,7 +107,6 @@ const Page = () => {
                 theme="light"
             />
         )}
-        <LoadData />
       </>
   );
 };

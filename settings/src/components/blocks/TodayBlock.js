@@ -3,80 +3,109 @@ import {
   formatTime,
   formatNumber, getRelativeTime,
 } from '../../utils/formatting';
-import {
-    useState,
-    useEffect
-} from '@wordpress/element';
 import Tooltip from '@mui/material/Tooltip';
+import { useQueries, useQueryClient } from '@tanstack/react-query';
+import getLiveVisitors from '../../api/getLiveVisitors';
+import getTodayData from '../../api/getTodayData';
 
-import * as burst_api from '../../utils/api';
 import Icon from '../../utils/Icon';
 import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
-import {useTodayStore} from '../../store/useTodayStore';
-import {useRef} from 'react';
+import {useRef, useState} from 'react';
 import GridItem from '../common/GridItem';
+import {getDateWithOffset} from "../../utils/formatting";
+
+function selectVisitorIcon(value) {
+  value = parseInt(value);
+  if (value > 100) {
+    return 'visitors-crowd';
+  }
+  else if (value > 10) {
+    return 'visitors';
+  }
+  else {
+    return 'visitor';
+  }
+}
 
 const TodayBlock = () => {
-  const live = useTodayStore((state) => state.live);
-  const incrementUpdateLive = useTodayStore((state) => state.incrementUpdateLive);
-  const data = useTodayStore((state) => state.data);
-  const incrementUpdateData = useTodayStore((state) => state.incrementUpdateData);
-
-  useEffect(() => {
-    let timer1, timer2;
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        clearInterval(timer1);
-        clearInterval(timer2);
-      } else {
-        timer1 = setInterval(() => {
-          incrementUpdateLive();
-        }, 5000);
-
-        timer2 = setInterval(() => {
-          incrementUpdateData();
-        }, 10000);
+  const [interval, setInterval] = useState(5000);
+  const currentDateWithOffset = getDateWithOffset();
+  const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+  const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+  const placeholderData = {
+    live: {
+      title: __('Live', 'burst-statistics'),
+      icon: 'visitor',
+    },
+    today: {
+      title: __('Total', 'burst-statistics'),
+      value: '-',
+      icon: 'visitor',
+    },
+    mostViewed: {
+      title: '-',
+      value: '-',
+    },
+    pageviews: {
+      title: '-',
+      value: '-',
+    },
+    referrer: {
+      title: '-',
+      value: '-',
+    },
+    timeOnPage: {
+      title: '-',
+      value: '-',
+    },
+  };
+  const queries = useQueries({
+        queries: [
+          {
+            queryKey: ['live-visitors'],
+            queryFn: getLiveVisitors,
+            refetchInterval: interval,
+            placeholderData: '-',
+            onError: (error) => {
+              setInterval(0);
+            }
+          },
+          {
+            queryKey: ['today'],
+            queryFn: () => getTodayData({startDate, endDate}),
+            refetchInterval: interval * 2,
+            placeholderData: placeholderData,
+            onError: (error) => {
+              setInterval(0);
+            }
+          }
+        ]
       }
-    }
+  );
 
-    // add event listener for visibility change
-    document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // start the intervals
-    handleVisibilityChange();
 
-    // cleanup the event listener
-    return () => {
-      clearInterval(timer1);
-      clearInterval(timer2);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    }
-  }, []);
-
-  function selectVisitorIcon(value) {
-    value = parseInt(value);
-    if (value > 100) {
-      return 'visitors-crowd';
-    }
-    else if (value > 10) {
-      return 'visitors';
-    }
-    else {
-      return 'visitor';
-    }
+  // Your existing code
+  const live = queries[0].data;
+  let data = queries[1].data;
+  if (queries.some((query) => query.isError)) {
+    data = placeholderData;
   }
-  let liveIcon = selectVisitorIcon(live);
-  let todayIcon = selectVisitorIcon(data.today.value);
-  const delayTooltip = 200;
+  let liveIcon = selectVisitorIcon(live ? live : 0);
+  let todayIcon = 'loading';
+  if (data && data.today) {
+    todayIcon = selectVisitorIcon(data.today.value ? data.today.value : 0);
+  }
+
   return (
       <GridItem
           className={'border-to-border burst-today'}
           title={__('Today', 'burst-statistics')}
+          controls={<>{queries[0].isFetching ? <Icon name={"loading"} /> : null }</>}
       >
         <div className="burst-today">
           <div className="burst-today-select">
-            <Tooltip arrow title={data.live.tooltip} enterDelay={delayTooltip}>
+            <Tooltip arrow title={data.live.tooltip} enterDelay={200}>
               <div className="burst-today-select-item">
                 <Icon name={liveIcon} size="23"/>
                 <h2>{live}</h2>
@@ -84,7 +113,7 @@ const TodayBlock = () => {
               </div>
             </Tooltip>
             <Tooltip arrow title={data.today.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-today-select-item">
                 <Icon name={todayIcon} size="23"/>
                 <h2>{data.today.value}</h2>
@@ -95,7 +124,7 @@ const TodayBlock = () => {
           </div>
           <div className="burst-today-list">
             <Tooltip arrow title={data.mostViewed.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-today-list-item">
                 <Icon name="winner"/>
                 <p className="burst-today-list-item-text">{decodeURI(data.mostViewed.title)}</p>
@@ -103,7 +132,7 @@ const TodayBlock = () => {
               </div>
             </Tooltip>
             <Tooltip arrow title={data.referrer.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-today-list-item">
                 <Icon name="referrer"/>
                 <p className="burst-today-list-item-text">{decodeURI(data.referrer.title)}</p>
@@ -111,7 +140,7 @@ const TodayBlock = () => {
               </div>
             </Tooltip>
             <Tooltip arrow title={data.pageviews.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-today-list-item">
                 <Icon name="pageviews"/>
                 <p className="burst-today-list-item-text">{data.pageviews.title}</p>
@@ -119,7 +148,7 @@ const TodayBlock = () => {
               </div>
             </Tooltip>
             <Tooltip arrow title={data.timeOnPage.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-today-list-item">
                 <Icon name="time"/>
                 <p className="burst-today-list-item-text">{data.timeOnPage.title}</p>
@@ -127,9 +156,6 @@ const TodayBlock = () => {
               </div>
             </Tooltip>
           </div>
-          {/*<div className={'burst-grid-item-footer'}>*/}
-          {/*    <a className={'burst-button burst-button--secondary'} href={'#statistics'}>{ __( "View", "burst-statistics" ) }</a>*/}
-          {/*</div>*/}
         </div>
       </GridItem>
   );

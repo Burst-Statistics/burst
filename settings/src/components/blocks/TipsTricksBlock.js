@@ -28,6 +28,7 @@ const TipsTricksBlock = (props) => {
       link: 'https://burst-statistics.com/how-to-set-goals/',
     },
   ];
+  const src = '?src=plugin-tips-tricks';
 
   return (
       <GridItem
@@ -43,7 +44,7 @@ const TipsTricksBlock = (props) => {
         <div className="burst-tips-tricks-container">
           {items.map((item, index) => (
               <div key={index} className="burst-tips-tricks-element">
-                <a href={item.link} target="_blank" rel="noopener noreferrer" title={item.content}>
+                <a href={item.link + src} target="_blank" rel="noopener noreferrer" title={item.content}>
                   <div className="burst-bullet medium" />
                   <div className="burst-tips-tricks-content">{item.content}</div>
                 </a>

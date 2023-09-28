@@ -83,7 +83,7 @@
       gap: var(--rsp-spacing-s);
 
       &-item {
-        border-radius: var(--rsp-border-radius-input);
+        border-radius: var(--rsp-border-radius-xs);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -213,7 +213,7 @@
         padding: var(--rsp-spacing-s);
         padding-left: var(--rsp-spacing-m);
         padding-right: var(--rsp-spacing-m);
-        border-radius: var(--rsp-border-radius-input);
+        border-radius: var(--rsp-border-radius-xs);
         margin: var(--rsp-spacing-s) 40px;
 
         /* animation */

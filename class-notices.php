@@ -142,17 +142,6 @@ if ( ! class_exists( "burst_notices" ) ) {
 						],
 					],
 				],
-				'new_feature_goals' => [
-					'callback'  => '_true_',
-					'output'    => [
-						'true' => [
-							'msg'         => __( "New! Configure Burst to track your website goals.", 'burst-statistics' ),
-							'icon'        => 'new',
-							'url'         => 'https://burst-statistics.com/new-feature-goals/',
-							'dismissible' => true,
-						],
-					],
-				],
 				'new_delete_old_data' => [
 					'callback'  => '_true_',
 					'output'    => [
@@ -161,7 +150,22 @@ if ( ! class_exists( "burst_notices" ) ) {
 							'icon'        => 'new',
 							'url'         => '#settings/data',
 							'dismissible' => true,
-							'plusone'     => true,
+							'plusone'     => burst_is_pro() ? false : true,
+						],
+					],
+				],
+				'new_country_information' => [
+					'condition' => [
+						'burst_is_pro'
+					],
+					'callback'  => '_true_',
+					'output'    => [
+						'true' => [
+							'msg'         => __( "New! Keep track of what country your visitors come from.", 'burst-statistics' ),
+							'icon'        => 'new',
+							'url'         => '#statistics',
+							'dismissible' => true,
+							'plusone'     => false,
 						],
 					],
 				],
