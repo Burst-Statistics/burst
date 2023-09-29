@@ -67,9 +67,6 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 
 			$goal_type = $goal['type'] ?? 'clicks';
 			$goal_conversion_metric = $goal['conversion_metric'] ?? 'visitors';
-			error_log('conversion_metric: ' . $goal_conversion_metric);
-
-
 
 			// Initialize data array
 			$data = array();
@@ -129,11 +126,6 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			$data['dateEnd'] = $goal_end;
 			$data['status'] = $status;
 			$data['goalId'] = $goal_id;
-
-			error_log('goal_id: ' . $goal_id);
-			error_log(print_r($data, true));
-
-
 
 			if ( $goal_id !== 0 ) {
 				// Query to get total number of goal completions
