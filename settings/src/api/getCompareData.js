@@ -1,14 +1,11 @@
-import { useCallback } from 'react';
-import {create} from 'zustand';
-import { __ } from '@wordpress/i18n';
-import * as burst_api from '../utils/api';
+
+import {getData} from '../utils/api';
 import {
-  formatNumber,
-  formatTime,
+  formatNumber, formatTime,
   getBouncePercentage,
-  getChangePercentage,
-  getPercentage,
+  getChangePercentage, getPercentage,
 } from '../utils/formatting';
+import {__} from '@wordpress/i18n';
 
 const metrics = {
   'pageviews': __('Pageviews', 'burst-statistics'),
@@ -24,25 +21,6 @@ const goalMetrics = {
   'visitors': __('Visitors', 'burst-statistics'),
 
 };
-
-let emptyData = {};
-// loop through metrics and set default values
-Object.keys(metrics).forEach(function (key) {
-  emptyData[key] = {
-    'title': metrics[key],
-    'subtitle': '-',
-    'value': '-',
-    'change': '-',
-    'changeStatus': '',
-  };
-});
-
-const useCompareStore = create((set) => ({
-  loading: true,
-  setLoading: (loading) => set({ loading }),
-  data: emptyData,
-  setData: (data) => set({ data }),
-}));
 
 const templates = {
   default: {
@@ -95,9 +73,9 @@ const templates = {
 };
 
 const transformCompareData = (response) => {
-    const data = {};
-    const curr = response.current;
-    const prev = response.previous;
+  const data = {};
+  const curr = response.current;
+  const prev = response.previous;
 
   let templateType = 'default';
   let selectedMetrics = metrics;
@@ -111,24 +89,45 @@ const transformCompareData = (response) => {
   // const selectedMetrics = filters.goal_id > 0 ? goalMetrics : metrics;
   // const selectedTemplate = templates[templateType];
 
-    Object.entries(selectedMetrics).forEach(([key, value]) => {
-      const templateFunction = selectedTemplate[key] || templates.default[key];
+  Object.entries(selectedMetrics).forEach(([key, value]) => {
+    const templateFunction = selectedTemplate[key] || templates.default[key];
 
-      let change = getChangePercentage(curr[key], prev[key]);
+    let change = getChangePercentage(curr[key], prev[key]);
 
-      if (key === 'bounced_sessions') {
-        const bouncePercentage = getBouncePercentage(curr[key], curr['sessions'], false);
-        const bouncePercentagePrev = getBouncePercentage(prev[key], prev['sessions'], false);
-        change = getChangePercentage(bouncePercentage, bouncePercentagePrev);
-        change.status = change.status === 'positive' ? 'negative' : 'positive';
-      }
-      data[key] = {
-        ...templateFunction(curr, prev),
-        change: change.val,
-        changeStatus: change.status,
-      };
-    });
-    return data;
+    if (key === 'bounced_sessions') {
+      const bouncePercentage = getBouncePercentage(curr[key], curr['sessions'], false);
+      const bouncePercentagePrev = getBouncePercentage(prev[key], prev['sessions'], false);
+      change = getChangePercentage(bouncePercentage, bouncePercentagePrev);
+      change.status = change.status === 'positive' ? 'negative' : 'positive';
+    }
+    data[key] = {
+      ...templateFunction(curr, prev),
+      change: change.val,
+      changeStatus: change.status,
+    };
+  });
+  return data;
 };
 
-export { useCompareStore, transformCompareData };
+/**
+ * Get live visitors
+ * @param {Object} args
+ * @param {string} args.startDate
+ * @param {string} args.endDate
+ * @param {string} args.range
+ * @param {Object} args.filters
+ * @returns {Promise<*>}
+ */
+const getCompareData = async ({ startDate, endDate, range, args } ) => {
+  const { data } = await getData(
+      'compare',
+      startDate,
+      endDate,
+      range,
+      args
+  );
+  return transformCompareData(data);
+
+}
+export default getCompareData;
+

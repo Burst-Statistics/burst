@@ -33,9 +33,6 @@ const Menu = (props) => {
         <div className="burst-grid-item-content">
           <div className="burst-wizard-menu-items">
             { subMenu.menu_items.map((menuItem, i) => <MenuItem key={i} menuItem={menuItem} /> ) }
-            { hasProItems && !burst_settings.is_pro &&
-                <div className="burst-pro-menu-item"><div><a target="_blank" href={burst_settings.upgrade_link} className='burst-button burst-button--black'>{__('Go Pro', 'burst-statistics')}</a></div></div>
-            }
           </div>
         </div>
         <div className="burst-grid-item-footer">

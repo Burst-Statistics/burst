@@ -1,14 +1,5 @@
-import {create} from 'zustand';
-import * as burst_api from '../utils/api';
-
-// define the store
-export const useReferrersStore = create((set) => ({
-  loading: true,
-  setLoading: (loading) => set({loading}),
-  metrics: ['referrers', 'pageviews'],
-  data: [],
-  setData: (data) => set({data}),
-}));
+import {__} from '@wordpress/i18n';
+import {getData} from '../utils/api';
 
 export const transformReferrersData = (response) => {
   response.columns[0].selector = row => row.referrer; // select data for referrer column
@@ -20,3 +11,16 @@ export const transformReferrersData = (response) => {
 
   return response;
 }
+
+const getReferrerData = async ({startDate, endDate, range, args}) => {
+  const { data } = await getData(
+      'referrers',
+      startDate,
+      endDate,
+      range,
+      args
+  );
+
+  return transformReferrersData(data);
+}
+export default getReferrerData;

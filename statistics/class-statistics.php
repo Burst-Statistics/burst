@@ -697,13 +697,26 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$data  = $wpdb->get_results( $sql , ARRAY_A);
 
 			$direct_text = __( "Direct", "burst-statistics" );
-			// find 'Direct in the data and replace with $direct_text. Use fastest method possible
-			foreach ( $data as $key => $row ) {
-				if ( $row['referrer'] == 'Direct' ) {
-					$data[ $key ]['referrer'] = $direct_text;
+
+			// Create a new array to hold the updated data
+			$updated_data = [];
+
+			foreach ($data as $row) {
+				if ($row['referrer'] == 'Direct') {
+					$row['referrer'] = $direct_text;
 				}
+
+				// Change the 'referrer' key to 'value'
+				$row['value'] = $row['referrer'];
+				$row['count'] = (int) $row['count'];
+				unset($row['referrer']);
+
+				// Add the updated row to the new data array
+				$updated_data[] = $row;
 			}
 
+			// Replace the original data array with the updated one
+			$data = $updated_data;
 			return [
 				"columns" => $columns,
 				"data"    => $data,
@@ -1090,7 +1103,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					break;
 				case '*':
 				default:
-					$sql = "*";
+					$sql = false;
 					break;
 			}
 
@@ -1108,7 +1121,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 			$i      = 1;
 			foreach ( $metrics as $metric ) {
 				$sql    = $this->get_sql_select_for_metric( $metric );
-				if ($sql !== '*') {
+				if ($sql !== false) {
 					// if metric starts with  'count(' and ends with ')', then it's a custom metric
 					// so we change the $metric name to 'metric'_count
 					if ( substr( $metric, 0, 6 ) === 'count(' && substr( $metric, - 1 ) === ')' ) {
@@ -1119,7 +1132,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 					$select .= $sql . ' as ' . $metric;
 				} else { // if it's a wildcard, then we don't need to add the alias
-					$select .= $sql;
+					$select .= $metric;
 				}
 				if ( $count !== $i ) { // if it's not the last metric, then we need to add a comma
 					$select .= ', ';

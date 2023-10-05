@@ -1,5 +1,14 @@
-const GridItem = (props) => {
-  const { className, title, controls, children, footer } = props;
+/**
+ * GridItem
+ * @param className
+ * @param title
+ * @param controls
+ * @param children
+ * @param footer
+ * @return {JSX.Element}
+ * @constructor
+ */
+const GridItem = ({ className, title, controls, children, footer }) => {
   return (
       <div className={"burst-grid-item " + className}>
         <div className="burst-grid-item-header">
@@ -17,5 +26,4 @@ const GridItem = (props) => {
       </div>
   )
 }
-
 export default GridItem;

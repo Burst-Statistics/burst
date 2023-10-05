@@ -73,7 +73,9 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		$session_arr = array(
 			'last_visited_url' => $arr['page_url'],
 			'goal_id'          => false,
+			'country_code'     => $arr['country_code'] ?? '',
 		);
+		unset( $arr['country_code'] );
 		// update burst_sessions table
 		// Get the last record with the same uid within 30 minutes. If it exists, use session_id. If not, create a new session.
 		if ($is_update_hit) { // if update hit, make sure that the URL matches.
@@ -864,6 +866,13 @@ if ( ! function_exists( 'burst_get_ip_address' ) ) {
 			$ips        = explode( ',', $current_ip );
 			$current_ip = $ips[0];
 		}
+
+		// for testing purposes @todo delete
+//		$current_ip = "128.101.101.101"; //US ip
+//		$current_ip = "94.214.200.105"; //EU ip
+//		$current_ip = '185.86.151.11'; // UK ip
+//		$current_ip = '45.44.129.152'; // CA ip
+//		$current_ip = "189.189.111.174"; //Mexico
 
 		return apply_filters( "burst_visitor_ip", $current_ip );
 	}

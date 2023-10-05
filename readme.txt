@@ -61,8 +61,6 @@ Burst Statistics can be used without setting cookies or storing data in browsers
 Burst Statistics uses an endpoint to minimize requests during sessions. For best performance you can always use our 'Turbo Mode' which loads Burst in the footer, using the defer attribute.
 = Do you mind if I give feedback about the product? =
 We really want your feedback, please use the "Useful Links" section to get in contact. We'd like to develop this together.
-= Is there a Pro version? =
-Not...yet.
 
 == Change log ==
 = 1.4.6.1 =

@@ -5,7 +5,6 @@ import PagePlaceholder from './pages/PagePlaceholder';
 import {useMenu} from '../store/useMenuStore';
 import {useEffect, useMemo, useState} from 'react';
 import {useFields} from '../store/useFieldsStore';
-import {LoadData} from './LoadData';
 import {setLocaleData} from "@wordpress/i18n";
 
 const Page = () => {
@@ -96,7 +95,7 @@ const Page = () => {
             <ToastContainer
                 position="bottom-right"
                 autoClose={2000}
-                limit={3}
+                limit={5}
                 hideProgressBar
                 newestOnTop
                 closeOnClick
@@ -105,7 +104,6 @@ const Page = () => {
                 theme="light"
             />
         )}
-        <LoadData />
       </>
   );
 };
