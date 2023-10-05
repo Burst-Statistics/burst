@@ -83,6 +83,11 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can submit a support request on the WordPress forums, and we will respond promptly.
 
 == Change log ==
+= 1.5.0 =
+* Improvement: Updated outdated readme information.
+* Improvement: Updated outdated links in the plugin.
+* Improvement: Some minor styling changes.
+
 = 1.4.6.1 =
 Fix: Build issue for our dashboard.
 
