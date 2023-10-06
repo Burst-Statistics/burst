@@ -9,17 +9,9 @@ const ProPopover = ({
   onClick,
 }) => {
   const [open, setOpen] = useState(false);
-  const [firstHover, setFirstHover] = useState(true);
-  // on first hover open popover
-  const openInFirstHover = () => {
-    if (firstHover) {
-      setOpen(true);
-      setFirstHover(false);
-    }
-  }
   return (
       <Popover.Root open={open} onOpenChange={setOpen}>
-        <Popover.Trigger className={className} onMouseEnter={openInFirstHover} onClick={onClick}>
+        <Popover.Trigger className={className} onMouseEnter={() => setOpen(true)}>
           {children}
         </Popover.Trigger>
         <Popover.Portal>
