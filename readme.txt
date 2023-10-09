@@ -91,6 +91,7 @@ We value your feedback. You can submit a support request on the WordPress forums
 * Fix: Dropdown in data archiving showing empty.
 * Fix: Missing slug for Really Simple SSL with suggested plugins block
 * Improvement: Skip a missing post in the posts array for the goals overview.
+* Fix: Goals could crash when no hits were recorded yet. This has been resolved.
 
 = 1.4.6.1 =
 * Fix: Build issue for our dashboard.

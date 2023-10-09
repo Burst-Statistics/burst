@@ -20,6 +20,9 @@ export default (props) => {
   useEffect(() => {
     setIsLoading(true);
     getPosts('').then((response) => {
+        if ( !Array.isArray(response) ) {
+            response = [];
+        }
       setDefaultPosts(
           response.map((post) => ({
             value: post.page_url,
