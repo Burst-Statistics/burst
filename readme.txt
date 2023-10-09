@@ -87,9 +87,13 @@ We value your feedback. You can submit a support request on the WordPress forums
 * Improvement: Updated outdated readme information.
 * Improvement: Updated outdated links in the plugin.
 * Improvement: Some minor styling changes.
+* Improvement: Added notice about country insights.
+* Fix: Dropdown in data archiving showing empty.
+* Fix: Missing slug for Really Simple SSL with suggested plugins block
+* Improvement: Skip a missing post in the posts array for the goals overview.
 
 = 1.4.6.1 =
-Fix: Build issue for our dashboard.
+* Fix: Build issue for our dashboard.
 
 = 1.4.6 =
 * New: Delete old data to manage your database disk usage.
