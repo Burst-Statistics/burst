@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.3
-Stable tag: 1.5.0
+Stable tag: 1.5.0.1
 
 Self-hosted and privacy-friendly analytics for Wordpress.
 
@@ -83,6 +83,9 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can submit a support request on the WordPress forums, and we will respond promptly.
 
 == Change log ==
+= 1.5.0.1 =
+* Fix missing file 
+
 = 1.5.0 =
 * Improvement: Updated outdated readme information.
 * Improvement: Updated outdated links in the plugin.
