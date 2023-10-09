@@ -38,7 +38,19 @@ if ( ! class_exists( "burst_goals" ) ) {
 		    return $goal;
 	    }
 
+		public function sanitize_orderby($orderby) {
+			//get all colums from {$wpdb->prefix}burst_goals
+			$cols = $wpdb->query("SHOW COLUMNS FROM {$wpdb->prefix}burst_goals");
+			$cols = array_column($cols, 'Field');
+			//if orderby is not in cols, then set it to ID
+			return in_array($orderby, $cols) ? $orderby : 'ID';
+		}
+
 	    public function get_goals( $args = array() ) {
+			if ( !burst_user_can_view() ) {
+				return;
+			}
+
 		    global $wpdb;
 		    $default_args = [
 			    'status'  => 'all',
@@ -52,12 +64,10 @@ if ( ! class_exists( "burst_goals" ) ) {
 			
 			// sanitize args
 		    $args['order'] = $args['order'] === 'DESC' ? 'DESC' : 'ASC';
-		    $args['orderby'] = sanitize_title($args['orderby']);
-		    $args['status'] = sanitize_text_field($args['status']);
+		    $args['orderby'] = $this->sanitize_orderby($args['orderby']);
+		    $args['status'] = $this->sanitize_status($args['status']);
 			$args['limit'] = (int) $args['limit'];
 			$args['offset'] = (int) $args['offset'];
-
-
 
 		    $query = "SELECT * FROM {$wpdb->prefix}burst_goals";
 		    $where = [];
@@ -68,8 +78,8 @@ if ( ! class_exists( "burst_goals" ) ) {
 			    $query .= " WHERE " . implode( " AND ", $where );
 		    }
 
-		    $query .= $wpdb->prepare(" ORDER BY {$args['orderby']} {$args['order']}", );
-		    $query .= " LIMIT {$args['offset']}, {$args['limit']}";
+		    $query .= $wpdb->prepare(" ORDER BY {$args['orderby']} {$args['order']}", );//can only be columns or DESC/ASC because of sanitizing
+		    $query .= " LIMIT {$args['offset']}, {$args['limit']}"; //can only be integer because of sanitizing
 
 			$results = $wpdb->get_results($query, ARRAY_A);
 
@@ -83,6 +93,21 @@ if ( ! class_exists( "burst_goals" ) ) {
 			return $goals;
 
 	    }
+
+	    /**
+	     * Sanitize status
+	     * @param string $status
+	     *
+	     * @return string
+	     */
+		public function sanitize_status($status) {
+			$statuses = [
+				'active',
+				'inactive',
+				'archived',
+			];
+			return in_array($status, $statuses) ? $status : 'inactive';
+		}
 
 	    public function get_goal_field_values($goal_id){
 		    // get db values for goal

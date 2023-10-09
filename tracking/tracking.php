@@ -49,6 +49,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'completed_goals'   => null,
 		);
 		$data            = wp_parse_args( $data, $defaults );
+
 		// update array
 		$arr                      = array();
 		$arr['entire_page_url']   = burst_sanitize_entire_page_url( $data['url'] ); // required
@@ -223,10 +224,15 @@ if ( ! function_exists( 'burst_sanitize_entire_page_url' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_entire_page_url( $url ): string {
-		if (!function_exists('wp_kses_bad_protocol')) {
+		if ( !function_exists('wp_kses_bad_protocol') ) {
 			require_once( ABSPATH . '/wp-includes/kses.php' );
 		}
-		return esc_url_raw( trailingslashit( filter_var( $url, FILTER_SANITIZE_URL ) ) );
+		$sanitized_url = filter_var($url, FILTER_SANITIZE_URL);
+		// Validate the URL
+		if (!filter_var($sanitized_url, FILTER_VALIDATE_URL)) {
+			return ''; // or throw an exception, or however you handle errors
+		}
+		return esc_url_raw( trailingslashit( $sanitized_url ) );
 	}
 }
 
@@ -615,7 +621,8 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 		if ( ! $search_uid ) {
 			return $default_data;
 		}
-		$where = $page_url ? " AND page_url = '".sanitize_text_field($page_url)."'" : '';
+
+		$where = $page_url ? $wpdb->prepare(" AND page_url = %s", sanitize_text_field($page_url) ) : '';
 		$data = $wpdb->get_row(
 			$wpdb->prepare(
 				"select ID, session_id, page_url, time_on_page, bounce

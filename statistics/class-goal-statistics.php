@@ -33,11 +33,11 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			$goal_url     = $goal['url'] ?? '';
 			$goal_url_sql = $goal_url === '' || $goal_url === '*' ? '' : $wpdb->prepare( 'AND statistics.page_url = %s', $goal_url );
 
-			$sql = "SELECT COUNT(*)
+			$sql = $wpdb->prepare("SELECT COUNT(*)
 					FROM {$wpdb->prefix}burst_statistics as statistics 
 					    INNER JOIN {$wpdb->prefix}burst_goal_statistics as goals 
 					        ON statistics.ID = goals.statistic_id
-					WHERE statistics.bounce = 0 AND goals.goal_id = {$goal_id} AND statistics.time > {$today} {$goal_url_sql}";
+					WHERE statistics.bounce = 0 AND goals.goal_id = %d AND statistics.time > %d {$goal_url_sql}", $goal_id, $today );
 			$val = $wpdb->get_var( $sql );
 
 			return (int) $val ?: 0;
