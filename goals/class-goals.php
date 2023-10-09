@@ -112,6 +112,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 	     */
 		public function sanitize_status($status) {
 			$statuses = [
+				'all',
 				'active',
 				'inactive',
 				'archived',
