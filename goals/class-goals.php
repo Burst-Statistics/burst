@@ -34,17 +34,27 @@ if ( ! class_exists( "burst_goals" ) ) {
 		    global $wpdb;
 		    $table_name = $wpdb->prefix . 'burst_goals';
 		    $goal       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID = %d", (int) $goal_id ), ARRAY_A );
-
 		    return $goal;
 	    }
 
-		public function sanitize_orderby($orderby) {
-			//get all colums from {$wpdb->prefix}burst_goals
-			$cols = $wpdb->query("SHOW COLUMNS FROM {$wpdb->prefix}burst_goals");
-			$cols = array_column($cols, 'Field');
-			//if orderby is not in cols, then set it to ID
-			return in_array($orderby, $cols) ? $orderby : 'ID';
-		}
+	    public function sanitize_orderby($orderby) {
+		    global $wpdb;
+
+		    // Get all columns from {$wpdb->prefix}burst_goals table
+		    $table_name = $wpdb->prefix . 'burst_goals';
+		    $cols = $wpdb->get_results("SHOW COLUMNS FROM $table_name", ARRAY_A);
+
+		    // Extract the 'Field' values into an array
+		    $col_names = array_column($cols, 'Field');
+
+		    // If $orderby is not in $col_names, set it to 'ID'
+		    if (!in_array($orderby, $col_names)) {
+			    $orderby = 'ID';
+		    }
+
+		    return $orderby;
+	    }
+
 
 	    public function get_goals( $args = array() ) {
 			if ( !burst_user_can_view() ) {
@@ -78,7 +88,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 			    $query .= " WHERE " . implode( " AND ", $where );
 		    }
 
-		    $query .= $wpdb->prepare(" ORDER BY {$args['orderby']} {$args['order']}", );//can only be columns or DESC/ASC because of sanitizing
+		    $query .= " ORDER BY {$args['orderby']} {$args['order']}";//can only be columns or DESC/ASC because of sanitizing
 		    $query .= " LIMIT {$args['offset']}, {$args['limit']}"; //can only be integer because of sanitizing
 
 			$results = $wpdb->get_results($query, ARRAY_A);
