@@ -1,10 +1,6 @@
-const defaultConfig = require("@wordpress/scripts/config/webpack.config");
+const developmentConfig = require('./webpack.dev.js');
+const productionConfig = require('./webpack.prod.js');
 
-module.exports = {
-  ...defaultConfig,
-  output: {
-    ...defaultConfig.output,
-    filename: '[name].[contenthash]2.js',
-    chunkFilename: '[name].[contenthash]2.js',
-  },
-};
+const environment = process.env.BURST_ENV;
+
+module.exports = environment === 'production' ? productionConfig : developmentConfig;

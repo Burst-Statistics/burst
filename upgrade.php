@@ -14,6 +14,9 @@ function burst_check_upgrade() {
 	$prev_version = get_option( 'burst-current-version', false );
 	if ( $prev_version === burst_version ) return; // no upgrade
 
+	// update burst_update_endpoint option, so that the endpoint file will be updated every time the version is changed
+	update_option( 'burst_update_endpoint', true );
+
 	// add burst capabilities
 	if ( $prev_version
 	     && version_compare( $prev_version, '1.1.1', '<' )

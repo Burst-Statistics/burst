@@ -3,19 +3,45 @@ import {useState, useEffect, useRef} from 'react';
 import * as burst_api from '../../utils/api';
 import {getPercentage} from '../../utils/formatting';
 import Icon from '../../utils/Icon';
-import {useDevicesStore} from '../../store/useDevicesStore';
 import ClickToFilter from './ClickToFilter';
 import {useFiltersStore} from '../../store/useFiltersStore';
 import {useDate} from '../../store/useDateStore';
 import GridItem from '../common/GridItem';
 import ExplanationAndStatsItem from '../common/ExplanationAndStatsItem';
-import {fetchDevicesData} from '../../store/useDevicesStore';
+import {useQuery} from '@tanstack/react-query';
+import getDevicesData from '../../api/getDevicesData';
 
 const DevicesBlock = () => {
-  const loading = useDevicesStore((state) => state.loading);
-  const data = useDevicesStore((state) => state.data);
+  const {startDate, endDate, range} = useDate( (state) => state);
+  const filters = useFiltersStore((state) => state.filters);
+  const args = { 'filters': filters};
 
+  const deviceNames = {
+    'desktop': __('Desktop', 'burst-statistics'),
+    'tablet': __('Tablet', 'burst-statistics'),
+    'mobile': __('Mobile', 'burst-statistics'),
+    'other': __('Other', 'burst-statistics'),
+  };
+  let emptyData = {};
+// loop through metrics and set default values
+  Object.keys(deviceNames).forEach(function(key) {
+    emptyData[key] = {
+      'title': deviceNames[key],
+      'subtitle': '-',
+      'value': '-%',
+    };
+  });
+
+  const query = useQuery({
+    queryKey: ['devices', startDate, endDate, args],
+    queryFn: () => getDevicesData({startDate, endDate, range, args}),
+    placeholderData: emptyData,
+  });
+
+  const data = query.data || {};
+  const loading = query.isLoading || query.isFetching;
   let loadingClass = loading ? 'burst-loading' : '';
+
   return (
       <GridItem
           title={__('Devices', 'burst-statistics')}

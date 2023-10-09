@@ -12,7 +12,7 @@ import {
   formatTime,
   formatNumber,
   getPercentage,
-  getRelativeTime,
+  getRelativeTime, getDateWithOffset,
 } from '../../utils/formatting';
 import GoalStatus from './GoalStatus';
 import {useDashboardGoalsStore} from '../../store/useDashboardGoalsStore';
@@ -20,98 +20,91 @@ import {useGoalsStore} from '../../store/useGoalsStore';
 import GridItem from '../common/GridItem';
 import GoalsHeader from './GoalsHeader';
 import {setOption} from '../../utils/api';
+import {useQueries} from '@tanstack/react-query';
+import getLiveGoals from '../../api/getLiveGoals';
+import getGoalsData from '../../api/getGoalsData';
+
+function selectGoalIcon(value) {
+  value = parseInt(value);
+  if (value > 10) {
+    return 'goals';
+  } else if (value > 0) {
+    return 'goals';
+  } else {
+    return 'goals-empty';
+  }
+}
 
 const GoalsBlock = () => {
-  const live = useDashboardGoalsStore((state) => state.live);
-  const incrementUpdateLive = useDashboardGoalsStore((state) => state.incrementUpdateLive);
-
-  const data = useDashboardGoalsStore((state) => state.data);
-  const loading = useDashboardGoalsStore((state) => state.loading);
-  const setLoading = useDashboardGoalsStore((state) => state.setLoading);
-  const incrementUpdateData = useDashboardGoalsStore((state) => state.incrementUpdateData);
-
+  const [interval, setInterval] = useState(5000);
   const goalId = useDashboardGoalsStore((state) => state.goalId);
   const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
   const goals = useGoalsStore((state) => state.goals);
-  const [noGoals, setNoGoals] = useState(false);
-  useEffect(() => {
-    if (goalId === false) {
-      // get the key of first item from the goals list
-      const firstGoal = Object.keys(goals)[0];
-      if (firstGoal) {
-        setGoalId(firstGoal);
-      }
-    }
-    if (Object.keys(goals).length === 0) {
-      setNoGoals(true);
-      setLoading(false);
-    } else {
-      setNoGoals(false);
-    }
-  }, [goalId, goals]);
 
-  useEffect(() => {
-    if ( !noGoals ) {
-      let timer1, timer2;
-
-      const handleVisibilityChange = () => {
-        if (document.hidden) {
-          clearInterval(timer1);
-          clearInterval(timer2);
-        }
-        else {
-          timer1 = setInterval(() => {
-            incrementUpdateLive();
-          }, 5000);
-
-          timer2 = setInterval(() => {
-            incrementUpdateData();
-          }, 10000);
-        }
-      }
-
-      // add event listener for visibility change
-      document.addEventListener("visibilitychange", handleVisibilityChange);
-
-      // start the intervals
-      handleVisibilityChange();
-
-      // cleanup the event listener
-      return () => {
-        clearInterval(timer1);
-        clearInterval(timer2);
-        document.removeEventListener("visibilitychange",
-            handleVisibilityChange);
-      }
-    }
-  }, [noGoals]);
-
-  function selectGoalIcon(value) {
-    value = parseInt(value);
-    if (value > 10) {
-      return 'goals';
-    } else if (value > 0) {
-      return 'goals';
-    } else {
-      return 'goals-empty';
-    }
+  const currentDateWithOffset = getDateWithOffset();
+  const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+  const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+  const args = {
+    goal_id: goalId,
+    startDate: startDate,
+    endDate: endDate
+  };
+  const placeholderData = {
+    today: {
+      title: __('Today', 'burst-statistics'),
+      icon: 'goals',
+    },
+    total: {
+      title: __('Total', 'burst-statistics'),
+      value: '-',
+      icon: 'goals',
+    },
+    topPerformer: {
+      title: '-',
+      value: '-',
+    },
+    pageviews: {
+      title: '-',
+      value: '-',
+    },
+    conversionPercentage: {
+      title: '-',
+      value: '-',
+    },
+    bestDevice: {
+      title: '-',
+      value: '-',
+      icon: 'desktop',
+    },
+    dateCreated: 0,
+    dateStart: 0,
+    dateEnd: 0,
+    status: 'inactive',
   }
-
-  let todayIcon = selectGoalIcon(live);
-  let totalIcon = selectGoalIcon(data.total.value);
-  const delayTooltip = 200;
-  // let loadingClass = loading ? 'burst-loading' : '';
-
-  let startDate = false;
-  let endDate = false;
-  if (data.dateStart > 0 ) {
-    startDate = data.dateStart;
-    if (data.dateEnd > 0) {
-      endDate = data.dateEnd;
-    }
-  }
-
-  let today = format(new Date(), 'yyyy-MM-dd');
+  
+  const queries = useQueries({
+        queries: [
+          {
+            queryKey: ['live-goals', goalId],
+            queryFn: () => getLiveGoals(args),
+            refetchInterval: interval, // @todo: make this configurable
+            placeholderData: '-',
+            onError: (error) => {
+              setInterval(0);
+            }
+          },
+          {
+            queryKey: ['goals', goalId],
+            queryFn: () => getGoalsData(args),
+            refetchInterval: interval * 2,
+            placeholderData: placeholderData,
+            onError: (error) => {
+              setInterval(0);
+            }
+          }
+        ]
+      }
+  );
 
   const onGoalsInfoClick = () => {
     return () => {
@@ -122,12 +115,22 @@ const GoalsBlock = () => {
     }
   }
 
+
+
+  const live = queries[0].data;
+  let data = queries[1].data;
+  if (queries.some((query) => query.isError)) {
+    data = placeholderData;
+  }
+  const todayIcon = selectGoalIcon(live);
+  const totalIcon = selectGoalIcon(data.today.value);
+  let today = format(currentDateWithOffset, 'yyyy-MM-dd');
   return (
       <GridItem
           className={'border-to-border burst-goals'}
           title={__('Goals', 'burst-statistics')}
           controls={<GoalsHeader goalId={goalId} goals={goals} />}
-          footer={ !noGoals && (
+          footer={ Object.keys(goals).length !== 0 && (
               <>
                 <a className={'burst-button burst-button--secondary'}
                    href={'#settings/goals'}>{__('View setup',
@@ -143,7 +146,7 @@ const GoalsBlock = () => {
               <div className="information-overlay">
                 <div className="information-overlay-container">
                   <h4>{__('Goals', 'burst-statistics')}</h4>
-                  <p>{__('The all new goals! Keep track of customizable goals and get valuable insights. Add your first goal!', 'burst-statistics')}</p>
+                  <p>{__('Keep track of customizable goals and get valuable insights. Add your first goal!', 'burst-statistics')}</p>
                   <p><a href={'https://burst-statistics.com/how-to-set-goals/'}>{__('Learn how to set your first goal', 'burst-statistics')}</a></p>
                   <a onClick={onGoalsInfoClick()} className="burst-button burst-button--primary">{__('Create my first goal', 'burst-statistics')}</a>
                 </div>
@@ -170,7 +173,7 @@ const GoalsBlock = () => {
           </div>
           <div className="burst-goals-list">
             <Tooltip arrow title={data.topPerformer.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-goals-list-item">
                 <Icon name="winner"/>
                 <p className="burst-goals-list-item-text">{decodeURI(data.topPerformer.title)}</p>
@@ -178,7 +181,7 @@ const GoalsBlock = () => {
               </div>
             </Tooltip>
             <Tooltip arrow title={data.pageviews.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-goals-list-item">
                 <Icon name="pageviews"/>
                 <p className="burst-goals-list-item-text">{data.pageviews.title}</p>
@@ -186,7 +189,7 @@ const GoalsBlock = () => {
               </div>
             </Tooltip>
             <Tooltip arrow title={data.conversionPercentage.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-goals-list-item">
                 <Icon name="graph"/>
                 <p className="burst-goals-list-item-text">{data.conversionPercentage.title}</p>
@@ -194,7 +197,7 @@ const GoalsBlock = () => {
               </div>
             </Tooltip>
             <Tooltip arrow title={data.bestDevice.tooltip}
-                     enterDelay={delayTooltip}>
+                     enterDelay={200}>
               <div className="burst-goals-list-item">
                 <Icon name={data.bestDevice.icon}/>
                 <p className="burst-goals-list-item-text">{data.bestDevice.title}</p>

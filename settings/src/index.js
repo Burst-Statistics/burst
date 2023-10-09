@@ -1,23 +1,50 @@
 import React from 'react';
 import {
-    render,
+  render,
 } from '@wordpress/element';
 import Page from './components/Page';
+import {toast} from 'react-toastify';
 
-/**
- * Initialize
- */
+import {
+  QueryClient,
+  QueryCache,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 
-document.addEventListener( 'DOMContentLoaded', () => {
-	const container = document.getElementById( 'burst-statistics' );
-	if ( container ) {
-		render(
-				<React.StrictMode>
-					<div className="burst-wrapper">
-						<Page />
-					</div>
-				</React.StrictMode>,
-			container
-		);
-	}
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+const HOUR_IN_SECONDS = 3600;
+const queryCache = new QueryCache({
+  onError: (error) => {
+    // any error handling code...
+  }
+});
+let config = {
+  defaultOptions: {
+    queries: {
+      staleTime: HOUR_IN_SECONDS * 1000, // ms
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  }
+}
+// merge queryCache with config
+config = {...config, ...{queryCache}};
+
+const queryClient = new QueryClient(config);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('burst-statistics');
+  if (container) {
+    render(
+        <React.StrictMode>
+          <QueryClientProvider client={queryClient}>
+            <div className="burst-wrapper">
+              <Page/>
+            </div>
+            <ReactQueryDevtools />
+          </QueryClientProvider>
+        </React.StrictMode>,
+    container
+    );
+  }
 });

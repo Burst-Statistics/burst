@@ -29,7 +29,8 @@ function burst_install_sessions_table() {
 			`last_visited_url` varchar(255) NOT NULL,
             `goal_id` int(11),
             `experiment_id` int(11),
-            `experiment_version` int(11),    
+            `experiment_version` int(11),
+            `country_code` varchar(2),
               PRIMARY KEY  (ID)
             ) $charset_collate;";
 		dbDelta( $sql );

@@ -14,6 +14,7 @@ export const useFiltersStore = create((set, get) => ({
     device: '',
     browser: '',
     platform: '',
+    country_code: '',
   },
   filtersConf: {
     page_url: {
@@ -40,6 +41,10 @@ export const useFiltersStore = create((set, get) => ({
       label: __('Operating System', 'burst-statistics'),
       icon: 'operating-system',
     },
+    country_code: {
+      label: __('Country', 'burst-statistics'),
+      icon: 'country',
+    }
   },
   animate: null,
   setAnimate: (animate) => set({animate}),
