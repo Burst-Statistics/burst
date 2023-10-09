@@ -1107,9 +1107,14 @@ function burst_get_posts( $request, $ajax_data = false ) {
 	$posts = $wpdb->get_results( $sql, 'ARRAY_A' );
 	// get the post title from wp_posts
 	foreach ( $posts as $key => $post ) {
-		$post_id                     = $post['page_id'];
+		$post_id                     = (int) $post['page_id'];
+        $post = get_post($post_id);
+        if (!$post) {
+            unset($posts[$key]);
+            continue;
+        }
 		$post_title                  = get_the_title( $post_id );
-		$posts[ $key ]['post_title'] = $post_title;
+		$posts[ $key ]['post_title'] = empty($post_title) ? $post_id : $post_title;
 	}
 
 	//$sql = "SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'publish' ORDER BY post_title ASC";

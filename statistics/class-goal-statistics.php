@@ -98,7 +98,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 
 			if ( $goal_id !== 0 ) {
 				// Query to get total number of goal completions
-				$goal_end_sql = $goal_end > 0 ? "AND statistics.time < {$goal_end}" : '';
+				$goal_end_sql = $goal_end > 0 ? $wpdb->prepare("AND statistics.time < %s", $goal_end ) : '';
 				$goal_url_sql = $goal_url === '' || $goal_url === '*' ? '' : $wpdb->prepare( 'AND statistics.page_url = %s', $goal_url );
 				$total_sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics AS statistics
 								INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
@@ -108,11 +108,11 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 				$data['total']['value'] = $wpdb->get_var( $total_sql );
 
 				// Query to get top performing page
-				$top_performer_sql    = "SELECT COUNT(*) AS value, statistics.page_url AS title FROM {$wpdb->prefix}burst_statistics AS statistics
+				$top_performer_sql    = $wpdb->prepare("SELECT COUNT(*) AS value, statistics.page_url AS title FROM {$wpdb->prefix}burst_statistics AS statistics
 											INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
 											ON statistics.ID = goals.statistic_id
-											WHERE statistics.bounce = 0 AND goals.goal_id = {$goal_id} AND statistics.time > {$goal_start} {$goal_end_sql} {$goal_url_sql}
-											GROUP BY statistics.page_url ORDER BY COUNT(*) DESC LIMIT 1";
+											WHERE statistics.bounce = 0 AND goals.goal_id = %s AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
+											GROUP BY statistics.page_url ORDER BY COUNT(*) DESC LIMIT 1", $goal_id, $goal_start);
 				$top_performer_result = $wpdb->get_row( $top_performer_sql );
 				if ( $top_performer_result ) {
 					$data['topPerformer']['title'] = $top_performer_result->title;
@@ -120,21 +120,21 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 				}
 
 				// Query to get total number of pageviews
-				$visitors_sql               = "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics as statistics
-												WHERE statistics.time > {$goal_start} {$goal_end_sql} AND statistics.bounce = 0 {$goal_url_sql}";
+				$visitors_sql               = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics as statistics
+												WHERE statistics.time > %s {$goal_end_sql} AND statistics.bounce = 0 {$goal_url_sql}", $goal_start);
 				$data['pageviews']['value'] = $wpdb->get_var( $visitors_sql );
 
 				// Query to get best performing device
-				$device_sql    = "SELECT COUNT(*) AS value, statistics.device AS title FROM {$wpdb->prefix}burst_statistics AS statistics
+				$device_sql    = $wpdb->prepare("SELECT COUNT(*) AS value, statistics.device AS title FROM {$wpdb->prefix}burst_statistics AS statistics
 											INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
 											ON statistics.ID = goals.statistic_id
-											WHERE statistics.bounce = 0 AND goals.goal_id = {$goal_id} AND statistics.time > {$goal_start} {$goal_end_sql} {$goal_url_sql}
-											GROUP BY statistics.device ORDER BY value DESC LIMIT 4";
+											WHERE statistics.bounce = 0 AND goals.goal_id = %s AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
+											GROUP BY statistics.device ORDER BY value DESC LIMIT 4", $goal_id, $goal_start);
 				$device_result = $wpdb->get_results( $device_sql );
 
-				$pageviews_per_device = "SELECT COUNT(*) AS value, device FROM {$wpdb->prefix}burst_statistics as statistics
-											WHERE statistics.bounce = 0 AND statistics.time > {$goal_start} {$goal_end_sql} {$goal_url_sql}
-											GROUP BY statistics.device ORDER BY value DESC LIMIT 4";
+				$pageviews_per_device = $wpdb->prepare("SELECT COUNT(*) AS value, device FROM {$wpdb->prefix}burst_statistics as statistics
+											WHERE statistics.bounce = 0 AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
+											GROUP BY statistics.device ORDER BY value DESC LIMIT 4", $goal_start);
 				$pageviews_per_device_result = $wpdb->get_results($pageviews_per_device);
 
 				// calculate conversion rate and select the highest percentage

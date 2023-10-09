@@ -1015,6 +1015,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					if ( is_numeric( $filters[ $filter ] ) ) {
 						$where .= "AND {$filter} = {$filters[$filter]} ";
 					} else {
+						$filters[$filter] = sanitize_text_field( $filters[$filter] );
 						if ( $filter === 'referrer' ) {
 							if ( $filters[ $filter ] === __('Direct', 'burst-statistics') ) {
 								$where .= "AND {$filter} = '' ";
@@ -1036,7 +1037,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 					'on' => 'stats.ID = goals.statistic_id',
 					'type' => 'INNER' // Optional, default is INNER JOIN
 				];
-				$where .= "AND goals.goal_id = {$filters['goal_id']} ";
+				$where .= $wpdb->prepare( "AND goals.goal_id = %s ", (int) $filters['goal_id'] );
 			}
 
 			if ( ! empty( $join ) ) {
@@ -1049,7 +1050,7 @@ if ( ! class_exists( "burst_statistics" ) ) {
 
 			$group_by = $group_by ? "GROUP BY $group_by" : '';
 			$order_by = $order_by ? "ORDER BY $order_by" : '';
-			$limit = $limit ? "LIMIT $limit" : '';
+			$limit = $limit ? "LIMIT ".intval($limit) : '';
 
 			return $wpdb->prepare(
 				"SELECT $select FROM $table_name $join_sql WHERE time > %d AND time < %d $where $group_by $order_by $limit",

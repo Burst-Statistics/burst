@@ -33,7 +33,7 @@ if ( ! class_exists( "burst_goals" ) ) {
 	    public function get_goal_setup( $goal_id ) {
 		    global $wpdb;
 		    $table_name = $wpdb->prefix . 'burst_goals';
-		    $goal       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID = %d", $goal_id ), ARRAY_A );
+		    $goal       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID = %d", (int) $goal_id ), ARRAY_A );
 
 		    return $goal;
 	    }
@@ -49,15 +49,26 @@ if ( ! class_exists( "burst_goals" ) ) {
 		    ];
 		    // merge args
 		    $args  = wp_parse_args( $args, $default_args );
+			
+			// sanitize args
+		    $args['order'] = $args['order'] === 'DESC' ? 'DESC' : 'ASC';
+		    $args['orderby'] = sanitize_title($args['orderby']);
+		    $args['status'] = sanitize_text_field($args['status']);
+			$args['limit'] = (int) $args['limit'];
+			$args['offset'] = (int) $args['offset'];
+
+
+
 		    $query = "SELECT * FROM {$wpdb->prefix}burst_goals";
 		    $where = [];
 		    if ( $args['status'] !== 'all' ) {
-			    $where[] = $wpdb->prepare( "status = %s", $args['status'] );
+			    $where[] = $wpdb->prepare( "status = %s", $args['status']);
 		    }
 		    if ( ! empty( $where ) ) {
 			    $query .= " WHERE " . implode( " AND ", $where );
 		    }
-		    $query .= " ORDER BY {$args['orderby']} {$args['order']}";
+
+		    $query .= $wpdb->prepare(" ORDER BY {$args['orderby']} {$args['order']}", );
 		    $query .= " LIMIT {$args['offset']}, {$args['limit']}";
 
 			$results = $wpdb->get_results($query, ARRAY_A);
