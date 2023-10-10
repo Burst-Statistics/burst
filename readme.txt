@@ -33,16 +33,17 @@ Burst Statistics was created by experienced developers who created [Really Simpl
 Our community speaks for itself: with over 1,000,000 downloads and 100,000 active users, Burst Statistics is a trusted choice for your analytics needs.
 
 == Make Burst Statistics better! ==
-Our team is always working on improving our plugin, and your input as a user can significantly help us in this process. You don’t require any coding or software development knowledge to contribute; simply sharing your ideas or any issues you encounter would help to improve the plugin significantly. Please feel free to contact us via [a support request on the WordPress forums; we welcome any feedback you may have.]](https://wordpress.org/support/plugin/burst-statistics/)
+Our team is always working on improving our plugin, and your input as a user can significantly help us in this process. You don’t require any coding or software development knowledge to contribute; simply sharing your ideas or any issues you encounter would help to improve the plugin significantly. Please feel free to contact us via [a support request on the WordPress forums; we welcome any feedback you may have.](https://wordpress.org/support/plugin/burst-statistics/)
 
 == Get even more insight with Burst Pro ==
 Unlock comprehensive insights into your website’s user behavior with Burst Pro. Benefit from advanced features designed to improve performance, boost engagement, and drive conversions. [Elevate your data analysis experience by upgrading to Burst Pro today.](https://burst-statistics.com/pricing/)
 
-Pro Features Include:
+= Pro Features Include: =
 * **Geo-Tracking:** Identify the countries your visitors are coming from.
 * **Data Archiving:** Automatic archiving and manual restore options.
 * **Multiple Goals:** Track multiple objectives to measure your site’s success.
 * **Premium Support:** Premium Support from our fantastic team.
+
 For upcoming features, please [visit our roadmap on our website.](https://burst-statistics.com/development-roadmap/)
 
 == Installation ==
