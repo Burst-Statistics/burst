@@ -38,11 +38,11 @@ Our team is always working on improving our plugin, and your input as a user can
 == Get even more insight with Burst Pro ==
 Unlock comprehensive insights into your website’s user behavior with Burst Pro. Benefit from advanced features designed to improve performance, boost engagement, and drive conversions. [Elevate your data analysis experience by upgrading to Burst Pro today.](https://burst-statistics.com/pricing/)
 
-= Pro Features Include: =
-* **Geo-Tracking:** Identify the countries your visitors are coming from.
-* **Data Archiving:** Automatic archiving and manual restore options.
-* **Multiple Goals:** Track multiple objectives to measure your site’s success.
-* **Premium Support:** Premium Support from our fantastic team.
+Pro Features Include:
+* Geo-Tracking - Identify the countries your visitors are coming from.
+* Data Archiving - Automatic archiving and manual restore options.
+* Multiple Goals - Track multiple objectives to measure your site’s success.
+* Premium Support - Premium Support from our fantastic team.
 
 For upcoming features, please [visit our roadmap on our website.](https://burst-statistics.com/development-roadmap/)
 
@@ -88,7 +88,7 @@ We value your feedback. You can submit a support request on the WordPress forums
 * Fix: build of react code for dashboard, props @schidddy
 
 = 1.5.0.1 =
-* Fix missing file
+* Fix missing file causing a fatal error, props @bb15
 
 = 1.5.0 =
 * Improvement: Updated outdated readme information.
