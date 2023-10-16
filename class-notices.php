@@ -127,7 +127,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 						),
 					),
 				],
-				'bf_notice2022' => [
+				'bf_notice2023' => [
 					'condition'  => [
 						'BURST()->admin->is_bf'
 					],
