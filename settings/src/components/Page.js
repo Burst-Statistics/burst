@@ -3,7 +3,7 @@ import getAnchor from '../utils/getAnchor';
 import Header from './common/Header';
 import PagePlaceholder from './pages/PagePlaceholder';
 import {useMenu} from '../store/useMenuStore';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useFields} from '../store/useFieldsStore';
 import {setLocaleData} from "@wordpress/i18n";
 

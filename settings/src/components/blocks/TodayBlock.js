@@ -1,16 +1,12 @@
 import {__} from '@wordpress/i18n';
-import {
-  formatTime,
-  formatNumber, getRelativeTime,
-} from '../../utils/formatting';
 import Tooltip from '@mui/material/Tooltip';
-import { useQueries, useQueryClient } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import getLiveVisitors from '../../api/getLiveVisitors';
 import getTodayData from '../../api/getTodayData';
 
 import Icon from '../../utils/Icon';
-import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
-import {useRef, useState} from 'react';
+import {endOfDay, format,  startOfDay} from 'date-fns';
+import { useState} from 'react';
 import GridItem from '../common/GridItem';
 import {getDateWithOffset} from "../../utils/formatting";
 
@@ -32,6 +28,7 @@ const TodayBlock = () => {
   const currentDateWithOffset = getDateWithOffset();
   const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
   const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+
   const placeholderData = {
     live: {
       title: __('Live', 'burst-statistics'),
@@ -96,6 +93,8 @@ const TodayBlock = () => {
   if (data && data.today) {
     todayIcon = selectVisitorIcon(data.today.value ? data.today.value : 0);
   }
+
+
 
   return (
       <GridItem

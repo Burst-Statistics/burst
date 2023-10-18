@@ -50,34 +50,16 @@ add_filter( 'rest_url', 'burst_fix_rest_url_for_wpml', 10, 4 );
  *
  * @return array
  */
-function burst_get_chunk_translations($path) {
+function burst_get_chunk_translations( $dir ) {
 	//get all files from the settings/build folder
-	$files = scandir(burst_path . 'settings/build');
-	$json_translations = [];
-	foreach ($files as $file) {
-		$chunk_handle = 'burst-chunk-'.$file;
-		//temporarily register the script, so we can get a translations object.
-		wp_register_script( $chunk_handle, plugins_url('build/'.$file, __FILE__), [], true );
-		$localeData = load_script_textdomain( $chunk_handle, 'burst-statistics', $path );
-		if (!empty($localeData)){
-			$json_translations[] = $localeData;
-		}
-		wp_deregister_script( $chunk_handle );
-	}
-	return $json_translations;
-}
-
-function burst_plugin_admin_scripts() {
-	// replace with the actual path to your build directory
-	$buildDirPath = plugin_dir_path(__FILE__) . '/build';
-
-	// get the filenames in the build directory
+	$buildDirPath = burst_path . $dir;
 	$filenames = scandir($buildDirPath);
 
 	// filter the filenames to get the JavaScript and asset filenames
 	$jsFilename = '';
 	$assetFilename = '';
-	foreach ($filenames as $filename) {
+	$json_translations = [];
+	foreach ( $filenames as $filename ) {
 		if (strpos($filename, 'index.') === 0) {
 			if (substr($filename, -3) === '.js') {
 				$jsFilename = $filename;
@@ -85,50 +67,80 @@ function burst_plugin_admin_scripts() {
 				$assetFilename = $filename;
 			}
 		}
+
+		if ( strpos($filename, '.js') === false ) {
+			continue;
+		}
+
+		$chunk_handle = 'burst-chunk-'.$filename;
+		//temporarily register the script, so we can get a translations object.
+		wp_register_script( $chunk_handle, plugins_url('build/'.$filename, __FILE__), [], true );
+		$localeData = load_script_textdomain( $chunk_handle, 'burst-statistics' );
+		if (!empty($localeData)){
+			$json_translations[] = $localeData;
+		}
+		wp_deregister_script( $chunk_handle );
 	}
 
-
-	// check if the necessary files are found
-	if ($jsFilename !== '' && $assetFilename !== '') {
-		$assetFilePath = $buildDirPath . '/' . $assetFilename;
-		$assetFile     = require( $assetFilePath );
-
-		wp_enqueue_script(
-			'burst-settings',
-			plugins_url( 'build/' . $jsFilename, __FILE__ ),
-			$assetFile['dependencies'],
-			$assetFile['version'],
-			true
-		);
-		$path = defined( 'burst_pro' ) ? burst_path . 'languages' : false;
-		wp_set_script_translations( 'burst-settings', 'burst-statistics', $path );
-
-		wp_localize_script(
-			'burst-settings',
-			'burst_settings',
-			apply_filters( 'burst_localize_script', array(
-				'json_translations'       => burst_get_chunk_translations( $path ),
-				'menu'                    => burst_menu(),
-				'site_url'                => get_rest_url(),
-				'admin_ajax_url'          => add_query_arg( array( 'action' => 'burst_rest_api_fallback' ), admin_url( 'admin-ajax.php' ) ),
-				'dashboard_url'           => add_query_arg( [ 'page' => 'burst' ], burst_admin_url() ),
-				'upgrade_link'            => is_multisite() ? 'https://burst-statistics.com/pricing/?src=burst-plugin' : 'https://burst-statistics.com/pricing/?src=burst-plugin',
-				'plugin_url'              => burst_url,
-				'network_link'            => network_site_url( 'plugins.php' ),
-				'is_pro'                  => burst_is_pro(),
-				'networkwide_active'      => ! is_multisite(),//true for single sites and network wide activated
-				'nonce'                   => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
-				'burst_nonce'             => wp_create_nonce( 'burst_nonce' ),
-				'current_ip'              => burst_get_ip_address(),
-				'user_roles'              => burst_get_user_roles(),
-				'date_ranges'             => burst_get_date_ranges(),
-				'date_format'             => get_option( 'date_format' ),
-				'tour_shown'              => burst_get_option( 'burst_tour_shown_once' ),
-				'gmt_offset'              => get_option( 'gmt_offset' ),
-				'goals_information_shown' => (int) get_option( 'burst_goals_information_shown' ),
-			) )
-		);
+	$asset_file =  require( $buildDirPath . '/' . $assetFilename );
+	if ( empty($jsFilename) ) {
+		return [];
 	}
+
+	return [
+		'json_translations' => $json_translations,
+		'js_file'           => $jsFilename,
+		'dependencies'      => $asset_file['dependencies'],
+		'version'           => $asset_file['version'],
+	];
+}
+
+function burst_plugin_admin_scripts() {
+	$js_data = burst_get_chunk_translations('settings/build');
+	if ( empty($js_data) ) {
+		return;
+	}
+
+    wp_enqueue_script(
+        'burst-settings',
+        plugins_url( 'build/' . $js_data['js_file'], __FILE__ ),
+	    $js_data['dependencies'],
+	    $js_data['version'],
+        true
+    );
+    $path = defined( 'burst_pro' ) ? burst_path . 'languages' : false;
+    wp_set_script_translations( 'burst-settings', 'burst-statistics', $path );
+
+    wp_localize_script(
+        'burst-settings',
+        'burst_settings',
+        burst_localized_settings($js_data)
+    );
+
+}
+
+function burst_localized_settings($js_data){
+	return apply_filters( 'burst_localize_script', array(
+		'json_translations'       => $js_data['json_translations'],
+		'menu'                    => burst_menu(),
+		'site_url'                => get_rest_url(),
+		'admin_ajax_url'          => add_query_arg( array( 'action' => 'burst_rest_api_fallback' ), admin_url( 'admin-ajax.php' ) ),
+		'dashboard_url'           => add_query_arg( [ 'page' => 'burst' ], burst_admin_url() ),
+		'upgrade_link'            => is_multisite() ? 'https://burst-statistics.com/pricing/?src=burst-plugin' : 'https://burst-statistics.com/pricing/?src=burst-plugin',
+		'plugin_url'              => burst_url,
+		'network_link'            => network_site_url( 'plugins.php' ),
+		'is_pro'                  => burst_is_pro(),
+		'networkwide_active'      => ! is_multisite(),//true for single sites and network wide activated
+		'nonce'                   => wp_create_nonce( 'wp_rest' ),//to authenticate the logged in user
+		'burst_nonce'             => wp_create_nonce( 'burst_nonce' ),
+		'current_ip'              => burst_get_ip_address(),
+		'user_roles'              => burst_get_user_roles(),
+		'date_ranges'             => burst_get_date_ranges(),
+		'date_format'             => get_option( 'date_format' ),
+		'tour_shown'              => burst_get_option( 'burst_tour_shown_once' ),
+		'gmt_offset'              => get_option( 'gmt_offset' ),
+		'goals_information_shown' => (int) get_option( 'burst_goals_information_shown' ),
+	));
 }
 
 /**

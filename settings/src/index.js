@@ -3,7 +3,6 @@ import {
   render,
 } from '@wordpress/element';
 import Page from './components/Page';
-import {toast} from 'react-toastify';
 
 import {
   QueryClient,

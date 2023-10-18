@@ -26,7 +26,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'body' => '',
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-            add_action( 'wp_dashboard_setup', array($this, 'add_burst_dashboard_widget') );
 
 			$plugin = burst_plugin;
 			add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
@@ -160,37 +159,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			return $links;
 		}
-
-        /**
-         *
-         * Add a dashboard widget
-         *
-         * @since 1.1
-         *
-         */
-
-        public function add_burst_dashboard_widget()
-        {
-            if ( ! burst_user_can_view() ) {
-                return;
-            }
-            wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
-                $this,
-                'generate_dashboard_widget'
-            ));
-        }
-
-        /**
-         *
-         * Generate the dashboard widget
-         * Also generated the Top Searches grid item
-         *
-         * @return false|string
-         */
-        public function generate_dashboard_widget()
-        {
-	        echo burst_get_html_template('wordpress/dashboard-widget.php');
-        }
 
         /**
          * Function to easily add a column in a WordPress post table
