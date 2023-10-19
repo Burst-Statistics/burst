@@ -638,6 +638,7 @@ function burst_sanitize_field_type( $type ) {
 		'select',
 		'ip_blocklist',
 		'user_role_blocklist',
+		'license',
 	];
 	if ( in_array( $type, $types ) ) {
 		return $type;
