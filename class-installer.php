@@ -57,6 +57,7 @@ if ( !class_exists('burst_installer') ){
             $slugs = [
                 'burst-statistics' => 'burst-statistics/burst.php',
                 'complianz-gdpr' => 'complianz-gdpr/complianz-gpdr.php',
+                'really-simple-ssl' => 'really-simple-ssl/rlrsssl-really-simple-ssl.php',
                 'complianz-terms-conditions' => 'complianz-terms-conditions/complianz-terms-conditions.php',
             ];
             return $slugs[$this->slug];

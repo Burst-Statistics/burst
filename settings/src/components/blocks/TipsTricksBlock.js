@@ -28,7 +28,7 @@ const TipsTricksBlock = (props) => {
       link: 'https://burst-statistics.com/how-to-set-goals/',
     },
   ];
-  const src = '?src=plugin-tips-tricks';
+  const src = '?src=plugin-burst-tips-tricks';
 
   return (
       <GridItem

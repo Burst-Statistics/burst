@@ -58,7 +58,7 @@ function burst_menu() {
 							'id'    => 'restore_archives',
 							'title' => __( 'Archived Data', 'burst-statistics' ),
 							'pro'      => true,
-							'upgrade'     => 'https://burst-statistics.com/pricing?src=plugin-archive-data',
+							'upgrade'     => 'https://burst-statistics.com/pricing?src=plugin-burst-archive-data',
 							'pro_text' => __( "Manage your archived data with %sBurst Pro%s", 'burst-statistics' ),
 						],
 					],

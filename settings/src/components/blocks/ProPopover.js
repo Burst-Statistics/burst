@@ -9,17 +9,9 @@ const ProPopover = ({
   onClick,
 }) => {
   const [open, setOpen] = useState(false);
-  const [firstHover, setFirstHover] = useState(true);
-  // on first hover open popover
-  const openInFirstHover = () => {
-    if (firstHover) {
-      setOpen(true);
-      setFirstHover(false);
-    }
-  }
   return (
       <Popover.Root open={open} onOpenChange={setOpen}>
-        <Popover.Trigger className={className} onMouseEnter={openInFirstHover} onClick={onClick}>
+        <Popover.Trigger className={className} onMouseEnter={() => setOpen(true)}>
           {children}
         </Popover.Trigger>
         <Popover.Portal>
@@ -42,8 +34,8 @@ const ProPopover = ({
               <span><Icon name={'filters'} /><p><b>{__('Filter by Country:', 'burst-statistics')}</b> {__('Only see data from specific places.', 'burst-statistics')}</p></span>
             </div>
             <div className={'burst-pro-popover__footer'}>
-              <a href={'https://burst-statistics.com/pricing/?src=countries-upsell'} target="_blank"  className={'burst-button burst-button--pro'}>{__('Upgrade to Pro', 'burst-statistics')}</a>
-              <a href={'https://burst-statistics.com/?src=countries-upsell'} target="_blank"  className={'burst-button burst-button--secondary'}>{__('Learn More', 'burst-statistics')}</a>
+              <a href={'https://burst-statistics.com/pricing/?src=plugin-burst-countries-upsell'} target="_blank"  className={'burst-button burst-button--pro'}>{__('Upgrade to Pro', 'burst-statistics')}</a>
+              <a href={'https://burst-statistics.com/?src=plugin-burst-countries-upsell'} target="_blank"  className={'burst-button burst-button--secondary'}>{__('Learn More', 'burst-statistics')}</a>
             </div>
           </Popover.Content>
         </Popover.Portal>

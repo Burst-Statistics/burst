@@ -10,7 +10,7 @@ import ErrorBoundary from '../ErrorBoundary';
  * Render a grouped block of settings
  */
 const SettingsGroup = ( props ) => {
-  let upgrade = 'https://burst-statistics.com/pricing/?src=burst-plugin';
+  let upgrade = 'https://burst-statistics.com/pricing/?src=plugin-burst-settings-group';
   const subMenu = useMenu( state => state.subMenu );
   const selectedSubMenuItem = useMenu( state => state.selectedSubMenuItem );
   const {licenseStatus} = useLicenseStore();

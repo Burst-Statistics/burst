@@ -33,12 +33,34 @@ if ( ! class_exists( "burst_goals" ) ) {
 	    public function get_goal_setup( $goal_id ) {
 		    global $wpdb;
 		    $table_name = $wpdb->prefix . 'burst_goals';
-		    $goal       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID = %d", $goal_id ), ARRAY_A );
-
+		    $goal       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID = %d", (int) $goal_id ), ARRAY_A );
 		    return $goal;
 	    }
 
+	    public function sanitize_orderby($orderby) {
+		    global $wpdb;
+
+		    // Get all columns from {$wpdb->prefix}burst_goals table
+		    $table_name = $wpdb->prefix . 'burst_goals';
+		    $cols = $wpdb->get_results("SHOW COLUMNS FROM $table_name", ARRAY_A);
+
+		    // Extract the 'Field' values into an array
+		    $col_names = array_column($cols, 'Field');
+
+		    // If $orderby is not in $col_names, set it to 'ID'
+		    if (!in_array($orderby, $col_names)) {
+			    $orderby = 'ID';
+		    }
+
+		    return $orderby;
+	    }
+
+
 	    public function get_goals( $args = array() ) {
+			if ( !burst_user_can_view() ) {
+				return;
+			}
+
 		    global $wpdb;
 		    $default_args = [
 			    'status'  => 'all',
@@ -49,16 +71,25 @@ if ( ! class_exists( "burst_goals" ) ) {
 		    ];
 		    // merge args
 		    $args  = wp_parse_args( $args, $default_args );
+			
+			// sanitize args
+		    $args['order'] = $args['order'] === 'DESC' ? 'DESC' : 'ASC';
+		    $args['orderby'] = $this->sanitize_orderby($args['orderby']);
+		    $args['status'] = $this->sanitize_status($args['status']);
+			$args['limit'] = (int) $args['limit'];
+			$args['offset'] = (int) $args['offset'];
+
 		    $query = "SELECT * FROM {$wpdb->prefix}burst_goals";
 		    $where = [];
 		    if ( $args['status'] !== 'all' ) {
-			    $where[] = $wpdb->prepare( "status = %s", $args['status'] );
+			    $where[] = $wpdb->prepare( "status = %s", $args['status']);
 		    }
 		    if ( ! empty( $where ) ) {
 			    $query .= " WHERE " . implode( " AND ", $where );
 		    }
-		    $query .= " ORDER BY {$args['orderby']} {$args['order']}";
-		    $query .= " LIMIT {$args['offset']}, {$args['limit']}";
+
+		    $query .= " ORDER BY {$args['orderby']} {$args['order']}";//can only be columns or DESC/ASC because of sanitizing
+		    $query .= " LIMIT {$args['offset']}, {$args['limit']}"; //can only be integer because of sanitizing
 
 			$results = $wpdb->get_results($query, ARRAY_A);
 
@@ -72,6 +103,22 @@ if ( ! class_exists( "burst_goals" ) ) {
 			return $goals;
 
 	    }
+
+	    /**
+	     * Sanitize status
+	     * @param string $status
+	     *
+	     * @return string
+	     */
+		public function sanitize_status($status) {
+			$statuses = [
+				'all',
+				'active',
+				'inactive',
+				'archived',
+			];
+			return in_array($status, $statuses) ? $status : 'inactive';
+		}
 
 	    public function get_goal_field_values($goal_id){
 		    // get db values for goal
@@ -190,15 +237,20 @@ if ( ! class_exists( "burst_goals" ) ) {
 			return $this->get( $wpdb->insert_id);
 		}
 
-		public function delete( $id ) {
-			global $wpdb;
-			$table_name = $wpdb->prefix . 'burst_goals';
-			$wpdb->delete( $table_name, array( 'ID' => $id ) );
-			// if delete was successful, return true
-			return $wpdb->last_error === '';
-		}
+	    public function delete( $id ) {
+		    global $wpdb;
+		    $table_name = $wpdb->prefix . 'burst_goals';
+		    $result1 = $wpdb->delete( $table_name, array( 'ID' => $id ) );
 
-		public function archive( $id ) {
+		    $table_name_statistics = $wpdb->prefix . 'burst_goals_statistics';
+		    $result2 = $wpdb->delete( $table_name_statistics, array( 'goal_id' => $id ) );
+
+		    // Check if both delete queries were successful
+		    return $result1 !== false && $result2 !== false;
+	    }
+
+
+	    public function archive( $id ) {
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_goals';
 			$wpdb->update( $table_name, array( 'status' => 'archived' ), array( 'ID' => $id ) );

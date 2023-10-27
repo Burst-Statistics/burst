@@ -87,8 +87,11 @@ const Page = () => {
                 { Tour && <Tour />}
               <ErrorBoundary fallback={'Could not load page'}>
                 {selectedMainMenuItem === 'dashboard' && DashboardPage && <DashboardPage />}
+                {selectedMainMenuItem === 'dashboard' && !DashboardPage && <PagePlaceholder />}
                 {selectedMainMenuItem === 'statistics' && StatisticsPage && <StatisticsPage />}
+                {selectedMainMenuItem === 'statistics' && !StatisticsPage && <PagePlaceholder />}
                 {selectedMainMenuItem === 'settings' && SettingsPage && <SettingsPage />}
+                {selectedMainMenuItem === 'settings' && !SettingsPage && <PagePlaceholder />}
               </ErrorBoundary>
             </>
         ) : (

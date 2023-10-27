@@ -75,7 +75,7 @@ const InsightsBlock = () => {
 
   return (
       <GridItem
-          className={'burst-column-2'}
+          className={'burst-column-2 burst-insights'}
           title={__('Insights', 'burst-statistics')}
           controls={<InsightsHeader metrics={metrics} filters={filters}/>}
       >

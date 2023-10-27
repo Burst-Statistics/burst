@@ -10,7 +10,7 @@ const SelectInput = ({
   defaultValue,
   disabled,
   options = {},
-  canBeEmpty = true,
+  canBeEmpty = false,
   label,
   innerRef,
 }) => {
@@ -25,8 +25,9 @@ const SelectInput = ({
   // add empty option
   if ( canBeEmpty ) {
     //only add this if no value is selected yet.
-    let valueIsEmpty = value === '' || value === false || value === 0;
+    let valueIsEmpty = !value || value.lenght===0 || value === 0;
     if (valueIsEmpty) {
+      value='0';
       options = {
         0: __('Select an option', 'complianz-gdpr'),
         ...options,
@@ -38,6 +39,7 @@ const SelectInput = ({
       value = Object.keys(options)[0];
     }
   }
+
 
   return (
       <div className="burst-input-group burst-select-group" key={label}>

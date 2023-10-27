@@ -45,7 +45,9 @@ const AcquisitionBlock = (props) => {
     if (type === 'countries') {
       data.columns[0].cell = (row) => {
         return (
-            <Flag country={row.country_code} countryNiceName={row.value} />
+            <ClickToFilter filter="country_code" filterValue={row.country_code}>
+              <Flag country={row.country_code} countryNiceName={row.value} />
+            </ClickToFilter>
         );
       };
     } else {

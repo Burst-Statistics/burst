@@ -44,6 +44,9 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $do_upgrade === 'goals_remove_columns' ) {
 				$this->upgrade_goals_remove_columns();
 			}
+			if ( $do_upgrade === 'goals_set_conversion_metric' ) {
+				$this->upgrade_goals_set_conversion_metric();
+			}
 		}
 
 		/**
@@ -56,6 +59,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			return apply_filters( 'burst_db_upgrades', [
 				'bounces',
 				'goals_remove_columns',
+				'goals_set_conversion_metric',
 			] );
 		}
 
@@ -98,7 +102,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			// if query is successful
 			if ( $result !== false ) {
-				update_option( 'burst_db_upgrade_bounces', false);
+				delete_option( 'burst_db_upgrade_bounces');
 			} else {
 				if ( WP_DEBUG ) {
 					error_log( 'Burst Statistics: db upgrade bounces failed' );
@@ -116,11 +120,10 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_goals';
-
 			// check if columns exist first
 			$columns = $wpdb->get_col( "DESC $table_name", 0 );
 			if ( ! in_array( 'event', $columns ) || ! in_array( 'action', $columns ) ) {
-				update_option( 'burst_db_upgrade_goals_remove_columns', false);
+				delete_option( 'burst_db_upgrade_goals_remove_columns');
 				return;
 			}
 
@@ -132,9 +135,33 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			$remove = $wpdb->query( $sql );
 
 			if ( $remove !== false ) {
-				update_option( 'burst_db_upgrade_goals_remove_columns', false);
+				delete_option( 'burst_db_upgrade_goals_remove_columns');
 			}
 			
+		}
+
+		private function upgrade_goals_set_conversion_metric(){
+			if ( ! burst_admin_logged_in() ) {
+				return;
+			}
+			$option_name = 'burst_db_upgrade_goals_set_conversion_metric';
+			if ( ! get_option( $option_name ) ) {
+				return;
+			}
+
+			global $wpdb;
+			$table_name = $wpdb->prefix . 'burst_goals';
+
+			// set conversion_metric to 'pageviews' for all goals
+			$sql    = "UPDATE $table_name
+					SET conversion_metric = 'pageviews'
+					WHERE conversion_metric IS NULL OR conversion_metric = ''";
+
+			$add_conversion_metric = $wpdb->query( $sql );
+
+			if ( $add_conversion_metric !== false ) {
+				delete_option( $option_name);
+			}
 		}
 	}
 }

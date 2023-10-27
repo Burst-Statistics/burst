@@ -66,7 +66,7 @@ const GoalsBlock = () => {
     conversionMetric: {
       title: '-',
       value: '-',
-      'icon': 'visitors',
+      icon: 'visitors',
     },
     conversionPercentage: {
       title: '-',
@@ -126,7 +126,6 @@ const GoalsBlock = () => {
   const todayIcon = selectGoalIcon(live);
   const totalIcon = selectGoalIcon(data.today.value);
   let today = format(currentDateWithOffset, 'yyyy-MM-dd');
-
   return (
       <GridItem
           className={'border-to-border burst-goals'}

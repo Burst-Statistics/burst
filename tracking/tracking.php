@@ -49,6 +49,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'completed_goals'   => null,
 		);
 		$data            = wp_parse_args( $data, $defaults );
+
 		// update array
 		$arr                      = array();
 		$arr['entire_page_url']   = burst_sanitize_entire_page_url( $data['url'] ); // required
@@ -223,8 +224,15 @@ if ( ! function_exists( 'burst_sanitize_entire_page_url' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_entire_page_url( $url ): string {
-
-		return trailingslashit( filter_var( $url, FILTER_SANITIZE_URL ) );
+		if ( !function_exists('wp_kses_bad_protocol') ) {
+			require_once( ABSPATH . '/wp-includes/kses.php' );
+		}
+		$sanitized_url = filter_var($url, FILTER_SANITIZE_URL);
+		// Validate the URL
+		if (!filter_var($sanitized_url, FILTER_VALIDATE_URL)) {
+			return ''; // or throw an exception, or however you handle errors
+		}
+		return esc_url_raw( trailingslashit( $sanitized_url ) );
 	}
 }
 
@@ -237,7 +245,10 @@ if ( ! function_exists( 'burst_sanitize_page_url' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_page_url( $url ): string {
-		$url = parse_url( $url );
+		if (!function_exists('wp_kses_bad_protocol')) {
+			require_once( ABSPATH . '/wp-includes/kses.php' );
+		}
+		$url = parse_url( esc_url_raw( $url ) );
 		if ( isset( $url['host'] ) ) {
 			return trailingslashit( $url['path'] );
 		}
@@ -325,8 +336,10 @@ if ( ! function_exists( 'burst_sanitize_referrer' ) ) {
 		if ( array_search( $referrer_url, $ref_spam_list ) ) {
 			return 'spammer';
 		}
-
-		return $referrer ? trailingslashit( $referrer ) : null;
+		if (!function_exists('wp_kses_bad_protocol')) {
+			require_once( ABSPATH . '/wp-includes/kses.php' );
+		}
+		return $referrer ? trailingslashit( esc_url_raw( $referrer ) ) : null;
 	}
 }
 
@@ -339,7 +352,7 @@ if ( ! function_exists( 'burst_sanitize_user_agent' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_user_agent( $user_agent ): string {
-		return filter_var( $user_agent, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW );
+		return sanitize_text_field(filter_var( $user_agent, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW ) );
 	}
 }
 
@@ -352,7 +365,7 @@ if ( ! function_exists( 'burst_sanitize_device_resolution' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_device_resolution( $device_resolution ): string {
-		return filter_var( $device_resolution, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW );
+		return sanitize_text_field(filter_var( $device_resolution, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW ));
 	}
 }
 
@@ -396,7 +409,7 @@ if ( ! function_exists( 'burst_sanitize_completed_goal_ids' ) ) {
 		}
 		$completed_goals = array_intersect( $completed_goals, burst_get_active_goals_ids() ); // only keep active goals ids
 		$completed_goals = array_unique( $completed_goals ); // remove duplicates
-
+		$completed_goals = array_map( 'absint', $completed_goals ); // make sure all values are integers
 		return $completed_goals;
 	}
 }
@@ -608,7 +621,8 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 		if ( ! $search_uid ) {
 			return $default_data;
 		}
-		$where = $page_url ? " AND page_url = '{$page_url}'" : '';
+
+		$where = $page_url ? $wpdb->prepare(" AND page_url = %s", sanitize_text_field($page_url) ) : '';
 		$data = $wpdb->get_row(
 			$wpdb->prepare(
 				"select ID, session_id, page_url, time_on_page, bounce
@@ -662,7 +676,7 @@ if ( ! function_exists( 'burst_update_session' ) ) {
 		$wpdb->update(
 			$wpdb->prefix . 'burst_sessions',
 			$data,
-			array( 'ID' => $session_id )
+			array( 'ID' => (int) $session_id )
 		);
 	}
 }
@@ -709,7 +723,7 @@ if ( ! function_exists( 'burst_update_statistic' ) ) {
 		$wpdb->update(
 			$wpdb->prefix . 'burst_statistics',
 			(array) $data,
-			array( 'ID' => $data['ID'] )
+			array( 'ID' => (int) $data['ID'] )
 		);
 
 		return $wpdb->insert_id;
@@ -733,9 +747,9 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 
 		// first get row with same statistics_id and goal_id
 		$goal_statistic = $wpdb->get_var(
-			"select count(*)
+			$wpdb->prepare("select count(*)
 							from {$wpdb->prefix}burst_goal_statistics
-		                    where statistic_id = {$data['statistic_id']} AND goal_id = {$data['goal_id']}");
+		                    where statistic_id = %s AND goal_id = %s"), intval($data['statistic_id']), intval($data['goal_id']) );
 		// goal already exists
 		if ( $goal_statistic > 0 ) {
 			return;
