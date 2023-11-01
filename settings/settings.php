@@ -1212,11 +1212,9 @@ function burst_get_user_roles(): array {
 }
 
 function burst_get_posts( $request, $ajax_data = false ) {
-    error_log('get_posts');
 	if ( ! burst_user_can_view() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
-    error_log('get_posts perm');
 
 	global $wpdb;
 	$data   = $ajax_data ?: $request->get_params();
@@ -1226,7 +1224,6 @@ function burst_get_posts( $request, $ajax_data = false ) {
 	if ( ! wp_verify_nonce( $nonce, 'burst_nonce' ) ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
-	error_log('get_posts nonce valid');
 
 	// Initialize an empty array for results
 	$resultArray = array();
@@ -1263,7 +1260,6 @@ function burst_get_posts( $request, $ajax_data = false ) {
 		'%' . $wpdb->esc_like( $search ) . '%'
 	);
 
-    error_log('get_posts query: ' . $final_query);
 	$results = $wpdb->get_results( $final_query, ARRAY_A );
 
 	foreach ( $results as $row ) {

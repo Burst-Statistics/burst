@@ -25,6 +25,7 @@ const DevicesBlock = () => {
   };
   let emptyDataTitleValue = {};
   let emptyDataSubtitle = {};
+  let placeholderData = {};
 // loop through metrics and set default values
   Object.keys(deviceNames).forEach(function(key) {
     emptyDataTitleValue[key] = {
@@ -34,8 +35,12 @@ const DevicesBlock = () => {
     emptyDataSubtitle[key] = {
       'subtitle': '-',
     }
+    placeholderData[key] = {
+      'title': deviceNames[key],
+      'value': '-%',
+      'subtitle': '-',
+    }
   });
-
   const titleAndValueQuery = useQuery({
     queryKey: ['devicesTitleAndValue', startDate, endDate, args],
     queryFn: () => getDevicesTitleAndValueData({startDate, endDate, range, args}),
@@ -48,12 +53,16 @@ const DevicesBlock = () => {
     placeholderData: emptyDataSubtitle,
   });
 
-  let mergedData = titleAndValueQuery.data;
-  Object.keys(mergedData).map((key) => {
-    mergedData[key] = { ...mergedData[key], ...subtitleQuery.data[key] };
-  });
+  let data = placeholderData;
+  if (titleAndValueQuery.data && subtitleQuery.data) {
+    data = {...titleAndValueQuery.data}; // Clone data to avoid mutation
+    Object.keys(data).forEach((key) => {
+      if (subtitleQuery.data[key]) { // Check if it exists in subtitle data
+        data[key] = { ...data[key], ...subtitleQuery.data[key] };
+      }
+    });
+  }
 
-  const data = mergedData || {};
   // const loading = query.isLoading || query.isFetching;
   const loading = titleAndValueQuery.isLoading || titleAndValueQuery.isFetching;
 
