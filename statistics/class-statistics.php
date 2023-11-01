@@ -525,12 +525,12 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			// if string is not '' then add 'AND' to the string
 			$where_clause = $this->get_where_clause_for_filters($filters);
 			if ( $goal_id !== null ) {
-				$join_clause  = 'INNER JOIN wp_burst_goal_statistics AS goals ON stats.ID = goals.statistic_id';
+				$join_clause  = "INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals ON stats.ID = goals.statistic_id";
 				// append to where clause
 				$where_clause .= $wpdb->prepare( " AND goals.goal_id = %d ", $goal_id );
 			}
 			if ($country_code !== null) {
-				$join_clause .= " INNER JOIN wp_burst_sessions AS sessions ON stats.session_id = sessions.ID ";
+				$join_clause .= " INNER JOIN {$wpdb->prefix}burst_sessions AS sessions ON stats.session_id = sessions.ID ";
 				$where_clause .= $wpdb->prepare( " AND sessions.country_code = %s ", $country_code );
 			}
 
@@ -538,7 +538,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				"SELECT device, COUNT(device) AS count
 				        FROM (
 				            SELECT stats.device 
-				            FROM wp_burst_statistics AS stats
+				            FROM {$wpdb->prefix}burst_statistics AS stats
 				            $join_clause
 				            WHERE time > %s
 				            AND time < %s 
@@ -612,17 +612,17 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			foreach ( $devices as $device ) {
 				$device_sql = $wpdb->prepare( " device=%s ", $device );
 
-				$common_sql = " FROM wp_burst_statistics AS stats ";
+				$common_sql = " FROM {$wpdb->prefix}burst_statistics AS stats ";
 				$where_sql = $wpdb->prepare( " WHERE time > %d AND time < %d AND device IS NOT NULL AND device <> '' $where_clause", $start, $end, $filters['bounce'] );
 
 				// Conditional JOIN and WHERE based on the presence of goal_id
 				if ($goal_id !== null) {
-					$common_sql .= " INNER JOIN wp_burst_goal_statistics AS goals ON stats.ID = goals.statistic_id ";
+					$common_sql .= " INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals ON stats.ID = goals.statistic_id ";
 					$where_sql .= $wpdb->prepare( " AND goals.goal_id = %d ", $goal_id );
 				}
 
 				if ($country_code) {
-					$common_sql .= " INNER JOIN wp_burst_sessions AS sessions ON stats.session_id = sessions.ID ";
+					$common_sql .= " INNER JOIN {$wpdb->prefix}burst_sessions AS sessions ON stats.session_id = sessions.ID ";
 					$where_sql .= $wpdb->prepare( " AND sessions.country_code = %s ", $country_code );
 				}
 

@@ -36,12 +36,13 @@ const OptionLayout = ({ innerProps, innerRef, data }) => {
 };
 
 // Main SelectPage component
-const SelectPage = ({ defaultValue, onChangeHandler, field }) => {
+const SelectPage = ({ value, onChangeHandler, field }) => {
   const [search, setSearch] = React.useState('');
   const posts = useQuery(
       ['defaultPosts', search],
       () => fetchPosts(search),
   );
+  console.log('value', value);
 
   // cache the first '' empty fetchPosts call so we can use it as the default value
   const firstPosts = useRef(posts.data);
@@ -66,9 +67,9 @@ const SelectPage = ({ defaultValue, onChangeHandler, field }) => {
             isSearchable={true}
             name="selectPage"
             cacheOptions
-            defaultValue={defaultValue}
+            defaultValue={value}
+            defaultInputValue={value}
             defaultOptions={firstPosts.current}
-            defaultInputValue={defaultValue}
             loadOptions={loadOptions}
             components={{ Option: OptionLayout }}
             theme={(theme) => ({
