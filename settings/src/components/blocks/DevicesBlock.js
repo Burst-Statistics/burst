@@ -9,7 +9,8 @@ import {useDate} from '../../store/useDateStore';
 import GridItem from '../common/GridItem';
 import ExplanationAndStatsItem from '../common/ExplanationAndStatsItem';
 import {useQuery} from '@tanstack/react-query';
-import getDevicesData from '../../api/getDevicesData';
+import {getDevicesTitleAndValueData, getDevicesSubtitleData} from '../../api/getDevicesData';
+
 
 const DevicesBlock = () => {
   const {startDate, endDate, range} = useDate( (state) => state);
@@ -22,24 +23,49 @@ const DevicesBlock = () => {
     'mobile': __('Mobile', 'burst-statistics'),
     'other': __('Other', 'burst-statistics'),
   };
-  let emptyData = {};
+  let emptyDataTitleValue = {};
+  let emptyDataSubtitle = {};
+  let placeholderData = {};
 // loop through metrics and set default values
   Object.keys(deviceNames).forEach(function(key) {
-    emptyData[key] = {
+    emptyDataTitleValue[key] = {
       'title': deviceNames[key],
-      'subtitle': '-',
       'value': '-%',
     };
+    emptyDataSubtitle[key] = {
+      'subtitle': '-',
+    }
+    placeholderData[key] = {
+      'title': deviceNames[key],
+      'value': '-%',
+      'subtitle': '-',
+    }
+  });
+  const titleAndValueQuery = useQuery({
+    queryKey: ['devicesTitleAndValue', startDate, endDate, args],
+    queryFn: () => getDevicesTitleAndValueData({startDate, endDate, range, args}),
+    placeholderData: emptyDataTitleValue,
   });
 
-  const query = useQuery({
-    queryKey: ['devices', startDate, endDate, args],
-    queryFn: () => getDevicesData({startDate, endDate, range, args}),
-    placeholderData: emptyData,
+  const subtitleQuery = useQuery({
+    queryKey: ['devicesSubtitle', startDate, endDate, args],
+    queryFn: () => getDevicesSubtitleData({startDate, endDate, range, args}),
+    placeholderData: emptyDataSubtitle,
   });
 
-  const data = query.data || {};
-  const loading = query.isLoading || query.isFetching;
+  let data = placeholderData;
+  if (titleAndValueQuery.data && subtitleQuery.data) {
+    data = {...titleAndValueQuery.data}; // Clone data to avoid mutation
+    Object.keys(data).forEach((key) => {
+      if (subtitleQuery.data[key]) { // Check if it exists in subtitle data
+        data[key] = { ...data[key], ...subtitleQuery.data[key] };
+      }
+    });
+  }
+
+  // const loading = query.isLoading || query.isFetching;
+  const loading = titleAndValueQuery.isLoading || titleAndValueQuery.isFetching;
+
   let loadingClass = loading ? 'burst-loading' : '';
 
   return (

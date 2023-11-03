@@ -34,8 +34,8 @@ const ProPopover = ({
               <span><Icon name={'filters'} /><p><b>{__('Filter by Country:', 'burst-statistics')}</b> {__('Only see data from specific places.', 'burst-statistics')}</p></span>
             </div>
             <div className={'burst-pro-popover__footer'}>
-              <a href={'https://burst-statistics.com/pricing/?src=countries-upsell'} target="_blank"  className={'burst-button burst-button--pro'}>{__('Upgrade to Pro', 'burst-statistics')}</a>
-              <a href={'https://burst-statistics.com/?src=countries-upsell'} target="_blank"  className={'burst-button burst-button--secondary'}>{__('Learn More', 'burst-statistics')}</a>
+              <a href={'https://burst-statistics.com/pricing/?src=plugin-burst-countries-upsell'} target="_blank"  className={'burst-button burst-button--pro'}>{__('Upgrade to Pro', 'burst-statistics')}</a>
+              <a href={'https://burst-statistics.com/?src=plugin-burst-countries-upsell'} target="_blank"  className={'burst-button burst-button--secondary'}>{__('Learn More', 'burst-statistics')}</a>
             </div>
           </Popover.Content>
         </Popover.Portal>

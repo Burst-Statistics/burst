@@ -8,7 +8,7 @@ const Header = () => {
   const selectedMainMenuItem = useMenu((state) => state.selectedMainMenuItem);
   const fetchMainMenuData = useMenu((state) => state.fetchMainMenuData);
   const plugin_url = burst_settings.plugin_url;
-  const support_url = !burst_settings.is_pro ? 'https://wordpress.org/support/plugin/burst-statistics/' :  'https://burst-statistics.com/support/?src=plugin-header';
+  const support_url = !burst_settings.is_pro ? 'https://wordpress.org/support/plugin/burst-statistics/' :  'https://burst-statistics.com/support/?src=plugin-burst-header';
   const firstUpdate = useRef(true);
 
   useEffect( () => {
@@ -42,7 +42,7 @@ const Header = () => {
                className={"burst-button burst-button--secondary"}
                target="_blank">{__('Support', 'burst-statistics')}</a>
             {!burst_settings.is_pro &&
-              <a href={'https://burst-statistics.com/pricing/?src=plugin-header'}
+              <a href={'https://burst-statistics.com/pricing/?src=plugin-burst-header'}
                   className={"burst-button burst-button--pro"}
                   target="_blank">{__('Upgrade to Pro', 'burst-statistics')}</a>
             }

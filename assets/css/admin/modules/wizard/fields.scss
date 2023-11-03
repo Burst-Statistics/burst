@@ -1,4 +1,12 @@
 .burst {
+
+  input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="email"], input[type="month"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="week"] {
+    background-color: var(--rsp-input-background-color);
+    border: 1px solid var(--rsp-input-border-color);
+    border-radius: var(--rsp-border-radius-xs);
+    color: var(--rsp-input-text-color);
+  }
+
   div[class^="burst-wizard-"] { // starts with selector
 
     input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="email"], input[type="month"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="week"] {
@@ -79,45 +87,11 @@
       align-items: center;
     }
 
-
     .burst-highlight {
       background-color: transparent;
       border-left: 4px solid var(--rsp-green);
       -o-animation: fadeIt 3s ease-in-out;
       animation: fadeIt 3s ease-in-out;
-    }
-
-    // warning shown below the input field
-    .burst-warning {
-      padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
-      margin: var(--rsp-spacing-xxs) 0;
-      border-radius: var(--rsp-border-radius-xs);
-      opacity: 1;
-      transition: opacity 1.3s ease-in-out;
-
-      color: var(--rsp-red);
-      background-color: var(--rsp-red-faded);
-      border: 1px solid var(--rsp-red);
-
-      display: flex;
-      gap: var(--rsp-spacing-xs);
-      align-items: center;
-    }
-
-    .burst-warning.hidden {
-      opacity: 0;
-    }
-
-    .burst-warning.success {
-      color: var(--rsp-green);
-      background-color: var(--rsp-green-faded);
-      border: 1px solid var(--rsp-green);
-    }
-
-    .burst-warning.warning {
-      color: var(--rsp-text-color);
-      background-color: var(--rsp-yellow-faded);
-      border: 1px solid var(--rsp-yellow);
     }
 
     @-o-keyframes fadeIt {

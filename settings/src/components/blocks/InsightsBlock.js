@@ -10,6 +10,7 @@ import {useFiltersStore} from "../../store/useFiltersStore";
 
 const InsightsBlock = () => {
   const [InsightsGraph, setInsightsGraph] = useState(null);
+
   useEffect(() => {
     if (!InsightsGraph){
       import ('./InsightsGraph').then(({default: InsightsGraph}) => {
@@ -17,7 +18,7 @@ const InsightsBlock = () => {
       });
     }
   }, []);
-  const metrics = useInsightsStore((state) => state.metrics);
+  const metrics = useInsightsStore((state) => state.getMetrics());
   const {startDate, endDate, range} = useDate( (state) => state);
   const filters = useFiltersStore((state) => state.filters);
   const args = { 'filters': filters, 'metrics': metrics };
@@ -75,7 +76,7 @@ const InsightsBlock = () => {
 
   return (
       <GridItem
-          className={'burst-column-2'}
+          className={'burst-column-2 burst-insights'}
           title={__('Insights', 'burst-statistics')}
           controls={<InsightsHeader metrics={metrics} filters={filters}/>}
       >

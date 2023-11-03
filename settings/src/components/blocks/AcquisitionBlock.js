@@ -40,12 +40,14 @@ const AcquisitionBlock = (props) => {
   let loadingClass = loading ? 'burst-loading' : '';
 
   if (query.isFetched && data.length !== 0 && data.columns) {
-    data.columns[1].selector = row => row.count; // select data for referrer column
+    data.columns[1].selector = row =>  Number(row.count); // select data for referrer column
     // make cell clickable
     if (type === 'countries') {
       data.columns[0].cell = (row) => {
         return (
-            <Flag country={row.country_code} countryNiceName={row.value} />
+            <ClickToFilter filter="country_code" filterValue={row.country_code}>
+              <Flag country={row.country_code} countryNiceName={row.value} />
+            </ClickToFilter>
         );
       };
     } else {

@@ -7,7 +7,7 @@
     justify-content: flex-start;
     gap: var(--rsp-spacing-xxs);
     font-size: var(--rsp-fs-300);
-    background: var(--rsp-white);
+    background: var(--rsp-grey-300);
     border: var(--rsp-grey-400) 1px solid;
     border-right-width: 0px;
     padding: var(--rsp-spacing-xxs) var(--rsp-spacing-s);
@@ -36,10 +36,10 @@
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
     }
     &--selected{
-      background: var(--rsp-grey-300);
+      background: var(--rsp-white);
       cursor: default;
       &:hover{
-        background: var(--rsp-grey-300);
+        background: var(--rsp-white);
       }
     }
     &--pro{

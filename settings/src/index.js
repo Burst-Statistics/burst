@@ -1,9 +1,8 @@
 import React from 'react';
 import {
-  render,
+  render, createRoot
 } from '@wordpress/element';
 import Page from './components/Page';
-import {toast} from 'react-toastify';
 
 import {
   QueryClient,
@@ -34,17 +33,30 @@ const queryClient = new QueryClient(config);
 
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('burst-statistics');
-  if (container) {
-    render(
-        <React.StrictMode>
-          <QueryClientProvider client={queryClient}>
-            <div className="burst-wrapper">
-              <Page/>
-            </div>
-            <ReactQueryDevtools />
-          </QueryClientProvider>
-        </React.StrictMode>,
-    container
-    );
+  if ( container ) {
+    if ( createRoot ) {
+      createRoot( container ).render(
+          <React.StrictMode>
+            <QueryClientProvider client={queryClient}>
+              <div className="burst-wrapper">
+                <Page/>
+              </div>
+              <ReactQueryDevtools />
+            </QueryClientProvider>
+          </React.StrictMode>,
+           );
+    } else {
+      render(
+          <React.StrictMode>
+            <QueryClientProvider client={queryClient}>
+              <div className="burst-wrapper">
+                <Page/>
+              </div>
+              <ReactQueryDevtools />
+            </QueryClientProvider>
+          </React.StrictMode>,
+          container
+      );
+    }
   }
 });

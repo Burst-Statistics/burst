@@ -1,6 +1,6 @@
 import {__} from '@wordpress/i18n';
 import {useState, useEffect, useRef} from 'react';
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from './Tooltip';
 import ClickToFilter from './ClickToFilter';
 import Icon from '../../utils/Icon';
 import {
@@ -28,9 +28,11 @@ function selectGoalIcon(value) {
   value = parseInt(value);
   if (value > 10) {
     return 'goals';
-  } else if (value > 0) {
+  }
+  else if (value > 0) {
     return 'goals';
-  } else {
+  }
+  else {
     return 'goals-empty';
   }
 }
@@ -47,7 +49,7 @@ const GoalsBlock = () => {
   const args = {
     goal_id: goalId,
     startDate: startDate,
-    endDate: endDate
+    endDate: endDate,
   };
   const placeholderData = {
     today: {
@@ -63,9 +65,10 @@ const GoalsBlock = () => {
       title: '-',
       value: '-',
     },
-    pageviews: {
+    conversionMetric: {
       title: '-',
       value: '-',
+      icon: 'visitors',
     },
     conversionPercentage: {
       title: '-',
@@ -80,8 +83,8 @@ const GoalsBlock = () => {
     dateStart: 0,
     dateEnd: 0,
     status: 'inactive',
-  }
-  
+  };
+
   const queries = useQueries({
         queries: [
           {
@@ -91,7 +94,7 @@ const GoalsBlock = () => {
             placeholderData: '-',
             onError: (error) => {
               setInterval(0);
-            }
+            },
           },
           {
             queryKey: ['goals', goalId],
@@ -100,22 +103,20 @@ const GoalsBlock = () => {
             placeholderData: placeholderData,
             onError: (error) => {
               setInterval(0);
-            }
-          }
-        ]
-      }
+            },
+          },
+        ],
+      },
   );
 
   const onGoalsInfoClick = () => {
     return () => {
       burst_settings.goals_information_shown = '1';
       setOption('goals_information_shown', true);
-      // chnage the #settings/goals to #settings/goals/add
+      // change the #settings/goals to #settings/goals/add
       window.location.hash = '#settings/goals';
-    }
-  }
-
-
+    };
+  };
 
   const live = queries[0].data;
   let data = queries[1].data;
@@ -129,8 +130,8 @@ const GoalsBlock = () => {
       <GridItem
           className={'border-to-border burst-goals'}
           title={__('Goals', 'burst-statistics')}
-          controls={<GoalsHeader goalId={goalId} goals={goals} />}
-          footer={ Object.keys(goals).length !== 0 && (
+          controls={<GoalsHeader goalId={goalId} goals={goals}/>}
+          footer={Object.keys(goals).length !== 0 && (
               <>
                 <a className={'burst-button burst-button--secondary'}
                    href={'#settings/goals'}>{__('View setup',
@@ -146,23 +147,36 @@ const GoalsBlock = () => {
               <div className="information-overlay">
                 <div className="information-overlay-container">
                   <h4>{__('Goals', 'burst-statistics')}</h4>
-                  <p>{__('Keep track of customizable goals and get valuable insights. Add your first goal!', 'burst-statistics')}</p>
-                  <p><a href={'https://burst-statistics.com/how-to-set-goals/'}>{__('Learn how to set your first goal', 'burst-statistics')}</a></p>
-                  <a onClick={onGoalsInfoClick()} className="burst-button burst-button--primary">{__('Create my first goal', 'burst-statistics')}</a>
+                  <p>{__(
+                      'Keep track of customizable goals and get valuable insights. Add your first goal!',
+                      'burst-statistics')}</p>
+                  <p><a
+                      href={'https://burst-statistics.com/how-to-set-goals/'}>{__(
+                      'Learn how to set your first goal',
+                      'burst-statistics')}</a></p>
+                  <a onClick={onGoalsInfoClick()}
+                     className="burst-button burst-button--primary">{__(
+                      'Create my first goal', 'burst-statistics')}</a>
                 </div>
               </div>
           )}
           <div className="burst-goals-select">
             <ClickToFilter filter="goal_id" filterValue={data.goalId}
-                           label={data.today.tooltip+ __('Goal and today', 'burst-statistics')} startDate={today}>
+                           label={data.today.tooltip +
+                               __('Goal and today', 'burst-statistics')}
+                           startDate={today}>
               <div className="burst-goals-select-item">
                 <Icon name={todayIcon} size="23"/>
                 <h2>{live}</h2>
-                <span><Icon name="sun" color={'yellow'} size="13"/> {__('Today', 'burst-statistics')}</span>
+                <span><Icon name="sun" color={'yellow'} size="13"/> {__('Today',
+                    'burst-statistics')}</span>
               </div>
             </ClickToFilter>
             <ClickToFilter filter="goal_id" filterValue={data.goalId}
-                           label={data.today.tooltip + __('Goal and the start date', 'burst-statistics')} startDate={startDate} endDate={endDate}>
+                           label={data.today.tooltip +
+                               __('Goal and the start date',
+                                   'burst-statistics')} startDate={startDate}
+                           endDate={endDate}>
               <div className="burst-goals-select-item">
                 <Icon name={totalIcon} size="23"/>
                 <h2>{data.total.value}</h2>
@@ -172,33 +186,33 @@ const GoalsBlock = () => {
             </ClickToFilter>
           </div>
           <div className="burst-goals-list">
-            <Tooltip arrow title={data.topPerformer.tooltip}
-                     enterDelay={200}>
-              <div className="burst-goals-list-item">
+            <Tooltip content={data.topPerformer.tooltip}>
+              <div className="burst-goals-list-item burst-tooltip-topPerformer"
+                  >
                 <Icon name="winner"/>
-                <p className="burst-goals-list-item-text">{decodeURI(data.topPerformer.title)}</p>
+                <p className="burst-goals-list-item-text">{decodeURI(
+                    data.topPerformer.title)}</p>
                 <p className="burst-goals-list-item-number">{data.topPerformer.value}</p>
               </div>
             </Tooltip>
-            <Tooltip arrow title={data.pageviews.tooltip}
-                     enterDelay={200}>
+            <Tooltip arrow title={data.conversionMetric.tooltip}>
               <div className="burst-goals-list-item">
-                <Icon name="pageviews"/>
-                <p className="burst-goals-list-item-text">{data.pageviews.title}</p>
-                <p className="burst-goals-list-item-number">{data.pageviews.value}</p>
+                <Icon name={data.conversionMetric.icon} />
+                <p className="burst-goals-list-item-text">{data.conversionMetric.title}</p>
+                <p className="burst-goals-list-item-number">{data.conversionMetric.value}</p>
               </div>
             </Tooltip>
-            <Tooltip arrow title={data.conversionPercentage.tooltip}
-                     enterDelay={200}>
-              <div className="burst-goals-list-item">
+            <Tooltip content={data.conversionPercentage.tooltip}>
+              <div
+                  className="burst-goals-list-item burst-tooltip-conversionPercentage"
+                 >
                 <Icon name="graph"/>
                 <p className="burst-goals-list-item-text">{data.conversionPercentage.title}</p>
                 <p className="burst-goals-list-item-number">{data.conversionPercentage.value}</p>
               </div>
             </Tooltip>
-            <Tooltip arrow title={data.bestDevice.tooltip}
-                     enterDelay={200}>
-              <div className="burst-goals-list-item">
+            <Tooltip content={data.bestDevice.tooltip}>
+              <div className="burst-goals-list-item burst-tooltip-bestDevice">
                 <Icon name={data.bestDevice.icon}/>
                 <p className="burst-goals-list-item-text">{data.bestDevice.title}</p>
                 <p className="burst-goals-list-item-number">{data.bestDevice.value}</p>

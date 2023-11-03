@@ -15,6 +15,7 @@ if ( ! class_exists( "burst_frontend" ) ) {
             self::$_this = $this;
 
             add_action('admin_bar_menu', array($this, 'add_to_admin_bar_menu'), 35);
+            add_action('admin_bar_menu', array($this, 'add_top_bar_menu'), 400 );
         }
 
         static function this()
@@ -22,7 +23,7 @@ if ( ! class_exists( "burst_frontend" ) ) {
             return self::$_this;
         }
 
-        function add_to_admin_bar_menu( $wp_admin_bar ) {
+        public function add_to_admin_bar_menu( $wp_admin_bar ) {
             if ( ! burst_user_can_view() || is_admin() ) {
                 return;
             }
@@ -35,5 +36,44 @@ if ( ! class_exists( "burst_frontend" ) ) {
                 )
             );
         }
+
+	    /**
+	     * Add top bar menu for page views
+	     * @param $wp_admin_bar
+	     *
+	     * @return void
+	     */
+		public function add_top_bar_menu( $wp_admin_bar ) {
+			global $wp_admin_bar;
+			global $wpdb;
+			if ( is_admin() ) {
+				return;
+			}
+
+			if ( ! burst_user_can_view() ) {
+				return;
+			}
+
+			// get current url with php
+			$url = $_SERVER['REQUEST_URI'] ?? '';
+			// strip home_url
+			$url = str_replace( home_url(), '', $url );
+
+			$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics WHERE page_url = %s AND bounce = 0";
+			$count = (int) $wpdb->get_var( $wpdb->prepare( $sql, $url ) );
+
+			$wp_admin_bar->add_menu(
+				array(
+					'id' => 'burst-front-end',
+					'title' => $count . ' ' . __('Pageviews', 'burst-statistics'),
+				));
+			$wp_admin_bar->add_menu(
+				array(
+					'parent' => 'burst-front-end',
+					'id' => 'burst-statistics-link',
+					'title' => __('Go to dashboard', 'burst-statistics'),
+					'href' => burst_dashboard_url,
+				));
+		}
     }
 }

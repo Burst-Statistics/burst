@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
-import Tooltip from '@mui/material/Tooltip';
+import {useGoalFieldsStore} from "../../../store/useGoalFieldsStore";
+import Tooltip from '../Tooltip';
 
-export default function EditableText({ value, onChange }) {
+export default function EditableText({ value, id, onChange }) {
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef(null);
+  const saveGoalTitle = useGoalFieldsStore((state) => state.saveGoalTitle);
+
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -13,13 +16,14 @@ export default function EditableText({ value, onChange }) {
   }, [isEditing]);
 
   function handleClick(e) {
-    // prevent default click behavior
     e.preventDefault();
     setIsEditing(true);
   }
 
-  function handleBlur() {
+  async function handleBlur() {
     setIsEditing(false);
+    await saveGoalTitle(id, value);
+
   }
 
   function handleKeyDown(event) {
@@ -48,15 +52,17 @@ export default function EditableText({ value, onChange }) {
         {isEditing ? (
             <input
                 type="text"
-                value={value}
+                value={value} // Use temporary value
                 onChange={handleTextChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
                 ref={inputRef}
             />
         ) : (
-            <Tooltip title={__('Click to edit', 'burst-statistics')} arrow>
-              <h5 tabIndex="0" onClick={handleClick} onFocus={handleFocus}>
+            <Tooltip content={__('Click to edit', 'burst-statistics')}>
+              <h5 className="burst-tooltip-clicktoedit" tabIndex="0"
+                  onClick={handleClick} onFocus={handleFocus}
+                 >
                 {value}
               </h5>
             </Tooltip>

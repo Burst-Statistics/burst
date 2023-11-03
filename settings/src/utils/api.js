@@ -19,6 +19,7 @@ const getNonce = () => {
 
 const generateError = (error, path = false) => {
 	let message = __('Server error', 'burst-statistics');
+	error = error.replace(/(<([^>]+)>)/gi, "");
 
 	if (path) {
 		const urlWithoutQueryParams = path.split('?')[0];

@@ -22,6 +22,37 @@
           & > * {
             width: 100%;
           }
+          &__warning {
+            padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
+            margin: var(--rsp-spacing-xxs) 0;
+            border-radius: var(--rsp-border-radius-xs);
+            opacity: 1;
+            transition: opacity 1.3s ease-in-out;
+
+            color: var(--rsp-red);
+            background-color: var(--rsp-red-faded);
+            border: 1px solid var(--rsp-red);
+
+            display: flex;
+            gap: var(--rsp-spacing-xs);
+            align-items: center;
+
+            &.hidden {
+              opacity: 0;
+            }
+
+            &.success {
+              color: var(--rsp-green);
+              background-color: var(--rsp-green-faded);
+              border: 1px solid var(--rsp-green);
+            }
+
+            &.warning {
+              color: var(--rsp-text-color);
+              background-color: var(--rsp-yellow-faded);
+              border: 1px solid var(--rsp-yellow);
+            }
+          }
         }
 
         details {

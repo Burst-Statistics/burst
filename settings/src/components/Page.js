@@ -3,9 +3,10 @@ import getAnchor from '../utils/getAnchor';
 import Header from './common/Header';
 import PagePlaceholder from './pages/PagePlaceholder';
 import {useMenu} from '../store/useMenuStore';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useFields} from '../store/useFieldsStore';
 import {setLocaleData} from "@wordpress/i18n";
+import ErrorBoundary from "./ErrorBoundary";
 
 const Page = () => {
   const menuLoaded = useMenu((state) => state.menuLoaded);
@@ -84,9 +85,14 @@ const Page = () => {
         {menuLoaded ? (
             <>
                 { Tour && <Tour />}
+              <ErrorBoundary fallback={'Could not load page'}>
                 {selectedMainMenuItem === 'dashboard' && DashboardPage && <DashboardPage />}
+                {selectedMainMenuItem === 'dashboard' && !DashboardPage && <PagePlaceholder />}
                 {selectedMainMenuItem === 'statistics' && StatisticsPage && <StatisticsPage />}
+                {selectedMainMenuItem === 'statistics' && !StatisticsPage && <PagePlaceholder />}
                 {selectedMainMenuItem === 'settings' && SettingsPage && <SettingsPage />}
+                {selectedMainMenuItem === 'settings' && !SettingsPage && <PagePlaceholder />}
+              </ErrorBoundary>
             </>
         ) : (
             <PagePlaceholder />

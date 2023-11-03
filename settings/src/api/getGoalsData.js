@@ -7,7 +7,7 @@ import {__} from '@wordpress/i18n';
 
 export const transformTotalGoalsData = (response) => {
   response.conversionPercentage.value = getPercentage(
-      response.total.value, response.pageviews.value);
+      response.total.value, response.conversionMetric.value);
   response.bestDevice.value = formatPercentage(response.bestDevice.value);
   for (let key in response) {
     if (response.hasOwnProperty(key)) {
@@ -25,8 +25,8 @@ export const transformTotalGoalsData = (response) => {
   response.conversionPercentage.tooltip = __('Calculated by:',
           'burst-statistics') + ' ' +
       __('Total amount of goals reached ', 'burst-statistics') + ' / ' +
-      __('Total amount of pageviews', 'burst-statistics') + ' (' +
-      response.total.value + ' / ' + response.pageviews.value + ')';
+      __('Total amount of', 'burst-statistics') + ' ' +  response.conversionMetric.title + ' (' +
+      response.total.value + ' / ' + response.conversionMetric.value + ')';
   return response;
 };
 
@@ -45,9 +45,10 @@ const placeholderData = {
     title: '-',
     value: '-',
   },
-  pageviews: {
+  conversionMetric: {
     title: '-',
     value: '-',
+    icon: 'visitors',
   },
   conversionPercentage: {
     title: '-',

@@ -57,6 +57,10 @@ function burst_check_upgrade() {
 		update_option( "burst_db_upgrade_bounces", true );
 		update_option( 'burst_db_upgrade_goals_remove_columns', true);
 	}
+	if ( $prev_version
+	     && version_compare( $prev_version, '1.5.2', '<' ) ) {
+		update_option( 'burst_db_upgrade_goals_set_conversion_metric', true);
+	}
 
 
 	do_action( 'burst_upgrade', $prev_version );

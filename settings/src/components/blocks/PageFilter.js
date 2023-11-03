@@ -11,7 +11,7 @@ export const PageFilter = () => {
   const goalFields = useGoalFieldsStore((state) => state.goalFields);
   const animate = useFiltersStore((state) => state.animate);
   const setInsightsMetrics = useInsightsStore((state) => state.setMetrics);
-  const insightsMetrics = useInsightsStore((state) => state.metrics);
+  const insightsMetrics = useInsightsStore((state) => state.getMetrics());
   let title = '';
 
   const getGoalsTitle = (id) => {
@@ -19,6 +19,26 @@ export const PageFilter = () => {
       return '';
     }
     return goalFields[id].goal_title.value;
+  }
+  const getCountryTitle = (code) => {
+    if (!code) {
+      return '';
+    }
+    const countryLabel = burst_settings.countries[code];
+    return countryLabel ? countryLabel : code
+  }
+
+  const getDeviceTitle = (device) => {
+    switch (device) {
+      case 'desktop':
+        return __('Desktop', 'burst-statistics');
+      case 'tablet':
+        return __('Tablet', 'burst-statistics');
+      case 'mobile':
+        return __('Mobile', 'burst-statistics');
+      default:
+        return __('Other', 'burst-statistics');
+    }
   }
 
   // if animate is set, add the class to the filter
@@ -46,6 +66,10 @@ export const PageFilter = () => {
           if (filters[filter] !== '') {
             if (filter === 'goal_id') {
               title = getGoalsTitle(filters[filter]);
+            } else if (filter === 'device') {
+              title = getDeviceTitle(filters[filter]);
+            } else if (filter === 'country_code') {
+              title = getCountryTitle(filters[filter]);
             } else {
               title = filters[filter];
             }

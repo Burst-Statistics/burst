@@ -6,19 +6,10 @@ import Icon from '../../../utils/Icon';
 import GoalSetup from '../Goals/GoalSetup';
 import {useEffect} from 'react';
 
-
 const GoalsSettings = (props) => {
   const { goals, addGoal, removeGoal, updateGoal } = useGoalsStore();
   const {goalFields, setGoalValue} = useGoalFieldsStore();
   const {licenseStatus} = useLicenseStore();
-
-  const handleAddGoal = () => {
-    addGoal();
-  };
-
-  const handleRemoveGoal = (id) => {
-    removeGoal(id);
-  };
 
   useEffect(() => {
   }, [goals]);
@@ -37,7 +28,7 @@ const GoalsSettings = (props) => {
                     goal={goals[id]}
                     goalFields={goalFields[id]}
                     setGoalValue={setGoalValue}
-                    onRemove={handleRemoveGoal}
+                    onRemove={removeGoal}
                     onUpdate={updateGoal}
                 />
             );
@@ -47,7 +38,7 @@ const GoalsSettings = (props) => {
               <div className={'burst-settings-goals__add-goal'}>
                 <button
                     className={'burst-button burst-button--secondary'}
-                    onClick={handleAddGoal}
+                    onClick={addGoal}
                 >
                   {__('Add goal', 'burst-statistics')}
                 </button>
@@ -56,11 +47,11 @@ const GoalsSettings = (props) => {
           { ! burst_settings.is_pro && (
               <div className={'burst-settings-goals__upgrade'}>
                 <Icon name={'goals'} size={24} />
-                <h4>{__('Want more goals?')}</h4>
+                <h4>{__('Want more goals?', 'burst-statistics')}</h4>
                 <div className="burst-divider" />
-                <p>{__('Upgrade to Burst Pro')}</p>
+                <p>{__('Upgrade to Burst Pro', 'burst-statistics')}</p>
                 <a
-                    href={'https://burst-statistics.com/pricing/?src=burst-plugin'}
+                    href={'https://burst-statistics.com/pricing/?src=plugin-burst-more-goals'}
                     target={'_blank'}
                     className={'burst-button burst-button--pro'}
                 >

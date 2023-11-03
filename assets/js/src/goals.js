@@ -1,6 +1,8 @@
 /**
  * Setup event listeners for goals.
  */
+
+let viewportGoals = [];
 const burst_goals_setup = () => {
   // loop through goals and remove any that don't match the current path or
   // don't have a path
@@ -23,6 +25,22 @@ const burst_goals_setup = () => {
         break;
     }
   }
+
+  window.addEventListener('scroll', handle_viewport_goals, true);
+};
+
+/**
+ * Check if any goals are in the viewport.
+ */
+const handle_viewport_goals = () => {
+  viewportGoals.forEach((goalData, index) => {
+    if (burst_is_element_in_viewport(goalData.element)) {
+      burst_goal_triggered(goalData.goal);
+
+      // Remove the goal from the viewportGoals array
+      viewportGoals.splice(index, 1);
+    }
+  });
 };
 
 /**
@@ -35,14 +53,33 @@ const burst_setup_viewport_tracker = (goal) => {
 
   for (let i = 0; i < elements.length; i++) {
     let element = elements[i];
-    // if the element is already in the viewport, trigger the goal
+
+    // Check if already in viewport
     if (burst_is_element_in_viewport(element)) {
       burst_goal_triggered(goal);
+      // remove from list of elements to monitor
     } else {
-      // otherwise, setup a scroll listener
-      window.addEventListener('scroll', () => burst_listener_view(element, goal), true );
+      // Add to our list of elements to monitor
+      viewportGoals.push({element, goal});
     }
   }
+};
+
+/**
+ * Recursive function to check all parents.
+ * @param element
+ * @return {boolean|boolean|*}
+ */
+const is_element_truly_visible = (element) => {
+  if (!element) return true;
+
+  const style = window.getComputedStyle(element);
+
+  if (style.display === "none" || style.opacity === "0") {
+    return false;
+  }
+
+  return is_element_truly_visible(element.parentElement);
 };
 
 /**
@@ -51,6 +88,10 @@ const burst_setup_viewport_tracker = (goal) => {
  * @returns {boolean}
  */
 const burst_is_element_in_viewport = (element) => {
+  if (!is_element_truly_visible(element)) {
+    return false;
+  }
+
   let rect = element.getBoundingClientRect();
   return (
       rect.top >= 0 &&
@@ -81,24 +122,13 @@ const burst_listener_view = (element, goal) => {
  */
 const burst_setup_click_tracker = (goal) => {
   let selector = goal.setup.attribute === 'id' ? '#' : '.';
-  let elements = document.querySelectorAll(selector + goal.setup.value);
-  for (let i = 0; i < elements.length; i++) {
-    let element = elements[i];
-    element.addEventListener('click',
-        () => burst_listener_click(element, goal), {once: true} );
-  }
-};
 
-/**
- * Function to check and trigger a goal when an element is clicked.
- * @param element
- * @param goal
- */
-const burst_listener_click = (element, goal) => {
-  burst_goal_triggered(goal);
-  element.removeEventListener('scroll',
-      () => burst_listener_view(element, goal), true);
-}
+  document.body.addEventListener('click', function(event) {
+    if (event.target.matches(selector + goal.setup.value)) {
+      burst_goal_triggered(goal);
+    }
+  });
+};
 
 /**
  * Trigger a goal and add to the completed goals array.
@@ -108,6 +138,7 @@ const burst_goal_triggered = (goal) => {
   // if burst_completed_goals does not contain goal.id, add it
   if (burst_completed_goals.indexOf(goal.ID) === -1) {
     burst_completed_goals.push(goal.ID);
+    viewportGoals = viewportGoals.filter(goalData => goalData.goal.ID !== goal.ID);
   }
 };
 

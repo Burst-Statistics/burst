@@ -21,7 +21,7 @@ const useNotices = create(( set, get ) => ({
   let filteredNotices = [];
     // loop trough notices and remove the ones that are not open
     get().notices.map((notice, i) => {
-      if (notice.output.icon === 'warning' || notice.output.icon === 'error' || notice.output.icon === 'open') {
+      if (notice.output.icon !== 'completed') {
         filteredNotices.push(notice);
       }
     });

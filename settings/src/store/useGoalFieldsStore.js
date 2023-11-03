@@ -2,13 +2,28 @@ import { create } from 'zustand';
 import * as burst_api from '../utils/api';
 import {produce} from 'immer';
 import {validateConditions} from './useFieldsStore';
-import {useDashboardGoalsStore} from './useDashboardGoalsStore';
 
 export const useGoalFieldsStore = create((set, get) => {
-  const loadGoalFields = async () => {
+  const loadGoalFields = async (id) => {
+        //if id is undefined, load all goal fields
+        //if an id is passed, we overwrite only the goal fields for this id.
+        //this way we can add a new goal, without overwriting the other newly added goals.
+        if (typeof id === 'undefined') {
+          id = -1;
+        }
       burst_api.getGoalFields().then((response) => {
-        const goalFields = updateGoalsFieldWithConditions(response.goal_fields);
-        set({goalFields: goalFields});
+        let goalFields = response.goal_fields;
+        if ( id !== -1 ) {
+            goalFields = {[id]: goalFields[id]};
+        }
+        goalFields = updateGoalsFieldWithConditions(goalFields);
+        if ( id !== -1 ) {
+            set(produce(state => {
+              state.goalFields[id] = goalFields[id];
+            }));
+          } else {
+            set({goalFields: goalFields});
+          }
       }).catch((error) => {
         console.error(error);
       });
@@ -41,6 +56,22 @@ export const useGoalFieldsStore = create((set, get) => {
       }
     }));
   }
+  const saveGoalTitle = async (id, value) => {
+    try {
+      let goal = {
+        'id': id,
+        'goal_title': value,
+      };
+      let data = [];
+      data.push(goal);
+      await burst_api.setGoalFields(data);
+      return Promise.resolve();
+    }
+    catch (error) {
+      console.error(error);
+      return Promise.reject(error);
+    }
+  }
 
   const saveChangedGoalValues = async () => {
     try {
@@ -52,7 +83,7 @@ export const useGoalFieldsStore = create((set, get) => {
       const response = await burst_api.setGoalFields(changedGoalValues);
       set({changedGoalValues: []});
 
-      loadGoalFields();
+
       return Promise.resolve(response);
     }
     catch (error) {
@@ -70,6 +101,7 @@ export const useGoalFieldsStore = create((set, get) => {
     loadGoalFields,
     setGoalValue,
     saveChangedGoalValues,
+    saveGoalTitle,
     setChangedGoalValues: (changedGoalValues) => set({changedGoalValues}),
   };
 });

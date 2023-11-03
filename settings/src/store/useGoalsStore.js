@@ -22,12 +22,13 @@ export const useGoalsStore = create((set) => {
         success: __('Goal added successfully!', 'burst-statistics'),
         error: __('Failed to add goal', 'burst-statistics'),
       });
-      const data = response.goal[Object.keys(response)[0]];
+
       const id = Object.keys(response.goal)[0]; // extract the id from the response
-      await useGoalFieldsStore.getState().loadGoalFields();
+      const goal = response.goal[id];
+      await useGoalFieldsStore.getState().loadGoalFields(id);
 
       set(produce((state) => {
-        state.goals[id] = data;
+        state.goals[id] = goal;
       }));
     } catch (error) {
       console.error(error);

@@ -172,6 +172,9 @@ if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
 	 */
 	function burst_beacon_track_hit() {
 		$request = (string) file_get_contents( 'php://input' );
+		if (empty($request)){
+			wp_die('not a valid request');
+		}
 		if ( $request === 'request=test' ) {
 			http_response_code( 200 );
 
@@ -438,7 +441,7 @@ if ( ! function_exists( 'burst_get_goals_script_url' ) ) {
 	 * @return string
 	 */
 	function burst_get_goals_script_url() {
-		return apply_filters( 'burst_goals_script_url', burst_url . '/assets/js/build/burst-goals.js' );
+		return apply_filters( 'burst_goals_script_url', burst_url . '/assets/js/build/burst-goals.js?v='.burst_version );
 	}
 }
 

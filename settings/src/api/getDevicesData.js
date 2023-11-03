@@ -13,21 +13,55 @@ const deviceNames = {
   'other': __('Other', 'burst-statistics'),
 };
 
-export const transformDevicesData = (response) => {
+// Existing transform function for title and value
+export const transformDevicesTitleAndValue = (response) => {
   let data = {};
   for (const [key, value] of Object.entries(deviceNames)) {
-    let os = response[key].os ? response[key].os : '-';
-    let browser = response[key].browser ? response[key].browser : 'unknown';
-
     Object.assign(data, {
       [key]: {
         'title': value,
-        'subtitle': os + ' / ' + browser,
         'value': getPercentage(response[key].count, response['all'].count),
       },
     });
   }
   return data;
+}
+
+// New transform function for subtitle
+export const transformDevicesSubtitle = (response) => {
+  let data = {};
+  for (const [key] of Object.entries(deviceNames)) {
+    let os = response[key].os ? response[key].os : '';
+    let browser = response[key].browser ? response[key].browser : '';
+    Object.assign(data, {
+      [key]: {
+        'subtitle': os === '' && browser === '' ? '-' : os + ' / ' + browser,
+      },
+    });
+  }
+  return data;
+}
+
+
+/**
+ * Get live visitors
+ * @param {Object} args
+ * @param {string} args.startDate
+ * @param {string} args.endDate
+ * @param {string} args.range
+ * @param {Object} args.filters
+ * @returns {Promise<*>}
+ */
+export const getDevicesTitleAndValueData = async ({ startDate, endDate, range, args } ) => {
+  const { data } = await getData(
+      'devicesTitleAndValue',
+      startDate,
+      endDate,
+      range,
+      args
+  );
+  return transformDevicesTitleAndValue(data);
+
 }
 
 /**
@@ -39,16 +73,14 @@ export const transformDevicesData = (response) => {
  * @param {Object} args.filters
  * @returns {Promise<*>}
  */
-const getDevicesData = async ({ startDate, endDate, range, args } ) => {
+export const getDevicesSubtitleData = async ({ startDate, endDate, range, args } ) => {
   const { data } = await getData(
-      'devices',
+      'devicesSubtitle',
       startDate,
       endDate,
       range,
       args
   );
-  return transformDevicesData(data);
+  return transformDevicesSubtitle(data);
 
 }
-export default getDevicesData;
-

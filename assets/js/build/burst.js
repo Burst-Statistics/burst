@@ -13,8 +13,7 @@ let burst_goals_script_url = burst.goals_script_url ? burst.goals_script_url : '
  * @returns {Promise<void>}
  */
 const burst_import_goals = async () => {
-	let random_string = (Math.random() + 1).toString(36).substring(7);
-	const goals = await import(burst_goals_script_url + '?random_string=' + random_string);
+	const goals = await import(burst_goals_script_url);
 	goals.default();
 }
 

@@ -7,9 +7,9 @@ import {useFields} from "../../store/useFieldsStore";
 
 import {useGoalFieldsStore} from "../../store/useGoalFieldsStore";
 import {useMenu} from "../../store/useMenuStore";
-import {useEffect} from 'react';
-import getAnchor from '../../utils/getAnchor';
 import {toast} from 'react-toastify';
+
+import ErrorBoundary from "../ErrorBoundary";
 
 /**
  * Renders the selected settings
@@ -102,7 +102,7 @@ const Settings = (props) => {
   notices = notices.filter(notice => notice.label.toLowerCase()!=='completed');
   const isLicenseBlock = selectedFields[0].id === 'license';
   return (
-      <>
+      <ErrorBoundary fallback={'Could not load Settings'}>
         <div className="burst-wizard-settings burst-column-2">
           { groups.map((group, i) =>
               <SettingsGroup key={i} index={i} group={group} fields={selectedFields}/>)
@@ -127,7 +127,7 @@ const Settings = (props) => {
           </div>
           {notices.map((field, i) => <Help key={i} noticesExpanded={noticesExpanded} index={i} help={field} fieldId={field.id} item={field.help}/>)}
         </div>
-      </>
+      </ErrorBoundary>
   )
 
 }

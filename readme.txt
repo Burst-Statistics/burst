@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.3
-Stable tag: 1.5.0.2
+Stable tag: 1.5.2
 
 Self-hosted and privacy-friendly analytics for Wordpress.
 
@@ -84,6 +84,31 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.5.2 =
+* New Feature: Added pageviews per page display in top menu for logged-in users.
+* Fix: Removed random string from goals script for better caching.
+* Fix: Resolved display issue for goal creation date upon deletion.
+* Fix: Hide comparison block when no data is available for comparison.
+* Fix: Goal title now auto-saves.
+* Fix: Corrected URL in the settings page.
+* Improvement: Introduced new dashboard widget.
+* Improvement: Metric settings now saved to browser storage.
+* Fix: Resolved settings disappearance when adding multiple goals.
+* Improvement: Added a lightweight tooltip, reducing overall dashboard file size.
+* Improvement: Added option to select metric for conversion rate in goal settings.
+* Fix: Fixed goal name change issue when field is emptied.
+* Fix: Modified sessions color in insights chart for better clarity.
+* Fix: Resolved incorrect data display in insights chart with datepicker use.
+* Fix: Fixed 100% conversion rate issue for 'Visit' goal tracking based on current page.
+* Fix: Resolved pageview sorting issue for countries.
+* Fix: Fixed blank page issue on date range picker click in dashboard.
+* Fix: Resolved missing conversions in Insights chart when displayed in hours.
+* Fix: Fixed improper filtering in devices block when filtering by goal.
+* Fix: Ensured data deletion when a goal is deleted.
+
+= 1.5.1 =
+* Skipped to keep version numbers in sync with the Burst Pro plugin.
+
 = 1.5.0.2 =
 * Fix: build of react code for dashboard, props @schidddy
 

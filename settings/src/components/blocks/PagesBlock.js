@@ -7,15 +7,17 @@ import ClickToFilter from './ClickToFilter';
 import GridItem from '../common/GridItem';
 import {useQuery} from '@tanstack/react-query';
 import getPagesData from '../../api/getPagesData';
+import {useState} from '@wordpress/element';
 
 const PagesBlock = () => {
   const {startDate, endDate, range} = useDate((state) => state);
   const filters = useFiltersStore((state) => state.filters);
+  const [filterText, setFilterText] = useState('');
 
   const args = {'filters': filters, 'metrics': ['page_url', 'pageviews']};
   const query = useQuery({
     queryKey: ['pages', startDate, endDate, args],
-    queryFn: () => getPagesData({startDate, endDate, range, args})
+    queryFn: () => getPagesData({startDate, endDate, range, args}),
   });
 
   const data = query.data || {};
@@ -36,16 +38,28 @@ const PagesBlock = () => {
 
   let tableData = data.data;
   let columns = data.columns;
+  let filteredData = [];
+  if (Array.isArray(tableData)) {
+    filteredData = tableData.filter(
+        item => item.page_url.toLowerCase().includes(filterText.toLowerCase()));
+  }
 
   return (
       <GridItem
           className={'burst-column-2 border-to-border datatable'}
           title={__('Per page', 'burst-statistics')}
+          controls={
+            <input className="burst-datatable-search" type="text"
+                   placeholder={__('Search', 'burst-statistics')}
+                   value={filterText}
+                   onChange={e => setFilterText(e.target.value)}
+            />
+          }
       >
         <div className={`burst-loading-container ${loadingClass}`}>
           <DataTable
               columns={columns}
-              data={tableData}
+              data={filteredData}
               defaultSortFieldId={2}
               defaultSortAsc={false}
               pagination

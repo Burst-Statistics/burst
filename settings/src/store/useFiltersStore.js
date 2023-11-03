@@ -43,7 +43,7 @@ export const useFiltersStore = create((set, get) => ({
     },
     country_code: {
       label: __('Country', 'burst-statistics'),
-      icon: 'country',
+      icon: 'world',
     }
   },
   animate: null,

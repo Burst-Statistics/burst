@@ -7,8 +7,10 @@ import { useInsightsStore } from '../../store/useInsightsStore';
 
 const InsightsHeader = ({ metrics, filters }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const getMetrics = useInsightsStore((state) => state.getMetrics());
   const setMetrics = useInsightsStore((state) => state.setMetrics);
   const [pendingMetrics, setPendingMetrics] = useState(metrics);
+
   let metricLabels = {
     visitors: __('Unique visitors', 'burst-statistics'),
     pageviews: __('Pageviews', 'burst-statistics'),

@@ -26,7 +26,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 				'body' => '',
 			);
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-            add_action( 'wp_dashboard_setup', array($this, 'add_burst_dashboard_widget') );
 
 			$plugin = burst_plugin;
 			add_filter( "plugin_action_links_$plugin", array( $this, 'plugin_settings_link' ) );
@@ -160,37 +159,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 			return $links;
 		}
-
-        /**
-         *
-         * Add a dashboard widget
-         *
-         * @since 1.1
-         *
-         */
-
-        public function add_burst_dashboard_widget()
-        {
-            if ( ! burst_user_can_view() ) {
-                return;
-            }
-            wp_add_dashboard_widget('dashboard_widget_burst', 'Burst Statistics', array(
-                $this,
-                'generate_dashboard_widget'
-            ));
-        }
-
-        /**
-         *
-         * Generate the dashboard widget
-         * Also generated the Top Searches grid item
-         *
-         * @return false|string
-         */
-        public function generate_dashboard_widget()
-        {
-	        echo burst_get_html_template('wordpress/dashboard-widget.php');
-        }
 
         /**
          * Function to easily add a column in a WordPress post table
@@ -424,7 +392,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 
 	                <?php
 	                $token = wp_create_nonce('burst_deactivate_plugin');
-	                $deactivate_and_remove_all_data_url = admin_url("options-general.php?page=burst&action=uninstall_delete_all_data&token=" . $token);
+	                $deactivate_and_remove_all_data_url = add_query_arg( array( 'action' => 'uninstall_delete_all_data', 'token' => $token ), admin_url("plugins.php" ) );
 	                ?>
 	                <div class="burst-deactivate-notice-footer">
 	                    <a class="button button-default" href="#" id="burst_close_tb_window"><?php _e("Cancel", "burst-statistics" ) ?></a>
@@ -434,22 +402,24 @@ if ( ! class_exists( "burst_admin" ) ) {
 	        </div>
 	        <?php
 	    }
+        
 	    /**
-	     * Deactivate the plugin while keeping SSL
-	     * Activated when the 'uninstall_keep_data' button is clicked in the settings tab
-	     *
+	     * Deactivate the plugin, based on made choice regarding data
 	     */
 
-	    public function listen_for_deactivation()
-	    {
+	    public function listen_for_deactivation(): void {
 	        //check user role
-	        if (!current_user_can('activate_plugins')) return;
+	        if ( !current_user_can('activate_plugins') ) {
+                return;
+	        }
 
 	        //check nonce
-	        if (!isset($_GET['token']) || (!wp_verify_nonce($_GET['token'], 'burst_deactivate_plugin'))) return;
+	        if ( !isset($_GET['token']) || (!wp_verify_nonce($_GET['token'], 'burst_deactivate_plugin')) ) {
+                return;
+	        }
 
 	        //check for action
-	        if (isset($_GET["action"]) && $_GET["action"] == 'uninstall_delete_all_data') {
+	        if ( isset($_GET["action"]) && $_GET["action"] === 'uninstall_delete_all_data' ) {
 	            $this->delete_all_burst_data();
 	            $plugin = burst_plugin;
 	            $plugin = plugin_basename(trim($plugin));

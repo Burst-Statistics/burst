@@ -1,16 +1,12 @@
 import {__} from '@wordpress/i18n';
-import {
-  formatTime,
-  formatNumber, getRelativeTime,
-} from '../../utils/formatting';
-import Tooltip from '@mui/material/Tooltip';
-import { useQueries, useQueryClient } from '@tanstack/react-query';
+import Tooltip from './Tooltip';
+import { useQueries } from '@tanstack/react-query';
 import getLiveVisitors from '../../api/getLiveVisitors';
 import getTodayData from '../../api/getTodayData';
 
 import Icon from '../../utils/Icon';
-import {endOfDay, format, intervalToDuration, startOfDay} from 'date-fns';
-import {useRef, useState} from 'react';
+import {endOfDay, format, startOfDay} from 'date-fns';
+import {useState} from 'react';
 import GridItem from '../common/GridItem';
 import {getDateWithOffset} from "../../utils/formatting";
 
@@ -32,6 +28,7 @@ const TodayBlock = () => {
   const currentDateWithOffset = getDateWithOffset();
   const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
   const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+
   const placeholderData = {
     live: {
       title: __('Live', 'burst-statistics'),
@@ -97,6 +94,8 @@ const TodayBlock = () => {
     todayIcon = selectVisitorIcon(data.today.value ? data.today.value : 0);
   }
 
+
+
   return (
       <GridItem
           className={'border-to-border burst-today'}
@@ -105,16 +104,15 @@ const TodayBlock = () => {
       >
         <div className="burst-today">
           <div className="burst-today-select">
-            <Tooltip arrow title={data.live.tooltip} enterDelay={200}>
-              <div className="burst-today-select-item">
+            <Tooltip content={data.live.tooltip}>
+              <div className="burst-today-select-item burst-tooltip-live">
                 <Icon name={liveIcon} size="23"/>
                 <h2>{live}</h2>
                 <span><Icon name="live" size="12" color={'red'}/> {__('Live', 'burst-statistics')}</span>
               </div>
             </Tooltip>
-            <Tooltip arrow title={data.today.tooltip}
-                     enterDelay={200}>
-              <div className="burst-today-select-item">
+            <Tooltip content={data.today.tooltip} >
+              <div className="burst-today-select-item burst-tooltip-today">
                 <Icon name={todayIcon} size="23"/>
                 <h2>{data.today.value}</h2>
                 <span><Icon name="total" size="13"
@@ -123,33 +121,29 @@ const TodayBlock = () => {
             </Tooltip>
           </div>
           <div className="burst-today-list">
-            <Tooltip arrow title={data.mostViewed.tooltip}
-                     enterDelay={200}>
-              <div className="burst-today-list-item">
+            <Tooltip  content={data.mostViewed.tooltip}>
+              <div className="burst-today-list-item burst-tooltip-mostviewed">
                 <Icon name="winner"/>
                 <p className="burst-today-list-item-text">{decodeURI(data.mostViewed.title)}</p>
                 <p className="burst-today-list-item-number">{data.mostViewed.value}</p>
               </div>
             </Tooltip>
-            <Tooltip arrow title={data.referrer.tooltip}
-                     enterDelay={200}>
-              <div className="burst-today-list-item">
+            <Tooltip content={data.referrer.tooltip}>
+              <div className="burst-today-list-item burst-tooltip-referrer">
                 <Icon name="referrer"/>
                 <p className="burst-today-list-item-text">{decodeURI(data.referrer.title)}</p>
                 <p className="burst-today-list-item-number">{data.referrer.value}</p>
               </div>
             </Tooltip>
-            <Tooltip arrow title={data.pageviews.tooltip}
-                     enterDelay={200}>
-              <div className="burst-today-list-item">
+            <Tooltip content={data.pageviews.tooltip}>
+              <div className="burst-today-list-item burst-tooltip-pageviews">
                 <Icon name="pageviews"/>
                 <p className="burst-today-list-item-text">{data.pageviews.title}</p>
                 <p className="burst-today-list-item-number">{data.pageviews.value}</p>
               </div>
             </Tooltip>
-            <Tooltip arrow title={data.timeOnPage.tooltip}
-                     enterDelay={200}>
-              <div className="burst-today-list-item">
+            <Tooltip content={data.timeOnPage.tooltip}>
+              <div className="burst-today-list-item burst-tooltip-timeOnPage">
                 <Icon name="time"/>
                 <p className="burst-today-list-item-text">{data.timeOnPage.title}</p>
                 <p className="burst-today-list-item-number">{data.timeOnPage.value}</p>
