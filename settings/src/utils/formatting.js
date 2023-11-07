@@ -308,6 +308,18 @@ const getAvailableRanges = (selectedRanges) => {
   });
 };
 
+const getAvailableRangesWithKeys = (selectedRanges) => {
+  let ranges = {};
+  Object.keys(availableRanges) // Get the keys from the availableRanges object
+      .filter(key => selectedRanges.includes(key)) // Filter the keys based on selectedRanges
+      .forEach(key => {
+        ranges[key] = { // Assign a new object to the key on the ranges object
+          ...availableRanges[key], // Spread the properties from the range object
+        };
+      });
+  return ranges;
+};
+
 const getDisplayDates = (startDate, endDate) => {
   const formatString = 'MMMM d, yyyy';
   return {
@@ -338,6 +350,7 @@ export {
   getDateWithOffset,
   availableRanges,
   getAvailableRanges,
+  getAvailableRangesWithKeys,
   getDisplayDates,
   isSelected
 };
