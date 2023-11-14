@@ -1,0 +1,13 @@
+{
+  "core": "WordPress/WordPress",
+  "plugins": [
+    ".",
+    "https://downloads.wordpress.org/plugin/query-monitor.zip"
+  ],
+  "port": 8888,
+  "config": {
+    "WP_DEBUG": true,
+    "SCRIPT_DEBUG": true,
+    "WP_PHP_BINARY": "php"
+  }
+}

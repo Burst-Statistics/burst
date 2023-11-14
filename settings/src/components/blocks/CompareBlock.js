@@ -1,5 +1,4 @@
 import Icon from '../../utils/Icon';
-import {useEffect, useRef} from 'react';
 import {useFiltersStore} from '../../store/useFiltersStore';
 import {useDate} from '../../store/useDateStore';
 import ExplanationAndStatsItem from '../common/ExplanationAndStatsItem';
@@ -12,7 +11,6 @@ import getInsightsData from '../../api/getInsightsData';
 import getCompareData from '../../api/getCompareData';
 
 const CompareBlock = () => {
-  // const {startDate, endDate, range} = useDate( (state) => state);
   const {startDate, endDate, range} = useDate( (state) => state);
   const filters = useFiltersStore((state) => state.filters);
   const args = { 'filters': filters};
@@ -24,7 +22,7 @@ const CompareBlock = () => {
     'bounced_sessions': __('Bounce Rate', 'burst-statistics'),
   };
   let emptyData = {};
-// loop through metrics and set default values
+  // loop through metrics and set default values
   Object.keys(metrics).forEach(function (key) {
     emptyData[key] = {
       'title': metrics[key],
@@ -41,15 +39,16 @@ const CompareBlock = () => {
     placeholderData: emptyData,
   });
 
-  query.isLoading
   const data = query.data || {};
+  // if query is fetched and all .change values are empty, set compareNotAvailable to true
+  let compareNotAvailable = !Object.keys(data).some(key => data[key].change !== '');
 
   const loading = query.isLoading || query.isFetching;
   let loadingClass = loading ? 'burst-loading' : '';
   return (
       <GridItem
           title={__('Compare', 'burst-statistics')}
-          footer={<CompareFooter startDate={startDate} endDate={endDate} />}
+          footer={<CompareFooter noCompare={compareNotAvailable} startDate={startDate} endDate={endDate} />}
       >
       <div className={'burst-loading-container ' + loadingClass}>
         {Object.keys(data).map((key, i) => {

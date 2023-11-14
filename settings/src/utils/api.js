@@ -173,3 +173,33 @@ export const getMenu = () => makeRequest('burst/v1/menu/'+glue()+getNonce());
 export const getPosts = (search) => makeRequest(`burst/v1/posts/${glue()}${getNonce()}&search=${search}`).then(response => {
 	return response.hasOwnProperty('posts') ? response.posts : [];
 });
+
+/**
+ * Retrieves a value from local storage with a 'burst_' prefix and parses it as JSON.
+ * If the key is not found, returns the provided default value.
+ *
+ * @param {string} key - The key to retrieve from local storage, without the 'burst_' prefix.
+ * @param {*} defaultValue - The value to return if the key is not found in local storage.
+ * @returns {*} - The parsed JSON value from local storage or the default value.
+ */
+export const getLocalStorage = (key, defaultValue) => {
+	if (typeof Storage !== "undefined") {
+		const storedValue = localStorage.getItem('burst_' + key);
+		if (storedValue && storedValue.length > 0) {
+			return JSON.parse(storedValue);
+		}
+	}
+	return defaultValue;
+};
+
+/**
+ * Stringifies a value as JSON and stores it in local storage with a 'burst_' prefix.
+ *
+ * @param {string} key - The key to store in local storage, without the 'burst_' prefix.
+ * @param {*} value - The value to stringify as JSON and store in local storage.
+ */
+export const setLocalStorage = (key, value) => {
+	if (typeof Storage !== "undefined") {
+		localStorage.setItem('burst_' + key, JSON.stringify(value));
+	}
+};

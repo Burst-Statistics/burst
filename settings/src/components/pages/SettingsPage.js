@@ -8,7 +8,7 @@ const SettingsPage = () => {
       <div className={'burst-content-area burst-grid burst-dashboard'}>
         <Menu/>
         <Settings/>
-        <Notices className="cmplz-wizard-notices"/>
+        <Notices className="burst-wizard-notices"/>
       </ div>
   );
 };

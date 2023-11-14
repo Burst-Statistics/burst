@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Icon from '../../../utils/Icon';
-import Tooltip from '../Tooltip';
+import Tooltip from '../../common/Tooltip';
 import {__} from '@wordpress/i18n';
 import GoalField from './GoalField';
 import EditableText from '../Fields/EditableText';
@@ -48,12 +48,12 @@ const GoalSetup = (props) => {
                             defaultValue={__('New goal', 'burst-statistics')}
                             onChange={handleTitleChange}/>
             </span>
-            <button
-                onClick={() => setIsDeleteModalOpen(true)}
-                className="burst-button-icon burst-button-icon--delete"
-            >
-              <Icon name={'trash'} size={18} />
-            </button>
+            <DeleteGoalModal
+                goal={{ name: title, status: status ? __('Active', 'burst-statistics') : __('Inactive', 'burst-statistics') , dateCreated: dateCreated }} // Replace with actual goal data
+                onDelete={() => {
+                  onRemove(id);
+                }}
+            />
             <Tooltip content={status ? __('Click to de-activate',
                 'burst-statistics') : __(
                 'Click to activate', 'burst-statistics')}>
@@ -82,15 +82,6 @@ const GoalSetup = (props) => {
             })}
           </div>
         </details>
-        <DeleteGoalModal
-            isOpen={isDeleteModalOpen}
-            goal={{ name: title, status: status ? __('Active', 'burst-statistics') : __('Inactive', 'burst-statistics') , dateCreated: dateCreated }} // Replace with actual goal data
-            onDelete={() => {
-              onRemove(id);
-              setIsDeleteModalOpen(false);
-            }}
-            onClose={() => setIsDeleteModalOpen(false)}
-        />
       </div>
   );
 };

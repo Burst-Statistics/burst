@@ -1,5 +1,5 @@
 import Icon from '../../../utils/Icon';
-import Tooltip from '../Tooltip';
+import Tooltip from '../../common/Tooltip';
 
 const RadioButtons = ({
   disabled,

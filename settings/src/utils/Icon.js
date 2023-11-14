@@ -1,5 +1,5 @@
 import {memo} from 'react';
-import Tooltip from '../components/blocks/Tooltip';
+import Tooltip from '../components/common/Tooltip';
 
 const iconColors = {
   'black': 'var(--rsp-black)',
@@ -15,7 +15,6 @@ const iconColors = {
 const IconHtml = memo(({name = 'bullet', color = 'black', size = 15}) => {
   // if color is not in array use color value
   const colorVal = iconColors[color] || color;
-
   let renderedIcon = '';
   if (name === 'bullet' || name === 'dot') {
     renderedIcon = {
@@ -57,10 +56,10 @@ const IconHtml = memo(({name = 'bullet', color = 'black', size = 15}) => {
     renderedIcon = {
       html:
           <svg aria-hidden="true" focusable="false" role="img"
-               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
                height={size}>
             <path fill={colorVal}
-                  d="M512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0C397.4 0 512 114.6 512 256zM256 48C141.1 48 48 141.1 48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48z"/>
+                  d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
           </svg>,
     };
   }

@@ -1,5 +1,5 @@
 import {__} from '@wordpress/i18n';
-import Tooltip from './Tooltip';
+import Tooltip from '../common/Tooltip';
 import { useQueries } from '@tanstack/react-query';
 import getLiveVisitors from '../../api/getLiveVisitors';
 import getTodayData from '../../api/getTodayData';

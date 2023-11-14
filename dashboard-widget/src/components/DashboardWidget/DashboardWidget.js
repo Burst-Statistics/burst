@@ -8,7 +8,7 @@ import getLiveVisitors from '../../../../settings/src/api/getLiveVisitors';
 import getTodayData from '../../../../settings/src/api/getTodayData';
 import GridItem from '../../../../settings/src/components/common/GridItem';
 import Icon from '../../../../settings/src/utils/Icon';
-import {endOfDay, format, startOfDay} from 'date-fns';
+import {format} from 'date-fns';
 import {__} from '@wordpress/i18n';
 import {useQueries} from '@tanstack/react-query';
 
@@ -50,9 +50,11 @@ const DashboardWidget = () => {
   const availableRanges = getAvailableRangesWithKeys(
       ['today', 'yesterday', 'last-7-days', 'last-30-days', 'last-90-days']);
   // Get the currently selected range object.
-  const selectedRange = availableRanges[range] ? availableRanges[range].range() : availableRanges['last-7-days'].range()
-  const startDate = format( selectedRange.startDate, 'yyyy-MM-dd' );
-  const endDate = format( selectedRange.endDate, 'yyyy-MM-dd' );
+  const selectedRange = availableRanges[range]
+      ? availableRanges[range].range()
+      : availableRanges['last-7-days'].range();
+  const startDate = format(selectedRange.startDate, 'yyyy-MM-dd');
+  const endDate = format(selectedRange.endDate, 'yyyy-MM-dd');
 
   const [interval, setInterval] = useState(5000);
   const placeholderData = {

@@ -29,7 +29,7 @@ const SelectInput = ({
     if (valueIsEmpty) {
       value='0';
       options = {
-        0: __('Select an option', 'complianz-gdpr'),
+        0: __('Select an option', 'burst-statistics'),
         ...options,
       };
     }

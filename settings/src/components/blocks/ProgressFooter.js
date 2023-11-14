@@ -2,7 +2,7 @@ import {useState, useEffect, useMemo} from 'react';
 import * as burst_api from '../../utils/api';
 import {__} from '@wordpress/i18n';
 import Icon from '../../utils/Icon';
-import Tooltip from './Tooltip';
+import Tooltip from '../common/Tooltip';
 import {getRelativeTime} from '../../utils/formatting';
 
 const ProgressFooter = (props) => {

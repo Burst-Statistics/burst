@@ -69,6 +69,28 @@
     }
   }
 
+  .burst-grid-item-controls{
+    .burst-filter-button{
+      all: unset;
+      background-color: transparent;
+      border: none;
+      position: relative;
+      border-radius: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      aspect-ratio: 1/1;
+      transition: background-color 0.2s ease-in-out;
+      cursor: pointer;
+      background: var(--rsp-grey-200);
+      &:hover, &.active, &:focus{
+        background: var(--rsp-grey-300);
+      }
+    }
+  }
+
   .burst-real-time .block__explanation-and-stats {
     margin: var(--rsp-spacing-m) auto;
   }

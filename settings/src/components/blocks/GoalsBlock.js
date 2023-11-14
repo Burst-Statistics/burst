@@ -1,6 +1,6 @@
 import {__} from '@wordpress/i18n';
 import {useState, useEffect, useRef} from 'react';
-import Tooltip from './Tooltip';
+import Tooltip from '../common/Tooltip';
 import ClickToFilter from './ClickToFilter';
 import Icon from '../../utils/Icon';
 import {

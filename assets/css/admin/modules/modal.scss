@@ -13,28 +13,28 @@
 
 .burst-modal {
   max-width: 526px;
-  min-width:200px;
+  min-width: 200px;
   position: fixed;
   z-index: 3;
-  border-radius: 12px;
-  background-color: white;
+  border-radius: var(--rsp-border-radius-s);
+  background-color: var(--rsp-white);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 25px;
+  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
 
   .burst-modal-header {
-    background-color: white;
-    padding: 20px 20px 10px 20px;
+    padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 12px;
-    .modal-title {
-      font-size: 20px;
+    //border-radius: 12px;
+    h2 {
+      font-size: var(--rsp-fs-600);
       margin: 0;
-      background-color: white;
     }
+
     .burst-modal-close {
       cursor: pointer;
       background: none;
@@ -42,6 +42,7 @@
       font-size: 1.5em;
       font-weight: 700;
     }
+
     button {
       img {
         height: 16px;
@@ -52,25 +53,28 @@
 
   .burst-modal-content {
     position: relative;
-    padding: 10px 20px 10px 20px;
-    font-size: 12px;
+    padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
+
     .burst-modal-subtitle {
       font-weight: 600;
-      font-size: 15px;
+      font-size: var(--rsp-fs-500);
       margin-bottom: 10px;
     }
+
     .burst-modal-description {
       overflow-wrap: anywhere;
       margin-top: 0;
       font-weight: 500;
     }
   }
+
   .burst-modal-footer {
     display: flex;
     flex-direction: row;
-    padding: 10px 20px 20px 20px;
-    gap:10px;
-    // text-align: right;
+    padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
+    gap: 10px;
+    justify-content: flex-end;
+
     .button {
       display: flex;
       align-items: center;
@@ -78,7 +82,6 @@
       height: 45px;
       width: 100%;
       text-align: center;
-      // margin-right: 20px;
       border-radius: 6px;
     }
 
@@ -86,6 +89,7 @@
       background-color: #D7263D;
       color: white;
       border-color: #D7263D;
+
       &:hover {
         opacity: 0.9;
       }

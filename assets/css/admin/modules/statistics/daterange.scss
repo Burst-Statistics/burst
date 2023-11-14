@@ -1,33 +1,3 @@
-#burst-date-range-picker-container {
-  flex: 1 1 auto;
-  flex-wrap: wrap;
-  gap: var(--rsp-spacing-xs);
-  background-color: var(--rsp-background-block-color);
-  box-shadow: var(--rsp-box-shadow);
-  z-index: 1;
-  border-radius: var(--rsp-border-radius-xs);
-  &.burst-date-range-picker-open {
-    display: flex;
-  }
-}
-
-#burst-date-range-picker-open-button{
-  display: flex;
-  align-items: center;
-  padding: var(---rsp-filter-padding);
-  box-shadow: var(--rsp-box-shadow);
-  cursor: pointer;
-  gap: var(--rsp-spacing-xs);
-  color: var(--rsp-text-color);
-  background-color: var(--rsp-input-background-color);
-  background: var(--rsp-grey-200);
-  border: 1px solid var(--rsp-input-border-color);
-  border-radius: var(--rsp-border-radius-xs);
-  .burst-icon{
-    height: max-content;
-  }
-}
-
 .rdrCalendarWrapper{
   color: #000000;
   font-size: var(--rsp-fs-400);

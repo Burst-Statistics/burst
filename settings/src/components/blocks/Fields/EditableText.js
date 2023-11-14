@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import {useGoalFieldsStore} from "../../../store/useGoalFieldsStore";
-import Tooltip from '../Tooltip';
+import Tooltip from '../../common/Tooltip';
 
 export default function EditableText({ value, id, onChange }) {
   const [isEditing, setIsEditing] = useState(false);

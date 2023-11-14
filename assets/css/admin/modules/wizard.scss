@@ -35,7 +35,8 @@
         display: flex;
         align-items: center;
         gap: var(--rsp-spacing-s);
-        background-color: var(--rsp-white);
+        background-color: var(--rsp-grey-100);
+        border: 1px solid var(--rsp-grey-300);
         @include burst-block-padding;
         border-radius: var(--rsp-border-radius-xs);
         margin: var(--rsp-spacing-s);

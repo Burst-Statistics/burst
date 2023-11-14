@@ -1,6 +1,5 @@
 import React from 'react';
 import * as TooltipUI from '@radix-ui/react-tooltip';
-import './Tooltip.scss';
 
 const Tooltip = ({
   children,

@@ -40,7 +40,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
 			$in_footer       = burst_get_option( 'enable_turbo_mode' );
-			$beacon_enabled  = (int) burst_tracking_status_beacon();
+			$beacon_enabled = (int) burst_tracking_status_beacon();
 
 			if ( ! $this->exclude_from_tracking() ) {
 				$localize_args = apply_filters(
@@ -61,7 +61,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					)
 				);
 
-				$deps = $beacon_enabled ? array( 'burst-timeme' ) : array( 'burst-timeme', 'wp-api-fetch' );
+				$deps = $beacon_enabled ? ['burst-timeme' ] : ['burst-timeme', 'wp-api-fetch'];
 
 				wp_enqueue_script(
 					'burst',
@@ -151,22 +151,25 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			return apply_filters(
 				'burst_metrics',
 				array(
-					'visitors'    => __( 'Unique visitors', 'burst-statistics' ),
-					'pageviews'   => __( 'Pageviews', 'burst-statistics' ),
-					'sessions'    => __( 'Sessions', 'burst-statistics' ),
-					'bounces'     => __( 'Bounces', 'burst-statistics' ),
-					'conversions' => __( 'Conversions', 'burst-statistics' ),
+					'pageviews'           => __( 'Pageviews', 'burst-statistics' ),
+					'sessions'            => __( 'Sessions', 'burst-statistics' ),
+					'visitors'            => __( 'Visitors', 'burst-statistics' ),
+					'avg_time_on_page'    => __( 'Time on page', 'burst-statistics' ),
+					'first_time_visitors' => __( 'New visitors', 'burst-statistics' ),
+					'bounces'             => __( 'Bounces', 'burst-statistics' ),
+					'bounce_rate'         => __( 'Bounce rate', 'burst-statistics' ),
+					'conversions'         => __( 'Conversions', 'burst-statistics' ),
 				)
 			);
 		}
 
 		public function sanitize_interval( $metric ) {
-			$array = array(
+			$array = [
 				'hour',
 				'day',
 				'week',
 				'month',
-			);
+			];
 			if ( in_array( $metric, $array ) ) {
 				return $metric;
 			}
@@ -176,7 +179,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 		public function get_live_visitors_data() {
 			global $wpdb;
-			$data = array();
+			$data = [];
 
 			// get real time visitors
 			$db_name        = $wpdb->prefix . 'burst_statistics';
@@ -194,7 +197,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 		public function get_today_data( $args = array() ) {
 			global $wpdb;
-			$data     = array();
+			$data     = [];
 			$defaults = array(
 				'date_start' => 0,
 				'date_end'   => 0,
@@ -300,7 +303,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$defaults      = array(
 				'date_start' => 0,
 				'date_end'   => 0,
-				'metrics'    => array( 'visitors', 'pageviews' ),
+				'metrics'    => array( 'pageviews', 'visitors' ),
 			);
 			$args          = wp_parse_args( $args, $defaults );
 			$metrics       = $this->sanitize_metrics( $args['metrics'] );
@@ -505,14 +508,14 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 		public function get_devices_title_and_value_data( $args = array() ) {
 			global $wpdb;
-			$defaults = array(
+			$defaults          = array(
 				'date_start' => 0,
 				'date_end'   => 0,
 				'filters'    => array(),
 			);
-			$args     = wp_parse_args( $args, $defaults );
-			$start    = (int) $args['date_start'];
-			$end      = (int) $args['date_end'];
+			$args              = wp_parse_args( $args, $defaults );
+			$start             = (int) $args['date_start'];
+			$end               = (int) $args['date_end'];
 			$filters           = burst_sanitize_filters( $args['filters'] );
 			$filters['bounce'] = 0;
 			$goal_id           = $filters['goal_id'] ?? null;
@@ -666,22 +669,32 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			return wp_parse_args( $results, $default_data );
 		}
 
+		/**
+		 * Get data per page for the data table. Possible metrics are:
+		 * pageviews, sessions, visitors, avg_time_on_page, bounces, bounce_rate
+		 *
+		 * @param $args
+		 *
+		 * @return array
+		 * @todo add support for exit rate, entrances, actual pagespeed, returning visitors, interactions per visit
+		 */
+
 		public function get_pages_data(
 			$args = array()
 		) {
-			$defaults = array(
+			global $wpdb;
+			$defaults      = array(
 				'date_start' => 0,
 				'date_end'   => 0,
 				'metrics'    => array( 'pageviews' ),
-				// only one metric should be passed at the moment. @todo add support for multiple metrics
 			);
 			$args = wp_parse_args( $args, $defaults );
-
+$filters       = burst_sanitize_filters( $args['filters'] );
 			$metrics       = $this->sanitize_metrics( $args['metrics'] );
+			$sql_metrics   = wp_parse_args( array( 'page_url' ), $metrics );
 			$metric_labels = $this->get_metrics();
-
-			$date_start = (int) $args['date_start'];
-			$date_end   = (int) $args['date_end'];
+			$start         = (int) $args['date_start'];
+			$end           = (int) $args['date_end'];
 
 			// generate columns for each metric
 			$columns   = array();
@@ -693,6 +706,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			);
 
 			foreach ( $metrics as $metric ) {
+				$metric = $this->sanitize_metric( $metric );
+
 				// if goal_id isset then metric is a conversion
 				$title = $metric_labels[ $metric ];
 
@@ -705,24 +720,102 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				);
 			}
 
-			// @todo add metrics
-			// - page views
-			// - visitors
-			// - entrances
-			// - exits
-			// - avg.time on page
-			// - bounces
-
-			// get data for each metric
-			$data = array();
-			foreach ( $metrics as $metric ) {
-				$args = array(
-					'metric'     => $metric,
-					'date_start' => $date_start,
-					'date_end'   => $date_end,
-					'filters'    => burst_sanitize_filters( $args['filters'] ),
+			// if one of the metrics is a bounce remove and do a separate query
+			if ( in_array( 'bounces', $metrics ) ) {
+				$filters['bounce'] = 1;
+				$sql               = $this->get_sql_table(
+					$start,
+					$end,
+					array(
+						'page_url',
+						'bounces',
+					),
+					$filters,
+					'page_url'
 				);
-				$data = $this->get_pages_by_metric( $args );
+				$data_bounces      = $wpdb->get_results( $sql, ARRAY_A );
+				$sql_metrics       = array_diff( $sql_metrics, array( 'bounces' ) );
+			}
+
+			if ( in_array( 'bounce_rate', $metrics ) ) {
+				unset( $filters['bounce'] );
+				$sql              = $this->get_sql_table(
+					$start,
+					$end,
+					array(
+						'page_url',
+						'bounce_rate',
+					),
+					$filters,
+					'page_url'
+				);
+				$data_bounce_rate = $wpdb->get_results( $sql, ARRAY_A );
+				$sql_metrics      = array_diff( $sql_metrics, array( 'bounces' ) );
+			}
+
+			if ( $metrics !== array( 'bounces' ) ) {
+				$filters['bounce'] = 0;
+				// get data for each metric
+				$first_metric = $sql_metrics[0] . ' DESC';
+
+				$sql  = $this->get_sql_table( $start, $end, $sql_metrics, $filters, 'page_url', $first_metric );
+				$data = $wpdb->get_results( $sql, ARRAY_A );
+			}
+			if ( ( isset( $data_bounces, $data ) && in_array( 'bounces', $metrics ) ) || ( isset( $data_bounce_rate, $data ) && in_array( 'bounce_rate', $metrics ) ) ) {
+				// Initialize an associative array to hold the merged data
+				$merged_data = array();
+
+				// Prepare a template row with all metrics set to 0
+				$template_row = array();
+				foreach ( $metrics as $metric ) {
+					$template_row[ $metric ] = 0;
+				}
+
+				// First, populate $merged_data with the rows from $data
+				foreach ( $data as $row ) {
+					$key = $row['page_url'];
+					// Initialize with a template row and then update the metrics from $data
+					$merged_data[ $key ] = array_merge( $template_row, $row );
+				}
+
+				if ( isset( $data_bounces ) ) {
+
+					// Now, update the $merged_data with the rows from $data_bounces
+					foreach ( $data_bounces as $bounce_row ) {
+						$key = $bounce_row['page_url'];
+
+						// If the key already exists in $merged_data, update it
+						if ( isset( $merged_data[ $key ] ) ) {
+							$merged_data[ $key ]['bounces'] = (int) $bounce_row['bounces'];
+						} else {
+							// If the key doesn't exist in $merged_data, add a new entry based on the template row
+							$new_row             = $template_row;
+							$new_row['page_url'] = $key;
+							$new_row['bounces']  = (int) $bounce_row['bounces'];
+							$merged_data[ $key ] = $new_row;
+						}
+					}
+				}
+				if ( isset( $data_bounce_rate ) ) {
+					foreach ( $data_bounce_rate as $bounce_rate_row ) {
+						$key = $bounce_rate_row['page_url'];
+
+						// If the key already exists in $merged_data, update it
+						if ( isset( $merged_data[ $key ] ) ) {
+							$merged_data[ $key ]['bounce_rate'] = (float) $bounce_rate_row['bounce_rate'];
+						} else {
+							// If the key doesn't exist in $merged_data, add a new entry based on the template row
+							$new_row                = $template_row;
+							$new_row['page_url']    = $key;
+							$new_row['bounce_rate'] = (float) $bounce_rate_row['bounce_rate'];
+							$merged_data[ $key ]    = $new_row;
+						}
+					}
+				}
+
+				// Convert the merged associative array back to a zero-indexed array
+				$data = array_values( $merged_data );
+
 			}
 
 			if ( isset( $args['filters']['goal_id'] ) && $args['filters']['goal_id'] > 0 ) {
@@ -734,32 +827,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				'data'    => $data,
 				'metrics' => $metrics,
 			);
-		}
-
-		public function get_pages_by_metric(
-			$args = array()
-		) {
-			global $wpdb;
-			// Set up the base query arguments.
-			$defaults = array(
-				'metric'     => array( 'pageviews' ),
-				'date_start' => '0',
-				'date_end'   => '0',
-				'filters'    => array(),
-			);
-			$args     = wp_parse_args( $args, $defaults );
-			$start    = (int) $args['date_start'];
-			$end      = (int) $args['date_end'];
-			$metric   = $this->sanitize_metric( $args['metric'] );
-			// add page_url and page_id to metrics array
-			$metrics = array( $metric, 'page_url' );
-
-			$filters           = burst_sanitize_filters( $args['filters'] );
-			$filters['bounce'] = 0;
-
-			$sql = $this->get_sql_table( $start, $end, $metrics, $filters, 'page_url', $metric . ' DESC' );
-
-			return $wpdb->get_results( $sql );
 		}
 
 		public function get_referrers_data(
@@ -916,16 +983,20 @@ if ( ! class_exists( 'burst_statistics' ) ) {
                         GROUP BY period order by period";
 					break;
 				case 'conversions':
-					$join              = [
-						[
-							'table' => 'burst_goal_statistics AS goals',
-							'on'    => 'stats.ID = goals.statistic_id',
-							'type'  => 'INNER',
-						]
-					];
+					$join              = array(
+						'table' => 'burst_goal_statistics AS goals',
+						'on'    => 'stats.ID = goals.statistic_id',
+						'type'  => 'INNER',
+					);
 					$filters['bounce'] = 0;
 					$sql               = $this->get_sql_table( $start, $end, array( '*' ), $filters, 'period', 'period', '', $join );
-					$sql               = str_replace( '*', 'COUNT(*) AS hit_count, ' . $sqlperiod . ' AS period', $sql );
+					$select            = $wpdb->prepare(
+						'COUNT(*) AS hit_count, DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), %s, %s), %s) AS period',
+						$server_timezone,
+						$timezone,
+						$sqlformat
+					);
+					$sql               = str_replace( '*', $select, $sql );
 					break;
 				default:
 					unset( $filters['goal_id'] );
@@ -1284,10 +1355,11 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			switch ( $metric ) {
 				case 'pageviews':
 				case 'count':
-					$sql = 'count(*)';
-					break;
 				case 'bounces':
-					$sql = 'count(stats.bounce)';
+					$sql = 'COUNT(*)';
+					break;
+				case 'bounce_rate':
+					$sql = 'SUM(CASE WHEN stats.bounce = 1 THEN 1 ELSE 0 END) / COUNT( DISTINCT( stats.session_id ) ) * 100';
 					break;
 				case 'sessions':
 					$sql = 'COUNT( DISTINCT( stats.session_id ) )';
@@ -1296,7 +1368,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					$sql = 'AVG( stats.time_on_page )';
 					break;
 				case 'first_time_visitors':
-					$sql = 'sum(case when stats.first_time_visit = 1 then 1 else 0 end)';
+					$sql = 'SUM(CASE WHEN stats.first_time_visit = 1 THEN 1 ELSE 0 END)';
 					break;
 				case 'visitors':
 					$sql = 'COUNT(DISTINCT(stats.uid))';

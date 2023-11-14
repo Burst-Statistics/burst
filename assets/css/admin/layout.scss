@@ -177,7 +177,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: calc(30px + var(--rsp-spacing-s) * 2);
+      min-height: calc(40px + var(--rsp-spacing-s) * 2);
       @include burst-inline-block-padding;
 
       &:empty {
@@ -192,7 +192,9 @@
     &-controls {
       font-size: var(--rsp-fs-200);
       display: flex;
+      align-items: center;
       gap: var(--rsp-spacing-s);
+
     }
 
     &-content {

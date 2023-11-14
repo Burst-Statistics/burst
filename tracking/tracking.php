@@ -592,7 +592,7 @@ if ( ! function_exists( 'burst_get_first_time_visit' ) ) {
 	 */
 	function burst_get_first_time_visit( $burst_uid ): int {
 		global $wpdb;
-		// check if uid is already in the database in the past 30 days
+		// check if uid is already in the database in the past 30 days for a different sessions_id
 		$after_time         = time() - MONTH_IN_SECONDS;
 		$sql                = $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}burst_statistics WHERE uid = %s AND time > %s LIMIT 1", $burst_uid, $after_time );
 		$fingerprint_exists = $wpdb->get_var( $sql );

@@ -1,16 +1,32 @@
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
+import * as Dialog from '@radix-ui/react-dialog';
 import Icon from '../../utils/Icon';
 
-const Modal = ({isOpen, title, onClose, children}) => {
-  return (
-      <Dialog open={isOpen} onClose={onClose} sx={{ borderRadius: 'var(--rsp-border-radius-s)' }}>
-        <DialogTitle>
-          {title}
-        </DialogTitle>
+const Modal = ({ title, content, footer, triggerClassName, children }) => (
+    <Dialog.Root>
+      <Dialog.Trigger className={triggerClassName}>
         {children}
-      </Dialog>
-  );
-};
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="burst-modal-backdrop" />
+        <Dialog.Content className="burst burst-modal">
+          <div className="burst-modal-header">
+            <Dialog.Title className="burst-modal-title">{title}</Dialog.Title>
+            <Dialog.Close asChild>
+              <button className="burst-modal-close" aria-label="Close">
+                <Icon name={'times'} size={18} color={'grey'}/>
+              </button>
+            </Dialog.Close>
+          </div>
+          <Dialog.Description className="burst-modal-content">
+            {content}
+          </Dialog.Description>
+          <div className="burst-modal-footer">
+          {footer}
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+);
 
 export default Modal;
+

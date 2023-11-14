@@ -3,7 +3,7 @@ import {useFiltersStore} from '../../store/useFiltersStore';
 import {useGoalFieldsStore} from '../../store/useGoalFieldsStore';
 import {useInsightsStore} from '../../store/useInsightsStore';
 import {useDate} from '../../store/useDateStore';
-import Tooltip from './Tooltip';
+import Tooltip from '../common/Tooltip';
 import {__} from '@wordpress/i18n';
 import {toast} from 'react-toastify';
 import {isValidDate, toUnixTimestampMillis} from '../../utils/formatting';
