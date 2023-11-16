@@ -80,8 +80,6 @@ const PopoverFilter = ({
         {Object.keys(options).map((value) => {
               const isProActive = burst_settings.is_pro &&
                   licenseStatus === 'valid';
-              console.log('isProActive', isProActive);
-              console.log('options[value].disabled', options[value].disabled);
               return (
                   <div
                       key={value}
