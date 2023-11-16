@@ -143,6 +143,8 @@ if ( ! class_exists( 'BURST' ) ) {
 				require_once( burst_path . 'class-review.php' );
 				require_once( burst_path . 'class-notices.php' );
 				require_once( burst_path . 'class-installer.php' );
+				require_once( burst_path . 'dashboard-widget/dashboard-widget.php' );
+
 				if ( isset( $_GET['install_pro'] ) ) {
 					require_once( burst_path . 'upgrade/upgrade-to-pro.php' );
 				}
