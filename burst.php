@@ -72,6 +72,7 @@ if ( ! class_exists( 'BURST' ) ) {
 					self::$instance->review     = new burst_review();
 					self::$instance->notices    = new burst_notices();
 					self::$instance->db_upgrade = new burst_db_upgrade();
+					self::$instance->dashboard_widget = new burst_dashboard_widget();
 				}
 				self::$instance->hooks();
 			}
