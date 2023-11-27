@@ -336,6 +336,7 @@ if ( ! function_exists( 'burst_sanitize_referrer' ) ) {
 		$referrer      = filter_var( $referrer, FILTER_SANITIZE_URL );
 		$referrer_url  = parse_url( $referrer, PHP_URL_HOST );
 		$ref_spam_list = file( burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+		$ref_spam_list = apply_filters( 'burst_referrer_spam_list', $ref_spam_list );
 		if ( array_search( $referrer_url, $ref_spam_list ) ) {
 			return 'spammer';
 		}
