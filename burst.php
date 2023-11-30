@@ -95,7 +95,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			array_pop( $burst_plugin );
 			$burst_plugin = implode( '/', $burst_plugin );
 			define( 'burst_plugin_folder', $burst_plugin );
-			$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? time() : '';
+			$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '#'.time() : '';
 			define( 'burst_version', '1.5.2' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
