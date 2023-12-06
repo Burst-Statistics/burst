@@ -48,6 +48,7 @@ if ( ! class_exists( 'BURST' ) ) {
 		public $config;
 		public $notices;
 		public $db_upgrade;
+		public $dashboard_widget;
 
 		private function __construct() {
 		}
