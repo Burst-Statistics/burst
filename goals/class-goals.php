@@ -169,14 +169,22 @@ if ( ! class_exists( "burst_goals" ) ) {
 		    return $this->set($args);
 	    }
 
-		public function get( $id ) {
+	    /**
+	     * @param int $id
+	     *
+	     * @return array
+	     */
+		public function get( int $id ): array {
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_goals';
 			$goal       = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID = %d", $id ), ARRAY_A );
-			$id = $goal['ID'];
-			unset($goal['ID']);
+			if ( !$goal || is_wp_error( $goal ) ) {
+				return [];
+			}
 
-			return [ $id => $goal];
+			$id = $goal['ID'];
+			unset( $goal['ID'] );
+			return [ $id => $goal ];
 		}
 
 		public function set( $args = array(), $action = 'update' ) {
@@ -188,8 +196,6 @@ if ( ! class_exists( "burst_goals" ) ) {
 			} else {
 				do_action('burst_before_set_goals');
 			}
-
-
 
 			$table_name = $wpdb->prefix . 'burst_goals';
 			// sanitize data

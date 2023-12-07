@@ -40,7 +40,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
 			$in_footer       = burst_get_option( 'enable_turbo_mode' );
-			$beacon_enabled = (int) burst_tracking_status_beacon();
+			$beacon_enabled  = (int) burst_tracking_status_beacon();
 
 			if ( ! $this->exclude_from_tracking() ) {
 				$localize_args = apply_filters(
@@ -61,7 +61,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					)
 				);
 
-				$deps = $beacon_enabled ? ['burst-timeme' ] : ['burst-timeme', 'wp-api-fetch'];
+				$deps = $beacon_enabled ? [ 'burst-timeme' ] : [ 'burst-timeme', 'wp-api-fetch' ];
 
 				wp_enqueue_script(
 					'burst',
@@ -338,7 +338,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				),
 			);
 
-			for ( $i = 0; $i < $nr_of_periods; $i++ ) {
+			for ( $i = 0; $i < $nr_of_periods; $i ++ ) {
 				$date     = $date_start + $i * $interval_args[ $interval ]['in_seconds'] + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
 				$labels[] = date_i18n( $interval_args[ $interval ]['format'], $date );
 			}
@@ -519,21 +519,21 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$filters           = burst_sanitize_filters( $args['filters'] );
 			$filters['bounce'] = 0;
 			$goal_id           = $filters['goal_id'] ?? null;
-			$country_code	  = $filters['country_code'] ?? null;
+			$country_code      = $filters['country_code'] ?? null;
 
 			$from = $this->get_sql_table( $start, $end, array( '*' ), $filters );
 
 			// Conditional JOIN and WHERE based on the presence of goal_id
-			$join_clause  = '';
+			$join_clause = '';
 			// if string is not '' then add 'AND' to the string
-			$where_clause = $this->get_where_clause_for_filters($filters);
+			$where_clause = $this->get_where_clause_for_filters( $filters );
 			if ( $goal_id !== null ) {
-				$join_clause  = "INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals ON stats.ID = goals.statistic_id";
+				$join_clause = "INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals ON stats.ID = goals.statistic_id";
 				// append to where clause
 				$where_clause .= $wpdb->prepare( " AND goals.goal_id = %d ", $goal_id );
 			}
-			if ($country_code !== null) {
-				$join_clause .= " INNER JOIN {$wpdb->prefix}burst_sessions AS sessions ON stats.session_id = sessions.ID ";
+			if ( $country_code !== null ) {
+				$join_clause  .= " INNER JOIN {$wpdb->prefix}burst_sessions AS sessions ON stats.session_id = sessions.ID ";
 				$where_clause .= $wpdb->prepare( " AND sessions.country_code = %s ", $country_code );
 			}
 
@@ -556,14 +556,14 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			);
 			$devicesResult = $wpdb->get_results( $sql, ARRAY_A );
 
-			$total         = 0;
-			$devices           = [];
+			$total   = 0;
+			$devices = [];
 			foreach ( $devicesResult as $key => $data ) {
 				$name             = $data['device'];
 				$devices[ $name ] = array(
 					'count' => $data['count'],
 				);
-				$total           += $data['count'];
+				$total            += $data['count'];
 			}
 			$devices['all'] = array(
 				'count' => $total,
@@ -593,53 +593,52 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 		public function get_devices_subtitle_data( $args = array() ) {
 			global $wpdb;
-			$defaults = array(
+			$defaults          = array(
 				'date_start' => 0,
 				'date_end'   => 0,
 				'filters'    => [],
 			);
-			$args = wp_parse_args( $args, $defaults );
-			$start = (int) $args['date_start'];
-			$end = (int) $args['date_end'];
-			$devices = ['desktop', 'tablet', 'mobile', 'other'];
-			$filters = burst_sanitize_filters($args['filters']);
-			$goal_id = $filters['goal_id'] ?? null;
-			$country_code = $filters['country_code'] ?? null;
+			$args              = wp_parse_args( $args, $defaults );
+			$start             = (int) $args['date_start'];
+			$end               = (int) $args['date_end'];
+			$devices           = [ 'desktop', 'tablet', 'mobile', 'other' ];
+			$filters           = burst_sanitize_filters( $args['filters'] );
+			$goal_id           = $filters['goal_id'] ?? null;
+			$country_code      = $filters['country_code'] ?? null;
 			$filters['bounce'] = 0;
 
 			// if string is not '' then add 'AND' to the string
-			$where_clause = $this->get_where_clause_for_filters($filters);
-			$results = [];
+			$where_clause = $this->get_where_clause_for_filters( $filters );
+			$results      = [];
 
 			// Loop through results and add count to array
 			foreach ( $devices as $device ) {
 				$device_sql = $wpdb->prepare( " device=%s ", $device );
 
 				$common_sql = " FROM {$wpdb->prefix}burst_statistics AS stats ";
-				$where_sql = $wpdb->prepare( " WHERE time > %d AND time < %d AND device IS NOT NULL AND device <> '' $where_clause", $start, $end, $filters['bounce'] );
+				$where_sql  = $wpdb->prepare( " WHERE time > %d AND time < %d AND device IS NOT NULL AND device <> '' $where_clause", $start, $end, $filters['bounce'] );
 
 				// Conditional JOIN and WHERE based on the presence of goal_id
-				if ($goal_id !== null) {
+				if ( $goal_id !== null ) {
 					$common_sql .= " INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals ON stats.ID = goals.statistic_id ";
-					$where_sql .= $wpdb->prepare( " AND goals.goal_id = %d ", $goal_id );
+					$where_sql  .= $wpdb->prepare( " AND goals.goal_id = %d ", $goal_id );
 				}
 
-				if ($country_code) {
+				if ( $country_code ) {
 					$common_sql .= " INNER JOIN {$wpdb->prefix}burst_sessions AS sessions ON stats.session_id = sessions.ID ";
-					$where_sql .= $wpdb->prepare( " AND sessions.country_code = %s ", $country_code );
+					$where_sql  .= $wpdb->prepare( " AND sessions.country_code = %s ", $country_code );
 				}
-
 
 
 				// Query for browser
-				$sql = $wpdb->prepare( "SELECT browser FROM (SELECT browser, COUNT(*) AS count, device $common_sql $where_sql AND browser IS NOT NULL GROUP BY browser, device ) AS grouped_devices WHERE $device_sql ORDER BY count DESC LIMIT 1", '' );
+				$sql     = $wpdb->prepare( "SELECT browser FROM (SELECT browser, COUNT(*) AS count, device $common_sql $where_sql AND browser IS NOT NULL GROUP BY browser, device ) AS grouped_devices WHERE $device_sql ORDER BY count DESC LIMIT 1", '' );
 				$browser = $wpdb->get_var( $sql );
 
 				// Query for OS
 				$sql = $wpdb->prepare( "SELECT platform FROM (SELECT platform, COUNT(*) AS count, device $common_sql $where_sql AND platform IS NOT NULL GROUP BY platform, device ) AS grouped_devices WHERE $device_sql ORDER BY count DESC LIMIT 1", '' );
-				$os = $wpdb->get_var( $sql );
+				$os  = $wpdb->get_var( $sql );
 
-				$results[$device] = [
+				$results[ $device ] = [
 					'browser' => $browser,
 					'os'      => $os,
 				];
@@ -688,8 +687,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				'date_end'   => 0,
 				'metrics'    => array( 'pageviews' ),
 			);
-			$args = wp_parse_args( $args, $defaults );
-$filters       = burst_sanitize_filters( $args['filters'] );
+			$args          = wp_parse_args( $args, $defaults );
+			$filters       = burst_sanitize_filters( $args['filters'] );
 			$metrics       = $this->sanitize_metrics( $args['metrics'] );
 			$sql_metrics   = wp_parse_args( array( 'page_url' ), $metrics );
 			$metric_labels = $this->get_metrics();
@@ -865,7 +864,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 			$remove   = array( 'http://www.', 'https://www.', 'http://', 'https://' );
 			$site_url = str_replace( $remove, '', site_url() );
 			$sql      = $this->get_sql_table( $start, $end, array( 'count', 'referrer' ), $filters );
-			$sql     .= "AND referrer NOT LIKE '%$site_url%' GROUP BY referrer";
+			$sql      .= "AND referrer NOT LIKE '%$site_url%' GROUP BY referrer";
 
 			$data = $wpdb->get_results( $sql, ARRAY_A );
 
@@ -983,12 +982,15 @@ $filters       = burst_sanitize_filters( $args['filters'] );
                         GROUP BY period order by period";
 					break;
 				case 'conversions':
-					$join              = array(
-						'table' => 'burst_goal_statistics AS goals',
-						'on'    => 'stats.ID = goals.statistic_id',
-						'type'  => 'INNER',
-					);
+					$join              = [
+						[
+							'table' => 'burst_goal_statistics AS goals',
+							'on'    => 'stats.ID = goals.statistic_id',
+							'type'  => 'INNER',
+						]
+					];
 					$filters['bounce'] = 0;
+					//checkthis
 					$sql               = $this->get_sql_table( $start, $end, array( '*' ), $filters, 'period', 'period', '', $join );
 					$select            = $wpdb->prepare(
 						'COUNT(*) AS hit_count, DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), %s, %s), %s) AS period',
@@ -1018,7 +1020,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 			$data          = array();
 
 			// count back from end until zero periods. eg hours or days
-			for ( $i = $nr_of_periods - 1; $i >= 0; --$i ) {
+			for ( $i = $nr_of_periods - 1; $i >= 0; -- $i ) {
 				$period = strtotime( "-$i $interval", $end + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
 				$period = date( $format, $period );
 				$found  = false;
@@ -1172,7 +1174,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 			if ( isset( $top_referrer[0] ) ) {
 				if ( $top_referrer[0]->referrer == 'Direct' ) {
 					$top_referrer[0]->referrer = __( 'Direct', 'burst-statistics' );
-				} elseif ( $top_referrer[0]->pageviews === 0 ) {
+				} else if ( $top_referrer[0]->pageviews === 0 ) {
 					$top_referrer[0]->referrer = __( 'No referrers', 'burst-statistics' );
 				}
 			}
@@ -1196,7 +1198,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 			if ( isset( $most_visited[0] ) ) {
 				if ( $most_visited[0]->page_url === '/' ) {
 					$most_visited[0]->page_url = __( 'Homepage', 'burst-statistics' );
-				} elseif ( ! $most_visited[0]->pageviews === 0 ) {
+				} else if ( ! $most_visited[0]->pageviews === 0 ) {
 					$most_visited[0]->page_url = __( 'No pageviews', 'burst-statistics' );
 				}
 			}
@@ -1250,13 +1252,22 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 
 		/**
 		 *
-		* @param $filters
-		* @return string
+		 * @param $filters
+		 *
+		 * @return string
 		 */
-		function get_where_clause_for_filters($filters = []){
-			$filters = burst_sanitize_filters($filters);
+		function get_where_clause_for_filters( $filters = [] ) {
+			$filters          = burst_sanitize_filters( $filters );
 			$where            = '';
-			$possible_filters = apply_filters('burst_possible_filters', array( 'bounce', 'page_id', 'page_url', 'referrer', 'device', 'browser', 'platform'));
+			$possible_filters = apply_filters( 'burst_possible_filters', array(
+				'bounce',
+				'page_id',
+				'page_url',
+				'referrer',
+				'device',
+				'browser',
+				'platform',
+			) );
 			foreach ( $possible_filters as $filter ) {
 				// if filter is set and not empty
 				if ( isset( $filters[ $filter ] ) ) {
@@ -1276,6 +1287,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 					}
 				}
 			}
+
 			return $where;
 		}
 
@@ -1289,18 +1301,18 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 			$select     = $this->get_sql_select_for_metrics( $select );
 			$table_name = $wpdb->prefix . 'burst_statistics';
 
-			$where = $this->get_where_clause_for_filters($filters);
+			$where = $this->get_where_clause_for_filters( $filters );
 
 
 			$joined_tables = [];
 			// loop through joins and add 'table' to joined tables array
-			foreach($joins as $join){
+			foreach ( $joins as $join ) {
 				$joined_tables[] = $join['table'];
 			}
 
 			// if goal id use join, make sure we don't join the same table twice, but do add the where clause
 			if ( isset( $filters['goal_id'] ) ) {
-				if ( ! in_array( 'burst_goal_statistics AS goals', $joined_tables, true )  ) {
+				if ( ! in_array( 'burst_goal_statistics AS goals', $joined_tables, true ) ) {
 					$joins[] = array(
 						'table' => 'burst_goal_statistics AS goals',
 						'on'    => 'stats.ID = goals.statistic_id',
@@ -1311,7 +1323,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 			}
 
 			if ( isset( $filters['country_code'] ) ) {
-				if ( ! in_array( 'burst_sessions AS sessions', $joined_tables, true )  ) {
+				if ( ! in_array( 'burst_sessions AS sessions', $joined_tables, true ) ) {
 					$joins[] = array(
 						'table' => 'burst_sessions AS sessions',
 						'on'    => 'stats.session_id = sessions.ID',
@@ -1415,7 +1427,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 					// so we change the $metric name to 'metric'_count
 					if ( substr( $metric, 0, 6 ) === 'count(' && substr( $metric, - 1 ) === ')' ) {
 						// strip the 'count(' and ')' from the metric
-						$metric  = substr( $metric, 6, - 1 );
+						$metric = substr( $metric, 6, - 1 );
 						$metric .= '_count';
 					}
 
@@ -1426,7 +1438,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 				if ( $count !== $i ) { // if it's not the last metric, then we need to add a comma
 					$select .= ', ';
 				}
-				++$i;
+				++ $i;
 			}
 
 			return $select;
@@ -1505,7 +1517,7 @@ $filters       = burst_sanitize_filters( $args['filters'] );
 
 			if ( $uplift > 0 ) {
 				$status = 'positive';
-			} elseif ( $uplift < 0 ) {
+			} else if ( $uplift < 0 ) {
 				$status = 'negative';
 			}
 

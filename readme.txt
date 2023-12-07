@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.4
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 
 Self-hosted and privacy-friendly analytics for Wordpress.
 
@@ -85,6 +85,11 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.5.3 =
+* Fix: Fixed error in class-statistics.php
+* Fix: Changed query for post count per page on for logged in users.
+* Fix: Fixed a PHP error after activating the plugin.
+
 = 1.5.2 =
 * New Feature: Added pageviews per page display in top menu for logged-in users.
 * Fix: Removed random string from goals script for better caching.

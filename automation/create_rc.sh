@@ -146,6 +146,9 @@ upload_plugin() {
 
   # Optionally, remove the ZIP file from the server
   ssh ${username}@translate.really-simple-plugins.com "rm ${remote_path}/${zip_file}"
+
+  # Change back to burst-pro dir
+  cd ../burst-pro || { echo "Failed to change directory"; exit 1; }
 }
 
 # Change to the directory where the script is located
@@ -198,9 +201,6 @@ if [ "$upload_mode" == "true" ]; then
 
 	echo "Step 5.5: SSH Loco sync"
   ssh ${username}@translate.really-simple-plugins.com "cd public_html && wp loco sync ${language_file_prefix} && echo \"Synced Loco: ${language_file_prefix}\"" || { echo "ssh or wp loco sync failed"; exit 1; }
-
-  # cd back to root of plugin
-  cd "$(dirname "$0")" || { echo "Failed to change directory"; exit 1; }
 
 	echo "Step 5.6: Download .po files"
 	download_po_files

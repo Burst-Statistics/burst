@@ -54,14 +54,13 @@ if ( ! class_exists( "burst_frontend" ) ) {
 				return;
 			}
 
-			// get current url with php
-			$url = $_SERVER['REQUEST_URI'] ?? '';
-			// strip home_url
-			$url = str_replace( home_url(), '', $url );
-
-			$sql = "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics WHERE page_url = %s AND bounce = 0";
-			$count = (int) $wpdb->get_var( $wpdb->prepare( $sql, $url ) );
-
+			global $post;
+			if ( $post && is_object($post) ) {
+				$post_id = $post->ID;
+				$count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
+			} else {
+				$count = 0;
+			}
 			$wp_admin_bar->add_menu(
 				array(
 					'id' => 'burst-front-end',
