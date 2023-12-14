@@ -89,6 +89,11 @@ We value your feedback. You can [submit a support request on the WordPress forum
 * Fix: Fixed error in class-statistics.php
 * Fix: Changed query for post count per page on for logged in users.
 * Fix: Fixed a PHP error after activating the plugin.
+* Improvement: Moved endpoint to within the plugin folder.
+* Improvement: Changed some React imports to WordPress imports to save on file size.
+* Improvement: Removed unused data from the database. Removed full user_agent, shortened the full page URL and the referrer url, by removing site_url.
+* Fix: Tracking with Complianz turned on could sometimes result in double tracking. This has been resolved.
+* Fix: For filtering by conversions, the insights chart would not show the data correctly. This has been resolved.
 
 = 1.5.2 =
 * New Feature: Added pageviews per page display in top menu for logged-in users.
