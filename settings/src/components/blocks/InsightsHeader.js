@@ -1,4 +1,4 @@
-import {__} from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import {useInsightsStore} from '../../store/useInsightsStore';
 import PopoverFilter from './PopoverFilter';
 

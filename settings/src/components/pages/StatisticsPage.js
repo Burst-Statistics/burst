@@ -1,5 +1,5 @@
 import {Filters} from '../blocks/Filters';
-import {useEffect} from 'react';
+import {useEffect} from '@wordpress/element';
 import InsightsBlock from '../blocks/InsightsBlock';
 import CompareBlock from '../blocks/CompareBlock';
 import DevicesBlock from '../blocks/DevicesBlock';

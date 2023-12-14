@@ -1,4 +1,4 @@
-import React from 'react';
+import React from '@wordpress/element';
 import * as TooltipUI from '@radix-ui/react-tooltip';
 
 const Tooltip = ({

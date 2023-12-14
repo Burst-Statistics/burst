@@ -1344,9 +1344,17 @@ async function burst_update_hit ( update_uid = false ){
  *
  */
 async function burst_track_hit () {
+	if ( burst_initial_track_hit ) { // if the initial track hit has already been fired, we just update the hit
+		burst_update_hit();
+		return;
+	}
+	burst_initial_track_hit = true;
+
 	if (burst_is_user_agent()) return;
 	if (burst_is_do_not_track()) return;
-	if (burst_track_hit_running) return;
+	if ( burst_track_hit_running ) return;
+
+
 	burst_track_hit_running = true;
 	let event = new CustomEvent('burst_before_track_hit', {detail: burst});
 	document.dispatchEvent(event);
@@ -1381,7 +1389,6 @@ async function burst_track_hit () {
 			burst_track_hit_running	= false;
 		} );
 
-	burst_initial_track_hit = true;
 	burst_track_hit_running	= false;
 }
 

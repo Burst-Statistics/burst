@@ -748,15 +748,43 @@ if ( ! function_exists( 'burst_tracking_status_beacon' ) ) {
 
 if ( ! function_exists( 'burst_get_beacon_url' ) ) {
     /**
-     * Get beacon directory
+     * Get beacon path
      *
      * @return string
      */
-    function burst_get_beacon_url() {
-        $wp_dir = get_site_url();
-        return trailingslashit( $wp_dir ) . 'burst-statistics-endpoint.php';
-
+    function burst_get_beacon_url(): string {
+        if ( is_multisite() && burst_is_networkwide_active() ) {
+            if ( is_main_site() ) {
+	            return burst_url . 'beacon.php';
+            } else {
+                //replace the subsite url with the main site url in burst_url
+                //get main site_url
+                $main_site_url = get_site_url(get_main_site_id());
+                return str_replace(site_url(), $main_site_url, burst_url) . 'endpoint.php';
+            }
+        }
+        return burst_url . 'endpoint.php';
     }
+}
+
+if ( ! function_exists( 'burst_get_rest_url' ) ) {
+	/**
+	 * Get beacon path
+	 *
+	 * @return string
+	 */
+	function burst_get_rest_url(): string {
+		if ( is_multisite() && burst_is_networkwide_active() ) {
+			if ( is_main_site() ) {
+				return get_rest_url();
+			} else {
+				//replace the subsite url with the main site url in burst_url
+				//get main site_url
+				return get_rest_url(get_main_site_id());
+			}
+		}
+		return burst_url . 'endpoint.php';
+	}
 }
 
 if ( ! function_exists( 'burst_remote_file_exists' ) ) {
@@ -770,11 +798,8 @@ if ( ! function_exists( 'burst_remote_file_exists' ) ) {
 
 		$result = curl_exec( $ch );
 		curl_close( $ch );
-		if ( $result !== false ) {
-			return true;
-		}
 
-		return false;
+		return $result !== false;
 	}
 }
 

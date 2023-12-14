@@ -25,10 +25,6 @@ foreach ( $table_names as $table_name ) {
 	$wpdb->query( $sql );
 }
 
-if ( file_exists( ABSPATH . '/burst-statistics-endpoint.php' ) ) {
-	unlink( ABSPATH . '/burst-statistics-endpoint.php' );
-}
-
 // get all burst transients
 $results = $wpdb->get_results(
 	"SELECT `option_name` AS `name`, `option_value` AS `value`

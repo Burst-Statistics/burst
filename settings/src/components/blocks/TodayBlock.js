@@ -6,7 +6,7 @@ import getTodayData from '../../api/getTodayData';
 
 import Icon from '../../utils/Icon';
 import {endOfDay, format, startOfDay} from 'date-fns';
-import {useState} from 'react';
+import {useState} from '@wordpress/element';
 import GridItem from '../common/GridItem';
 import {getDateWithOffset} from "../../utils/formatting";
 

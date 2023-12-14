@@ -1,6 +1,6 @@
 import {
   Fragment,
-} from 'react';
+} from '@wordpress/element';
 
 const PagePlaceholder = (props) => {
     return (

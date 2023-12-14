@@ -1,12 +1,9 @@
-import {
-  TextControl,
-} from '@wordpress/components';
-import {useState, useEffect} from "@wordpress/element";
-
+import {TextControl} from '@wordpress/components';
 import Icon from "../../../utils/Icon";
 import RadioButtons from '../Fields/RadioButtons';
 import ClassId from '../Fields/ClassId';
 import SelectPage from '../Fields/SelectPage';
+import {useEffect, useState} from '@wordpress/element';
 
 const GoalField = (props) => {
   const {

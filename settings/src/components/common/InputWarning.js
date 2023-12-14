@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from '@wordpress/element';
 
 const InputWarning = ({
   type = "warning",

@@ -32,7 +32,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		global $wpdb;
 		$user_agent_data = isset( $data['user_agent'] ) ? burst_get_user_agent_data( $data['user_agent'] ) : array(
 			'browser'  => '',
-			'version'  => '',
+			'browser_version'  => '',
 			'platform' => '',
 			'device'   => '',
 		);
@@ -49,26 +49,27 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'completed_goals'   => null,
 		);
 		$data            = wp_parse_args( $data, $defaults );
+		$data['completed_goals']   = burst_sanitize_completed_goal_ids( $data['completed_goals'] );
 
 		// update array
 		$arr                      = array();
 		$arr['entire_page_url']   = burst_sanitize_entire_page_url( $data['url'] ); // required
-		$arr['page_url']          = burst_sanitize_page_url( $arr['entire_page_url'] ); // required
+		$arr['page_url']          = burst_sanitize_page_url( $data['url'] ); // required
 		$arr['page_id']           = burst_sanitize_page_id( $data['page_id'] ); // required
 		$arr['uid']               = burst_sanitize_uid( $data['uid'] ); // required
 		$arr['fingerprint']       = burst_sanitize_fingerprint( $data['fingerprint'] );
 		$arr['referrer']          = burst_sanitize_referrer( $data['referrer_url'] );
-		$arr['user_agent']        = burst_sanitize_user_agent( $data['user_agent'] );
 		$arr['browser']           = $user_agent_data['browser']; // already sanitized
-		$arr['browser_version']   = $user_agent_data['version']; // already sanitized
+		$arr['browser_version']   = $user_agent_data['browser_version']; // already sanitized
 		$arr['platform']          = $user_agent_data['platform']; // already sanitized
 		$arr['device']            = $user_agent_data['device']; // already sanitized
 		$arr['device_resolution'] = burst_sanitize_device_resolution( $data['device_resolution'] );
 		$arr['time_on_page']      = burst_sanitize_time_on_page( $data['time_on_page'] );
 		$arr['bounce']            = 1;
 
+
 		// if user agent is not set then this is an update hit
-		$is_update_hit = empty( $arr['user_agent'] );
+		$is_update_hit = empty( $data['user_agent'] );
 		$arr = apply_filters( 'burst_before_track_hit', $arr );
 
 		$session_arr = array(
@@ -101,6 +102,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			$arr['session_id'] = $last_statistic['session_id'];
 			burst_update_session( $arr['session_id'], $session_arr );
 		} else if ( $last_statistic ) {
+			$session_arr['first_visited_url'] = $arr['page_url'];
 			$arr['session_id'] = burst_create_session( $session_arr );
 		}
 
@@ -150,7 +152,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		}
 
 		if ( $statistic_id > 0 ) {
-			$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr );
+			$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr['page_url'] );
 			// if $arr['completed_goals'] is not an empty array, update burst_goals table
 			if ( ! empty( $completed_goals ) ) {
 				foreach ( $completed_goals as $goal_id ) {
@@ -166,14 +168,15 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		return 'success';
 	}
 }
+
 if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
 	/**
 	 * Burst Statistics beacon endpoint for collecting hits
 	 */
 	function burst_beacon_track_hit() {
 		$request = (string) file_get_contents( 'php://input' );
-		if (empty($request)){
-			wp_die('not a valid request');
+		if ( empty( $request ) ) {
+			wp_die( 'not a valid request' );
 		}
 		if ( $request === 'request=test' ) {
 			http_response_code( 200 );
@@ -182,9 +185,9 @@ if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
 		}
 
 		if ( burst_is_ip_blocked() ) {
-			http_response_code(200);
-			return 'ip blocked';
+			http_response_code( 200 );
 
+			return 'ip blocked';
 		}
 
 		$data = json_decode( json_decode( $request, true ), true ); // The data is encoded in JSON and decoded twice to get the array.
@@ -206,7 +209,8 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 	function burst_rest_track_hit( WP_REST_Request $request ): WP_REST_Response {
 		if ( burst_is_ip_blocked() ) {
 			$status_code = WP_DEBUG ? 202 : 200;
-			return new WP_REST_Response('Burst Statistics: Your IP is blocked from tracking.', $status_code );
+
+			return new WP_REST_Response( 'Burst Statistics: Your IP is blocked from tracking.', $status_code );
 		}
 		$data = json_decode( $request->get_json_params(), true );
 		if ( isset( $data['request'] ) && $data['request'] === 'test' ) {
@@ -227,15 +231,21 @@ if ( ! function_exists( 'burst_sanitize_entire_page_url' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_entire_page_url( $url ): string {
-		if ( !function_exists('wp_kses_bad_protocol') ) {
+		if ( ! function_exists( 'wp_kses_bad_protocol' ) ) {
 			require_once( ABSPATH . '/wp-includes/kses.php' );
 		}
-		$sanitized_url = filter_var($url, FILTER_SANITIZE_URL);
+		$sanitized_url = filter_var( $url, FILTER_SANITIZE_URL );
 		// Validate the URL
-		if (!filter_var($sanitized_url, FILTER_VALIDATE_URL)) {
-			return ''; // or throw an exception, or however you handle errors
+		if ( ! filter_var( $sanitized_url, FILTER_VALIDATE_URL ) ) {
+			return '';
 		}
-		return esc_url_raw( trailingslashit( $sanitized_url ) );
+
+		$url = parse_url( esc_url_raw( $sanitized_url ) );
+		if ( isset( $url['host'] ) ) {
+			return trailingslashit( $url['path'] ) ;
+		}
+
+		return false;
 	}
 }
 
@@ -248,11 +258,16 @@ if ( ! function_exists( 'burst_sanitize_page_url' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_page_url( $url ): string {
-		if (!function_exists('wp_kses_bad_protocol')) {
+		if ( ! function_exists( 'wp_kses_bad_protocol' ) ) {
 			require_once( ABSPATH . '/wp-includes/kses.php' );
 		}
-		$url = parse_url( esc_url_raw( $url ) );
-		if ( isset( $url['host'] ) ) {
+		$sanitized_url = filter_var( $url, FILTER_SANITIZE_URL );
+		if ( ! filter_var( $sanitized_url, FILTER_VALIDATE_URL ) ) {
+			return '';
+		}
+
+		$url = parse_url( esc_url_raw( $sanitized_url ) );
+		if ( isset( $url['host'] ) ) { //
 			return trailingslashit( $url['path'] );
 		}
 
@@ -334,28 +349,23 @@ if ( ! function_exists( 'burst_sanitize_referrer' ) ) {
 			define( 'burst_path', plugin_dir_path( __FILE__ ) . '../' );
 		}
 		$referrer      = filter_var( $referrer, FILTER_SANITIZE_URL );
-		$referrer_url  = parse_url( $referrer, PHP_URL_HOST );
+		$referrer_host  = parse_url( $referrer, PHP_URL_HOST );
+		$current_host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];
+		// don't track if referrer is the same as current host
+		// if referrer_url starts with current_host, then it is not a referrer
+		if ( empty($referrer_host) || strpos( $referrer_host, $current_host ) === 0 ) {
+			return null;
+		}
+
 		$ref_spam_list = file( burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
-		if ( array_search( $referrer_url, $ref_spam_list ) ) {
+		if ( array_search( $referrer_host, $ref_spam_list ) ) {
 			return 'spammer';
 		}
-		if (!function_exists('wp_kses_bad_protocol')) {
+		if ( ! function_exists( 'wp_kses_bad_protocol' ) ) {
 			require_once( ABSPATH . '/wp-includes/kses.php' );
 		}
-		return $referrer ? trailingslashit( esc_url_raw( $referrer ) ) : null;
-	}
-}
 
-if ( ! function_exists( 'burst_sanitize_user_agent' ) ) {
-	/**
-	 * Sanitize $user_agent
-	 *
-	 * @param $user_agent
-	 *
-	 * @return string
-	 */
-	function burst_sanitize_user_agent( $user_agent ): string {
-		return sanitize_text_field(filter_var( $user_agent, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW ) );
+		return $referrer ? trailingslashit( esc_url_raw( $referrer ) ) : null;
 	}
 }
 
@@ -368,7 +378,7 @@ if ( ! function_exists( 'burst_sanitize_device_resolution' ) ) {
 	 * @return string
 	 */
 	function burst_sanitize_device_resolution( $device_resolution ): string {
-		return sanitize_text_field(filter_var( $device_resolution, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW ));
+		return sanitize_text_field( filter_var( $device_resolution, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW ) );
 	}
 }
 
@@ -413,6 +423,7 @@ if ( ! function_exists( 'burst_sanitize_completed_goal_ids' ) ) {
 		$completed_goals = array_intersect( $completed_goals, burst_get_active_goals_ids() ); // only keep active goals ids
 		$completed_goals = array_unique( $completed_goals ); // remove duplicates
 		$completed_goals = array_map( 'absint', $completed_goals ); // make sure all values are integers
+
 		return $completed_goals;
 	}
 }
@@ -441,7 +452,7 @@ if ( ! function_exists( 'burst_get_goals_script_url' ) ) {
 	 * @return string
 	 */
 	function burst_get_goals_script_url() {
-		return apply_filters( 'burst_goals_script_url', burst_url . '/assets/js/build/burst-goals.js?v='.burst_version );
+		return apply_filters( 'burst_goals_script_url', burst_url . '/assets/js/build/burst-goals.js?v=' . burst_version );
 	}
 }
 
@@ -469,17 +480,17 @@ if ( ! function_exists( 'burst_goal_is_completed' ) ) {
 	 *
 	 * @return bool
 	 */
-	function burst_goal_is_completed( $goal, $hit_data ) {
+	function burst_goal_is_completed( $goal, $page_url ) {
 		if (
 			! isset( $goal['type'] ) ||
 			! isset( $goal['setup']['url'] ) ||
-			! isset( $hit_data['page_url'] )
+			! isset( $page_url )
 		) {
 			switch ( $goal['type'] ) {
 				case 'visits':
 					// @todo maybe add support to compare parts of url (e.g. /hello-world/ and /hello-world/?utm_source=google)
 					// if url in hit data is equal to goal url
-					if ( $hit_data['page_url'] === $goal['url'] ) {
+					if ( $page_url === $goal['url'] ) {
 						return true;
 					}
 					break;
@@ -492,14 +503,12 @@ if ( ! function_exists( 'burst_goal_is_completed' ) ) {
 
 if ( ! function_exists( 'burst_get_completed_goals' ) ) {
 	/**
-	 * Get completed goals
+	 * @param $completed_client_goals
+	 * @param $page_url
 	 *
-	 * @param $completed_goals
-	 *
-	 * @return string
+	 * @return mixed
 	 */
-	function burst_get_completed_goals( $client_side_goals, $hit_data ) {
-		$completed_client_goals = burst_sanitize_completed_goal_ids( $client_side_goals );
+	function burst_get_completed_goals( $completed_client_goals, $page_url ) {
 		$completed_server_goals = [];
 		$server_goals           = burst_get_active_goals( true );
 		// if server side goals exist
@@ -507,7 +516,7 @@ if ( ! function_exists( 'burst_get_completed_goals' ) ) {
 			// loop through server side goals
 			foreach ( $server_goals as $goal ) {
 				// if goal is completed
-				if ( burst_goal_is_completed( $goal, $hit_data ) ) {
+				if ( burst_goal_is_completed( $goal, $page_url ) ) {
 					// add goal id to completed goals array
 					$completed_server_goals[] = $goal['ID'];
 				}
@@ -527,6 +536,15 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 	 * @return null[]|string[]
 	 */
 	function burst_get_user_agent_data( $user_agent ): array {
+		$defaults = array(
+			'browser'  => '',
+			'browser_version'  => '',
+			'platform' => '',
+			'device'   => '',
+		);
+		if ( $user_agent == '' ) {
+			return $defaults;
+		}
 
 		$ua = parse_user_agent( $user_agent );
 
@@ -573,12 +591,11 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 				break;
 		}
 
-		return array_merge( array(
-			'browser'  => null,
-			'version'  => null,
-			'platform' => null,
-			'device'   => null,
-		), $ua );
+		// change version to browser_version
+		$ua['browser_version'] = $ua['version'];
+		unset($ua['version']);
+
+		return wp_parse_args($ua, $defaults);
 	}
 }
 
@@ -592,12 +609,16 @@ if ( ! function_exists( 'burst_get_first_time_visit' ) ) {
 	 */
 	function burst_get_first_time_visit( $burst_uid ): int {
 		global $wpdb;
-		// check if uid is already in the database in the past 30 days for a different sessions_id
+		// Check if uid is already in the database in the past 30 days for a different sessions_id
 		$after_time         = time() - MONTH_IN_SECONDS;
-		$sql                = $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}burst_statistics WHERE uid = %s AND time > %s LIMIT 1", $burst_uid, $after_time );
+		$sql                = $wpdb->prepare(
+			"SELECT EXISTS(SELECT 1 FROM {$wpdb->prefix}burst_statistics WHERE uid = %s AND time > %s LIMIT 1)",
+			$burst_uid,
+			$after_time
+		);
 		$fingerprint_exists = $wpdb->get_var( $sql );
 
-		return ! ( $fingerprint_exists > 0 ) ? 1 : 0;
+		return $fingerprint_exists ? 0 : 1;
 	}
 }
 
@@ -624,7 +645,6 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 		if ( ! $search_uid ) {
 			return $default_data;
 		}
-
 		$where = $page_url ? $wpdb->prepare(" AND page_url = %s", sanitize_text_field($page_url) ) : '';
 		$data = $wpdb->get_row(
 			$wpdb->prepare(
@@ -699,6 +719,7 @@ if ( ! function_exists( 'burst_create_statistic' ) ) {
 			if ( WP_DEBUG ) {
 				error_log( 'Burst Statistics: burst_create_statistic->required values are not set. Stats: ' . print_r( $data, true ) );
 			}
+
 			return;
 		}
 		$id = $wpdb->insert(
@@ -722,7 +743,7 @@ if ( ! function_exists( 'burst_update_statistic' ) ) {
 		global $wpdb;
 		$data = burst_remove_empty_values( $data );
 		// if page_id is set, unset it, because it should already be in the db. Otherwise it will be overwritten with 0
-		unset($data['page_id']);
+		unset( $data['page_id'] );
 		$wpdb->update(
 			$wpdb->prefix . 'burst_statistics',
 			(array) $data,
@@ -750,9 +771,9 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 
 		// first get row with same statistics_id and goal_id
 		$goal_statistic = $wpdb->get_var(
-			$wpdb->prepare("select count(*)
+			$wpdb->prepare( "select count(*)
 							from {$wpdb->prefix}burst_goal_statistics
-		                    where statistic_id = %s AND goal_id = %s"), intval($data['statistic_id']), intval($data['goal_id']) );
+		                    where statistic_id = %s AND goal_id = %s" ), intval( $data['statistic_id'] ), intval( $data['goal_id'] ) );
 		// goal already exists
 		if ( $goal_statistic > 0 ) {
 			return;
@@ -792,10 +813,9 @@ if ( ! function_exists( 'burst_required_values_set' ) ) {
 	 */
 	function burst_required_values_set( array $data ): bool {
 		return (
-			isset($data['uid']) &&
-			isset($data['page_url']) &&
-			isset($data['entire_page_url']) &&
-			isset($data['user_agent'])
+			isset( $data['uid'] ) &&
+			isset( $data['page_url'] ) &&
+			isset( $data['entire_page_url'] )
 		);
 	}
 }
@@ -885,11 +905,11 @@ if ( ! function_exists( 'burst_get_ip_address' ) ) {
 		}
 
 		// for testing purposes @todo delete
-//		$current_ip = "128.101.101.101"; //US ip
-//		$current_ip = "94.214.200.105"; //EU ip
-//		$current_ip = '185.86.151.11'; // UK ip
-//		$current_ip = '45.44.129.152'; // CA ip
-//		$current_ip = "189.189.111.174"; //Mexico
+		//		$current_ip = "128.101.101.101"; //US ip
+		//		$current_ip = "94.214.200.105"; //EU ip
+		//		$current_ip = '185.86.151.11'; // UK ip
+		//		$current_ip = '45.44.129.152'; // CA ip
+		//		$current_ip = "189.189.111.174"; //Mexico
 
 		return apply_filters( "burst_visitor_ip", $current_ip );
 	}

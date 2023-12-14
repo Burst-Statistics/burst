@@ -1,5 +1,5 @@
 import {__} from '@wordpress/i18n';
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef} from '@wordpress/element';
 import Tooltip from '../common/Tooltip';
 import ClickToFilter from './ClickToFilter';
 import Icon from '../../utils/Icon';

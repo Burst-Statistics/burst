@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect } from '@wordpress/element';
 import { ShepherdTour, ShepherdTourContext } from 'react-shepherd';
 import { __ } from '@wordpress/i18n';
 import * as burst_api from '../../utils/api';

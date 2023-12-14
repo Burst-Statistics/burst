@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from '@wordpress/element';
 import AsyncCreatableSelect from 'react-select/async-creatable';
 import { useQuery } from '@tanstack/react-query';
 import { getPosts } from '../../../utils/api';
@@ -37,7 +37,7 @@ const OptionLayout = ({ innerProps, innerRef, data }) => {
 
 // Main SelectPage component
 const SelectPage = ({ value, onChangeHandler, field }) => {
-  const [search, setSearch] = React.useState('');
+  const [search, setSearch] = useState('');
   const posts = useQuery(
       ['defaultPosts', search],
       () => fetchPosts(search),

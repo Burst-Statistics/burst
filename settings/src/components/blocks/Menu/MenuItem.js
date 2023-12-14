@@ -1,6 +1,6 @@
 import {__} from '@wordpress/i18n';
 import {useMenu} from '../../../store/useMenuStore';
-import {useState} from 'react';
+import {useState} from '@wordpress/element';
 
 const MenuItem = (props) => {
   const selectedSubMenuItem = useMenu((state) => state.selectedSubMenuItem);

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {useGoalFieldsStore} from "../../../store/useGoalFieldsStore";
 import Tooltip from '../../common/Tooltip';

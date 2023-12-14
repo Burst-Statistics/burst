@@ -1,4 +1,4 @@
-import React from 'react';
+import React from '@wordpress/element';
 import {useGoalsStore} from '../../store/useGoalsStore';
 import {useDashboardGoalsStore} from '../../store/useDashboardGoalsStore';
 import Icon from '../../utils/Icon';

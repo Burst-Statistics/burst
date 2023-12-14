@@ -27,7 +27,13 @@ if ( ! class_exists( "burst_frontend" ) ) {
             if ( ! burst_user_can_view() || is_admin() ) {
                 return;
             }
-            $wp_admin_bar->add_node(
+
+			//don't show on subsites if networkwide activated, and this is not the main site.
+			if ( burst_is_networkwide_active() && !is_main_site() ) {
+				return;
+			}
+
+			$wp_admin_bar->add_node(
                 array(
                     'parent' => 'site-name',
                     'id' => 'burst-statistics',

@@ -1,6 +1,6 @@
 import {__} from '@wordpress/i18n';
 import {useMenu} from '../../store/useMenuStore';
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef} from '@wordpress/element';
 
 const Header = () => {
   const menu = useMenu((state) => state.menu);

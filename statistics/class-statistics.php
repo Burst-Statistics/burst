@@ -46,7 +46,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				$localize_args = apply_filters(
 					'burst_tracking_options',
 					array(
-						'url'                   => get_rest_url(),
+						'url'                   => burst_get_rest_url(),
 						'page_id'               => get_queried_object_id(),
 						'cookie_retention_days' => 30,
 						'beacon_url'            => burst_get_beacon_url(),
@@ -1593,7 +1593,6 @@ function burst_install_statistics_table() {
             `platform` varchar(255),
             `device` varchar(255),
             `device_resolution` varchar(255),
-            `user_agent` varchar(255),
             `session_id` int(11),
             `first_time_visit` int(1),
             `bounce` int(1) DEFAULT 1,

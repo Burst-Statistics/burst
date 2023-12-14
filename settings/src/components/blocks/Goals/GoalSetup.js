@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect} from '@wordpress/element';
 import Icon from '../../../utils/Icon';
 import Tooltip from '../../common/Tooltip';
 import {__} from '@wordpress/i18n';

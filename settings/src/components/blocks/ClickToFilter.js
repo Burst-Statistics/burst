@@ -1,4 +1,4 @@
-import React from 'react';
+import React from '@wordpress/element';
 import {useFiltersStore} from '../../store/useFiltersStore';
 import {useGoalFieldsStore} from '../../store/useGoalFieldsStore';
 import {useInsightsStore} from '../../store/useInsightsStore';

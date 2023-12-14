@@ -4,7 +4,7 @@ import useLicenseStore from '../../../store/useLicenseStore';
 import {__} from '@wordpress/i18n';
 import Icon from '../../../utils/Icon';
 import GoalSetup from '../Goals/GoalSetup';
-import {useEffect} from 'react';
+import {useEffect} from '@wordpress/element';
 
 const GoalsSettings = (props) => {
   const { goals, addGoal, removeGoal, updateGoal } = useGoalsStore();

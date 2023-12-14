@@ -1,4 +1,4 @@
-import {useState, useEffect, useMemo} from 'react';
+import {useState, useEffect, useMemo} from '@wordpress/element';
 import * as burst_api from '../../utils/api';
 import {__} from '@wordpress/i18n';
 import Icon from '../../utils/Icon';

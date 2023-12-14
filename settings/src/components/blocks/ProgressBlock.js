@@ -1,6 +1,6 @@
 import {
   useEffect,
-} from 'react';
+} from '@wordpress/element';
 
 import TaskElement from './TaskElement';
 import {__} from '@wordpress/i18n';

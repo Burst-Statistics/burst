@@ -1,5 +1,5 @@
 import {__} from '@wordpress/i18n';
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef} from '@wordpress/element';
 import * as burst_api from '../../utils/api';
 import {getPercentage} from '../../utils/formatting';
 import Icon from '../../utils/Icon';

@@ -1,4 +1,4 @@
-import {memo} from 'react';
+import {memo} from '@wordpress/element';
 import Tooltip from '../components/common/Tooltip';
 
 const iconColors = {

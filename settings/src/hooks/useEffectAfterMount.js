@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from '@wordpress/element';
 
 export function useEffectAfterMount(effect, dependencies) {
   const isFirstRender = useRef(true);

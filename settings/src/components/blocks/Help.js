@@ -1,4 +1,3 @@
-import {Fragment} from "react";
 import Icon from "../../utils/Icon";
 import { __ } from '@wordpress/i18n';
 import ErrorBoundary from "../ErrorBoundary";

@@ -3,7 +3,7 @@ import GridItem from '../common/GridItem';
 import InsightsHeader from './InsightsHeader';
 import {useInsightsStore} from '../../store/useInsightsStore';
 import {useDate} from '../../store/useDateStore';
-import {useEffect, useState} from "react";
+import {useEffect, useState} from '@wordpress/element';
 import {useQuery} from '@tanstack/react-query';
 import getInsightsData from '../../api/getInsightsData';
 import {useFiltersStore} from "../../store/useFiltersStore";

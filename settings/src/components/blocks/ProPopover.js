@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState} from '@wordpress/element';
 import * as Popover from '@radix-ui/react-popover';
 import Icon from '../../utils/Icon';
 import {__} from '@wordpress/i18n';

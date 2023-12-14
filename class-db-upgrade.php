@@ -47,6 +47,15 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $do_upgrade === 'goals_set_conversion_metric' ) {
 				$this->upgrade_goals_set_conversion_metric();
 			}
+			if ( $do_upgrade === 'drop_user_agent' ) {
+				$this->upgrade_drop_user_agent();
+			}
+			if ( $do_upgrade === 'empty_referrer_when_current_domain' ) {
+				$this->upgrade_empty_referrer_when_current_domain();
+			}
+			if ( $do_upgrade === 'strip_domain_names_from_entire_page_url' ) {
+				$this->upgrade_strip_domain_names_from_entire_page_url();
+			}
 		}
 
 		/**
@@ -60,6 +69,9 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 				'bounces',
 				'goals_remove_columns',
 				'goals_set_conversion_metric',
+				'drop_user_agent',
+				'empty_referrer_when_current_domain',
+				'strip_domain_names_from_entire_page_url',
 			] );
 		}
 
@@ -137,7 +149,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $remove !== false ) {
 				delete_option( 'burst_db_upgrade_goals_remove_columns');
 			}
-			
+
 		}
 
 		private function upgrade_goals_set_conversion_metric(){
@@ -160,6 +172,88 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			$add_conversion_metric = $wpdb->query( $sql );
 
 			if ( $add_conversion_metric !== false ) {
+				delete_option( $option_name);
+			}
+		}
+
+		private function upgrade_drop_user_agent(){
+			if ( ! burst_admin_logged_in() ) {
+				return;
+			}
+
+			$option_name = 'burst_db_upgrade_drop_user_agent';
+			if ( ! get_option( $option_name ) ) {
+				return;
+			}
+
+			global $wpdb;
+			$table_name = $wpdb->prefix . 'burst_statistics';
+
+			// check if columns exist first
+			$columns = $wpdb->get_col( "DESC $table_name", 0 );
+			if ( ! in_array( 'user_agent', $columns, true ) ) {
+				delete_option( 'burst_db_upgrade_drop_user_agent' );
+				return;
+			}
+
+			// drop user_agent column
+			$sql    = "ALTER TABLE $table_name
+					DROP COLUMN `user_agent`";
+
+			$drop_user_agent = $wpdb->query( $sql );
+
+			if ( $drop_user_agent !== false ) {
+				delete_option( $option_name);
+			}
+		}
+
+		private function upgrade_empty_referrer_when_current_domain(){
+			if ( ! burst_admin_logged_in() ) {
+				return;
+			}
+			$option_name = 'burst_db_upgrade_empty_referrer_when_current_domain';
+			if ( ! get_option( $option_name ) ) {
+				return;
+			}
+
+			global $wpdb;
+			$table_name = $wpdb->prefix . 'burst_statistics';
+			$home_url = home_url();
+			// empty referrer when starts with current domain
+			$sql    = "UPDATE $table_name
+					SET referrer = null
+					WHERE referrer LIKE '$home_url%'";
+
+			$empty_referrer_when_current_domain = $wpdb->query( $sql );
+
+			if ( $empty_referrer_when_current_domain !== false ) {
+				delete_option( $option_name);
+			}
+		}
+
+		private function upgrade_strip_domain_names_from_entire_page_url(){
+			if ( ! burst_admin_logged_in() ) {
+				return;
+			}
+			$option_name = 'burst_db_upgrade_strip_domain_names_from_entire_page_url';
+			if ( ! get_option( $option_name ) ) {
+				return;
+			}
+
+			global $wpdb;
+			$table_name = $wpdb->prefix . 'burst_statistics';
+			// make sure it does not end with slash
+			$home_url = untrailingslashit( home_url() );
+
+
+			// strip home url from entire_page_url where it starts with home_url
+			$sql    = "UPDATE $table_name
+					SET entire_page_url = REPLACE(entire_page_url, '$home_url', '')
+					WHERE entire_page_url LIKE '$home_url%'";
+
+			$strip_domain_names_from_entire_page_url = $wpdb->query( $sql );
+
+			if ( $strip_domain_names_from_entire_page_url !== false ) {
 				delete_option( $option_name);
 			}
 		}

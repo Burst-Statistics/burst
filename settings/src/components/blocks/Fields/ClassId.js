@@ -1,6 +1,6 @@
 import RadioButtons from './RadioButtons';
 import { __, sprintf } from '@wordpress/i18n';
-import {useEffect, useState, useRef} from 'react';
+import {useEffect, useState, useRef} from '@wordpress/element';
 import TextInput from './TextInput';
 const ClassId = (props) => {
   const { field, goal_id, label, help, value, onChangeHandler } = props;

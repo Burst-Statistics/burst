@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState} from '@wordpress/element';
 
 const UserRoleBlock = (props) => {
   const [radioValue, setRadioValue] = useState('block-selected');

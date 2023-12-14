@@ -1,4 +1,4 @@
-import {memo} from 'react';
+import {memo} from '@wordpress/element';
 import Icon from '../../../utils/Icon';
 import {__} from '@wordpress/i18n';
 import ProPopover from '../ProPopover';
