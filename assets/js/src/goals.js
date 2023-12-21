@@ -127,7 +127,7 @@ const burst_setup_click_tracker = (goal) => {
     if (event.target.matches(selector + goal.setup.value)) {
       burst_goal_triggered(goal);
     }
-  });
+  }, true);
 };
 
 /**
