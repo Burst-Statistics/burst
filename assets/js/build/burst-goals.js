@@ -123,7 +123,7 @@ const burst_listener_view = (element, goal) => {
 const burst_setup_click_tracker = (goal) => {
   document.body.addEventListener('click', function(event) {
       burst_recursive_trigger_check(event.target, goal);
-  }, true);
+  });
 };
 
 const burst_recursive_trigger_check = (target, goal) => {
