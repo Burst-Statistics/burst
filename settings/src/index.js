@@ -19,7 +19,7 @@ const queryCache = new QueryCache({
 let config = {
   defaultOptions: {
     queries: {
-      staleTime: HOUR_IN_SECONDS * 1000, // ms
+      staleTime: HOUR_IN_SECONDS * 1000, // hour in ms
       refetchOnWindowFocus: false,
       retry: false,
     },
