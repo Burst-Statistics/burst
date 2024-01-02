@@ -17,7 +17,7 @@ foreach ( $options as $option_name ) {
 
 global $wpdb;
 $table_names = array(
-	//$wpdb->prefix . 'burst_statistics',
+	$wpdb->prefix . 'burst_statistics',
 );
 
 foreach ( $table_names as $table_name ) {
