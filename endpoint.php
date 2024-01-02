@@ -61,17 +61,15 @@ function find_wordpress_base_path()
 	} while ($path = realpath("$path/.."));
 }
 
-if (!function_exists('burst_has_open_basedir_restriction')) {
-	function burst_has_open_basedir_restriction($path) {
-		// Default error handler is required
-		set_error_handler(null);
-		// Clean last error info.
-		error_clear_last();
-		// Testing...
-		@file_exists($path);
-		// Restore previous error handler
-		restore_error_handler();
-		// Return `true` if error has occurred
-		return ($error = error_get_last()) && $error['message'] !== '__clean_error_info';
-	}
+function burst_has_open_basedir_restriction($path) {
+	// Default error handler is required
+	set_error_handler(null);
+	// Clean last error info.
+	error_clear_last();
+	// Testing...
+	@file_exists($path);
+	// Restore previous error handler
+	restore_error_handler();
+	// Return `true` if error has occurred
+	return ($error = error_get_last()) && $error['message'] !== '__clean_error_info';
 }

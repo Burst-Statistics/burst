@@ -146,7 +146,7 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
 				'disabled' => '',
 				'button_text' => __("Install", "burst-statistics"),
 				'slug' => 'burst-statistics',
-				'description' => __("Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard from Really Simple Plugins.", "burst-statistics"),
+				'description' => __("Get detailed insights into visitors' behaviour with Burst Statistics, the privacy-friendly analytics dashboard.", "burst-statistics"),
 				'install_url' => 'burst%20statistics%20hesseldejong%20%20burst-statistics.com&tab=search&type=term',
 			];
 
@@ -329,7 +329,7 @@ if ( !class_exists('rsp_upgrade_to_pro') ){
                     </div>
                 </div>
                 <div id="rsp-plugin-suggestion-template">
-                    <div class="rsp-recommended"><?php _e("Recommended by Really Simple Plugins","burst-statistics")?></div>
+                    <div class="rsp-recommended"><?php _e("Recommended by Burst Statistics","burst-statistics")?></div>
                     <div class="rsp-plugin-suggestion">
                         <div class="rsp-icon"><img alt="suggested plugin icon" src="<?=$this->get_suggested_plugin('icon_url')?>"></div>
                         <div class="rsp-summary">
