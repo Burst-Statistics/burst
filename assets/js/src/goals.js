@@ -121,14 +121,19 @@ const burst_listener_view = (element, goal) => {
  * @param goal
  */
 const burst_setup_click_tracker = (goal) => {
-  let selector = goal.setup.attribute === 'id' ? '#' : '.';
-
   document.body.addEventListener('click', function(event) {
-    if (event.target.matches(selector + goal.setup.value)) {
-      burst_goal_triggered(goal);
-    }
+      burst_recursive_trigger_check(event.target, goal);
   });
 };
+
+const burst_recursive_trigger_check = (target, goal) => {
+  let selector = goal.setup.attribute === 'id' ? '#' : '.';
+  if (target.matches(selector + goal.setup.value)) {
+    burst_goal_triggered(goal);
+  } else if (target.parentElement) {
+    burst_recursive_trigger_check(target.parentElement, goal);
+  }
+}
 
 /**
  * Trigger a goal and add to the completed goals array.
