@@ -324,24 +324,6 @@ if ( ! function_exists( 'burst_format_milliseconds_to_readable_time' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_get_referrer_url' ) ) {
-	/**
-	 * Get the referrer url
-	 *
-	 * @return string
-	 */
-	function burst_get_referrer_url( $unsanitzed_referrer ) {
-		$referrer      = esc_url_raw( $unsanitzed_referrer );
-		$referrer_url  = parse_url( $referrer, PHP_URL_HOST );
-		$ref_spam_list = file( burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
-		if ( in_array( $referrer_url, $ref_spam_list, true ) ) {
-			return 'spammer';
-		}
-
-        return trailingslashit(esc_url_raw( $unsanitzed_referrer ));
-	}
-}
-
 if ( ! function_exists( 'burst_format_number' ) ) {
 	/**
      * Format number with correct decimal and thousands separator
@@ -676,15 +658,12 @@ if ( ! function_exists('burst_sanitize_filters') ) {
             return $item !== false && $item !== '';
         } );
 
+	    $out = [];
         foreach ( $filters as $key => $value ) {
-            if ( is_array( $value ) ) {
-                $filters[ $key ] = array_map( 'sanitize_text_field', $value );
-            } else {
-                $filters[ $key ] = sanitize_text_field( $value );
-            }
+	        $out[ esc_sql($key) ] = esc_sql($value);
         }
 
-        return $filters;
+        return $out;
     }
 }
 

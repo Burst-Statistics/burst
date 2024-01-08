@@ -9,7 +9,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			add_filter( 'script_loader_tag', array( $this, 'defer_burst_tracking_script' ), 10, 3 );
 		}
 
-
 		/**
 		 * Enqueue some assets
 		 *
@@ -179,7 +178,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 		public function get_live_visitors_data() {
 			global $wpdb;
-			$data = [];
 
 			// get real time visitors
 			$db_name        = $wpdb->prefix . 'burst_statistics';
@@ -212,9 +210,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					'visitors',
 					'pageviews',
 					'avg_time_on_page',
-				),
-				array(
-					'bounce' => 0,
 				)
 			);
 			$table    = $this->get_sql_table( $start, $end );
@@ -227,9 +222,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			// get most visited page
 			$sql = "SELECT page_url as title, count(*) as value
 						FROM ( $table ) as t 
-						WHERE page_url IS NOT NULL 
-						  AND page_url <> ''
-						  AND bounce = 0
 						GROUP BY title
 						ORDER BY value DESC
 					";
@@ -247,7 +239,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
                         FROM ( $table ) as t
                         WHERE referrer IS NOT NULL 
                           AND referrer NOT LIKE '%$site_url%'
-                          AND bounce = 0
                         GROUP BY referrer
                         ORDER BY value DESC
                         LIMIT 1";
@@ -299,7 +290,65 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			return $data;
 		}
 
+		/**
+		 * @param $date_start int
+		 *                       Unix timestamp
+		 * @param $date_end int
+		 *                     Unix timestamp
+		 *
+		 * @return array
+		 */
+		public function get_insights_date_modifiers($date_start, $date_end){
+			$nr_of_days = $this->get_nr_of_periods('day', $date_start, $date_end);
+
+			$week_string = _x('Week','Week 1, as in Week number 1', 'burst-statistics' );
+			$escaped_week_string = '';
+			for ($i = 0, $iMax = strlen( $week_string ); $i < $iMax; $i++) {
+				$escaped_week_string .= '\\' . $week_string[$i];
+			}
+
+			// Define intervals and corresponding settings
+			$intervals = [
+				'hour' => ['%Y-%m-%d %H', 'Y-m-d H', 'd M H:00', HOUR_IN_SECONDS],
+				'day' => ['%Y-%m-%d', 'Y-m-d', 'D d M', DAY_IN_SECONDS],
+				'week' => ['%Y-%u', 'Y-W', $escaped_week_string. ' W', WEEK_IN_SECONDS],
+				'month' => ['%Y-%m', 'Y-m', 'M', MONTH_IN_SECONDS]
+			];
+
+			// Determine the interval
+			if ($nr_of_days > 364) {
+				$interval = 'month';
+			} elseif ($nr_of_days > 48) {
+				$interval = 'week';
+			} elseif ($nr_of_days > 2) {
+				$interval = 'day';
+			} else {
+				$interval = 'hour';
+			}
+
+			// Extract settings based on the determined interval
+			list($sql_date_format, $php_date_format, $php_pretty_date_format, $interval_in_seconds) = $intervals[$interval];
+
+			$nr_of_intervals = $this->get_nr_of_periods($interval, $date_start, $date_end);
+
+			// check if $date_start does not equal the current year, so the year only shows if not the current year is in the dataset
+			$is_current_year = date('Y', $date_start) === date('Y');
+			// if date_start and date_end are not in the same year, add Y or y to the php_pretty_date_format
+			$php_pretty_date_format .= $is_current_year ? '' : ' y';
+
+			return [
+				'interval' => $interval,
+				'interval_in_seconds' => $interval_in_seconds,
+				'nr_of_intervals' => $nr_of_intervals,
+				'sql_date_format' => $sql_date_format,
+				'php_date_format' => $php_date_format,
+				'php_pretty_date_format' => $php_pretty_date_format,
+			];
+		}
+
+
 		public function get_insights_data( $args = array() ) {
+			global $wpdb;
 			$defaults      = array(
 				'date_start' => 0,
 				'date_end'   => 0,
@@ -308,63 +357,74 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$args          = wp_parse_args( $args, $defaults );
 			$metrics       = $this->sanitize_metrics( $args['metrics'] );
 			$metric_labels = $this->get_metrics();
+			$filters =  burst_sanitize_filters( $args['filters'] );
 
 			// generate labels for dataset
 			$labels = array();
 			// if not interval is a string and string is not ''
 			$date_start = (int) $args['date_start'];
 			$date_end   = (int) $args['date_end'];
-			$nr_of_days = $this->get_nr_of_periods( 'day', $date_start, $date_end );
+			$date_modifiers = $this->get_insights_date_modifiers($date_start, $date_end);
+			$datasets = [];
 
-			$interval = 'hour';
-
-			// if $nr_of_days > 3 then interval is day
-			// if $nr_of_days > 30 then interval is week
-			// if $nr_of_days > 365 then interval is month
-			if ( $nr_of_days > 3 ) {
-				$interval = 'day';
-			}
-
-			$nr_of_periods = $this->get_nr_of_periods( $interval, $date_start, $date_end );
-
-			$interval_args = array(
-				'hour' => array(
-					'format'     => 'H:i',
-					'in_seconds' => HOUR_IN_SECONDS,
-				),
-				'day'  => array(
-					'format'     => 'd M',
-					'in_seconds' => DAY_IN_SECONDS,
-				),
-			);
-
-			for ( $i = 0; $i < $nr_of_periods; $i ++ ) {
-				$date     = $date_start + $i * $interval_args[ $interval ]['in_seconds'] + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
-				$labels[] = date_i18n( $interval_args[ $interval ]['format'], $date );
-			}
-
-			// get data for each metric
-			$datasets = array();
-			foreach ( $metrics as $metric ) {
-				$title = $metric_labels[ $metric ];
-				// get hits grouped per timeslot. default day
-				$args       = array(
-					'metric'     => $metric,
-					'date_start' => $date_start,
-					'date_end'   => $date_end,
-					'interval'   => $interval,
-					'filters'    => burst_sanitize_filters( $args['filters'] ),
-				);
-				$hits       = $this->get_chart_data_by_metric( $args );
-				$datasets[] = array(
-					'data'            => $hits,
+			// foreach metric
+			foreach ($metrics as $metrics_key => $metric){
+				$datasets[$metrics_key] = array(
+					'data'            => [],
 					'backgroundColor' => $this->get_metric_color( $metric, 'background' ),
 					'borderColor'     => $this->get_metric_color( $metric, 'border' ),
-					'label'           => $title,
+					'label'           => $metric_labels[ $metric ],
 					'fill'            => 'false',
 				);
 			}
 
+
+			$date     = $date_start;
+			for ( $i = 0; $i < $date_modifiers['nr_of_intervals']; $i ++ ) {
+				$date  += $date_modifiers['interval_in_seconds'];
+				$formatted_date = date_i18n( $date_modifiers['php_date_format'], $date );
+				$labels[$formatted_date] = date_i18n( $date_modifiers['php_pretty_date_format'], $date );
+
+				// loop through metrics and assign x to 0, 1 , 2, 3, etc.
+				foreach ($metrics as $metric_key => $metric){
+					$datasets[ $metric_key ]['data'][$formatted_date] = 0;
+				}
+			}
+
+			//$select = $metrics;
+			$select = wp_parse_args([
+				'page_url',
+				'sessions',
+				'pageviews',
+				'visitors',
+				'first_time_visitors',
+				'bounces',
+				'avg_time_on_page',
+			], $metrics);
+
+			$sql = $this->get_sql_table( $date_start, $date_end, $select, $filters, 'period', 'period', '', [],  $date_modifiers );
+			$hits = $wpdb->get_results( $sql, ARRAY_A );
+
+			// match data from db to labels
+			foreach ($hits as $hit) {
+				$period = $hit['period']; // Get the period from the hit
+
+				// Loop through each metric
+				foreach ($metrics as $metric_key => $metric_name) {
+					// Check if the period and the metric exist in the dataset
+					if (isset($datasets[$metric_key]['data'][$period]) && isset($hit[$metric_name])) {
+						// Update the value for the corresponding metric and period
+						$datasets[$metric_key]['data'][$period] = $hit[$metric_name];
+					}
+				}
+			}
+
+			// strip keys from array $labels to make it a simple array and work with ChartJS
+			$labels = array_values( $labels );
+			foreach ($metrics as $metric_key => $metric_name) {
+				// strip keys from array $datasets to make it a simple array
+				$datasets[$metric_key]['data'] = array_values( $datasets[$metric_key]['data'] );
+			}
 			return array(
 				'labels'   => $labels,
 				'datasets' => $datasets,
@@ -379,7 +439,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				'filters'    => array(),
 			);
 			$args                      = wp_parse_args( $args, $defaults );
-			$args['filters']['bounce'] = 0;
 
 			$start      = (int) $args['date_start'];
 			$end        = (int) $args['date_end'];
@@ -388,6 +447,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$end_diff   = $end - $diff;
 
 			$filters = burst_sanitize_filters( $args['filters'] );
+
 			$select  = array( 'visitors', 'pageviews', 'sessions', 'first_time_visitors', 'avg_time_on_page' );
 
 			// current data
@@ -430,7 +490,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				'filters'    => array(),
 			);
 			$args                      = wp_parse_args( $args, $defaults );
-			$args['filters']['bounce'] = 0;
 
 			$start      = (int) $args['date_start'];
 			$end        = (int) $args['date_end'];
@@ -485,14 +544,12 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$sql    = $this->get_sql_table( $start, $end, $select, $filters );
 			$result = $wpdb->get_results( $sql, 'ARRAY_A' );
 
-			return $result[0];
+			return $result[0] ?? array_fill_keys( $select, 0 );
 		}
 
 		private function get_bounces( $start, $end, $filters ) {
 			global $wpdb;
-			$filters['bounce'] = 1;
-			$sql               = $this->get_sql_table( $start, $end, array( 'count' ), $filters );
-
+			$sql = $this->get_sql_table( $start, $end, array( 'bounces' ), $filters );
 			return (int) $wpdb->get_var( $sql );
 		}
 
@@ -517,11 +574,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$start             = (int) $args['date_start'];
 			$end               = (int) $args['date_end'];
 			$filters           = burst_sanitize_filters( $args['filters'] );
-			$filters['bounce'] = 0;
 			$goal_id           = $filters['goal_id'] ?? null;
 			$country_code      = $filters['country_code'] ?? null;
-
-			$from = $this->get_sql_table( $start, $end, array( '*' ), $filters );
 
 			// Conditional JOIN and WHERE based on the presence of goal_id
 			$join_clause = '';
@@ -587,7 +641,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					'count' => 0,
 				),
 			);
-
 			return wp_parse_args( $devices, $default_data );
 		}
 
@@ -605,18 +658,16 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$filters           = burst_sanitize_filters( $args['filters'] );
 			$goal_id           = $filters['goal_id'] ?? null;
 			$country_code      = $filters['country_code'] ?? null;
-			$filters['bounce'] = 0;
 
 			// if string is not '' then add 'AND' to the string
 			$where_clause = $this->get_where_clause_for_filters( $filters );
-			$results      = [];
+			$data      = [];
 
 			// Loop through results and add count to array
 			foreach ( $devices as $device ) {
 				$device_sql = $wpdb->prepare( " device=%s ", $device );
-
 				$common_sql = " FROM {$wpdb->prefix}burst_statistics AS stats ";
-				$where_sql  = $wpdb->prepare( " WHERE time > %d AND time < %d AND device IS NOT NULL AND device <> '' $where_clause", $start, $end, $filters['bounce'] );
+				$where_sql  = $wpdb->prepare( " WHERE time > %d AND time < %d AND device IS NOT NULL AND device <> '' $where_clause", $start, $end );
 
 				// Conditional JOIN and WHERE based on the presence of goal_id
 				if ( $goal_id !== null ) {
@@ -629,18 +680,13 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					$where_sql  .= $wpdb->prepare( " AND sessions.country_code = %s ", $country_code );
 				}
 
+				// Query for browser and OS
+				$sql     = $wpdb->prepare( "SELECT browser, platform FROM (SELECT browser, platform, COUNT(*) AS count, device $common_sql $where_sql AND browser IS NOT NULL GROUP BY browser, platform, device ) AS grouped_devices WHERE $device_sql ORDER BY count DESC LIMIT 1", '' );
+				$results = $wpdb->get_row( $sql , ARRAY_A);
 
-				// Query for browser
-				$sql     = $wpdb->prepare( "SELECT browser FROM (SELECT browser, COUNT(*) AS count, device $common_sql $where_sql AND browser IS NOT NULL GROUP BY browser, device ) AS grouped_devices WHERE $device_sql ORDER BY count DESC LIMIT 1", '' );
-				$browser = $wpdb->get_var( $sql );
-
-				// Query for OS
-				$sql = $wpdb->prepare( "SELECT platform FROM (SELECT platform, COUNT(*) AS count, device $common_sql $where_sql AND platform IS NOT NULL GROUP BY platform, device ) AS grouped_devices WHERE $device_sql ORDER BY count DESC LIMIT 1", '' );
-				$os  = $wpdb->get_var( $sql );
-
-				$results[ $device ] = [
-					'browser' => $browser,
-					'os'      => $os,
+				$data[ $device ] = [
+					'browser' => $results['browser'] ?? false,
+					'os'      => $results['platform'] ?? false,
 				];
 
 			}
@@ -665,7 +711,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				),
 			);
 
-			return wp_parse_args( $results, $default_data );
+			return wp_parse_args( $data, $default_data );
 		}
 
 		/**
@@ -719,103 +765,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				);
 			}
 
-			// if one of the metrics is a bounce remove and do a separate query
-			if ( in_array( 'bounces', $metrics ) ) {
-				$filters['bounce'] = 1;
-				$sql               = $this->get_sql_table(
-					$start,
-					$end,
-					array(
-						'page_url',
-						'bounces',
-					),
-					$filters,
-					'page_url'
-				);
-				$data_bounces      = $wpdb->get_results( $sql, ARRAY_A );
-				$sql_metrics       = array_diff( $sql_metrics, array( 'bounces' ) );
-			}
-
-			if ( in_array( 'bounce_rate', $metrics ) ) {
-				unset( $filters['bounce'] );
-				$sql              = $this->get_sql_table(
-					$start,
-					$end,
-					array(
-						'page_url',
-						'bounce_rate',
-					),
-					$filters,
-					'page_url'
-				);
-				$data_bounce_rate = $wpdb->get_results( $sql, ARRAY_A );
-				$sql_metrics      = array_diff( $sql_metrics, array( 'bounces' ) );
-			}
-
-			if ( $metrics !== array( 'bounces' ) ) {
-				$filters['bounce'] = 0;
-				// get data for each metric
-				$first_metric = $sql_metrics[0] . ' DESC';
-
-				$sql  = $this->get_sql_table( $start, $end, $sql_metrics, $filters, 'page_url', $first_metric );
-				$data = $wpdb->get_results( $sql, ARRAY_A );
-			}
-			if ( ( isset( $data_bounces, $data ) && in_array( 'bounces', $metrics ) ) || ( isset( $data_bounce_rate, $data ) && in_array( 'bounce_rate', $metrics ) ) ) {
-				// Initialize an associative array to hold the merged data
-				$merged_data = array();
-
-				// Prepare a template row with all metrics set to 0
-				$template_row = array();
-				foreach ( $metrics as $metric ) {
-					$template_row[ $metric ] = 0;
-				}
-
-				// First, populate $merged_data with the rows from $data
-				foreach ( $data as $row ) {
-					$key = $row['page_url'];
-					// Initialize with a template row and then update the metrics from $data
-					$merged_data[ $key ] = array_merge( $template_row, $row );
-				}
-
-				if ( isset( $data_bounces ) ) {
-
-					// Now, update the $merged_data with the rows from $data_bounces
-					foreach ( $data_bounces as $bounce_row ) {
-						$key = $bounce_row['page_url'];
-
-						// If the key already exists in $merged_data, update it
-						if ( isset( $merged_data[ $key ] ) ) {
-							$merged_data[ $key ]['bounces'] = (int) $bounce_row['bounces'];
-						} else {
-							// If the key doesn't exist in $merged_data, add a new entry based on the template row
-							$new_row             = $template_row;
-							$new_row['page_url'] = $key;
-							$new_row['bounces']  = (int) $bounce_row['bounces'];
-							$merged_data[ $key ] = $new_row;
-						}
-					}
-				}
-				if ( isset( $data_bounce_rate ) ) {
-					foreach ( $data_bounce_rate as $bounce_rate_row ) {
-						$key = $bounce_rate_row['page_url'];
-
-						// If the key already exists in $merged_data, update it
-						if ( isset( $merged_data[ $key ] ) ) {
-							$merged_data[ $key ]['bounce_rate'] = (float) $bounce_rate_row['bounce_rate'];
-						} else {
-							// If the key doesn't exist in $merged_data, add a new entry based on the template row
-							$new_row                = $template_row;
-							$new_row['page_url']    = $key;
-							$new_row['bounce_rate'] = (float) $bounce_rate_row['bounce_rate'];
-							$merged_data[ $key ]    = $new_row;
-						}
-					}
-				}
-
-				// Convert the merged associative array back to a zero-indexed array
-				$data = array_values( $merged_data );
-
-			}
+			$sql  = $this->get_sql_table( $start, $end, $sql_metrics, $filters, 'page_url', '1 DESC' );
+			$data = $wpdb->get_results( $sql, ARRAY_A );
 
 			if ( isset( $args['filters']['goal_id'] ) && $args['filters']['goal_id'] > 0 ) {
 				$metrics = array( 1 => 'conversions' );
@@ -827,6 +778,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				'metrics' => $metrics,
 			);
 		}
+
 
 		public function get_referrers_data(
 			$args = array()
@@ -841,7 +793,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			);
 			$args              = wp_parse_args( $args, $defaults );
 			$filters           = burst_sanitize_filters( $args['filters'] );
-			$filters['bounce'] = 0;
 
 			$columns = array(
 				array(
@@ -864,7 +815,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$remove   = array( 'http://www.', 'https://www.', 'http://', 'https://' );
 			$site_url = str_replace( $remove, '', site_url() );
 			$sql      = $this->get_sql_table( $start, $end, array( 'count', 'referrer' ), $filters );
-			$sql      .= "AND referrer NOT LIKE '%$site_url%' GROUP BY referrer";
+			$sql      .= "AND referrer NOT LIKE '%$site_url%' GROUP BY referrer ORDER BY 1 DESC";
 
 			$data = $wpdb->get_results( $sql, ARRAY_A );
 
@@ -913,130 +864,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$gmt_offset_seconds = (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
 
 			return $utc_time - $gmt_offset_seconds;
-		}
-
-		/**
-		 * Get chart data by metric
-		 *
-		 * @param array $args
-		 *
-		 * @return array
-		 */
-
-		public function get_chart_data_by_metric(
-			$args = array()
-		) {
-			global $wpdb;
-			$default_args = array(
-				'metric'     => 'visitors',
-				'date_start' => 0,
-				'date_end'   => 0,
-				'interval'   => 'day',
-			);
-			$args         = wp_parse_args( $args, $default_args );
-			$metric       = $this->sanitize_metric( $args['metric'] );
-			$interval     = $this->sanitize_interval( $args['interval'] );
-			$start        = (int) $args['date_start'];
-			$end          = (int) $args['date_end'];
-			$filters      = burst_sanitize_filters( $args['filters'] ) ?? array();
-
-			// first we get the data from the db
-			if ( $interval === 'hour' ) {
-				$sqlformat = '%Y-%m-%d %H:00';
-				$format    = 'Y-m-d H:00';
-			} else {
-				$sqlformat = '%Y-%m-%d';
-				$format    = 'Y-m-d';
-			}
-
-			$offset = (float) get_option( 'gmt_offset' );
-
-			// Calculate the number of hours and minutes
-			$hours   = floor( $offset );
-			$minutes = ( $offset - $hours ) * 60;
-
-			// Format the offset as a string
-			$timezone = sprintf( '%+03d:%02d', $hours, $minutes );
-
-			$sql_time     = $wpdb->get_var( 'SELECT NOW()' );
-			$sql_time_utc = $wpdb->get_var( 'SELECT UTC_TIMESTAMP()' );
-
-			$time_diff = strtotime( $sql_time ) - strtotime( $sql_time_utc );
-			$hours     = floor( $time_diff / 3600 );
-			$minutes   = floor( ( $time_diff / 60 ) % 60 );
-
-			$server_timezone = sprintf( '%s%02d:%02d', ( $time_diff >= 0 ? '+' : '-' ), abs( $hours ), abs( $minutes ) );
-
-			$sqlperiod         = "DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), '$server_timezone', '" . $timezone . "'), '" . $sqlformat . "')"; // this is the sql format for the period
-			$filters['bounce'] = 0;
-
-			switch ( $metric ) {
-				case 'bounces':
-					$select            = 'count(*)';
-					$filters['bounce'] = 1;
-					unset( $filters['goal_id'] );
-					$table = $this->get_sql_table( $start, $end, array( '*' ), $filters );
-					$sql   = "SELECT $select as hit_count,
-                        $sqlperiod as period
-                        FROM ($table) as stats
-                        GROUP BY period order by period";
-					break;
-				case 'conversions':
-					$join              = [
-						[
-							'table' => 'burst_goal_statistics AS goals',
-							'on'    => 'stats.ID = goals.statistic_id',
-							'type'  => 'INNER',
-						]
-					];
-					$filters['bounce'] = 0;
-					//checkthis
-					$sql               = $this->get_sql_table( $start, $end, array( '*' ), $filters, 'period', 'period', '', $join );
-					$select            = $wpdb->prepare(
-						'COUNT(*) AS hit_count, DATE_FORMAT(CONVERT_TZ(FROM_UNIXTIME(time), %s, %s), %s) AS period',
-						$server_timezone,
-						$timezone,
-						$sqlformat
-					);
-					$sql               = str_replace( '*', $select, $sql );
-					break;
-				default:
-					unset( $filters['goal_id'] );
-					$filters['bounce'] = 0;
-					$select            = $this->get_sql_select_for_metric( $metric );
-					$table             = $this->get_sql_table( $start, $end, array( '*' ), $filters );
-					$sql               = "SELECT $select as hit_count,
-                        $sqlperiod as period
-                        FROM ($table) as stats
-                        GROUP BY period order by period";
-					break;
-
-			}
-
-			$results = $wpdb->get_results( $sql );
-
-			// match results to periods
-			$nr_of_periods = $this->get_nr_of_periods( $interval, $start, $end );
-			$data          = array();
-
-			// count back from end until zero periods. eg hours or days
-			for ( $i = $nr_of_periods - 1; $i >= 0; -- $i ) {
-				$period = strtotime( "-$i $interval", $end + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
-				$period = date( $format, $period );
-				$found  = false;
-				foreach ( $results as $result ) {
-					if ( $result->period == $period ) {
-						$data[] = $result->hit_count;
-						$found  = true;
-						break;
-					}
-				}
-				if ( ! $found ) {
-					$data[] = 0;
-				}
-			}
-
-			return $data;
 		}
 
 		/**
@@ -1121,8 +948,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 						'sessions',
 						'pageviews',
 						'avg_time_on_page',
-					),
-					array( 'bounce' => 0 )
+					)
 				)
 			);
 			$prev_data = $wpdb->get_results(
@@ -1134,8 +960,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 						'sessions',
 						'pageviews',
 						'avg_time_on_page',
-					),
-					array( 'bounce' => 0 )
+					)
 				)
 			);
 
@@ -1165,7 +990,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 						'pageviews',
 						'referrer',
 					),
-					array( 'bounce' => 0 ),
 					'referrer',
 					'pageviews DESC',
 					1
@@ -1189,7 +1013,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 						'pageviews',
 						'page_url',
 					),
-					array( 'bounce' => 0 ),
 					'page_url',
 					'pageviews DESC',
 					1
@@ -1292,12 +1115,51 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		}
 
 		/**
+		 * Get query for statistics
+		 *
+		 * @param int $start
+		 * @param int $end
+		 * @param array $select
+		 * @param array $filters
+		 * @param string $group_by
+		 * @param $order_by
+		 * @param $limit
+		 * @param $joins
+		 * @param $raw
+		 *
+		 * @return string|null
+		 */
+		public function get_sql_table( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [], $date_modifiers = false ) {
+
+			$raw = isset($date_modifiers['sql_date_format']) && strpos($date_modifiers['sql_date_format'], '%H')!==false;
+
+			if ( !$raw && BURST()->summary->upgrade_completed() &&  BURST()->summary->is_summary_data($select, $filters)  ) {
+				error_log("generating summary sql");
+				$sql = BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
+				error_log("summary sql: $sql");
+				return $sql;
+			}
+			$sql = $this->get_sql_table_raw($start, $end, $select, $filters, $group_by, $order_by, $limit, $joins);
+			if ( $date_modifiers ) {
+				$sql = str_replace( 'SELECT', "SELECT DATE_FORMAT(FROM_UNIXTIME(time), '{$date_modifiers['sql_date_format']}') as period,", $sql );
+			}
+			error_log("non summary sql $sql");
+			return $sql;
+		}
+
+		/**
 		 * Function to get the SQL query to exclude bounces from query's
 		 *
 		 * @return string
 		 */
-		function get_sql_table( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [] ) {
+		public function get_sql_table_raw( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [] ) {
 			global $wpdb;
+
+			$filters = esc_sql( $filters);
+			$select = esc_sql( $select);
+			$group_by = esc_sql( $group_by);
+			$order_by = esc_sql( $order_by);
+			$limit = !empty($limit) ? (int) $limit : '';
 			$select     = $this->get_sql_select_for_metrics( $select );
 			$table_name = $wpdb->prefix . 'burst_statistics';
 
@@ -1356,6 +1218,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 
 		function get_sql_select_for_metric( $metric ) {
+			$exclude_bounces = apply_filters( 'burst_exclude_bounces', 1 );
+
 			global $wpdb;
 			// if metric starts with  'count(' and ends with ')', then it's a custom metric
 			// so we sanitize it and return it
@@ -1367,23 +1231,25 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			switch ( $metric ) {
 				case 'pageviews':
 				case 'count':
+					$sql = $exclude_bounces ? 'SUM( CASE WHEN bounce = 0 THEN 1 ELSE 0 END )' : 'COUNT( stats.ID )';
+					break;
 				case 'bounces':
-					$sql = 'COUNT(*)';
+					$sql = 'SUM( CASE WHEN bounce = 1 THEN 1 ELSE 0 END )';
 					break;
 				case 'bounce_rate':
-					$sql = 'SUM(CASE WHEN stats.bounce = 1 THEN 1 ELSE 0 END) / COUNT( DISTINCT( stats.session_id ) ) * 100';
+					$sql = 'SUM( stats.bounce ) / COUNT( DISTINCT stats.session_id ) * 100';
 					break;
 				case 'sessions':
-					$sql = 'COUNT( DISTINCT( stats.session_id ) )';
+					$sql = $exclude_bounces ? 'COUNT( DISTINCT CASE WHEN bounce = 0 THEN stats.session_id END )' : 'COUNT( DISTINCT stats.session_id )';
 					break;
 				case 'avg_time_on_page':
-					$sql = 'AVG( stats.time_on_page )';
+					$sql = $exclude_bounces ? 'AVG( CASE WHEN bounce = 0 THEN stats.time_on_page END )' : 'AVG( stats.time_on_page )';
 					break;
 				case 'first_time_visitors':
-					$sql = 'SUM(CASE WHEN stats.first_time_visit = 1 THEN 1 ELSE 0 END)';
+					$sql = $exclude_bounces ? ' SUM( CASE WHEN bounce = 0 THEN stats.first_time_visit ELSE 0 END )' : 'SUM( stats.first_time_visit )';
 					break;
 				case 'visitors':
-					$sql = 'COUNT(DISTINCT(stats.uid))';
+					$sql = $exclude_bounces ? 'COUNT(DISTINCT CASE WHEN bounce = 0 THEN stats.uid END)' : 'COUNT(DISTINCT stats.uid)';
 					break;
 				case 'page_url':
 					$sql = 'stats.page_url';
@@ -1417,6 +1283,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @return string
 		 */
 		function get_sql_select_for_metrics( $metrics ) {
+			$metrics = esc_sql( $metrics);
 			$select = '';
 			$count  = count( $metrics );
 			$i      = 1;
@@ -1597,15 +1464,35 @@ function burst_install_statistics_table() {
             `first_time_visit` int(1),
             `bounce` int(1) DEFAULT 1,
               PRIMARY KEY  (ID),
-              KEY `time_index` (time),
-              KEY `bounce_index` (bounce)
+              INDEX time_index (time),
+              INDEX bounce_index (bounce),
+              INDEX page_url_index (page_url),
+              INDEX session_id_index (session_id),
+              INDEX time_page_url_index (`time`, `page_url`)
             ) $charset_collate;";
 
-		// uid or session id also as index?
-		/**
-		 * We use b-tree index as it can be used for < or > operations, which is not possible for HASH
-		 */
 		dbDelta( $sql );
+
+		$table_name = $wpdb->prefix . 'burst_summary';
+		$sql        = "CREATE TABLE $table_name (
+			`ID` int(11) NOT NULL AUTO_INCREMENT ,
+            `date` DATE NOT NULL,
+            `page_url` varchar(255) NOT NULL,
+            `sessions` int(11) NOT NULL,
+            `visitors` int(11) NOT NULL,
+            `first_time_visitors` int(11) NOT NULL,
+            `pageviews` int(11) NOT NULL,
+            `bounces` int(11) NOT NULL,
+            `avg_time_on_page` int(11) NOT NULL,
+            `completed` int(11) NOT NULL,
+            UNIQUE KEY unique_date_page_url (date, page_url),
+            INDEX page_url_date_index (page_url, date),
+            INDEX date_index (date),
+              PRIMARY KEY  (ID)
+            ) $charset_collate;";
+
+		dbDelta( $sql );
+
 		update_option( 'burst_stats_db_version', burst_version );
 	}
 }

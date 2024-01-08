@@ -11,6 +11,11 @@ import Icon from '../../../../settings/src/utils/Icon';
 import {format} from 'date-fns';
 import {__} from '@wordpress/i18n';
 import {useQueries} from '@tanstack/react-query';
+import {
+  getLocalStorage,
+  setLocalStorage,
+} from '../../../../settings/src/utils/api';
+
 
 /**
  * Lazy load everything to keep light weight.
@@ -30,7 +35,7 @@ function selectVisitorIcon(value) {
 }
 
 const DashboardWidget = () => {
-  const [range, setRange] = useState('last-7-days');
+  const [range, setRange] = useState(getLocalStorage('widget_date_range', 'last-7-days'));
   useEffect(() => {
     burst_settings.json_translations.forEach((translationsString) => {
       let translations = JSON.parse(translationsString);
@@ -43,6 +48,7 @@ const DashboardWidget = () => {
 
   // This function would be triggered when the user selects a new range.
   const handleRangeSelect = (rangeKey) => {
+    setLocalStorage('widget_date_range', rangeKey);
     setRange(rangeKey);
   };
 

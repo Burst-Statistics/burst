@@ -73,6 +73,11 @@ function burst_check_upgrade() {
 		}
 	}
 
+	if ( $prev_version
+	     && version_compare( $prev_version, '1.5.4', '<' ) ) {
+		update_option( 'burst_db_upgrade_summary_table', true, false);
+	}
+
 	do_action( 'burst_upgrade', $prev_version );
 	update_option( 'burst-current-version', burst_version, false );
 }

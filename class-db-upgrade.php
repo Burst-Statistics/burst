@@ -37,6 +37,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 					break;
 				}
 			}
+			error_log($do_upgrade);
 			// only one upgrade at a time
 			if ( $do_upgrade === 'bounces' ) {
 				$this->upgrade_bounces();
@@ -56,6 +57,9 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $do_upgrade === 'strip_domain_names_from_entire_page_url' ) {
 				$this->upgrade_strip_domain_names_from_entire_page_url();
 			}
+			if ( $do_upgrade === 'summary_table' ) {
+				BURST()->summary->upgrade_summary_table_alltime();
+			}
 		}
 
 		/**
@@ -72,6 +76,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 				'drop_user_agent',
 				'empty_referrer_when_current_domain',
 				'strip_domain_names_from_entire_page_url',
+				'summary_table'
 			] );
 		}
 

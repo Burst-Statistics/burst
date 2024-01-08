@@ -205,7 +205,9 @@ function burst_install_goal_statistics_table() {
 			`ID` int(11) NOT NULL AUTO_INCREMENT,
 			`statistic_id` int(11) NOT NULL,
             `goal_id` int(11) NOT NULL,
-              PRIMARY KEY  (ID)                
+              PRIMARY KEY  (ID),
+              KEY `statistic_id_index` (statistic_id),
+              KEY `goal_id_index` (goal_id)
             ) $charset_collate;";
 		/**
 		 * We use b-tree index as it can be used for < or > operations, which is not possible for HASH

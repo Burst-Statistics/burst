@@ -31,12 +31,12 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 	function burst_track_hit( $data ): string {
 		global $wpdb;
 		$user_agent_data = isset( $data['user_agent'] ) ? burst_get_user_agent_data( $data['user_agent'] ) : array(
-			'browser'  => '',
-			'browser_version'  => '',
-			'platform' => '',
-			'device'   => '',
+			'browser'         => '',
+			'browser_version' => '',
+			'platform'        => '',
+			'device'          => '',
 		);
-		$defaults        = array(
+		$defaults = array(
 			'url'               => null,
 			'page_id'           => null,
 			'time'              => null,
@@ -48,8 +48,8 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			'time_on_page'      => null,
 			'completed_goals'   => null,
 		);
-		$data            = wp_parse_args( $data, $defaults );
-		$data['completed_goals']   = burst_sanitize_completed_goal_ids( $data['completed_goals'] );
+		$data     = wp_parse_args( $data, $defaults );
+		$data['completed_goals'] = burst_sanitize_completed_goal_ids( $data['completed_goals'] );
 
 		// update array
 		$arr                      = array();
@@ -59,6 +59,9 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		$arr['uid']               = burst_sanitize_uid( $data['uid'] ); // required
 		$arr['fingerprint']       = burst_sanitize_fingerprint( $data['fingerprint'] );
 		$arr['referrer']          = burst_sanitize_referrer( $data['referrer_url'] );
+		if ( $arr['referrer'] === 'spammer' ) {
+			return 'referrer is spam';
+		}
 		$arr['browser']           = $user_agent_data['browser']; // already sanitized
 		$arr['browser_version']   = $user_agent_data['browser_version']; // already sanitized
 		$arr['platform']          = $user_agent_data['platform']; // already sanitized
@@ -70,8 +73,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		// if user agent is not set then this is an update hit
 		$is_update_hit = empty( $data['user_agent'] );
-		$arr = apply_filters( 'burst_before_track_hit', $arr );
-
+		$arr           = apply_filters( 'burst_before_track_hit', $arr );
 		$session_arr = array(
 			'last_visited_url' => $arr['page_url'],
 			'goal_id'          => false,
@@ -80,7 +82,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		unset( $arr['country_code'] );
 		// update burst_sessions table
 		// Get the last record with the same uid within 30 minutes. If it exists, use session_id. If not, create a new session.
-		if ($is_update_hit) { // if update hit, make sure that the URL matches.
+		if ( $is_update_hit ) { // if update hit, make sure that the URL matches.
 			$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'], $arr['page_url'] );
 		} else {
 			$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'] );
@@ -103,7 +105,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			burst_update_session( $arr['session_id'], $session_arr );
 		} else if ( $last_statistic ) {
 			$session_arr['first_visited_url'] = $arr['page_url'];
-			$arr['session_id'] = burst_create_session( $session_arr );
+			$arr['session_id']                = burst_create_session( $session_arr );
 		}
 
 		// if there is a fingerprint use that instead of uid
@@ -147,10 +149,9 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		if ( array_key_exists( 'ID', $arr ) && $arr['ID'] > 0 ) {
 			$statistic_id = $arr['ID'];
-		} else  {
+		} else {
 			$statistic_id = $insert_id ?? 0;
 		}
-
 		if ( $statistic_id > 0 ) {
 			$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr['page_url'] );
 			// if $arr['completed_goals'] is not an empty array, update burst_goals table
@@ -242,7 +243,7 @@ if ( ! function_exists( 'burst_sanitize_entire_page_url' ) ) {
 
 		$url = parse_url( esc_url_raw( $sanitized_url ) );
 		if ( isset( $url['host'] ) ) {
-			return trailingslashit( $url['path'] ) ;
+			return trailingslashit( $url['path'] );
 		}
 
 		return false;
@@ -349,15 +350,16 @@ if ( ! function_exists( 'burst_sanitize_referrer' ) ) {
 			define( 'burst_path', plugin_dir_path( __FILE__ ) . '../' );
 		}
 		$referrer      = filter_var( $referrer, FILTER_SANITIZE_URL );
-		$referrer_host  = parse_url( $referrer, PHP_URL_HOST );
-		$current_host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];
+		$referrer_host = parse_url( $referrer, PHP_URL_HOST );
+		$current_host  = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];
 		// don't track if referrer is the same as current host
 		// if referrer_url starts with current_host, then it is not a referrer
-		if ( empty($referrer_host) || strpos( $referrer_host, $current_host ) === 0 ) {
+		if ( empty( $referrer_host ) || strpos( $referrer_host, $current_host ) === 0 ) {
 			return null;
 		}
 
 		$ref_spam_list = file( burst_path . 'helpers/referrer-spam-list/spammers.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+		$ref_spam_list = apply_filters( 'burst_referrer_spam_list', $ref_spam_list );
 		if ( array_search( $referrer_host, $ref_spam_list ) ) {
 			return 'spammer';
 		}
@@ -537,10 +539,10 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 	 */
 	function burst_get_user_agent_data( $user_agent ): array {
 		$defaults = array(
-			'browser'  => '',
-			'browser_version'  => '',
-			'platform' => '',
-			'device'   => '',
+			'browser'         => '',
+			'browser_version' => '',
+			'platform'        => '',
+			'device'          => '',
 		);
 		if ( $user_agent == '' ) {
 			return $defaults;
@@ -593,9 +595,9 @@ if ( ! function_exists( 'burst_get_user_agent_data' ) ) {
 
 		// change version to browser_version
 		$ua['browser_version'] = $ua['version'];
-		unset($ua['version']);
+		unset( $ua['version'] );
 
-		return wp_parse_args($ua, $defaults);
+		return wp_parse_args( $ua, $defaults );
 	}
 }
 
@@ -645,8 +647,8 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 		if ( ! $search_uid ) {
 			return $default_data;
 		}
-		$where = $page_url ? $wpdb->prepare(" AND page_url = %s", sanitize_text_field($page_url) ) : '';
-		$data = $wpdb->get_row(
+		$where = $page_url ? $wpdb->prepare( " AND page_url = %s", $page_url ) : '';
+		$data  = $wpdb->get_row(
 			$wpdb->prepare(
 				"select ID, session_id, page_url, time_on_page, bounce
 							from {$wpdb->prefix}burst_statistics
@@ -766,16 +768,23 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 		global $wpdb;
 		// do not create goal statistic if statistic_id or goal_id is not set
 		if ( ! isset( $data['statistic_id'] ) || ! isset( $data['goal_id'] ) ) {
+			error_log( 'Burst Statistics: Goal statistic not created because statistic_id or goal_id is not set' );
+
 			return;
 		}
-
 		// first get row with same statistics_id and goal_id
-		$goal_statistic = $wpdb->get_var(
-			$wpdb->prepare( "select count(*)
-							from {$wpdb->prefix}burst_goal_statistics
-		                    where statistic_id = %s AND goal_id = %s" ), intval( $data['statistic_id'] ), intval( $data['goal_id'] ) );
+		// check if goals already exists
+		$goal_exists = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT 1 FROM {$wpdb->prefix}burst_goal_statistics WHERE statistic_id = %d AND goal_id = %d LIMIT 1",
+				$data['statistic_id'],
+				$data['goal_id']
+			)
+		);
+
 		// goal already exists
-		if ( $goal_statistic > 0 ) {
+		if ( $goal_exists ) {
+			error_log( 'Burst Statistics: Goal statistic already exists' );
 			return;
 		}
 		$wpdb->insert(

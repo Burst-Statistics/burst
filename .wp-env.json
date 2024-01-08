@@ -2,7 +2,8 @@
   "core": "WordPress/WordPress",
   "plugins": [
     ".",
-    "https://downloads.wordpress.org/plugin/query-monitor.zip"
+    "https://downloads.wordpress.org/plugin/query-monitor.zip",
+    "https://downloads.wordpress.org/plugin/wp-debugging.zip"
   ],
   "port": 8888,
   "config": {
