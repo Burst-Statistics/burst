@@ -768,7 +768,9 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 		global $wpdb;
 		// do not create goal statistic if statistic_id or goal_id is not set
 		if ( ! isset( $data['statistic_id'] ) || ! isset( $data['goal_id'] ) ) {
-			error_log( 'Burst Statistics: Goal statistic not created because statistic_id or goal_id is not set' );
+			if ( WP_DEBUG ) {
+				error_log( 'Burst Statistics: Goal statistic not created because statistic_id or goal_id is not set' );
+			}
 
 			return;
 		}
@@ -784,7 +786,9 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 
 		// goal already exists
 		if ( $goal_exists ) {
-			error_log( 'Burst Statistics: Goal statistic already exists' );
+			if ( WP_DEBUG ) {
+				error_log( 'Burst Statistics: Goal statistic already exists' );
+			}
 			return;
 		}
 		$wpdb->insert(

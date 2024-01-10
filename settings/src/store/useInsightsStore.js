@@ -9,7 +9,10 @@ export const useInsightsStore = create((set, get) => ({
     if (get().loaded) {
       return get().metrics;
     }
-    const metrics = getLocalStorage('insights_metrics', ['visitors', 'pageviews']);
+    let metrics = getLocalStorage('insights_metrics', ['visitors', 'pageviews']);
+    //temporarily remove conversions from localstorage until the query has been fixed
+    metrics = metrics.filter(metric => metric !== 'conversions');
+
     set({ metrics, loaded: true });
     return metrics;
   },

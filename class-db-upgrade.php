@@ -37,7 +37,6 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 					break;
 				}
 			}
-			error_log($do_upgrade);
 			// only one upgrade at a time
 			if ( $do_upgrade === 'bounces' ) {
 				$this->upgrade_bounces();

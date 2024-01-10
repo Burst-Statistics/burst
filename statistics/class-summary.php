@@ -88,7 +88,6 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		public function upgrade_summary_table_alltime(){
 
 			global $wpdb;
-			error_log("run upgrade summary table alltime");
 			$first_statistics_date_unix = $wpdb->get_var("select min(time) from {$wpdb->prefix}burst_statistics");
 			//convert unix to date and back to unix, to ensure that the date is at the start of the day, for comparison purposes
 			$first_statistics_date = date('Y-m-d', $first_statistics_date_unix);
@@ -101,8 +100,6 @@ if ( ! class_exists( 'burst_summary' ) ) {
 			//if the offset is negative, set it to 0
 			$max_days_offset = $max_days_offset < 0 ? 0 : $max_days_offset;
 			$current_days_offset = get_option('burst_summary_table_upgrade_days_offset', 0);
-			error_log("max days offset $max_days_offset");
-			error_log("processed dyas offset ".get_option('burst_summary_table_upgrade_days_offset'));
 
 			//check if the oldest summary date is more recent than the oldest statistics date
 			if ( $max_days_offset > $current_days_offset ){
@@ -125,7 +122,6 @@ if ( ! class_exists( 'burst_summary' ) ) {
 				}
 				$end = microtime( true );
 				$passed = $end - $start;
-				error_log("upgrade for summary tables, $days_offset days completed, time $passed seconds ");
 				update_option('burst_summary_table_upgrade_days_offset', $days_offset, false);
 			} else {
 				//completed

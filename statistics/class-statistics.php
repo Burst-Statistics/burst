@@ -391,16 +391,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				}
 			}
 
-			//$select = $metrics;
-			$select = wp_parse_args([
-				'page_url',
-				'sessions',
-				'pageviews',
-				'visitors',
-				'first_time_visitors',
-				'bounces',
-				'avg_time_on_page',
-			], $metrics);
+			$select = $this->sanitize_metrics($metrics);
 
 			$sql = $this->get_sql_table( $date_start, $date_end, $select, $filters, 'period', 'period', '', [],  $date_modifiers );
 			$hits = $wpdb->get_results( $sql, ARRAY_A );
@@ -1130,20 +1121,15 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @return string|null
 		 */
 		public function get_sql_table( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [], $date_modifiers = false ) {
-
 			$raw = isset($date_modifiers['sql_date_format']) && strpos($date_modifiers['sql_date_format'], '%H')!==false;
 
 			if ( !$raw && BURST()->summary->upgrade_completed() &&  BURST()->summary->is_summary_data($select, $filters)  ) {
-				error_log("generating summary sql");
-				$sql = BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
-				error_log("summary sql: $sql");
-				return $sql;
+				return BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
 			}
 			$sql = $this->get_sql_table_raw($start, $end, $select, $filters, $group_by, $order_by, $limit, $joins);
 			if ( $date_modifiers ) {
 				$sql = str_replace( 'SELECT', "SELECT DATE_FORMAT(FROM_UNIXTIME(time), '{$date_modifiers['sql_date_format']}') as period,", $sql );
 			}
-			error_log("non summary sql $sql");
 			return $sql;
 		}
 
@@ -1154,7 +1140,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 */
 		public function get_sql_table_raw( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [] ) {
 			global $wpdb;
-
 			$filters = esc_sql( $filters);
 			$select = esc_sql( $select);
 			$group_by = esc_sql( $group_by);
@@ -1162,16 +1147,12 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$limit = !empty($limit) ? (int) $limit : '';
 			$select     = $this->get_sql_select_for_metrics( $select );
 			$table_name = $wpdb->prefix . 'burst_statistics';
-
 			$where = $this->get_where_clause_for_filters( $filters );
-
-
 			$joined_tables = [];
 			// loop through joins and add 'table' to joined tables array
 			foreach ( $joins as $join ) {
 				$joined_tables[] = $join['table'];
 			}
-
 			// if goal id use join, make sure we don't join the same table twice, but do add the where clause
 			if ( isset( $filters['goal_id'] ) ) {
 				if ( ! in_array( 'burst_goal_statistics AS goals', $joined_tables, true ) ) {
