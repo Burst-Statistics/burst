@@ -43,12 +43,12 @@ if ( ! class_exists( 'BURST' ) ) {
 		public $admin;
 		public $settings;
 		public $frontend;
-		public $wizard;
 		public $review;
 		public $config;
 		public $notices;
-		public $db_upgrade;
+		public $summary;
 		public $dashboard_widget;
+		public $db_upgrade;
 
 		private function __construct() {
 		}
@@ -70,6 +70,7 @@ if ( ! class_exists( 'BURST' ) ) {
 
 				if ( burst_admin_logged_in() ) {
 					self::$instance->admin      = new burst_admin();
+					self::$instance->summary    = new burst_summary();
 					self::$instance->review     = new burst_review();
 					self::$instance->notices    = new burst_notices();
 					self::$instance->db_upgrade = new burst_db_upgrade();
@@ -141,6 +142,7 @@ if ( ! class_exists( 'BURST' ) ) {
 
 			if ( burst_admin_logged_in() ) {
 				require_once( burst_path . 'class-admin.php' );
+				require_once( burst_path . 'statistics/class-summary.php' );
 				require_once( burst_path . 'settings/settings.php' );
 				require_once( burst_path . 'class-review.php' );
 				require_once( burst_path . 'class-notices.php' );
