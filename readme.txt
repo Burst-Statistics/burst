@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.4
-Stable tag: 1.5.3
+Stable tag: 1.5.4
 
 Self-hosted and privacy-friendly analytics for Wordpress.
 
@@ -87,6 +87,15 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.5.4 =
+* Improvement: We have added summary tables, which will speed up the dashboard tremendously on large websites. The summary tables are updated every hour.
+* Improvement: We have added some indexes and removed some unused data which speeds up the dashboard and it will reduce the database size quite a bit.
+* Improvement: Save the last used date range in local storage, so when you return the date is the same.
+* Fix: Added more data to delete on uninstall. This will prevent data from being left behind when uninstalling the plugin.
+* Improvement: Updated referrer spam list.
+* Fix: Referer spam would not be filtered out. This has been resolved.
+* Fix: Click goals where an ID was on a parent class, would not be tracked. Now this is checked recursively.
+
 = 1.5.3 =
 * Fix: Fixed error in class-statistics.php
 * Fix: Changed query for post count per page on for logged in users.

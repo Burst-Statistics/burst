@@ -31,7 +31,7 @@ function burst_install_sessions_table() {
             `goal_id` int(11),
             `country_code` varchar(2),
               PRIMARY KEY  (ID),
-              KEY `goal_id_index` (goal_id),
+              KEY `goal_id_index` (goal_id)
             ) $charset_collate;";
 		dbDelta( $sql );
 		update_option( 'burst_sessions_db_version', burst_version );
