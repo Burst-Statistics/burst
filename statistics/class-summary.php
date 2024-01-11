@@ -107,10 +107,12 @@ if ( ! class_exists( 'burst_summary' ) ) {
 					update_option('burst_summary_table_upgrade_days_offset', 0, false);
 				}
 
-				$days_offset = ( (int) get_option('burst_summary_table_upgrade_days_offset') ) + 1;
+				$days_offset = get_option('burst_summary_table_upgrade_days_offset') + 1;
+				$start = microtime( true );
+
 				for ( $i = 0; $i < 30; $i++ ) {
 					$days_offset++;
-					$success = $this->update_summary_table( $days_offset );
+					$success = $this->update_summary_table($days_offset);
 
 					//if failed, set days_offset to one lower, and exit to try later.
 					if ( !$success ) {
@@ -118,6 +120,8 @@ if ( ! class_exists( 'burst_summary' ) ) {
 						return;
 					}
 				}
+				$end = microtime( true );
+				$passed = $end - $start;
 				update_option('burst_summary_table_upgrade_days_offset', $days_offset, false);
 			} else {
 				//completed
