@@ -25,11 +25,11 @@ function burst_install_sessions_table() {
 		$charset_collate = $wpdb->get_charset_collate();
 		$table_name = $wpdb->prefix . 'burst_sessions';
 		$sql        = "CREATE TABLE $table_name (
-			`ID` int(11) NOT NULL AUTO_INCREMENT,
+			`ID` int NOT NULL AUTO_INCREMENT,
 			`first_visited_url` varchar(255) NOT NULL,
 			`last_visited_url` varchar(255) NOT NULL,
-            `goal_id` int(11),
-            `country_code` varchar(2),
+            `goal_id` int,
+            `country_code` char(2),
               PRIMARY KEY  (ID),
               KEY `goal_id_index` (goal_id)
             ) $charset_collate;";
