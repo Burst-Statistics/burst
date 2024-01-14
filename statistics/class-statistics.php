@@ -1124,8 +1124,10 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$raw = isset($date_modifiers['sql_date_format']) && strpos($date_modifiers['sql_date_format'], '%H')!==false;
 
 			if ( !$raw && BURST()->summary->upgrade_completed() &&  BURST()->summary->is_summary_data($select, $filters)  ) {
+				error_log("using summary");
 				return BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
 			}
+			error_log("using raw data");
 			$sql = $this->get_sql_table_raw($start, $end, $select, $filters, $group_by, $order_by, $limit, $joins);
 			if ( $date_modifiers ) {
 				$sql = str_replace( 'SELECT', "SELECT DATE_FORMAT(FROM_UNIXTIME(time), '{$date_modifiers['sql_date_format']}') as period,", $sql );
