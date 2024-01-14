@@ -77,6 +77,10 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 * @return bool
 		 */
 		public function upgrade_completed(){
+			//if option set to never use summary tables, return false for upgrade completed.
+			if ( get_option('burst_dont_use_summary_tables') ) {
+				return false;
+			}
 			return !get_option('burst_db_upgrade_summary_table');
 		}
 
@@ -112,13 +116,13 @@ if ( ! class_exists( 'burst_summary' ) ) {
 				for ( $i = 0; $i < 30; $i++ ) {
 					$days_offset++;
 					$success = $this->update_summary_table( $days_offset );
-
 					//if failed, set days_offset to one lower, and exit to try later.
 					if ( !$success ) {
 						update_option('burst_summary_table_upgrade_days_offset', $days_offset-1, false);
 						return;
 					}
 				}
+
 				update_option('burst_summary_table_upgrade_days_offset', $days_offset, false);
 			} else {
 				//completed

@@ -4,6 +4,11 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
 
+//don't uninstall when upgrading
+if ( get_option( 'burst_run_premium_upgrade' )  ) {
+	exit();
+}
+
 $post_meta = [
 	'burst_total_pageviews_count',
 ];
