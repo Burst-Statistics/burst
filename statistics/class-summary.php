@@ -112,7 +112,6 @@ if ( ! class_exists( 'burst_summary' ) ) {
 				}
 
 				$days_offset = ( (int) get_option('burst_summary_table_upgrade_days_offset') ) + 1;
-
 				for ( $i = 0; $i < 30; $i++ ) {
 					$days_offset++;
 					$success = $this->update_summary_table( $days_offset );

@@ -79,7 +79,9 @@ function burst_check_upgrade() {
 	}
 
 	if ( $prev_version
-	     && version_compare( $prev_version, '1.5.5', '<' ) ) {
+	     && !defined('burst_pro')
+	     && version_compare( $prev_version, '1.5.5', '<' )
+	) {
 		update_option( 'burst_dont_use_summary_tables', true, false);
 	}
 
