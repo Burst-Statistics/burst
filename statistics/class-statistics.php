@@ -1113,25 +1113,30 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @param array $select
 		 * @param array $filters
 		 * @param string $group_by
-		 * @param $order_by
-		 * @param $limit
-		 * @param $joins
-		 * @param $raw
+		 * @param string $order_by
+		 * @param string $limit
+		 * @param array $joins
+		 * @param array|false $date_modifiers
 		 *
 		 * @return string|null
 		 */
 		public function get_sql_table( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [], $date_modifiers = false ) {
-			$raw = isset($date_modifiers['sql_date_format']) && strpos($date_modifiers['sql_date_format'], '%H')!==false;
+			$useSummaryTables = !get_option('burst_dont_use_summary_tables');
+			$raw = $date_modifiers && strpos($date_modifiers['sql_date_format'], '%H') !== false;
 
-			if ( !$raw && BURST()->summary->upgrade_completed() &&  BURST()->summary->is_summary_data($select, $filters)  ) {
+			if ( $useSummaryTables && !$raw && BURST()->summary->upgrade_completed() && BURST()->summary->is_summary_data($select, $filters) ) {
 				return BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
 			}
+
 			$sql = $this->get_sql_table_raw($start, $end, $select, $filters, $group_by, $order_by, $limit, $joins);
+
 			if ( $date_modifiers ) {
 				$sql = str_replace( 'SELECT', "SELECT DATE_FORMAT(FROM_UNIXTIME(time), '{$date_modifiers['sql_date_format']}') as period,", $sql );
 			}
+
 			return $sql;
 		}
+
 
 		/**
 		 * Function to get the SQL query to exclude bounces from query's
