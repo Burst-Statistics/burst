@@ -87,6 +87,10 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.5.5 =
+* Fix: limit summary tables upgrade to new users, and explicit upgraded websites.
+* Fix: Don't delete data on uninstall. Only delete when the 'Delete all data and deactivate' prompt is selected.
+
 = 1.5.4 =
 * Improvement: We have added summary tables, which will speed up the dashboard tremendously on large websites. The summary tables are updated every hour.
 * Improvement: We have added some indexes and removed some unused data which speeds up the dashboard and it will reduce the database size quite a bit.
