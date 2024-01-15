@@ -847,7 +847,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @return int
 		 */
 
-		public function convert_date_to_utc(
+		public function convert_date_to_unix(
 			$time_string
 		): int {
 			$time               = DateTime::createFromFormat( 'Y-m-d H:i:s', $time_string );
@@ -856,6 +856,28 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 			return $utc_time - $gmt_offset_seconds;
 		}
+
+		/**
+		 * convert unix timestamp to date string by gmt offset
+		 *
+		 * @param $unix_timestamp      int
+		 *
+		 * @return string
+		 */
+
+		public function convert_unix_to_date($unix_timestamp): string {
+			// Adjust the Unix timestamp for the GMT offset
+			$gmt_offset_seconds = (int) (get_option('gmt_offset') * HOUR_IN_SECONDS);
+			$adjusted_timestamp = $unix_timestamp + $gmt_offset_seconds;
+
+			// Convert the adjusted timestamp to a DateTime object
+			$time = new DateTime();
+			$time->setTimestamp($adjusted_timestamp);
+
+			// Format the DateTime object to 'Y-m-d' format
+			return $time->format('Y-m-d');
+		}
+
 
 		/**
 		 * @param string $period
@@ -1121,10 +1143,9 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @return string|null
 		 */
 		public function get_sql_table( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [], $date_modifiers = false ) {
-			$useSummaryTables = !get_option('burst_dont_use_summary_tables');
 			$raw = $date_modifiers && strpos($date_modifiers['sql_date_format'], '%H') !== false;
 
-			if ( $useSummaryTables && !$raw && BURST()->summary->upgrade_completed() && BURST()->summary->is_summary_data($select, $filters) ) {
+			if ( !$raw && BURST()->summary->upgrade_completed() && BURST()->summary->is_summary_data($select, $filters) ) {
 				return BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
 			}
 

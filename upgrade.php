@@ -78,12 +78,10 @@ function burst_check_upgrade() {
 		update_option( 'burst_db_upgrade_summary_table', true, false);
 	}
 
-	if ( $prev_version
-	     && !defined('burst_pro')
-	     && version_compare( $prev_version, '1.5.5', '<' )
-	) {
-		update_option( 'burst_dont_use_summary_tables', true, false);
-	}
+//	if ( $prev_version
+//	     && version_compare( $prev_version, '1.5.5', '<' ) ) {
+//		BURST()->summary->restart_update_summary_table_alltime();
+//	}
 
 	do_action( 'burst_upgrade', $prev_version );
 	update_option( 'burst-current-version', burst_version, false );

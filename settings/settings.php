@@ -597,9 +597,9 @@ function burst_get_data( WP_REST_Request $request ) {
 
 	$type = sanitize_title( $request->get_param( 'type' ) );
 	$args = array(
-		'date_start' => BURST()->statistics->convert_date_to_utc( $request->get_param( 'date_start' ) . ' 00:00:00' ),
+		'date_start' => BURST()->statistics->convert_date_to_unix( $request->get_param( 'date_start' ) . ' 00:00:00' ),
 		// add 00:00:00 to date,
-		'date_end'   => BURST()->statistics->convert_date_to_utc( $request->get_param( 'date_end' ) . ' 23:59:59' ),
+		'date_end'   => BURST()->statistics->convert_date_to_unix( $request->get_param( 'date_end' ) . ' 23:59:59' ),
 		// add 23:59:59 to date
 	);
 	if ( isset( $request->get_params()['args'] ) ) {
