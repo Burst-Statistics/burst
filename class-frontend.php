@@ -99,7 +99,7 @@ if ( ! class_exists( "burst_frontend" ) ) {
 		    global $post;
 		    $burst_total_pageviews_count = get_post_meta( $post->ID, 'burst_total_pageviews_count', true );
 		    $count = (int) $burst_total_pageviews_count ?: 0;
-		    $text = sprintf( _n('This page has been visited %d time.', 'This page has been visited %d times.', $count, 'burst-statistics'), $count );
+		    $text = sprintf( _n('This page has been viewed %d time.', 'This page has been viewed %d times.', $count, 'burst-statistics'), $count );
 			return '<p class="burst-pageviews">' . $text . '</p>';
 	    }
     }

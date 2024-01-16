@@ -6,13 +6,13 @@
 
 
   blocks.registerBlockType( 'burst/pageviews-block', {
-    title: 'Pageviews Block',
+    title: 'Pageviews Counter',
     icon: 'analytics',
     category: 'widgets',
 
     edit: function() {
 
-      var pageviewsText = sprintf(__('This page has been visited %d times.', 'burst-statistics'), 0);
+      var pageviewsText = sprintf(__('This page has been viewed %d times.', 'burst-statistics'), 0);
 
       return el(
           'p',
@@ -23,7 +23,7 @@
 
     save: function() {
 
-      var pageviewsText = sprintf(__('This page has been visited %d times.', 'burst-statistics'), 0);
+      var pageviewsText = sprintf(__('This page has been viewed %d times.', 'burst-statistics'), 0);
 
       return el(
           'p',
