@@ -4,11 +4,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
 
-//don't uninstall when upgrading
-if ( get_option( 'burst_run_premium_upgrade' )  ) {
-	exit();
-}
-
+global $wpdb;
 // get all burst transients
 $results = $wpdb->get_results(
 	"SELECT `option_name` AS `name`, `option_value` AS `value`
