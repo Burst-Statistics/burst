@@ -1455,7 +1455,7 @@ function burst_install_statistics_table() {
 		$table_name = $wpdb->prefix . 'burst_statistics';
 		$sql        = "CREATE TABLE $table_name (
 			`ID` int(11) NOT NULL AUTO_INCREMENT ,
-            `page_url` text NOT NULL,
+            `page_url` varchar(255) NOT NULL,
             `time` int(11) NOT NULL,
             `uid` varchar(255) NOT NULL,
             `time_on_page` int(11),
@@ -1484,7 +1484,7 @@ function burst_install_statistics_table() {
 		$sql        = "CREATE TABLE $table_name (
 			`ID` int(11) NOT NULL AUTO_INCREMENT ,
             `date` DATE NOT NULL,
-            `page_url` text NOT NULL,
+            `page_url` varchar(255) NOT NULL,
             `sessions` int(11) NOT NULL,
             `visitors` int(11) NOT NULL,
             `first_time_visitors` int(11) NOT NULL,
@@ -1492,7 +1492,7 @@ function burst_install_statistics_table() {
             `bounces` int(11) NOT NULL,
             `avg_time_on_page` int(11) NOT NULL,
             `completed` int(11) NOT NULL,
-            UNIQUE KEY unique_date_page_url (date, page_url),
+            UNIQUE KEY unique_date_page_url (date, page_url(191)),
             INDEX page_url_date_index (page_url, date),
             INDEX date_index (date),
               PRIMARY KEY  (ID)
