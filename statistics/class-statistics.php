@@ -1484,7 +1484,7 @@ function burst_install_statistics_table() {
 		$sql        = "CREATE TABLE $table_name (
 			`ID` int(11) NOT NULL AUTO_INCREMENT ,
             `date` DATE NOT NULL,
-            `page_url` varchar(255) NOT NULL,
+            `page_url` text NOT NULL,
             `sessions` int(11) NOT NULL,
             `visitors` int(11) NOT NULL,
             `first_time_visitors` int(11) NOT NULL,
