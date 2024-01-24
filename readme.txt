@@ -95,11 +95,12 @@ We value your feedback. You can [submit a support request on the WordPress forum
 * Fix: Don't delete data on uninstall. Only delete when the 'Delete all data and deactivate' prompt is selected.
 
 = 1.5.4 =
+* Security: fixed an authenticated SQL injection vulnerability.
 * Improvement: We have added summary tables, which will speed up the dashboard tremendously on large websites. The summary tables are updated every hour.
 * Improvement: We have added some indexes and removed some unused data which speeds up the dashboard and it will reduce the database size quite a bit.
 * Improvement: Save the last used date range in local storage, so when you return the date is the same.
-* Fix: Added more data to delete on uninstall. This will prevent data from being left behind when uninstalling the plugin.
 * Improvement: Updated referrer spam list.
+* Fix: Added more data to delete on uninstall. This will prevent data from being left behind when uninstalling the plugin.
 * Fix: Referer spam would not be filtered out. This has been resolved.
 * Fix: Click goals where an ID was on a parent class, would not be tracked. Now this is checked recursively.
 
