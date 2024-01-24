@@ -146,6 +146,7 @@ We value your feedback. You can [submit a support request on the WordPress forum
 * Fix missing file causing a fatal error, props @bb15
 
 = 1.5.0 =
+* Security: fixed an SQL injection issue, props German Ritter
 * Improvement: Updated outdated readme information.
 * Improvement: Updated outdated links in the plugin.
 * Improvement: Some minor styling changes.
