@@ -32,7 +32,7 @@ const Header = () => {
               <ul>
 
                 {menuLoaded && menuItems.map((menu_item, i) =>
-                    <li key={i}><a className={ selectedMainMenuItem === menu_item.id ? 'active' : '' } href={"#" + menu_item.id.toString()} >{menu_item.title}</a></li>)}
+                    <li key={i}><a className={ selectedMainMenuItem === menu_item.id ? 'burst-main active' : 'burst-main' } href={"#" + menu_item.id.toString()} >{menu_item.title}</a></li>)}
 
               </ul>
             </nav>

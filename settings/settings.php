@@ -237,19 +237,153 @@ function burst_add_option_menu() {
 		</span>';
 	}
 
-	$page_hook_suffix = add_submenu_page(
-		'index.php',
+	$page_hook_suffix = add_menu_page(
 		'Burst Statistics',
 		$menu_label,
 		'view_burst_statistics',
 		'burst',
+		'burst_dashboard',
+		'assets/images/menu-icon.svg',
+		2
+	);
+
+	add_submenu_page(
+		'burst',
+		__('Statistics', 'burst-statistics'),
+		__('Statistics', 'burst-statistics'),
+		'view_burst_statistics',
+		'burst#statistics',
 		'burst_dashboard'
 	);
 
+    add_submenu_page(
+        'burst',
+        __('Settings', 'burst-statistics'),
+        __('Settings', 'burst-statistics'),
+        'view_burst_statistics',
+        'burst#settings',
+        'burst_dashboard'
+    );
+
+
+
+	if ( defined( 'burst_pro' ) && burst_pro ) {
+		global $submenu;
+		if (isset($submenu['burst'])) {
+			$class                  = 'burst-link-upgrade';
+			$highest_index = count($submenu['burst']);
+			$submenu['burst'][] = array(
+				__( 'Upgrade to premium', 'burst-statistics' ),
+				'manage_burst_statistics',
+				'https://burst-statistics.com/pricing/?src=burst-plugin-menu',
+			);
+			if ( isset( $submenu['burst'][$highest_index] ) ) {
+				if (! isset ($submenu['burst'][$highest_index][4])) $submenu['burst'][$highest_index][4] = '';
+				$submenu['burst'][$highest_index][4] .= ' ' . $class;
+			}
+		}
+	}
+
 	add_action( "admin_print_scripts-{$page_hook_suffix}", 'burst_plugin_admin_scripts' );
 }
-
 add_action( 'admin_menu', 'burst_add_option_menu' );
+
+function burst_fix_duplicate_menu_item() {
+	?>
+    <script>
+      window.addEventListener("load", () => {
+        let burstMain = document.querySelector('li.wp-has-submenu.toplevel_page_burst a.wp-first-item');
+        if (burstMain) {
+          console.log(burstMain);
+          burstMain.innerHTML = burstMain.innerHTML.replace('Statistics', '<?php esc_html_e(__( 'Dashboard', 'burst-statistics'))?>');
+        }
+      });
+    </script>
+
+	<?php
+	/**
+	 * Ensure the items are selected in sync with the burst react menu.
+	 */
+	if(isset($_GET['page']) && $_GET['page']==='burst') {
+		?>
+        <script>
+          const burstSetActive = (obj) => {
+            obj.classList.add('current');
+            obj.parentNode.classList.add('current');
+          }
+
+          window.addEventListener("load", () => {
+            let burstMain = document.querySelector('li.wp-has-submenu.toplevel_page_burst a.wp-first-item');
+            if (burstMain) {
+              burstMain.href = '#';
+            }
+          });
+          //get the hash from the current url
+          let burstHash = window.location.hash;
+          //strip off anything after a /
+          if ( burstHash.indexOf('/') !== -1 ) {
+            burstHash = burstHash.substring(0, burstHash.indexOf('/'));
+          }
+          console.log(burstHash);
+          if ( !burstHash ) {
+            let burstMain = document.querySelector('li.wp-has-submenu.toplevel_page_burst a.wp-first-item');
+            burstSetActive(burstMain);
+          } else {
+            let burstMenuItems = document.querySelector('li.wp-has-submenu.toplevel_page_burst').querySelectorAll('a');
+            for (const link of burstMenuItems) {
+              if (burstHash && link.href.indexOf(burstHash) !== -1) {
+                burstSetActive(link);
+              } else {
+                link.classList.remove('current');
+                link.parentNode.classList.remove('current');
+              }
+            }
+          }
+
+          window.addEventListener('click', (e) => {
+            const burstTargetHref = e.target && e.target.href;
+            let burstIsMainMenu = false;
+            let burstIsWpMenu = false;
+            if (burstTargetHref && e.target.classList.contains('burst-main')) {
+              burstIsMainMenu = true;
+            } else if (burstTargetHref && burstTargetHref.indexOf('admin.php')!==-1) {
+              burstIsWpMenu = true;
+            }
+            if (!burstIsWpMenu && !burstIsMainMenu) {
+              return;
+            }
+            if (burstIsWpMenu) {
+              if (burstTargetHref && burstTargetHref.indexOf('page=burst') !== -1) {
+                const parentElement = e.target.parentNode.parentNode;
+                const childLinks = parentElement.querySelectorAll('li, a');
+                // Loop through each 'a' element and add the class
+                for (const link of childLinks) {
+                  link.classList.remove('current');
+                }
+                e.target.classList.add('current');
+                e.target.parentNode.classList.add('current');
+              }
+            } else {
+              //find burstTargetHref in wordpress menu
+              let burstMenuItems = document.querySelector('li.wp-has-submenu.toplevel_page_burst').querySelectorAll('a');
+              for (const link of burstMenuItems) {
+                //check if last character of link.href is '#'
+                if (burstTargetHref.indexOf('dashboard')!==-1 && link.href.charAt(link.href.length - 1) === '#'){
+                  burstSetActive(link);
+                } else if (burstTargetHref && link.href.indexOf(burstTargetHref) !== -1) {
+                  burstSetActive(link);
+                } else {
+                  link.classList.remove('current');
+                  link.parentNode.classList.remove('current');
+                }
+              }
+            }
+          });
+        </script>
+		<?php
+	}
+}
+add_action('admin_footer', 'burst_fix_duplicate_menu_item', 1);
 
 function burst_remove_fallback_notice() {
 	if ( get_option( 'burst_ajax_fallback_active' ) !== false ) {
@@ -536,7 +670,7 @@ function burst_other_plugins_data( $slug = false ) {
 			'constant_pro'  => 'rsssl_pro_version',
 			'wordpress_url' => 'https://wordpress.org/plugins/really-simple-ssl/',
 			'upgrade_url'   => 'https://really-simple-ssl.com/pro?src=plugin-burst-other-plugins',
-			'title'         => 'Really Simple SSL - ' . __( 'Lightweight plugin. Heavyweight security features.', 'complianz-gdpr' ),
+			'title'         => 'Really Simple SSL - ' . __( 'Lightweight plugin. Heavyweight security features.', 'burst-statistics' ),
 		),
 		array(
 			'slug'          => 'complianz-gdpr',
