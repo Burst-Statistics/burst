@@ -88,7 +88,6 @@ We value your feedback. You can [submit a support request on the WordPress forum
 
 == Change log ==
 = 1.5.6 =
-* Fix: Deactivate and remove the free Burst Statistics plugin, when Burst Pro is active.
 * Improvement: Removed unused anonymize IP function. We don't save any IP addresses, so this has been removed.
 * Improvement: In the database boolean values will now be saved as tinyint(1) instead of int(1). This will save space in the database.
 * New: Gutenberg block to display amount of pageviews on a page.
