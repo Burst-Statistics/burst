@@ -202,9 +202,9 @@ function burst_install_goal_statistics_table() {
 
 		$table_name = $wpdb->prefix . 'burst_goal_statistics';
 		$sql        = "CREATE TABLE $table_name (
-			`ID` int(11) NOT NULL AUTO_INCREMENT,
-			`statistic_id` int(11) NOT NULL,
-            `goal_id` int(11) NOT NULL,
+			`ID` int NOT NULL AUTO_INCREMENT,
+			`statistic_id` int NOT NULL,
+            `goal_id` int NOT NULL,
               PRIMARY KEY  (ID),
               KEY `statistic_id_index` (statistic_id),
               KEY `goal_id_index` (goal_id)

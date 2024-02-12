@@ -299,16 +299,16 @@ function burst_install_goals_table() {
 
         $table_name = $wpdb->prefix . 'burst_goals';
         $sql        = "CREATE TABLE $table_name (
-			`ID` int(11) NOT NULL AUTO_INCREMENT,
+			`ID` int NOT NULL AUTO_INCREMENT,
             `title` varchar(255) NOT NULL,
             `type` varchar(30) NOT NULL,
             `status` varchar(30) NOT NULL,
             `server_side` tinyint NOT NULL,
             `url` varchar(255) NOT NULL,
             `conversion_metric` varchar(255) NOT NULL,
-            `date_created` int(11) NOT NULL,
-            `date_start` int(11) NOT NULL,
-            `date_end` int(11) NOT NULL,
+            `date_created` int NOT NULL,
+            `date_start` int NOT NULL,
+            `date_end` int NOT NULL,
             `setup` text NOT NULL,
               PRIMARY KEY  (ID)
             ) $charset_collate;";

@@ -16,7 +16,8 @@ if ( ! class_exists( "burst_frontend" ) ) {
 
             add_action('admin_bar_menu', array($this, 'add_to_admin_bar_menu'), 35);
             add_action('admin_bar_menu', array($this, 'add_top_bar_menu'), 400 );
-        }
+	        add_action( 'init', array( $this, 'register_pageviews_block' ) );
+		}
 
         static function this()
         {
@@ -80,5 +81,27 @@ if ( ! class_exists( "burst_frontend" ) ) {
 					'href' => burst_dashboard_url,
 				));
 		}
+
+	    public function register_pageviews_block() {
+		    wp_register_script(
+			    'burst-pageviews-block-editor',
+			    plugins_url( 'blocks/pageviews.js', __FILE__ ), // Adjust the path to your JavaScript file
+			    array( 'wp-blocks', 'wp-element', 'wp-editor' ),
+			    filemtime( plugin_dir_path( __FILE__ ) . 'blocks/pageviews.js' )
+		    );
+		    wp_set_script_translations( 'burst-pageviews-block-editor', 'burst-statistics' , burst_path . '/languages');
+
+		    register_block_type( 'burst/pageviews-block', array(
+			    'editor_script' => 'burst-pageviews-block-editor',
+			    'render_callback' => array( $this, 'render_burst_pageviews' )
+		    ) );
+	    }
+	    public function render_burst_pageviews() {
+		    global $post;
+		    $burst_total_pageviews_count = get_post_meta( $post->ID, 'burst_total_pageviews_count', true );
+		    $count = (int) $burst_total_pageviews_count ?: 0;
+		    $text = sprintf( _n('This page has been viewed %d time.', 'This page has been viewed %d times.', $count, 'burst-statistics'), $count );
+			return '<p class="burst-pageviews">' . $text . '</p>';
+	    }
     }
 }

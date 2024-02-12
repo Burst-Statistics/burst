@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.4
-Stable tag: 1.5.5.1
+Stable tag: 1.5.6
 
 Self-hosted and privacy-friendly analytics for Wordpress.
 
@@ -87,6 +87,13 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.5.6 =
+* Fix: Deactivate and remove the free Burst Statistics plugin, when Burst Pro is active.
+* Improvement: Removed unused anonymize IP function. We don't save any IP addresses, so this has been removed.
+* Improvement: In the database boolean values will now be saved as tinyint(1) instead of int(1). This will save space in the database.
+* New: Gutenberg block to display amount of pageviews on a page.
+* Fix: Issue where adding a goal would cause a console.error. This has been resolved.
+
 = 1.5.5.1 =
 * Fix: Issue where the plugin could not be deleted due to a fatal error. This has been resolved.
 
