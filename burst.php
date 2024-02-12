@@ -35,7 +35,6 @@ if ( ! class_exists( 'BURST' ) ) {
 	class BURST {
 		private static $instance;
 		public $endpoint;
-		public $anonymize_IP;
 		public $statistics;
 		public $sessions;
 		public $goals;
@@ -60,7 +59,6 @@ if ( ! class_exists( 'BURST' ) ) {
 				self::$instance->includes();
 
 				self::$instance->endpoint        = new burst_endpoint();
-				self::$instance->anonymize_IP    = new burst_ip_anonymizer();
 				self::$instance->statistics      = new burst_statistics();
 				self::$instance->goal_statistics = new burst_goal_statistics();
 				self::$instance->sessions        = new burst_sessions();
@@ -129,7 +127,6 @@ if ( ! class_exists( 'BURST' ) ) {
 			require_once( burst_path . 'integrations/integrations.php' );
 			require_once( burst_path . 'tracking/tracking.php' );
 			require_once( burst_path . 'class-frontend.php' );
-			require_once( burst_path . 'helpers/anonymize-ip.php' );
 			require_once( burst_path . 'helpers/php-user-agent/UserAgentParser.php' );
 			require_once( burst_path . 'statistics/class-statistics.php' );
 			require_once( burst_path . 'statistics/class-goal-statistics.php' );
