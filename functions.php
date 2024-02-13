@@ -720,16 +720,6 @@ if ( ! function_exists( 'burst_get_beacon_url' ) ) {
      * @return string
      */
     function burst_get_beacon_url(): string {
-        if ( is_multisite() && burst_is_networkwide_active() ) {
-            if ( is_main_site() ) {
-	            return burst_url . 'beacon.php';
-            } else {
-                //replace the subsite url with the main site url in burst_url
-                //get main site_url
-                $main_site_url = get_site_url(get_main_site_id());
-                return str_replace(site_url(), $main_site_url, burst_url) . 'endpoint.php';
-            }
-        }
         return burst_url . 'endpoint.php';
     }
 }
