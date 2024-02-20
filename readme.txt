@@ -87,7 +87,7 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
-= 1.5.5.1 =
+= 1.5.6.1 =
 * Fix: Tracking would only work for users with cookieless tracking, because the burst script was empty due to an error in the build process. This has been resolved.
 
 = 1.5.6 =
