@@ -74,6 +74,7 @@ create_rc_zip() {
     "--exclude=.gitlab-ci.yml"
     "--exclude=phpunit.xml.dist"
     "--exclude=tests/"
+    "--exclude=cypress/"
     "--exclude=bin/"
     "--exclude=/vendor/"
     "--exclude=/automation/"

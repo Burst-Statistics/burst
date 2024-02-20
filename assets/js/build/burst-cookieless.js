@@ -1075,6 +1075,7 @@ let burst_goals_script_url = burst.goals_script_url ? burst.goals_script_url : '
  * @returns {Promise<void>}
  */
 const burst_import_goals = async () => {
+	console.log('Importing goals');
 	const goals = await import(burst_goals_script_url);
 	goals.default();
 }
@@ -1344,7 +1345,9 @@ async function burst_update_hit ( update_uid = false ){
  *
  */
 async function burst_track_hit () {
+	console.log('Tracking hit');
 	if ( burst_initial_track_hit ) { // if the initial track hit has already been fired, we just update the hit
+		console.log('Updating hit');
 		burst_update_hit();
 		return;
 	}
@@ -1386,9 +1389,10 @@ async function burst_track_hit () {
 		data: JSON.stringify(data)
 	};
 	burst_api_request(request_params).catch(error => {
+		console.log(error);
 			burst_track_hit_running	= false;
 		} );
-
+	console.log('Hit tracked');
 	burst_track_hit_running	= false;
 }
 

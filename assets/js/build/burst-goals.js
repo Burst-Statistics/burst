@@ -155,5 +155,6 @@ const burst_goal_triggered = (goal) => {
  * Default export for goals.
  */
 export default () => {
+  console.log('goals.js default');
   burst_goals_setup();
 };

@@ -72,10 +72,12 @@ function burst_get_chunk_translations( $dir ) {
 			continue;
 		}
 
-		$chunk_handle = 'burst-chunk-'.$filename;
+        //remove extension from $filename
+        $chunk_handle = str_replace('.js', '', $filename);
 		//temporarily register the script, so we can get a translations object.
 		wp_register_script( $chunk_handle, plugins_url('build/'.$filename, __FILE__), [], true );
-		$localeData = load_script_textdomain( $chunk_handle, 'burst-statistics' );
+        $path = defined( 'burst_pro' ) ? burst_path . 'languages' : false;
+		$localeData = load_script_textdomain( $chunk_handle, 'burst-statistics', $path  );
 		if (!empty($localeData)){
 			$json_translations[] = $localeData;
 		}
