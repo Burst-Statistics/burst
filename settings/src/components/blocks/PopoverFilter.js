@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from '@wordpress/element';
 import * as Checkbox from '@radix-ui/react-checkbox';
 import Icon from '../../utils/Icon';
 import {__} from '@wordpress/i18n';
@@ -14,6 +14,12 @@ const PopoverFilter = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [pendingMetrics, setPendingMetrics] = useState(selectedOptions);
+
+  // Inside your PopoverFilter component
+  useEffect(() => {
+    setPendingMetrics(selectedOptions);
+  }, [selectedOptions]);
+
   const {licenseStatus} = useLicenseStore();
 
   const onCheckboxChange = (value) => {

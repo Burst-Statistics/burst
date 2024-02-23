@@ -1,10 +1,10 @@
 import {Filters} from '../blocks/Filters';
-import {useEffect} from '@wordpress/element';
 import InsightsBlock from '../blocks/InsightsBlock';
 import CompareBlock from '../blocks/CompareBlock';
 import DevicesBlock from '../blocks/DevicesBlock';
 import PagesBlock from '../blocks/PagesBlock';
 import AcquisitionBlock from '../blocks/AcquisitionBlock';
+import DataTableBlock from '../blocks/DataTableBlock';
 
 import {PageFilter} from '../blocks/PageFilter';
 import DateRange from '../blocks/DateRange';
@@ -33,8 +33,8 @@ const StatisticsPage = () => {
         <InsightsBlock filters={filters} />
         <CompareBlock {...commonProps} />
         <DevicesBlock {...commonProps} />
-        <PagesBlock {...commonProps} />
-        <AcquisitionBlock {...commonProps} />
+        <DataTableBlock {...commonProps} allowedConfigs={['pages', 'parameters']} id={1}/>
+        <DataTableBlock {...commonProps} allowedConfigs={['referrers', 'countries', 'campaigns']} id={2} />
       </div>
   );
 };

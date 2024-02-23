@@ -13,6 +13,9 @@ const Flag = ({country, countryNiceName = ''}) => {
         <span className={'burst-flag-wrapper'}>{countryNiceName}</span>
     );
   }
+  if (countryNiceName === '') {
+    countryNiceName = country;
+  }
 
   country = country.toLowerCase();
   const src = `${burst_settings.plugin_url}pro/assets/flags/4x3/${country}.svg`;

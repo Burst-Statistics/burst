@@ -4,27 +4,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
 
-
-$options = array(
-	'burst_activation_time',
-);
-
-
-foreach ( $options as $option_name ) {
-	delete_option( $option_name );
-	delete_site_option( $option_name );
-}
-
 global $wpdb;
-$table_names = array(
-	//$wpdb->prefix . 'burst_statistics',
-);
-
-foreach ( $table_names as $table_name ) {
-	$sql = "DROP TABLE IF EXISTS $table_name";
-	$wpdb->query( $sql );
-}
-
 // get all burst transients
 $results = $wpdb->get_results(
 	"SELECT `option_name` AS `name`, `option_value` AS `value`

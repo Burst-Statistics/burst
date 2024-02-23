@@ -39,9 +39,7 @@ foreach ( $burst_integrations_list as $plugin => $details ) {
 	if ( file_exists( $file ) ) {
 		require_once( $file );
 	} else {
-		if ( WP_DEBUG ) {
-			error_log( "Burst Statistics: searched for $plugin integration at $file, but did not find it" );
-		}
+		burst_error_log( "Burst Statistics: searched for $plugin integration at $file, but did not find it" );
 	}
 }
 
@@ -86,9 +84,7 @@ function burst_integrations() {
 			if ( file_exists( $file ) ) {
 				require_once( $file );
 			} else {
-				if ( WP_DEBUG ) {
-					error_log( "Burst Statistics: searched for $plugin integration at $file, but did not find it" );
-				}
+				burst_error_log( "Burst Statistics: searched for $plugin integration at $file, but did not find it" );
 			}
 		}
 	}

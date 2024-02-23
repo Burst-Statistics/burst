@@ -207,6 +207,18 @@ function formatPercentage(value, decimals = 1){
   }).format(value);
 }
 
+/**
+ * Returns the name of a country based on its country code. If undefined return Unknown
+ * @param countryCode
+ * @return {*}
+ */
+function getCountryName(countryCode) {
+  if (countryCode) {
+    return burst_settings.countries[countryCode.toUpperCase()] || __('Unknown', 'burst-statistics');
+  }
+  return __('Unknown', 'burst-statistics');
+}
+
 function getDateWithOffset(currentDate = new Date()) {
   // get client's timezone offset in minutes
   const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
@@ -347,6 +359,7 @@ export {
   formatTime,
   formatNumber,
   formatPercentage,
+  getCountryName,
   getDateWithOffset,
   availableRanges,
   getAvailableRanges,

@@ -1,21 +1,17 @@
 import {create} from "zustand";
 import * as burst_api from "../utils/api";
-import {__} from '@wordpress/i18n';
+import {getLocalStorage, setLocalStorage} from '../utils/api';
+
+
 const useNotices = create(( set, get ) => ({
-  filter:'all',
+  filter: getLocalStorage('task_filter', 'all'),
   notices: [],
   filteredNotices: [],
   error: false,
   loading: true,
   setFilter: (filter) => {
-    sessionStorage.burst_task_filter = filter;
+    setLocalStorage('task_filter', filter);
     set(state => ({ filter }))
-  },
-  fetchFilter: () => {
-    if ( typeof (Storage) !== "undefined" && sessionStorage.burst_task_filter  ) {
-      let filter = sessionStorage.burst_task_filter;
-      set(state => ({ filter:filter }))
-    }
   },
   filterNotices: () => {
   let filteredNotices = [];

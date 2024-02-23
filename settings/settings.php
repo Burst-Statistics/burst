@@ -149,7 +149,7 @@ function burst_localized_settings($js_data){
  * @return void
  */
 function burst_rest_api_fallback() {
-	$response = array();
+	$response = [];
 	$error    = $action = $do_action = $data = $data_type = false;
 	if ( ! burst_user_can_manage() ) {
 		$error = true;
@@ -478,7 +478,7 @@ function burst_do_action( $request, $ajax_data = false ) {
 			$data = BURST()->endpoint->get_tracking_status_and_time();
 			break;
 		default:
-			$data = apply_filters( 'burst_do_action', array(), $action, $data );
+			$data = apply_filters( 'burst_do_action', [], $action, $data );
 	}
 
 	if ( ob_get_length() ) {
@@ -504,7 +504,7 @@ function burst_do_action( $request, $ajax_data = false ) {
 
 function burst_plugin_actions( $request, $data ) {
 	if ( ! burst_user_can_manage() ) {
-		return array();
+		return [];
 	}
 	$slug      = sanitize_title( $data['slug'] );
 	$action    = sanitize_title( $data['pluginAction'] );
@@ -527,7 +527,7 @@ function burst_plugin_actions( $request, $data ) {
  */
 function burst_other_plugins_data( $slug = false ) {
 	if ( ! burst_user_can_view() ) {
-		return array();
+		return [];
 	}
 	$plugins = array(
 		array(
@@ -597,15 +597,15 @@ function burst_get_data( WP_REST_Request $request ) {
 
 	$type = sanitize_title( $request->get_param( 'type' ) );
 	$args = array(
-		'date_start' => BURST()->statistics->convert_date_to_utc( $request->get_param( 'date_start' ) . ' 00:00:00' ),
+		'date_start' => BURST()->statistics->convert_date_to_unix( $request->get_param( 'date_start' ) . ' 00:00:00' ),
 		// add 00:00:00 to date,
-		'date_end'   => BURST()->statistics->convert_date_to_utc( $request->get_param( 'date_end' ) . ' 23:59:59' ),
+		'date_end'   => BURST()->statistics->convert_date_to_unix( $request->get_param( 'date_end' ) . ' 23:59:59' ),
 		// add 23:59:59 to date
 	);
 	if ( isset( $request->get_params()['args'] ) ) {
 		$request_args = json_decode( $request->get_param( 'args' ), true );
 	} else {
-		$request_args = array();
+		$request_args = [];
 	}
 	// merge get_json_params with request_args
 	$post_args = $request->get_json_params();
@@ -613,8 +613,10 @@ function burst_get_data( WP_REST_Request $request ) {
 		$request_args = array_merge( $request_args, $post_args );
 	}
 
-	$args['metrics'] = $request_args['metrics'] ?? array();
-	$args['filters'] = burst_sanitize_filters( $request_args['filters'] ?? array() );
+	$args['metrics'] = $request_args['metrics'] ?? [];
+	$args['filters'] = burst_sanitize_filters( $request_args['filters'] ?? [] );
+    $args['group_by']    = $request_args['group_by'] ?? [];
+
 	switch ( $type ) {
 		case 'live-visitors':
 			$data = BURST()->statistics->get_live_visitors_data();
@@ -646,8 +648,8 @@ function burst_get_data( WP_REST_Request $request ) {
 		case 'devicessubtitle':
 			$data = BURST()->statistics->get_devices_subtitle_data( $args );
 			break;
-		case 'pages':
-			$data = BURST()->statistics->get_pages_data( $args );
+		case 'datatable':
+			$data = BURST()->statistics->get_datatables_data( $args );
 			break;
 		case 'referrers':
 			$data = BURST()->statistics->get_referrers_data( $args );
@@ -658,6 +660,10 @@ function burst_get_data( WP_REST_Request $request ) {
 	if ( ob_get_length() ) {
 		ob_clean();
 	}
+
+    if (isset($data['error'])) {
+        return new WP_Error( 'rest_invalid_data', $data['error'], array( 'status' => 400 ) );
+    }
 
 	return new WP_REST_Response(
 		array(
@@ -792,7 +798,7 @@ function burst_rest_api_fields_set( $request, $ajax_data = false ) {
 		$fields[ $index ] = $field;
 	}
 
-	$options = get_option( 'burst_options_settings', array() );
+	$options = get_option( 'burst_options_settings', [] );
 
 	// build a new options array
 	foreach ( $fields as $field ) {
@@ -849,9 +855,9 @@ function burst_update_option( $name, $value ) {
 	if ( ! $type ) {
 		return;
 	}
-	$options = get_option( 'burst_options_settings', array() );
+	$options = get_option( 'burst_options_settings', [] );
 	if ( ! is_array( $options ) ) {
-		$options = array();
+		$options = [];
 	}
 	$prev_value       = $options[ $name ] ?? false;
 	$name             = sanitize_text_field( $name );
@@ -880,7 +886,7 @@ function burst_rest_api_fields_get( $request ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	$output = array();
+	$output = [];
 	$fields = burst_fields();
 	$menu   = burst_menu();
 	foreach ( $fields as $index => $field ) {
@@ -893,7 +899,7 @@ function burst_rest_api_fields_get( $request ) {
 				$main           = $data_source[0];
 				$class          = $data_source[1];
 				$function       = $data_source[2];
-				$field['value'] = array();
+				$field['value'] = [];
 				if ( function_exists( $main ) ) {
 					$field['value'] = $main()->$class->$function();
 				}
@@ -960,7 +966,7 @@ function burst_rest_api_goal_fields_get( $request ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
 
-	$goal_fields = array();
+	$goal_fields = [];
 	$fields      = burst_goal_fields();
 	$goals       = BURST()->goals->get_goals();
 
@@ -1016,7 +1022,7 @@ function burst_rest_api_goal_fields_set( $request, $ajax_data = false ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	$saved_goal_ids = array();
+	$saved_goal_ids = [];
 	foreach ( $goals as $index => $goal ) {
 		$id = (int) $goal['id'];
 		unset( $goal['id'] );
@@ -1088,7 +1094,7 @@ function burst_rest_api_goals_add( $request, $ajax_data = false ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	$goal = BURST()->goals->set( array(), 'insert' );
+	$goal = BURST()->goals->set( [], 'insert' );
 	if ( ob_get_length() ) {
 		ob_clean();
 	}
@@ -1214,7 +1220,7 @@ function burst_sanitize_ip_field( $value ) {
 
 function burst_get_user_roles(): array {
 	if ( ! burst_user_can_manage() ) {
-		return array();
+		return [];
 	}
 
 	global $wp_roles;
@@ -1237,7 +1243,7 @@ function burst_get_posts( $request, $ajax_data = false ) {
 	}
 
 	// Initialize an empty array for results
-	$resultArray = array();
+	$resultArray = [];
 
 	// Base query for wp_posts
 	$posts_query = "

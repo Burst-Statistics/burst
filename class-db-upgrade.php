@@ -56,6 +56,9 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $do_upgrade === 'strip_domain_names_from_entire_page_url' ) {
 				$this->upgrade_strip_domain_names_from_entire_page_url();
 			}
+			if ( $do_upgrade === 'summary_table' ) {
+				BURST()->summary->upgrade_summary_table_alltime();
+			}
 		}
 
 		/**
@@ -72,6 +75,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 				'drop_user_agent',
 				'empty_referrer_when_current_domain',
 				'strip_domain_names_from_entire_page_url',
+				'summary_table'
 			] );
 		}
 
@@ -101,9 +105,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			$result = $wpdb->query( $sql );
 			if ( $result === false ) {
-				if ( WP_DEBUG ) {
-					error_log( 'Burst Statistics: db upgrade bounces multiple sessions failed' );
-				}
+				burst_error_log( 'Burst Statistics: db upgrade bounces multiple sessions failed' );
 				return;
 			}
 
@@ -116,9 +118,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $result !== false ) {
 				delete_option( 'burst_db_upgrade_bounces');
 			} else {
-				if ( WP_DEBUG ) {
-					error_log( 'Burst Statistics: db upgrade bounces failed' );
-				}
+				burst_error_log( 'Burst Statistics: db upgrade bounces failed' );
 			}
 		}
 

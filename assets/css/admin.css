@@ -4483,6 +4483,94 @@ Admin notice
     padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
 }
 
+.burst .burst-datatable-message {
+    padding: var(--rsp-spacing-xl);
+    text-align: center;
+}
+
+.burst .burst-datatable__select-trigger {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 8px 0;
+}
+
+.burst .burst-datatable__select-trigger__icon {
+    margin-left: 8px;
+}
+
+.burst .burst-datatable__select-content {
+    background: var(--rsp-grey-100);
+    z-index: 99;
+    border: 1px solid var(--rsp-grey-400);
+    border-radius: var(--rsp-border-radius-xs);
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--rsp-spacing-s);
+    left: 0;
+    right: 0;
+    box-shadow: hsla(206, 22%, 7%, 0.35) 0px 10px 38px -10px, hsla(206, 22%, 7%, 0.2) 0px 10px 20px -15px;
+    animation-duration: 600ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+}
+
+.burst .burst-datatable__select-content[data-state=open] {
+    animation-name: slideDownAndFade;
+}
+
+@keyframes slideDownAndFade {
+    from {
+        opacity: 0;
+        transform: translateY(-2px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.burst .burst-datatable__select-content__item {
+    min-width: min(100vw, 150px);
+    cursor: pointer;
+    color: var(--rsp-text-color);
+    font-size: var(--rsp-fs-400);
+    padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+}
+
+.burst .burst-datatable__select-content__item .burst-icon {
+    margin-right: 8px;
+}
+
+.burst .burst-datatable__select-content__item .burst-pill {
+    margin-left: 8px;
+    font-size: var(--rsp-fs-200);
+}
+
+.burst .burst-datatable__select-content__item[data-disabled] {
+    color: var(--rsp-text-grey-200);
+    background-color: var(--rsp-grey-100);
+    cursor: not-allowed;
+}
+
+.burst .burst-datatable__select-content__item[data-highlighted] {
+    color: var(--rsp-text-color);
+    outline: none;
+    background-color: var(--rsp-green-faded);
+}
+
+.burst .burst-datatable__select-content__item[data-state=selected] {
+    color: var(--rsp-text-color-light);
+    outline: none;
+}
+
 .burst-shepherd {
     --rsp-black: #333;
     background: var(--rsp-black);

@@ -10,6 +10,7 @@ const iconColors = {
   'yellow-faded': 'var(--rsp-yellow-faded)',
   'red-faded': 'var(--rsp-red-faded)',
   'grey': 'var(--rsp-grey-400)',
+  'white': 'var(--rsp-white)',
 };
 
 const IconHtml = memo(({name = 'bullet', color = 'black', size = 15}) => {

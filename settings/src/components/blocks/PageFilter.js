@@ -24,6 +24,7 @@ export const PageFilter = () => {
     if (!code) {
       return '';
     }
+    code = code.toUpperCase();
     const countryLabel = burst_settings.countries[code];
     return countryLabel ? countryLabel : code
   }
@@ -64,6 +65,9 @@ export const PageFilter = () => {
       <>
         {Object.keys(filtersConf).map((filter, index) => {
           if (filters[filter] !== '') {
+            console.log(filter);
+            console.log(filters[filter]);
+
             if (filter === 'goal_id') {
               title = getGoalsTitle(filters[filter]);
             } else if (filter === 'device') {
