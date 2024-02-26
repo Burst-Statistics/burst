@@ -74,7 +74,7 @@ const config = {
   'countries': {
     label: __('Countries', 'burst-statistics'),
     pro: true,
-    searchable: true,
+    searchable: false,
     defaultColumns: ['country', 'pageviews'],
     columnsOptions: {
       'country_code': {
@@ -235,8 +235,8 @@ const DataTableBlock = ({ allowedConfigs = ['pages', 'referrers'], id }) => {
   let columnsData = data.columns;
 
   let filteredData = [];
-
-  if (columnsOptions.searchable && Array.isArray(tableData)) {
+  console.log('configDetails', configDetails);
+  if (configDetails.searchable && Array.isArray(tableData)) {
     filteredData = tableData.filter(item => {
       // Get the first key and its corresponding value in the object
       const firstKey = Object.keys(item)[0];
@@ -282,13 +282,12 @@ const DataTableBlock = ({ allowedConfigs = ['pages', 'referrers'], id }) => {
           }
           controls={
             <>
-              {columnsOptions.searchable &&
+              {configDetails.searchable &&
                   <input className="burst-datatable-search" type="text"
                          placeholder={__('Search', 'burst-statistics')}
                          value={filterText}
                          onChange={e => setFilterText(e.target.value)}
                   />}
-              {console.log('PopoverFilter columns', columns)}
               <PopoverFilter
                   selectedOptions={columns}
                   options={columnsOptions}
