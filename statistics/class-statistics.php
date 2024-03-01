@@ -1144,7 +1144,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 */
 		public function get_sql_table( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [], $date_modifiers = false ) {
 			$raw = $date_modifiers && strpos($date_modifiers['sql_date_format'], '%H') !== false;
-
 			if ( !$raw && BURST()->summary->upgrade_completed() && BURST()->summary->is_summary_data($select, $filters) ) {
 				return BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
 			}
@@ -1235,13 +1234,14 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				// sanitize_title and wrap it in count()
 				return 'count(' . sanitize_title( substr( $metric, 6, - 1 ) ) . ')';
 			}
+			//using COALESCE to prevent NULL values in the output, in the today
 			switch ( $metric ) {
 				case 'pageviews':
 				case 'count':
-					$sql = $exclude_bounces ? 'SUM( CASE WHEN bounce = 0 THEN 1 ELSE 0 END )' : 'COUNT( stats.ID )';
+					$sql = $exclude_bounces ? 'COALESCE( SUM( CASE WHEN bounce = 0 THEN 1 ELSE 0 END ), 0)' : 'COUNT( stats.ID )';
 					break;
 				case 'bounces':
-					$sql = 'SUM( CASE WHEN bounce = 1 THEN 1 ELSE 0 END )';
+					$sql = 'COALESCE( SUM( CASE WHEN bounce = 1 THEN 1 ELSE 0 END ), 0)';
 					break;
 				case 'bounce_rate':
 					$sql = 'SUM( stats.bounce ) / COUNT( DISTINCT stats.session_id ) * 100';
@@ -1250,10 +1250,10 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					$sql = $exclude_bounces ? 'COUNT( DISTINCT CASE WHEN bounce = 0 THEN stats.session_id END )' : 'COUNT( DISTINCT stats.session_id )';
 					break;
 				case 'avg_time_on_page':
-					$sql = $exclude_bounces ? 'AVG( CASE WHEN bounce = 0 THEN stats.time_on_page END )' : 'AVG( stats.time_on_page )';
+					$sql = $exclude_bounces ? 'COALESCE( AVG( CASE WHEN bounce = 0 THEN stats.time_on_page END ), 0 )' : 'AVG( stats.time_on_page )';
 					break;
 				case 'first_time_visitors':
-					$sql = $exclude_bounces ? ' SUM( CASE WHEN bounce = 0 THEN stats.first_time_visit ELSE 0 END )' : 'SUM( stats.first_time_visit )';
+					$sql = $exclude_bounces ? 'COALESCE( SUM( CASE WHEN bounce = 0 THEN stats.first_time_visit ELSE 0 END ), 0 ) ' : 'SUM( stats.first_time_visit )';
 					break;
 				case 'visitors':
 					$sql = $exclude_bounces ? 'COUNT(DISTINCT CASE WHEN bounce = 0 THEN stats.uid END)' : 'COUNT(DISTINCT stats.uid)';
@@ -1454,22 +1454,22 @@ function burst_install_statistics_table() {
 
 		$table_name = $wpdb->prefix . 'burst_statistics';
 		$sql        = "CREATE TABLE $table_name (
-			`ID` int NOT NULL AUTO_INCREMENT ,
+			`ID` int(11) NOT NULL AUTO_INCREMENT ,
             `page_url` varchar(255) NOT NULL,
-            `time` int NOT NULL,
+            `time` int(11) NOT NULL,
             `uid` varchar(255) NOT NULL,
-            `time_on_page` int,
+            `time_on_page` int(11),
             `entire_page_url` varchar(255) NOT NULL,
-            `page_id` int NOT NULL,
+            `page_id` int(11) NOT NULL,
             `referrer` varchar(255),
             `browser` varchar(255),
             `browser_version` varchar(255),
             `platform` varchar(255),
             `device` varchar(255),
             `device_resolution` varchar(255),
-            `session_id` int,
-            `first_time_visit` tinyint,
-            `bounce` tinyint DEFAULT 1,
+            `session_id` int(11),
+            `first_time_visit` int(1),
+            `bounce` int(1) DEFAULT 1,
               PRIMARY KEY  (ID),
               INDEX time_index (time),
               INDEX bounce_index (bounce),
@@ -1482,16 +1482,16 @@ function burst_install_statistics_table() {
 
 		$table_name = $wpdb->prefix . 'burst_summary';
 		$sql        = "CREATE TABLE $table_name (
-			`ID` int NOT NULL AUTO_INCREMENT ,
+			`ID` int(11) NOT NULL AUTO_INCREMENT ,
             `date` DATE NOT NULL,
             `page_url` varchar(255) NOT NULL,
-            `sessions` int NOT NULL,
-            `visitors` int NOT NULL,
-            `first_time_visitors` int NOT NULL,
-            `pageviews` int NOT NULL,
-            `bounces` int NOT NULL,
-            `avg_time_on_page` int NOT NULL,
-            `completed` tinyint NOT NULL,
+            `sessions` int(11) NOT NULL,
+            `visitors` int(11) NOT NULL,
+            `first_time_visitors` int(11) NOT NULL,
+            `pageviews` int(11) NOT NULL,
+            `bounces` int(11) NOT NULL,
+            `avg_time_on_page` int(11) NOT NULL,
+            `completed` int(11) NOT NULL,
             UNIQUE KEY unique_date_page_url (date, page_url),
             INDEX page_url_date_index (page_url, date),
             INDEX date_index (date),

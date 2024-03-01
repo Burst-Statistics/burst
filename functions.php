@@ -574,6 +574,18 @@ if ( ! function_exists( 'burst_panel' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
+	/**
+	 * Get anon ip address
+	 * @return string
+	 */
+	function burst_get_anon_ip_address(): string {
+		$ip = burst_get_ip_address();
+
+		return BURST()->anonymize_IP->anonymizeIp( $ip );
+	}
+}
+
 if ( ! function_exists( 'burst_sprintf' ) ) {
 	/**
 	 * @param string $format
