@@ -79,7 +79,7 @@ function burst_check_upgrade() {
 	}
 
 	if ( $prev_version
-	     && version_compare( $prev_version, '1.5.6', '<' ) ) {
+	     && version_compare( $prev_version, '1.5.6.1', '<' ) ) {
 		BURST()->summary->restart_update_summary_table_alltime();
 	}
 
