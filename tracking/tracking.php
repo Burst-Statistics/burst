@@ -240,7 +240,9 @@ if ( ! function_exists( 'burst_sanitize_entire_page_url' ) ) {
 		if ( ! filter_var( $sanitized_url, FILTER_VALIDATE_URL ) ) {
 			return '';
 		}
-
+		if ( !function_exists('wp_parse_url')) {
+			require_once( ABSPATH . '/wp-includes/http.php' );
+		}
 		$url = parse_url( esc_url_raw( $sanitized_url ) );
 		if ( isset( $url['host'] ) ) {
 			return trailingslashit( $url['path'] );
