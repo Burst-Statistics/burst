@@ -45,7 +45,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				$localize_args = apply_filters(
 					'burst_tracking_options',
 					array(
-						'url'                   => burst_get_rest_url(),
 						'page_id'               => get_queried_object_id(),
 						'cookie_retention_days' => 30,
 						'beacon_url'            => burst_get_beacon_url(),
@@ -1455,7 +1454,7 @@ function burst_install_statistics_table() {
 		$table_name = $wpdb->prefix . 'burst_statistics';
 		$sql        = "CREATE TABLE $table_name (
 			`ID` int NOT NULL AUTO_INCREMENT ,
-            `page_url` varchar(255) NOT NULL,
+            `page_url` varchar(191) NOT NULL,
             `time` int NOT NULL,
             `uid` varchar(255) NOT NULL,
             `time_on_page` int,
@@ -1484,7 +1483,7 @@ function burst_install_statistics_table() {
 		$sql        = "CREATE TABLE $table_name (
 			`ID` int NOT NULL AUTO_INCREMENT ,
             `date` DATE NOT NULL,
-            `page_url` varchar(255) NOT NULL,
+            `page_url` varchar(191) NOT NULL,
             `sessions` int NOT NULL,
             `visitors` int NOT NULL,
             `first_time_visitors` int NOT NULL,
@@ -1492,7 +1491,7 @@ function burst_install_statistics_table() {
             `bounces` int NOT NULL,
             `avg_time_on_page` int NOT NULL,
             `completed` tinyint NOT NULL,
-            UNIQUE KEY unique_date_page_url (date, page_url),
+            UNIQUE KEY unique_date_page_url (date, page_url(191)),
             INDEX page_url_date_index (page_url, date),
             INDEX date_index (date),
               PRIMARY KEY  (ID)

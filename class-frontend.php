@@ -64,7 +64,7 @@ if ( ! class_exists( "burst_frontend" ) ) {
 			global $post;
 			if ( $post && is_object($post) ) {
 				$post_id = $post->ID;
-				$count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
+				$count = (int) get_post_meta( $post_id, 'burst_total_pageviews_count', true );
 			} else {
 				$count = 0;
 			}
