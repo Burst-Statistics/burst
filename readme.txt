@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.4
-Stable tag: 1.5.6.1
+Stable tag: 1.5.7
 
 Self-hosted and privacy-friendly analytics for Wordpress.
 
@@ -87,6 +87,12 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.5.7 =
+* Fix: Security issue where a contributor with the ability to add posts and add custom fields, could create a cross-site scripting attack. This has been resolved. props @Webbernaut
+* Fix: Changed key length for page_url to 191 to prevent issues with MySQL 5.7.7 and lower.
+* Fix: Issue where using [ in a URL would result in a failed tracking request. This has been resolved. props @webwitnl
+* Improvement: Removed legacy code in the functions.php file.
+
 = 1.5.6.1 =
 * Fix: Tracking would only work for users with cookieless tracking, because the burst script was empty due to an error in the build process. This has been resolved.
 
