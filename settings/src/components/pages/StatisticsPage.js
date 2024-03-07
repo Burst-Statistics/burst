@@ -33,8 +33,8 @@ const StatisticsPage = () => {
         <InsightsBlock filters={filters} />
         <CompareBlock {...commonProps} />
         <DevicesBlock {...commonProps} />
-        <DataTableBlock {...commonProps} allowedConfigs={['pages', 'parameters']} id={1}/>
-        <DataTableBlock {...commonProps} allowedConfigs={['referrers', 'countries', 'campaigns']} id={2} />
+        <DataTableBlock {...commonProps} allowedConfigs={['pages', 'parameters', 'campaigns']} id={1}/>
+        <DataTableBlock {...commonProps} allowedConfigs={['referrers', 'countries']} id={2} />
       </div>
   );
 };

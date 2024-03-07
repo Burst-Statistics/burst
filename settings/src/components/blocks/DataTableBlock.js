@@ -55,6 +55,42 @@ const config = {
       },
       ...defaultColumnsOptions
     },
+    upsellPopover: {
+      title: __('Unlock Campaign Insights with Pro', 'burst-statistics'),
+      subtitle: __('Get in-depth analysis of your marketing efforts.',
+          'burst-statistics'),
+      bulletPoints: [
+        {
+          text: (
+              <>
+                <b>{__('Track URL parameters:', 'burst-statistics')}</b> {__(
+                  'Understand visitors patterns.', 'burst-statistics')}
+              </>
+          ), icon: 'world'
+        },
+        {
+          text: (
+              <>
+                <b>{__('UTM Analytics:', 'burst-statistics')}</b> {__(
+                  'Measure the success of your UTM campaigns.',
+                  'burst-statistics')}
+              </>
+          ),
+          icon: 'goals'
+        },
+        {
+          text: (
+              <>
+                <b>{__('Filter data:', 'burst-statistics')}</b> {__(
+                  'By device, page, goal, or country.', 'burst-statistics')}
+              </>
+          ),
+          icon: 'filter'
+        },
+      ],
+      primaryButtonUrl: 'https://burst-statistics.com/pricing/?src=plugin-burst-params-campaigns-upsell',
+      secondaryButtonUrl: 'https://burst-statistics.com/?src=plugin-burst-params-campaigns-upsell'
+    },
   },
   'referrers': {
     label: __('Referrers', 'burst-statistics'),
@@ -69,6 +105,42 @@ const config = {
         'group_by': true,
       },
       ...defaultColumnsOptions
+    },
+    upsellPopover: {
+      title: __('Unlock Country Insights with Pro', 'burst-statistics'),
+      subtitle: __('Get detailed information on your users',
+          'burst-statistics'),
+      bulletPoints: [
+        {
+          text: (
+              <>
+                <b>{__('See Countries:', 'burst-statistics')}</b> {__(
+                  'Know where your visitors are from.', 'burst-statistics')}
+              </>
+          ), icon: 'world'
+        },
+        {
+          text: (
+              <>
+                <b>{__('Track More Goals:', 'burst-statistics')}</b> {__(
+                  'Follow different things at the same time.',
+                  'burst-statistics')}
+              </>
+          ),
+          icon: 'goals'
+        },
+        {
+          text: (
+              <>
+                <b>{__('Filter by Country:', 'burst-statistics')}</b> {__(
+                  'Only see data from specific places.', 'burst-statistics')}
+              </>
+          ),
+          icon: 'filter'
+        },
+      ],
+      primaryButtonUrl: 'https://burst-statistics.com/pricing/?src=plugin-burst-countries-upsell',
+      secondaryButtonUrl: 'https://burst-statistics.com/?src=plugin-burst-countries-upsell'
     },
   },
   'countries': {
@@ -203,6 +275,7 @@ const DataTableBlock = ({ allowedConfigs = ['pages', 'referrers'], id }) => {
         key,
         label: config[key].label,
         pro: !!config[key].pro,
+        upsellPopover: config[key].upsellPopover || null,
       }));
 
   // query

@@ -552,7 +552,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			global $wpdb;
 
 			// filter is goal id so pageviews returned are the conversions
-			$sql = $this->get_sql_table( $start, $end, array( 'pageviews' ), $filters );
+			$sql = $this->get_sql_table( $start, $end, array( 'conversions' ), $filters );
 
 			return (int) $wpdb->get_var( $sql );
 		}
@@ -1169,6 +1169,11 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 			$table_name .= ' AS statistics';
 
+			// if parameter is in select, then we need to join the parameters table
+			if ( strpos( $select, 'parameter' ) !== false ) {
+				//replcae the group by with the parameter
+				$group_by = 'parameters.parameter, parameters.value';
+			}
 			$group_by = $group_by ? "GROUP BY $group_by" : '';
 			error_log('Group by: ' . $group_by);
 			$order_by = $order_by ? "ORDER BY $order_by" : '';
