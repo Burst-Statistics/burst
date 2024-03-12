@@ -194,100 +194,71 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 		public function get_today_data( $args = array() ) {
 			global $wpdb;
-			$data     = [];
-			$defaults = array(
+
+			// Setup default arguments and merge with input
+			$args = wp_parse_args( $args, array(
 				'date_start' => 0,
 				'date_end'   => 0,
-			);
-			$args     = wp_parse_args( $args, $defaults );
-			$start    = (int) $args['date_start'];
-			$end      = (int) $args['date_end'];
-			$sql      = $this->get_sql_table(
-				$start,
-				$end,
-				array(
-					'visitors',
-					'pageviews',
-					'avg_time_on_page',
-				)
-			);
-			$table    = $this->get_sql_table( $start, $end );
+			));
 
-			$results                     = $wpdb->get_results( $sql );
-			$data['today']['value']      = $results[0]->visitors > 0 ? $results[0]->visitors : 0;
-			$data['pageviews']['value']  = $results[0]->pageviews > 0 ? $results[0]->pageviews : 0;
-			$data['timeOnPage']['value'] = $results[0]->avg_time_on_page > 0 ? $results[0]->avg_time_on_page : 0;
+			// Cast start and end dates to integer
+			$start = (int) $args['date_start'];
+			$end = (int) $args['date_end'];
 
-			// get most visited page
-			$sql = "SELECT page_url as title, count(*) as value
-						FROM ( $table ) as t 
-						GROUP BY title
-						ORDER BY value DESC
-					";
-
-			$data['mostViewed'] = $wpdb->get_row( $sql, ARRAY_A );
-
-			$remove   = array( 'http://www.', 'https://www.', 'http://', 'https://' );
-			$site_url = str_replace( $remove, '', site_url() );
-			// get top referrer
-			$sql = "SELECT count(referrer) as value,
-                            CASE
-                                WHEN referrer = '' THEN 'Direct'
-                                ELSE REPLACE(REPLACE(REPLACE(referrer, 'https://', ''), 'http://', ''), 'www.', '')
-                            END as title
-                        FROM ( $table ) as t
-                        WHERE referrer IS NOT NULL 
-                          AND referrer NOT LIKE '%$site_url%'
-                        GROUP BY referrer
-                        ORDER BY value DESC
-                        LIMIT 1";
-
-			$data['referrer'] = $wpdb->get_row( $sql, ARRAY_A );
-
-			if ( isset( $data['referrer']['title'] ) && $data['referrer']['title'] == '' ) {
-				$data['referrer']['title'] = __( 'Direct', 'burst-statistics' );
-			}
-
-			// setup defaults
-			$default_data = array(
-				'live'       => array(
-					'value'   => '0',
+			// Prepare default data structure with predefined tooltips
+			$data = array(
+				'live' => array(
+					'value' => '0',
 					'tooltip' => __( 'The amount of people using your website right now. The data updates every 5 seconds.', 'burst-statistics' ),
 				),
-				'today'      => array(
-					'value'   => '0',
+				'today' => array(
+					'value' => '0',
 					'tooltip' => __( 'This is the total amount of unique visitors for today.', 'burst-statistics' ),
 				),
 				'mostViewed' => array(
-					'title'   => '-',
-					'value'   => '0',
+					'title' => '-',
+					'value' => '0',
 					'tooltip' => __( 'This is your most viewed page for today.', 'burst-statistics' ),
 				),
-				'referrer'   => array(
-					'title'   => '-',
-					'value'   => '0',
+				'referrer' => array(
+					'title' => '-',
+					'value' => '0',
 					'tooltip' => __( 'This website referred the most visitors.', 'burst-statistics' ),
 				),
-				'pageviews'  => array(
-					'title'   => __( 'Total pageviews', 'burst-statistics' ),
-					'value'   => '0',
+				'pageviews' => array(
+					'title' => __( 'Total pageviews', 'burst-statistics' ),
+					'value' => '0',
 					'tooltip' => '',
 				),
 				'timeOnPage' => array(
-					'title'   => __( 'Average time on page', 'burst-statistics' ),
-					'value'   => '0',
+					'title' => __( 'Average time on page', 'burst-statistics' ),
+					'value' => '0',
 					'tooltip' => '',
 				),
 			);
 
-			$data = wp_parse_args( $data, $default_data );
-			foreach ( $data as $key => $value ) {
-				// wp_parse_args doesn't work with nested arrays
-				$data[ $key ] = wp_parse_args( $value, $default_data[ $key ] );
+			// Query today's data
+			$sql = $this->get_sql_table($start, $end, array('visitors', 'pageviews', 'avg_time_on_page'));
+			$results = $wpdb->get_row($sql, 'ARRAY_A');
+			if ($results) {
+				$data['today']['value'] = max(0, (int) $results['visitors']);
+				$data['pageviews']['value'] = max(0, (int) $results['pageviews']);
+				$data['timeOnPage']['value'] = max(0, (int) $results['avg_time_on_page']);
+			}
+
+			// Query for most viewed page and top referrer
+			foreach (['mostViewed' => ['page_url', 'pageviews'], 'referrer' => ['referrer', 'pageviews']] as $key => $fields) {
+				$sql = $this->get_sql_table($start, $end, $fields, [], $fields[0], '1 DESC');
+				$query = $wpdb->get_row($sql, 'ARRAY_A');
+				if ($query) {
+					$data[$key]['title'] = $query[$fields[0]];
+					$data[$key]['value'] = $query['pageviews'];
+				}
 			}
 
 			return $data;
 		}
+
 
 		/**
 		 * @param $date_start int
@@ -1264,12 +1235,15 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					$sql = 'stats.page_id';
 					break;
 				case 'referrer':
+					$remove   = array( 'http://www.', 'https://www.', 'http://', 'https://' );
+					$site_url = str_replace( $remove, '', site_url() );
 					$direct_text = 'Direct';
 					$sql         = $wpdb->prepare(
 						"CASE
-                            WHEN stats.referrer = '' THEN '%s'
-                            ELSE trim( 'www.' from substring(stats.referrer, locate('://', stats.referrer) + 3)) 
-                        END",
+                       WHEN stats.referrer = '' OR stats.referrer IS NULL OR stats.referrer LIKE %s THEN %s
+                       ELSE trim( 'www.' from substring(stats.referrer, locate('://', stats.referrer) + 3))
+                   END",
+						'%' . $wpdb->esc_like($site_url) . '%',
 						$direct_text
 					);
 					break;
