@@ -46,12 +46,129 @@ if ( ! class_exists( "burst_admin" ) ) {
 
             // remove tables on multisite uninstall
 			add_filter( 'wpmu_drop_tables', array( $this, 'ms_remove_tables' ), 10, 2 );
+
+			add_filter( 'burst_after_saved_fields', array( $this, 'create_js_file' ), 10, 1 );
+			add_action( 'upgrader_process_complete', array( $this, 'create_js_file'), 10, 1);
+			add_action( 'wp_initialize_site', array( $this, 'create_js_file'), 10, 1);
+			add_action( 'admin_init', array( $this, 'activation' ) );
+
+			add_action('admin_bar_menu', array($this, 'add_to_admin_bar_menu'), 35);
+			add_action('admin_bar_menu', array($this, 'add_top_bar_menu'), 400 );
 		}
 
 
-		static function this() {
+		public static function this() {
 			return self::$_this;
 		}
+
+		public function add_to_admin_bar_menu( $wp_admin_bar ) {
+			if ( ! burst_user_can_view() || is_admin() ) {
+				return;
+			}
+
+			//don't show on subsites if networkwide activated, and this is not the main site.
+			if ( burst_is_networkwide_active() && !is_main_site() ) {
+				return;
+			}
+
+			$wp_admin_bar->add_node(
+				array(
+					'parent' => 'site-name',
+					'id' => 'burst-statistics',
+					'title' => __('Statistics', 'burst-statistics'),
+					'href' => burst_dashboard_url,
+				)
+			);
+		}
+
+		/**
+		 * Add top bar menu for page views
+		 * @param $wp_admin_bar
+		 *
+		 * @return void
+		 */
+		public function add_top_bar_menu( $wp_admin_bar ) {
+			global $wp_admin_bar;
+			global $wpdb;
+			if ( is_admin() ) {
+				return;
+			}
+
+			if ( ! burst_user_can_view() ) {
+				return;
+			}
+
+			global $post;
+			if ( $post && is_object($post) ) {
+				$post_id = $post->ID;
+				$count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
+			} else {
+				$count = 0;
+			}
+			$wp_admin_bar->add_menu(
+				array(
+					'id' => 'burst-front-end',
+					'title' => $count . ' ' . __('Pageviews', 'burst-statistics'),
+				));
+			$wp_admin_bar->add_menu(
+				array(
+					'parent' => 'burst-front-end',
+					'id' => 'burst-statistics-link',
+					'title' => __('Go to dashboard', 'burst-statistics'),
+					'href' => burst_dashboard_url,
+				));
+		}
+
+		public function activation(){
+			if ( !burst_admin_logged_in() ){
+				return;
+			}
+
+			if ( get_option( 'burst_run_activation' ) ) {
+				delete_option( 'burst_run_activation' );
+			}
+		}
+
+		public function create_js_file() {
+			if ( ! burst_user_can_manage() ) {
+				return;
+			}
+			error_log("create js file");
+            $cookieless      = burst_get_option( 'enable_cookieless_tracking' );
+			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
+			$beacon_enabled  = (int) burst_tracking_status_beacon();
+
+			$localize_args = apply_filters(
+				'burst_tracking_options',
+				array(
+					'url'                   => burst_get_rest_url(),
+					'page_id'               => get_queried_object_id(),
+					'cookie_retention_days' => 30,
+					'beacon_url'            => burst_get_beacon_url(),
+					'options'               => array(
+						'beacon_enabled'             => $beacon_enabled,
+						'enable_cookieless_tracking' => (int) $cookieless,
+						'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
+						'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
+					),
+					'goals'                 => burst_get_active_goals(),
+					'goals_script_url'      => burst_get_goals_script_url(),
+				)
+			);
+
+			$js = "";
+			$js .= "let burst = ".json_encode($localize_args).";";
+			$js .= file_get_contents(burst_path . "assets/js/build/burst$cookieless_text.min.js");
+
+			$upload_dir = burst_upload_dir('js');
+			$file = $upload_dir . 'burst.min.js';
+			if ( file_exists($upload_dir) && is_writable($upload_dir) ){
+				$handle = fopen($file, 'wb' );
+				fwrite($handle, $js);
+				fclose($handle);
+			}
+		}
+
 
 		/**
 		 * Add some privacy info
@@ -453,44 +570,18 @@ if ( ! class_exists( "burst_admin" ) ) {
             global $wpdb;
             global $wp_roles;
 
-            // post meta to delete
-	        $post_meta = [
-		        'burst_total_pageviews_count',
-	        ];
-
-	        if ( ! function_exists( 'delete_post_meta_by_key' ) ) {
-		        require_once ABSPATH . WPINC . '/post.php';
-	        }
-	        foreach ( $post_meta as $post_meta_key ) {
-		        delete_post_meta_by_key( $post_meta_key );
-	        }
-
             // options to delete
-	        $options = array(
-		        'burst_activation_time',
-		        'burst_set_defaults',
-		        'burst_review_notice_shown',
-		        'burst_run_premium_upgrade',
-		        'burst_tracking_status',
-		        'burst_goals_db_version',
-		        'burst_table_size',
-		        'burst_import_geo_ip_on_activation',
-		        'burst_geo_ip_import_error',
-		        'burst_archive_dir',
-		        'burst_geo_ip_file',
-		        'burst_last_update_geo_ip',
-		        'burst_license_attempts',
-		        'burst_ajax_fallback_active',
-		        'burst_tour_shown_once',
-		        'burst_options_settings',
-		        'burst-current-version',
-	        );
-	        // delete options
-	        foreach ($options as $option_name) {
-		        delete_option($option_name);
-		        delete_site_option($option_name);
-	        }
-
+            $options = array(
+                'burst_activation_time',
+                'burst-current-version',
+                'burst_review_notice_shown',
+                'burst_stats_db_version',
+                'burst_sessions_db_version',
+                'burst_goals_db_version',
+                'burst_experiments_db_version',
+                'burst_options_settings',
+                'burst_last_generated',
+            );
 
             // capabilities to delete
             $roles = $wp_roles->roles;
@@ -499,43 +590,31 @@ if ( ! class_exists( "burst_admin" ) ) {
                 'view_burst_statistics'
             );
 
-	        // delete user capabilities from all user roles
-	        foreach ($roles as $role_name => $role_info) {
-		        foreach ($capabilities as $capability) {
-			        $wp_roles->remove_cap($role_name, $capability);
-		        }
-	        }
-
             // tables to delete
             $table_names = array(
-	            $wpdb->prefix . 'burst_statistics',
-	            $wpdb->prefix . 'burst_sessions',
-	            $wpdb->prefix . 'burst_goals',
-	            $wpdb->prefix . 'burst_archived_months',
-	            $wpdb->prefix . 'burst_goal_statistics',
-                $wpdb->prefix . 'burst_summary',
+                $wpdb->prefix . 'burst_sessions',
+                $wpdb->prefix . 'burst_statistics',
+                $wpdb->prefix . 'burst_goals',
             );
+
+            // delete options
+            foreach ($options as $option_name) {
+                delete_option($option_name);
+                delete_site_option($option_name);
+            }
+
+            // delete user capabilities from all user roles
+            foreach ($roles as $role_name => $role_info) {
+                foreach ($capabilities as $capability) {
+                    $wp_roles->remove_cap($role_name, $capability);
+                }
+            }
 
             // delete tables
             foreach($table_names as $table_name){
                 $sql = "DROP TABLE IF EXISTS $table_name";
                 $wpdb->query($sql);
             }
-
-	        // get all burst transients
-	        $results = $wpdb->get_results(
-		        "SELECT `option_name` AS `name`, `option_value` AS `value`
-                                FROM  $wpdb->options
-                                WHERE `option_name` LIKE '%transient_burst%'
-                                ORDER BY `option_name`", 'ARRAY_A'
-	        );
-	        // loop through all burst transients and delete
-	        foreach ($results as $key => $value){
-		        $transient_name = substr($value['name'], 11);
-		        delete_transient($transient_name);
-	        }
-
-
         }
 
 		/**
@@ -552,9 +631,6 @@ if ( ! class_exists( "burst_admin" ) ) {
 			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_sessions';
 			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_statistics';
 			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_goals';
-            $tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_archived_months';
-            $tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_goal_statistics';
-            $tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_summary';
 
 			return $tables;
 		}

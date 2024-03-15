@@ -46,17 +46,6 @@ const GoalsBlock = () => {
   const currentDateWithOffset = getDateWithOffset();
   const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
   const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
-
-  let goalStart = goals[goalId] && goals[goalId].date_start;
-  let goalEnd = goals[goalId] && goals[goalId].date_end;
-
-  if (goalStart == 0 || goalStart === undefined) {
-    goalStart = startDate;
-  }
-  if (goalEnd == 0 || goalEnd === undefined) {
-    goalEnd = endDate;
-  }
-
   const args = {
     goal_id: goalId,
     startDate: startDate,
@@ -186,9 +175,8 @@ const GoalsBlock = () => {
             <ClickToFilter filter="goal_id" filterValue={data.goalId}
                            label={data.today.tooltip +
                                __('Goal and the start date',
-                                   'burst-statistics')}
-                           startDate={goalStart}
-                           endDate={goalEnd}>
+                                   'burst-statistics')} startDate={startDate}
+                           endDate={endDate}>
               <div className="burst-goals-select-item">
                 <Icon name={totalIcon} size="23"/>
                 <h2>{data.total.value}</h2>

@@ -574,6 +574,18 @@ if ( ! function_exists( 'burst_panel' ) ) {
 	}
 }
 
+if ( ! function_exists( 'burst_get_anon_ip_address' ) ) {
+	/**
+	 * Get anon ip address
+	 * @return string
+	 */
+	function burst_get_anon_ip_address(): string {
+		$ip = burst_get_ip_address();
+
+		return BURST()->anonymize_IP->anonymizeIp( $ip );
+	}
+}
+
 if ( ! function_exists( 'burst_sprintf' ) ) {
 	/**
 	 * @param string $format
@@ -789,6 +801,21 @@ if ( ! function_exists('burst_upload_dir')) {
 	}
 }
 
+if ( ! function_exists('burst_upload_url')) {
+	/**
+	 * Get the upload url
+	 *
+	 * @param string $path
+	 *
+	 * @return string
+	 */
+	function burst_upload_url( string $path=''): string {
+		$uploads    = wp_upload_dir();
+		$upload_url = $uploads['baseurl'];
+		$upload_url = trailingslashit( apply_filters('burst_upload_url', $upload_url) );
+		return trailingslashit($upload_url.'burst/'.$path);
+	}
+}
 
 /**
  * Create directories recursively

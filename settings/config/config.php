@@ -195,6 +195,20 @@ function burst_fields( $load_values = true ) {
 			'default'  => false,
 		],
 		[
+			'id'       => 'combine_vars_and_script',
+			'menu_id'  => 'advanced',
+			'group_id' => 'tracking',
+			'type'     => 'checkbox',
+			'label'    => __( 'Combine inline javascript settings and javascript into one script', 'burst-statistics' ),
+			'help'     => [
+				'label' => 'default',
+				'title' => __( 'Combining inline settings and script', 'burst-statistics' ),
+				'text'  => __( 'You can combine the inline settings and javascript file into one file. This can be useful if you have a headless website, or a strict Content Security Policy.', 'burst-statistics' ),
+			],
+			'disabled' => false,
+			'default'  => false,
+		],
+		[
 			'id'       => 'ip_blocklist',
 			'menu_id'  => 'advanced',
 			'group_id' => 'tracking',

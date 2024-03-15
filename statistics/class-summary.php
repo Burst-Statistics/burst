@@ -68,16 +68,6 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 * @return void
 		 */
 		public function restart_update_summary_table_alltime(){
-			global $wpdb;
-
-			$table_names = array( $wpdb->prefix . 'burst_summary');
-
-			foreach ( $table_names as $table_name ) {
-				if ( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) === $table_name ) {
-					$wpdb->query( "TRUNCATE TABLE $table_name" );
-				}
-			}
-
 			update_option('burst_db_upgrade_summary_table', true, false);
 			delete_option('burst_summary_table_upgrade_days_offset');
 		}
@@ -87,13 +77,6 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 * @return bool
 		 */
 		public function upgrade_completed(){
-			//skip until fixed. 
-			return false;
-
-			//if option set to never use summary tables, return false for upgrade completed.
-			if ( defined('BURST_DONT_USE_SUMMARY_TABLE') ) {
-				return false;
-			}
 			return !get_option('burst_db_upgrade_summary_table');
 		}
 
@@ -105,18 +88,21 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		public function upgrade_summary_table_alltime(){
 
 			global $wpdb;
+			error_log("run upgrade summary table alltime");
 			$first_statistics_date_unix = $wpdb->get_var("select min(time) from {$wpdb->prefix}burst_statistics");
 			//convert unix to date and back to unix, to ensure that the date is at the start of the day, for comparison purposes
-			$first_statistics_date = BURST()->statistics->convert_unix_to_date( $first_statistics_date_unix);
+			$first_statistics_date = date('Y-m-d', $first_statistics_date_unix);
 			//calculate days offset from first_statistics_date to today
-			$first_statistics_date = BURST()->statistics->convert_unix_to_date( strtotime($first_statistics_date));
-			$today = BURST()->statistics->convert_unix_to_date(strtotime('today'));
+			$first_statistics_date = date('Y-m-d', strtotime($first_statistics_date));
+			$today = date('Y-m-d');
 			$max_days_offset = (strtotime($today) - $first_statistics_date_unix) / DAY_IN_SECONDS;
 			//round to integer
 			$max_days_offset = round($max_days_offset, 0);
 			//if the offset is negative, set it to 0
 			$max_days_offset = $max_days_offset < 0 ? 0 : $max_days_offset;
 			$current_days_offset = get_option('burst_summary_table_upgrade_days_offset', 0);
+			error_log("max days offset $max_days_offset");
+			error_log("processed dyas offset ".get_option('burst_summary_table_upgrade_days_offset'));
 
 			//check if the oldest summary date is more recent than the oldest statistics date
 			if ( $max_days_offset > $current_days_offset ){
@@ -124,17 +110,22 @@ if ( ! class_exists( 'burst_summary' ) ) {
 					update_option('burst_summary_table_upgrade_days_offset', 0, false);
 				}
 
-				$days_offset = ( (int) get_option('burst_summary_table_upgrade_days_offset') ) + 1;
+				$days_offset = get_option('burst_summary_table_upgrade_days_offset') + 1;
+				$start = microtime( true );
+
 				for ( $i = 0; $i < 30; $i++ ) {
 					$days_offset++;
-					$success = $this->update_summary_table( $days_offset );
+					$success = $this->update_summary_table($days_offset);
+
 					//if failed, set days_offset to one lower, and exit to try later.
 					if ( !$success ) {
 						update_option('burst_summary_table_upgrade_days_offset', $days_offset-1, false);
 						return;
 					}
 				}
-
+				$end = microtime( true );
+				$passed = $end - $start;
+				error_log("upgrade for summary tables, $days_offset days completed, time $passed seconds ");
 				update_option('burst_summary_table_upgrade_days_offset', $days_offset, false);
 			} else {
 				//completed
@@ -152,10 +143,10 @@ if ( ! class_exists( 'burst_summary' ) ) {
 			//we want to update for yesterday at least once on the next day, to ensure completeness. If completed, continue with normal update process
 			if ( !$this->summary_table_updated_yesterday() ) {
 				$this->update_summary_table( 1 );
+			} else {
+				//update for today
+				$this->update_summary_table();
 			}
-
-			//update for today
-			$this->update_summary_table();
 		}
 
 		/**
@@ -165,16 +156,15 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 */
 		private function summary_table_updated_yesterday(): bool {
 			global $wpdb;
-			$yesterday = BURST()->statistics->convert_unix_to_date( strtotime( 'yesterday' ) );
+			$yesterday = date( 'Y-m-d', strtotime( 'yesterday' ) );
 			$completed = $wpdb->get_var( $wpdb->prepare( "select completed from {$wpdb->prefix}burst_summary where date = %s", $yesterday ) );
 			return (bool) $completed;
 		}
 
 
 		public function summary_sql($date_start, $date_end, $select_array, $group_by='', $order_by='', $limit='', $date_modifiers=false ) {
-			$date_start = BURST()->statistics->convert_unix_to_date( $date_start );
-			$date_end = BURST()->statistics->convert_unix_to_date( $date_end );
-			
+			$date_start = date( 'Y-m-d', $date_start );
+			$date_end = date( 'Y-m-d', $date_end );
 			global $wpdb;
 
 			$sql_array = [
@@ -226,17 +216,17 @@ if ( ! class_exists( 'burst_summary' ) ) {
 			}
 			set_transient('burst_updating_summary_table', 5 * MINUTE_IN_SECONDS );
 			global $wpdb;
-			$today = BURST()->statistics->convert_unix_to_date( strtotime( 'today' ));
+			$today = date( 'Y-m-d' );
 
 			//deduct days offset in days
 			if ( $days_offset > 0 ) {
-				$today = BURST()->statistics->convert_unix_to_date( strtotime( $today . ' -' . $days_offset . ' days' ) );
+				$today = date( 'Y-m-d', strtotime( $today . ' -' . $days_offset . ' days' ) );
 			}
 
 			//get start of today in unix
-			$date_start = BURST()->statistics->convert_date_to_unix( $today . ' 00:00:00' );
+			$date_start = BURST()->statistics->convert_date_to_utc( $today . ' 00:00:00' );
 			//get end of today in unix
-			$date_end = BURST()->statistics->convert_date_to_unix( $today . ' 23:59:59' );
+			$date_end = BURST()->statistics->convert_date_to_utc( $today . ' 23:59:59' );
 			//get today's date
 			//get the summary from the statistics table
 			$select_sql = BURST()->statistics->get_sql_table_raw(

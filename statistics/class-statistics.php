@@ -4,115 +4,9 @@ defined( 'ABSPATH' ) or die( 'you do not have access to this page!' );
 if ( ! class_exists( 'burst_statistics' ) ) {
 	class burst_statistics {
 		function __construct() {
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_burst_time_tracking_script' ), 0 );
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_burst_tracking_script' ), 0 );
-			add_filter( 'script_loader_tag', array( $this, 'defer_burst_tracking_script' ), 10, 3 );
+
 		}
 
-		/**
-		 * Enqueue some assets
-		 *
-		 * @param $hook
-		 */
-
-		public function enqueue_burst_time_tracking_script( $hook ) {
-			$minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-			if ( ! $this->exclude_from_tracking() ) {
-				wp_enqueue_script(
-					'burst-timeme',
-					burst_url . "helpers/timeme/timeme$minified.js",
-					array(),
-					burst_version,
-					false
-				);
-			}
-		}
-
-		/**
-		 * Enqueue some assets
-		 *
-		 * @param $hook
-		 */
-
-		public function enqueue_burst_tracking_script( $hook ) {
-			$minified        = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-			$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
-			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
-			$in_footer       = burst_get_option( 'enable_turbo_mode' );
-			$beacon_enabled  = (int) burst_tracking_status_beacon();
-
-			if ( ! $this->exclude_from_tracking() ) {
-				$localize_args = apply_filters(
-					'burst_tracking_options',
-					array(
-						'url'                   => burst_get_rest_url(),
-						'page_id'               => get_queried_object_id(),
-						'cookie_retention_days' => 30,
-						'beacon_url'            => burst_get_beacon_url(),
-						'options'               => array(
-							'beacon_enabled'             => $beacon_enabled,
-							'enable_cookieless_tracking' => (int) $cookieless,
-							'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
-							'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
-						),
-						'goals'                 => burst_get_active_goals(),
-						'goals_script_url'      => burst_get_goals_script_url(),
-					)
-				);
-
-				$deps = $beacon_enabled ? [ 'burst-timeme' ] : [ 'burst-timeme', 'wp-api-fetch' ];
-
-				wp_enqueue_script(
-					'burst',
-					burst_url . "assets/js/build/burst$cookieless_text$minified.js",
-					apply_filters( 'burst_script_dependencies', $deps ),
-					burst_version,
-					$in_footer
-				);
-				wp_localize_script(
-					'burst',
-					'burst',
-					$localize_args
-				);
-			}
-		}
-
-		public function defer_burst_tracking_script( $tag, $handle, $src ) {
-			// time me load asap but async to avoid blocking the page load
-			if ( 'burst-timeme' === $handle ) {
-				return str_replace( ' src', ' async src', $tag );
-			}
-
-			$turbo = burst_get_option( 'enable_turbo_mode' );
-			if ( $turbo ) {
-				if ( 'burst' == $handle ) {
-					return str_replace( ' src', ' defer src', $tag );
-				}
-			}
-
-			if ( 'burst' === $handle ) {
-				return str_replace( ' src', ' async src', $tag );
-			}
-
-			return $tag;
-		}
-
-		function exclude_from_tracking() {
-			if ( is_user_logged_in() ) {
-				$user                = wp_get_current_user();
-				$user_role_blocklist = burst_get_option( 'user_role_blocklist' );
-				$get_excluded_roles  = is_array( $user_role_blocklist ) ? $user_role_blocklist : array( 'adminstrator' );
-				$excluded_roles      = apply_filters( 'burst_roles_excluded_from_tracking', $get_excluded_roles );
-				if ( array_intersect( $excluded_roles, $user->roles ) ) {
-					return true;
-				}
-				if ( is_preview() || burst_is_pagebuilder_preview() ) {
-					return true;
-				}
-			}
-
-			return false;
-		}
 
 		/**
 		 * @param string $metric
@@ -847,7 +741,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @return int
 		 */
 
-		public function convert_date_to_unix(
+		public function convert_date_to_utc(
 			$time_string
 		): int {
 			$time               = DateTime::createFromFormat( 'Y-m-d H:i:s', $time_string );
@@ -856,28 +750,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 			return $utc_time - $gmt_offset_seconds;
 		}
-
-		/**
-		 * convert unix timestamp to date string by gmt offset
-		 *
-		 * @param $unix_timestamp      int
-		 *
-		 * @return string
-		 */
-
-		public function convert_unix_to_date($unix_timestamp): string {
-			// Adjust the Unix timestamp for the GMT offset
-			$gmt_offset_seconds = (int) (get_option('gmt_offset') * HOUR_IN_SECONDS);
-			$adjusted_timestamp = $unix_timestamp + $gmt_offset_seconds;
-
-			// Convert the adjusted timestamp to a DateTime object
-			$time = new DateTime();
-			$time->setTimestamp($adjusted_timestamp);
-
-			// Format the DateTime object to 'Y-m-d' format
-			return $time->format('Y-m-d');
-		}
-
 
 		/**
 		 * @param string $period
@@ -1135,29 +1007,29 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @param array $select
 		 * @param array $filters
 		 * @param string $group_by
-		 * @param string $order_by
-		 * @param string $limit
-		 * @param array $joins
-		 * @param array|false $date_modifiers
+		 * @param $order_by
+		 * @param $limit
+		 * @param $joins
+		 * @param $raw
 		 *
 		 * @return string|null
 		 */
 		public function get_sql_table( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [], $date_modifiers = false ) {
-			$raw = $date_modifiers && strpos($date_modifiers['sql_date_format'], '%H') !== false;
+			$raw = isset($date_modifiers['sql_date_format']) && strpos($date_modifiers['sql_date_format'], '%H')!==false;
 
-			if ( !$raw && BURST()->summary->upgrade_completed() && BURST()->summary->is_summary_data($select, $filters) ) {
-				return BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
+			if ( !$raw && BURST()->summary->upgrade_completed() &&  BURST()->summary->is_summary_data($select, $filters)  ) {
+				error_log("generating summary sql");
+				$sql = BURST()->summary->summary_sql($start, $end, $select, $group_by, $order_by, $limit, $date_modifiers);
+				error_log("summary sql: $sql");
+				return $sql;
 			}
-
 			$sql = $this->get_sql_table_raw($start, $end, $select, $filters, $group_by, $order_by, $limit, $joins);
-
 			if ( $date_modifiers ) {
 				$sql = str_replace( 'SELECT', "SELECT DATE_FORMAT(FROM_UNIXTIME(time), '{$date_modifiers['sql_date_format']}') as period,", $sql );
 			}
-
+			error_log("non summary sql $sql");
 			return $sql;
 		}
-
 
 		/**
 		 * Function to get the SQL query to exclude bounces from query's
@@ -1454,22 +1326,22 @@ function burst_install_statistics_table() {
 
 		$table_name = $wpdb->prefix . 'burst_statistics';
 		$sql        = "CREATE TABLE $table_name (
-			`ID` int NOT NULL AUTO_INCREMENT ,
+			`ID` int(11) NOT NULL AUTO_INCREMENT ,
             `page_url` varchar(255) NOT NULL,
-            `time` int NOT NULL,
+            `time` int(11) NOT NULL,
             `uid` varchar(255) NOT NULL,
-            `time_on_page` int,
+            `time_on_page` int(11),
             `entire_page_url` varchar(255) NOT NULL,
-            `page_id` int NOT NULL,
+            `page_id` int(11) NOT NULL,
             `referrer` varchar(255),
             `browser` varchar(255),
             `browser_version` varchar(255),
             `platform` varchar(255),
             `device` varchar(255),
             `device_resolution` varchar(255),
-            `session_id` int,
-            `first_time_visit` tinyint,
-            `bounce` tinyint DEFAULT 1,
+            `session_id` int(11),
+            `first_time_visit` int(1),
+            `bounce` int(1) DEFAULT 1,
               PRIMARY KEY  (ID),
               INDEX time_index (time),
               INDEX bounce_index (bounce),
@@ -1482,16 +1354,16 @@ function burst_install_statistics_table() {
 
 		$table_name = $wpdb->prefix . 'burst_summary';
 		$sql        = "CREATE TABLE $table_name (
-			`ID` int NOT NULL AUTO_INCREMENT ,
+			`ID` int(11) NOT NULL AUTO_INCREMENT ,
             `date` DATE NOT NULL,
             `page_url` varchar(255) NOT NULL,
-            `sessions` int NOT NULL,
-            `visitors` int NOT NULL,
-            `first_time_visitors` int NOT NULL,
-            `pageviews` int NOT NULL,
-            `bounces` int NOT NULL,
-            `avg_time_on_page` int NOT NULL,
-            `completed` tinyint NOT NULL,
+            `sessions` int(11) NOT NULL,
+            `visitors` int(11) NOT NULL,
+            `first_time_visitors` int(11) NOT NULL,
+            `pageviews` int(11) NOT NULL,
+            `bounces` int(11) NOT NULL,
+            `avg_time_on_page` int(11) NOT NULL,
+            `completed` int(11) NOT NULL,
             UNIQUE KEY unique_date_page_url (date, page_url),
             INDEX page_url_date_index (page_url, date),
             INDEX date_index (date),

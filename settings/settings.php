@@ -72,12 +72,10 @@ function burst_get_chunk_translations( $dir ) {
 			continue;
 		}
 
-        //remove extension from $filename
-        $chunk_handle = str_replace('.js', '', $filename);
+		$chunk_handle = 'burst-chunk-'.$filename;
 		//temporarily register the script, so we can get a translations object.
 		wp_register_script( $chunk_handle, plugins_url('build/'.$filename, __FILE__), [], true );
-        $path = defined( 'burst_pro' ) ? burst_path . 'languages' : false;
-		$localeData = load_script_textdomain( $chunk_handle, 'burst-statistics', $path  );
+		$localeData = load_script_textdomain( $chunk_handle, 'burst-statistics' );
 		if (!empty($localeData)){
 			$json_translations[] = $localeData;
 		}
@@ -599,9 +597,9 @@ function burst_get_data( WP_REST_Request $request ) {
 
 	$type = sanitize_title( $request->get_param( 'type' ) );
 	$args = array(
-		'date_start' => BURST()->statistics->convert_date_to_unix( $request->get_param( 'date_start' ) . ' 00:00:00' ),
+		'date_start' => BURST()->statistics->convert_date_to_utc( $request->get_param( 'date_start' ) . ' 00:00:00' ),
 		// add 00:00:00 to date,
-		'date_end'   => BURST()->statistics->convert_date_to_unix( $request->get_param( 'date_end' ) . ' 23:59:59' ),
+		'date_end'   => BURST()->statistics->convert_date_to_utc( $request->get_param( 'date_end' ) . ' 23:59:59' ),
 		// add 23:59:59 to date
 	);
 	if ( isset( $request->get_params()['args'] ) ) {

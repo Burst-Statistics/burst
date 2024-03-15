@@ -14,94 +14,132 @@ if ( ! class_exists( "burst_frontend" ) ) {
 
             self::$_this = $this;
 
-            add_action('admin_bar_menu', array($this, 'add_to_admin_bar_menu'), 35);
-            add_action('admin_bar_menu', array($this, 'add_top_bar_menu'), 400 );
-	        add_action( 'init', array( $this, 'register_pageviews_block' ) );
-		}
+	        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_burst_time_tracking_script' ), 0 );
+	        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_burst_tracking_script' ), 0 );
+	        add_filter( 'script_loader_tag', array( $this, 'defer_burst_tracking_script' ), 10, 3 );
+        }
 
         static function this()
         {
             return self::$_this;
         }
 
-        public function add_to_admin_bar_menu( $wp_admin_bar ) {
-            if ( ! burst_user_can_view() || is_admin() ) {
-                return;
-            }
+	    /**
+	     * Enqueue some assets
+	     *
+	     * @param $hook
+	     */
 
-			//don't show on subsites if networkwide activated, and this is not the main site.
-			if ( burst_is_networkwide_active() && !is_main_site() ) {
-				return;
-			}
-
-			$wp_admin_bar->add_node(
-                array(
-                    'parent' => 'site-name',
-                    'id' => 'burst-statistics',
-                    'title' => __('Statistics', 'burst-statistics'),
-                    'href' => burst_dashboard_url,
-                )
-            );
-        }
+	    public function enqueue_burst_time_tracking_script( $hook ) {
+		    $minified = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+		    if ( ! $this->exclude_from_tracking() ) {
+			    wp_enqueue_script(
+				    'burst-timeme',
+				    burst_url . "helpers/timeme/timeme$minified.js",
+				    array(),
+				    burst_version,
+				    false
+			    );
+		    }
+	    }
 
 	    /**
-	     * Add top bar menu for page views
-	     * @param $wp_admin_bar
+	     * Enqueue some assets
 	     *
-	     * @return void
+	     * @param $hook
 	     */
-		public function add_top_bar_menu( $wp_admin_bar ) {
-			global $wp_admin_bar;
-			global $wpdb;
-			if ( is_admin() ) {
-				return;
-			}
 
-			if ( ! burst_user_can_view() ) {
-				return;
-			}
+	    public function enqueue_burst_tracking_script( $hook ) {
 
-			global $post;
-			if ( $post && is_object($post) ) {
-				$post_id = $post->ID;
-				$count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
-			} else {
-				$count = 0;
-			}
-			$wp_admin_bar->add_menu(
-				array(
-					'id' => 'burst-front-end',
-					'title' => $count . ' ' . __('Pageviews', 'burst-statistics'),
-				));
-			$wp_admin_bar->add_menu(
-				array(
-					'parent' => 'burst-front-end',
-					'id' => 'burst-statistics-link',
-					'title' => __('Go to dashboard', 'burst-statistics'),
-					'href' => burst_dashboard_url,
-				));
-		}
+		    if ( ! $this->exclude_from_tracking() ) {
+			    $in_footer       = burst_get_option( 'enable_turbo_mode' );
+			    $beacon_enabled  = (int) burst_tracking_status_beacon();
+			    $deps = $beacon_enabled ? [ 'burst-timeme' ] : [ 'burst-timeme', 'wp-api-fetch' ];
+				$combine_vars_and_script = burst_get_option( 'combine_vars_and_script' );
+				if ( $combine_vars_and_script ) {
+					$upload_url  = burst_upload_url( 'js' );
+					$upload_path = burst_upload_dir( 'js' );
+					wp_enqueue_script(
+						'burst',
+						$upload_url . "burst.min.js",
+						apply_filters( 'burst_script_dependencies', $deps ),
+						filemtime( $upload_path . "burst.min.js" ),
+						$in_footer
+					);
+				} else {
+					$minified        = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+					$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
+					$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
 
-	    public function register_pageviews_block() {
-		    wp_register_script(
-			    'burst-pageviews-block-editor',
-			    plugins_url( 'blocks/pageviews.js', __FILE__ ), // Adjust the path to your JavaScript file
-			    array( 'wp-blocks', 'wp-element', 'wp-editor' ),
-			    filemtime( plugin_dir_path( __FILE__ ) . 'blocks/pageviews.js' )
-		    );
-		    wp_set_script_translations( 'burst-pageviews-block-editor', 'burst-statistics' , burst_path . '/languages');
-
-		    register_block_type( 'burst/pageviews-block', array(
-			    'editor_script' => 'burst-pageviews-block-editor',
-			    'render_callback' => array( $this, 'render_burst_pageviews' )
-		    ) );
+					$localize_args = apply_filters(
+						'burst_tracking_options',
+						array(
+							'url'                   => burst_get_rest_url(),
+							'page_id'               => get_queried_object_id(),
+							'cookie_retention_days' => 30,
+							'beacon_url'            => burst_get_beacon_url(),
+							'options'               => array(
+								'beacon_enabled'             => $beacon_enabled,
+								'enable_cookieless_tracking' => (int) $cookieless,
+								'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
+								'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
+							),
+							'goals'                 => burst_get_active_goals(),
+							'goals_script_url'      => burst_get_goals_script_url(),
+						)
+					);
+					wp_enqueue_script(
+						'burst',
+						burst_url . "assets/js/build/burst$cookieless_text$minified.js",
+						apply_filters( 'burst_script_dependencies', $deps ),
+						burst_version,
+						$in_footer
+					);
+					wp_localize_script(
+						'burst',
+						'burst',
+						$localize_args
+					);
+				}
+		    }
 	    }
-	    public function render_burst_pageviews() {
-		    global $post;
-		    $burst_total_pageviews_count = get_post_meta( $post->ID, 'burst_total_pageviews_count', true );
-		    $count = (int) $burst_total_pageviews_count ?: 0;
-		    $text = sprintf( _n('This page has been viewed %d time.', 'This page has been viewed %d times.', $count, 'burst-statistics'), $count );
-			return '<p class="burst-pageviews">' . $text . '</p>';
+
+	    public function defer_burst_tracking_script( $tag, $handle, $src ) {
+		    // time me load asap but async to avoid blocking the page load
+		    if ( 'burst-timeme' === $handle ) {
+			    return str_replace( ' src', ' async src', $tag );
+		    }
+
+		    $turbo = burst_get_option( 'enable_turbo_mode' );
+		    if ( $turbo ) {
+			    if ( 'burst' == $handle ) {
+				    return str_replace( ' src', ' defer src', $tag );
+			    }
+		    }
+
+		    if ( 'burst' === $handle ) {
+			    return str_replace( ' src', ' async src', $tag );
+		    }
+
+		    return $tag;
 	    }
+
+	    function exclude_from_tracking() {
+		    if ( is_user_logged_in() ) {
+			    $user                = wp_get_current_user();
+			    $user_role_blocklist = burst_get_option( 'user_role_blocklist' );
+			    $get_excluded_roles  = is_array( $user_role_blocklist ) ? $user_role_blocklist : array( 'adminstrator' );
+			    $excluded_roles      = apply_filters( 'burst_roles_excluded_from_tracking', $get_excluded_roles );
+			    if ( array_intersect( $excluded_roles, $user->roles ) ) {
+				    return true;
+			    }
+			    if ( is_preview() || burst_is_pagebuilder_preview() ) {
+				    return true;
+			    }
+		    }
+
+		    return false;
+	    }
+
     }
 }
