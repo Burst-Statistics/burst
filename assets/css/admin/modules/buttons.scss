@@ -113,6 +113,11 @@ a.burst-button, button.burst-button, input.burst-button {
     }
   }
 }
+.burst-reset button {
+  background: var(--rsp-red);
+  border-color: var(--rsp-red);
+  color: var(--rsp-text-color-white);
+}
 
 .burst .burst-button.burst-button--date-range {
   display: flex;

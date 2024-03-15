@@ -9,7 +9,7 @@ const Pro = ({pro, id}) => {
     }
 
     let url = pro.url ? pro.url : 'https://burst-statistics.io/pricing';
-    url+='?'+id;
+    url+='?src='+id;
     return (
         <div className="burst-pro">
             <a target="_blank" href={url}>{__("Upgrade", "burst-statistics")}</a>

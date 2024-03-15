@@ -46,6 +46,10 @@ if ( ! class_exists( "burst_admin" ) ) {
 
             // remove tables on multisite uninstall
 			add_filter( 'wpmu_drop_tables', array( $this, 'ms_remove_tables' ), 10, 2 );
+
+			add_filter( 'burst_do_action', array( $this, 'maybe_delete_all_data' ), 10, 3 );
+
+
 		}
 
 
@@ -430,6 +434,28 @@ if ( ! class_exists( "burst_admin" ) ) {
 	            exit;
 	        }
 	    }
+
+		/**
+         * Clear all data from the reset button in the settings
+		 * @param array  $output
+		 * @param string $action
+		 * @param        $data
+		 *
+		 * @return array
+		 */
+        public function maybe_delete_all_data(array $output, string $action, $data ){
+            if ( !burst_user_can_manage() ) {
+	            return $output;
+            }
+	        if ( $action==='reset' ) {
+                $this->delete_all_burst_data();
+		        $output = [
+                        'success' => true,
+                        'message' => __('Successfully cleared data.', 'burst-statistics'),
+                ];
+	        }
+	        return $output;
+        }
 
 	    /**
 	     * Remove the plugin from the active plugins array when called from listen_for_deactivation

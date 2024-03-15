@@ -1121,6 +1121,12 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     fill: var(--rsp-red);
 }
 
+.burst-reset button {
+    background: var(--rsp-red);
+    border-color: var(--rsp-red);
+    color: var(--rsp-text-color-white);
+}
+
 .burst .burst-button.burst-button--date-range {
     display: flex;
     align-items: center;

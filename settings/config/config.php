@@ -263,6 +263,18 @@ function burst_fields( $load_values = true ) {
 				],
 			],
 		],
+		[
+			'id'       => 'reset',
+			'menu_id'  => 'data',
+			'group_id' => 'data_archiving',
+			'type'     => 'button',
+			'warn'     => __( 'Are you sure? This will clear all data, and cannot be undone.', 'burst-statistics' ),
+			'action'   => 'reset',
+			'button_text'     => __('Reset', 'burst-statistics'),
+			'label'    => __( 'This will clear all data in the database.', 'burst-statistics' ),
+			'disabled' => false,
+			'default'  => false,
+		],
 //		[
 //			'id'       => 'archive_data',
 //			'menu_id'  => 'data',

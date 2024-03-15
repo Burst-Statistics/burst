@@ -7,7 +7,6 @@ import {
 } from '@wordpress/components';
 import {useState, useEffect} from "@wordpress/element";
 import {useFields} from '../../store/useFieldsStore';
-import Hyperlink from "../../utils/Hyperlink";
 import Icon from "../../utils/Icon";
 import IpBlock from './Fields/IpBlock';
 import UserRoleBlock from './Fields/UserRoleBlock';
@@ -17,6 +16,7 @@ import SelectInput from './Fields/SelectInput';
 import License from './Fields/License';
 import RestoreArchivesControl from './Fields/RestoreArchivesControl';
 import LabelWrapper from './Fields/LabelWrapper';
+import ButtonControl from "./Fields/ButtonControl";
 /*
  * https://react-data-table-component.netlify.app
  */
@@ -193,9 +193,9 @@ const Field = (props) => {
 
 	if ( field.type==='button' ){
 		return (
-			<div className={'burst-field-button ' + highLightClass}>
+			<div className={'burst-field-button ' + highLightClass+' burst-'+field.id }>
 				<label>{field.label}</label>
-				<Hyperlink className="burst-button burst-button--secondary" text={field.button_text} disabled={disabled} url={field.url}/>
+				<ButtonControl label={field.label} field={field} disabled={disabled} />
 			</div>
 		);
 	}
