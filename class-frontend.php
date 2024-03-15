@@ -50,7 +50,11 @@ if ( ! class_exists( "burst_frontend" ) ) {
 	     */
 
 	    public function enqueue_burst_tracking_script( $hook ) {
-
+		    //don't enqueue if headless.
+		    if ( defined('BURST_HEADLESS' ) || burst_get_option('headless') ){
+			    return;
+		    }
+			
 		    if ( ! $this->exclude_from_tracking() ) {
 			    $in_footer       = burst_get_option( 'enable_turbo_mode' );
 			    $beacon_enabled  = (int) burst_tracking_status_beacon();
