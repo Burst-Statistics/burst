@@ -179,6 +179,7 @@ if ( ! function_exists( 'burst_set_defaults' ) ) {
 	 * @param $networkwide
 	 */
 	function burst_set_defaults( $networkwide ) {
+		do_action( 'burst_activation' );
 		if (!function_exists('burst_add_view_capability')) {
 			require_once( plugin_dir_path( __FILE__ ) . 'functions.php' );
 		}
