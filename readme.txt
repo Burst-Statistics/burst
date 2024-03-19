@@ -8,7 +8,7 @@ Requires PHP: 7.2
 Tested up to: 6.4
 Stable tag: 1.5.7
 
-Self-hosted and privacy-friendly analytics for Wordpress.
+Self-hosted and privacy-friendly analytics for WordPress.
 
 == Description ==
 
@@ -311,7 +311,7 @@ We value your feedback. You can [submit a support request on the WordPress forum
 * Improvement: added parameter to clear the dashboard cache
 * Improvement: added JS event to so other plugins can integrate with Burst
 * Improvement: added privacy annex
-* Improvement: added widget to the Wordpress Dashboard Props: Shayne
+* Improvement: added widget to the WordPress Dashboard Props: Shayne
 
 = 1.0.2 =
 * Fix: typo fix in generate_cached_data, props @seath
