@@ -3,7 +3,7 @@
  * Plugin Name: Burst Statistics - Privacy-Friendly Analytics for WordPress
  * Plugin URI: https://www.wordpress.org/plugins/burst-statistics
  * Description: Get detailed insights into visitors’ behavior with Burst Statistics, the privacy-friendly analytics dashboard.
- * Version: 1.5.7
+ * Version: 1.6.0
  * Requires at least: 5.8
  * Requires PHP: 7.2
  * Text Domain: burst-statistics
@@ -36,15 +36,17 @@ if ( ! class_exists( 'BURST' ) ) {
 		private static $instance;
 		public $endpoint;
 		public $statistics;
+		public $goal_statistics;
 		public $sessions;
 		public $goals;
-		public $goal_statistics;
+		public $goals_tracker;
 		public $admin;
 		public $settings;
 		public $frontend;
 		public $review;
 		public $config;
 		public $notices;
+		public $archive;
 		public $summary;
 		public $dashboard_widget;
 		public $db_upgrade;
@@ -59,14 +61,15 @@ if ( ! class_exists( 'BURST' ) ) {
 				self::$instance->includes();
 
 				self::$instance->endpoint        = new burst_endpoint();
-				self::$instance->statistics      = new burst_statistics();
-				self::$instance->goal_statistics = new burst_goal_statistics();
 				self::$instance->sessions        = new burst_sessions();
 				self::$instance->goals           = new burst_goals();
+				self::$instance->goals_tracker   = new burst_goals_tracker();
 				self::$instance->frontend        = new burst_frontend();
 
-
 				if ( burst_admin_logged_in() ) {
+					self::$instance->goals           = new burst_goals();
+					self::$instance->statistics      = new burst_statistics();
+					self::$instance->goal_statistics = new burst_goal_statistics();
 					self::$instance->admin      = new burst_admin();
 					self::$instance->summary    = new burst_summary();
 					self::$instance->review     = new burst_review();
@@ -96,7 +99,7 @@ if ( ! class_exists( 'BURST' ) ) {
 			$burst_plugin = implode( '/', $burst_plugin );
 			define( 'burst_plugin_folder', $burst_plugin );
 			$debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '#'.time() : '';
-			define( 'burst_version', '1.5.7' . $debug );
+			define( 'burst_version', '1.6.0' . $debug );
 			define( 'burst_plugin_file', __FILE__ );
 			define( 'burst_main_menu_position', 100 );
 			define( 'burst_pro_url', 'https://burst-statistics.com/pricing/?src=burst-plugin' );
@@ -128,16 +131,18 @@ if ( ! class_exists( 'BURST' ) ) {
 			require_once( burst_path . 'tracking/tracking.php' );
 			require_once( burst_path . 'class-frontend.php' );
 			require_once( burst_path . 'helpers/php-user-agent/UserAgentParser.php' );
-			require_once( burst_path . 'statistics/class-statistics.php' );
-			require_once( burst_path . 'statistics/class-goal-statistics.php' );
 			require_once( burst_path . 'sessions/class-sessions.php' );
 			require_once( burst_path . 'goals/class-goals.php' );
+			require_once( burst_path . 'goals/class-goals-tracker.php' );
 			require_once( burst_path . 'cron.php' );
-			require_once( burst_path . 'upgrade.php' );
-			require_once( burst_path . 'class-db-upgrade.php' );
-
+			require_once( burst_path . 'class-frontend.php' );
 
 			if ( burst_admin_logged_in() ) {
+				require_once( burst_path . 'upgrade.php' );
+				require_once( burst_path . 'goals/class-goals.php' );
+				require_once( burst_path . 'class-db-upgrade.php' );
+				require_once( burst_path . 'statistics/class-statistics.php' );
+				require_once( burst_path . 'statistics/class-goal-statistics.php' );
 				require_once( burst_path . 'class-admin.php' );
 				require_once( burst_path . 'statistics/class-summary.php' );
 				require_once( burst_path . 'settings/settings.php' );
