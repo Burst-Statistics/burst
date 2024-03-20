@@ -89,8 +89,8 @@ We value your feedback. You can [submit a support request on the WordPress forum
 == Change log ==
 = 1.6.0 =
 * Tested up to: WordPress 6.5
-* Feature: Tracking of URL parameters and UTM Campaigns. This will allow you to track the performance of your marketing campaigns and see how your site is being used.
-* Feature: Added more metrics to select in all datatables (Pages, Referrers, Countries, Parameters, Campaigns).
+* Feature: (Pro) Tracking of URL parameters and UTM Campaigns. This will allow you to track the performance of your marketing campaigns and see how your site is being used.
+* Feature: (Pro) Added more metrics to select in all datatables (Pages, Referrers, Countries, Parameters, Campaigns).
 * Feature: Track WordPress hooks as a goal. This will allow you to track WooCommerce orders, form submissions, and more. Your imagination is the limit.
 * Feature: Added shortcode to display the most viewed posts or pages. This will allow you to display the most popular posts or pages on your website.
 * Improvement: Removed WPML specific code as it is not needed anymore.
