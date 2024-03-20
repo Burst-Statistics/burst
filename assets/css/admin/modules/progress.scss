@@ -217,6 +217,11 @@
     background-color: var(--rsp-white);
     color: var(--rsp-text-color-light);
   }
+  //used in license block
+  &.burst-skeleton{
+    background-color: var(--rsp-grey-400);
+    color: var(--rsp-white);
+  }
 }
 
 .burst-plusone {

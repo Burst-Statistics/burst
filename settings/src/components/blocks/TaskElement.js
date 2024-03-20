@@ -1,4 +1,5 @@
 import {__} from '@wordpress/i18n';
+import Icon from "../../utils/Icon";
 
 const TaskElement = (props) => {
     const handleClick = () => {
@@ -9,7 +10,8 @@ const TaskElement = (props) => {
         return(
             <div className="burst-task-element">
                 <span className={'burst-task-status burst-' + notice.output.icon}>{ notice.output.label }</span>
-                <p className="burst-task-message" dangerouslySetInnerHTML={{__html: notice.output.msg}}></p>
+                {notice.output.icon!=='skeleton' && <p className="burst-task-message" dangerouslySetInnerHTML={{__html: notice.output.msg}}></p>}
+                {notice.output.icon==='skeleton' && <div className="burst-task-message" ><Icon name="loading" /></div>}
                 {notice.output.url && <a target="_blank" href={notice.output.url}>{__("More info", "burst-statistics")}</a> }
                 {notice.output.highlight_field_id && <span className="burst-task-enable" onClick={handleClick}>{__("Fix", "burst-statistics")}</span> }
                 {notice.output.plusone && <span className='burst-plusone'>1</span>}

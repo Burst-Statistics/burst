@@ -11,39 +11,6 @@ require_once burst_path . 'settings/config/config.php';
 require_once burst_path . 'settings/rest-api-optimizer/rest-api-optimizer.php';
 
 /**
- * Fix for WPML issue where WPML breaks the rest api by adding a language locale in the url
- *
- * @param $url
- * @param $path
- * @param $blog_id
- * @param $scheme
- *
- * @return string
- */
-function burst_fix_rest_url_for_wpml( $url, $path, $blog_id, $scheme ) {
-	if ( strpos( $url, 'burst/v' ) === false ) {
-		return $url;
-	}
-	$current_language = false;
-	if ( function_exists( 'icl_register_string' ) ) {
-		$current_language = apply_filters( 'wpml_current_language', null );
-	}
-
-	if ( function_exists( 'qtranxf_getLanguage' ) ) {
-		$current_language = qtranxf_getLanguage();
-	}
-
-	if ( $current_language ) {
-		if ( strpos( $url, '/' . $current_language . '/wp-json/' ) ) {
-			$url = str_replace( '/' . $current_language . '/wp-json/', '/wp-json/', $url );
-		}
-	}
-
-	return $url;
-}
-
-add_filter( 'rest_url', 'burst_fix_rest_url_for_wpml', 10, 4 );
-/**
  * WordPress doesn't allow for translation of chunks resulting of code splitting.
  * Several workarounds have popped up in JetPack and Woocommerce: https://developer.wordpress.com/2022/01/06/wordpress-plugin-i18n-webpack-and-composer/
  * Below is mainly based on the Woocommerce solution, which seems to be the most simple approach. Simplicity is king here.
@@ -151,7 +118,7 @@ function burst_localized_settings($js_data){
  * @return void
  */
 function burst_rest_api_fallback() {
-	$response = array();
+	$response = [];
 	$error    = $action = $do_action = $data = $data_type = false;
 	if ( ! burst_user_can_manage() ) {
 		$error = true;
@@ -200,8 +167,8 @@ function burst_rest_api_fallback() {
 			$response = burst_rest_api_goals_delete( $request, $data );
 		} elseif ( strpos( $action, '/goal_fields/get' ) !== false ) {
 			$response = burst_rest_api_goal_fields_get( $request );
-		} elseif ( strpos( $action, '/goal_fields/set' ) !== false ) {
-			$response = burst_rest_api_goal_fields_set( $request, $data );
+		} elseif ( strpos( $action, '/goals/set' ) !== false ) {
+			$response = burst_rest_api_goals_set( $request, $data );
 		} elseif ( strpos( $action, '/posts/' ) !== false ) {
 			$response = burst_get_posts( $request, $data );
 		} elseif ( strpos( $action, '/data/' ) ) {
@@ -226,7 +193,14 @@ function burst_add_option_menu() {
 		return;
 	}
 
-	$menu_label    = __( 'Statistics', 'burst-statistics' );
+    //if track network wide is enabled, show the menu only on the main site
+	if ( is_multisite() && burst_get_option('track_network_wide') && burst_is_networkwide_active() ) {
+	    if (!is_main_site()){
+            return;
+        }
+    }
+
+		$menu_label    = __( 'Statistics', 'burst-statistics' );
 	$warnings      = BURST()->notices->count_plusones( array( 'plus_ones' => true ) );
 	$warning_title = esc_attr( burst_sprintf( '%d plugin warnings', $warnings ) );
 	if ( $warnings > 0 ) {
@@ -364,6 +338,18 @@ function burst_settings_rest_route() {
 
 	register_rest_route(
 		'burst/v1',
+		'goals/add_predefined',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'burst_rest_api_goals_add_predefined',
+			'permission_callback' => function () {
+				return burst_user_can_manage();
+			},
+		)
+	);
+//    add_predefined
+    register_rest_route(
+		'burst/v1',
 		'goals/add',
 		array(
 			'methods'             => 'POST',
@@ -376,22 +362,10 @@ function burst_settings_rest_route() {
 
 	register_rest_route(
 		'burst/v1',
-		'goal_fields/get',
-		array(
-			'methods'             => 'GET',
-			'callback'            => 'burst_rest_api_goal_fields_get',
-			'permission_callback' => function () {
-				return burst_user_can_manage();
-			},
-		)
-	);
-
-	register_rest_route(
-		'burst/v1',
-		'goal_fields/set',
+		'goals/set',
 		array(
 			'methods'             => 'POST',
-			'callback'            => 'burst_rest_api_goal_fields_set',
+			'callback'            => 'burst_rest_api_goals_set',
 			'permission_callback' => function () {
 				return burst_user_can_manage();
 			},
@@ -480,7 +454,7 @@ function burst_do_action( $request, $ajax_data = false ) {
 			$data = BURST()->endpoint->get_tracking_status_and_time();
 			break;
 		default:
-			$data = apply_filters( 'burst_do_action', array(), $action, $data );
+			$data = apply_filters( 'burst_do_action', [], $action, $data );
 	}
 
 	if ( ob_get_length() ) {
@@ -506,7 +480,7 @@ function burst_do_action( $request, $ajax_data = false ) {
 
 function burst_plugin_actions( $request, $data ) {
 	if ( ! burst_user_can_manage() ) {
-		return array();
+		return [];
 	}
 	$slug      = sanitize_title( $data['slug'] );
 	$action    = sanitize_title( $data['pluginAction'] );
@@ -529,7 +503,7 @@ function burst_plugin_actions( $request, $data ) {
  */
 function burst_other_plugins_data( $slug = false ) {
 	if ( ! burst_user_can_view() ) {
-		return array();
+		return [];
 	}
 	$plugins = array(
 		array(
@@ -607,7 +581,7 @@ function burst_get_data( WP_REST_Request $request ) {
 	if ( isset( $request->get_params()['args'] ) ) {
 		$request_args = json_decode( $request->get_param( 'args' ), true );
 	} else {
-		$request_args = array();
+		$request_args = [];
 	}
 	// merge get_json_params with request_args
 	$post_args = $request->get_json_params();
@@ -615,8 +589,10 @@ function burst_get_data( WP_REST_Request $request ) {
 		$request_args = array_merge( $request_args, $post_args );
 	}
 
-	$args['metrics'] = $request_args['metrics'] ?? array();
-	$args['filters'] = burst_sanitize_filters( $request_args['filters'] ?? array() );
+	$args['metrics'] = $request_args['metrics'] ?? [];
+	$args['filters'] = burst_sanitize_filters( $request_args['filters'] ?? [] );
+    $args['group_by']    = $request_args['group_by'] ?? [];
+
 	switch ( $type ) {
 		case 'live-visitors':
 			$data = BURST()->statistics->get_live_visitors_data();
@@ -648,8 +624,8 @@ function burst_get_data( WP_REST_Request $request ) {
 		case 'devicessubtitle':
 			$data = BURST()->statistics->get_devices_subtitle_data( $args );
 			break;
-		case 'pages':
-			$data = BURST()->statistics->get_pages_data( $args );
+		case 'datatable':
+			$data = BURST()->statistics->get_datatables_data( $args );
 			break;
 		case 'referrers':
 			$data = BURST()->statistics->get_referrers_data( $args );
@@ -660,6 +636,10 @@ function burst_get_data( WP_REST_Request $request ) {
 	if ( ob_get_length() ) {
 		ob_clean();
 	}
+
+    if (isset($data['error'])) {
+        return new WP_Error( 'rest_invalid_data', $data['error'], array( 'status' => 400 ) );
+    }
 
 	return new WP_REST_Response(
 		array(
@@ -794,7 +774,7 @@ function burst_rest_api_fields_set( $request, $ajax_data = false ) {
 		$fields[ $index ] = $field;
 	}
 
-	$options = get_option( 'burst_options_settings', array() );
+	$options = get_option( 'burst_options_settings', [] );
 
 	// build a new options array
 	foreach ( $fields as $field ) {
@@ -851,9 +831,9 @@ function burst_update_option( $name, $value ) {
 	if ( ! $type ) {
 		return;
 	}
-	$options = get_option( 'burst_options_settings', array() );
+	$options = get_option( 'burst_options_settings', [] );
 	if ( ! is_array( $options ) ) {
-		$options = array();
+		$options = [];
 	}
 	$prev_value       = $options[ $name ] ?? false;
 	$name             = sanitize_text_field( $name );
@@ -882,7 +862,7 @@ function burst_rest_api_fields_get( $request ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	$output = array();
+	$output = [];
 	$fields = burst_fields();
 	$menu   = burst_menu();
 	foreach ( $fields as $index => $field ) {
@@ -895,7 +875,7 @@ function burst_rest_api_fields_get( $request ) {
 				$main           = $data_source[0];
 				$class          = $data_source[1];
 				$function       = $data_source[2];
-				$field['value'] = array();
+				$field['value'] = [];
 				if ( function_exists( $main ) ) {
 					$field['value'] = $main()->$class->$function();
 				}
@@ -938,6 +918,8 @@ function burst_rest_api_goals_get( $request ) {
 
 	$goals = BURST()->goals->get_goals();
 	$goals = apply_filters( 'burst_rest_api_goals_get', $goals );
+
+	$predefined_goals = BURST()->goals->get_predefined_goals();
 	if ( ob_get_length() ) {
 		ob_clean();
 	}
@@ -946,6 +928,8 @@ function burst_rest_api_goals_get( $request ) {
 		array(
 			'request_success' => true,
 			'goals'           => $goals,
+			'predefinedGoals' => $predefined_goals,
+            'goalFields'          => burst_goal_fields(),
 		),
 		200
 	);
@@ -962,37 +946,20 @@ function burst_rest_api_goal_fields_get( $request ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
 
-	$goal_fields = array();
-	$fields      = burst_goal_fields();
-	$goals       = BURST()->goals->get_goals();
-
 	$nonce = $request->get_param( 'nonce' );
 	if ( ! wp_verify_nonce( $nonce, 'burst_nonce' ) ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	// loop through goals and add the fields and get field values
-	foreach ( $goals as $goal_id => $goal ) {
-
-		// add fields to every goal
-		$goal_fields[ $goal_id ] = $fields;
-		$goal_values             = BURST()->goals->get_goal_field_values( $goal_id );
-		// loop through fields and set values
-		foreach ( $goal_fields[ $goal_id ] as $field_id => $field ) {
-			$field_value                                   = isset( $goal_values[ $field_id ] ) ? $goal_values[ $field_id ] : '';
-			$default_value                                 = isset( $fields[ $field_id ]['default'] ) ? $fields[ $field_id ]['default'] : '';
-			$goal_fields[ $goal_id ][ $field_id ]['value'] = $field_value !== '' ? $field_value : $default_value;
-		}
-	}
-
-	$goal_fields = apply_filters( 'burst_rest_api_goal_fields_get', $goal_fields );
+	$goals = apply_filters( 'burst_rest_api_goals_get', BURST()->goals->get_goals() );
 	if ( ob_get_length() ) {
 		ob_clean();
 	}
+
 	$response = new WP_REST_Response(
 		array(
 			'request_success' => true,
-			'goal_fields'     => $goal_fields,
+			'goals'     => $goals,
 		)
 	);
 	$response->set_status( 200 );
@@ -1006,35 +973,37 @@ function burst_rest_api_goal_fields_get( $request ) {
  *
  * @return WP_REST_Response | WP_Error
  */
-function burst_rest_api_goal_fields_set( $request, $ajax_data = false ) {
+function burst_rest_api_goals_set( $request, $ajax_data = false ) {
 	if ( ! burst_user_can_manage() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
 	$data  = $ajax_data ?: $request->get_json_params();
 	$nonce = $data['nonce'];
-	$goals = $data['fields'];
+	$goals = $data['goals'];
 	// get the nonce
 	if ( ! wp_verify_nonce( $nonce, 'burst_nonce' ) ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	$saved_goal_ids = array();
-	foreach ( $goals as $index => $goal ) {
-		$id = (int) $goal['id'];
-		unset( $goal['id'] );
+	require_once burst_path . 'goals/class-goal.php';
+	foreach ( $goals as $index => $goal_data) {
+		$id = (int) $goal_data['id'];
+		unset( $goal_data['id'] );
 
-		$set = BURST()->goals->set_goal_field_values( $id, $goal );
-		// if not null add to saved goal ids
-		if ( $set !== null ) {
-			$saved_goal_ids[] = $id;
+		$goal = new burst_goal($id);
+		foreach ($goal_data as $name => $value ) {
+			if ( property_exists( $goal, $name )) {
+				$goal->{$name} = $value;
+			}
 		}
+		$goal->save();
+
 	}
 	if ( ob_get_length() ) {
 		ob_clean();
 	}
 	$response = new WP_REST_Response(
 		array(
-			'saved_goal_ids'  => $saved_goal_ids,
 			'request_success' => true,
 		)
 	);
@@ -1058,8 +1027,14 @@ function burst_rest_api_goals_delete( $request, $ajax_data = false ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 	$id      = $data['id'];
-	$deleted = BURST()->goals->delete( $id );
 
+	require_once burst_path . 'goals/class-goal.php';
+	$goal = new burst_goal($id);
+	$deleted = $goal->delete();
+
+    //get resulting goals, in case the last one was deleted, and a new one was created.
+	//ensure at least one goal
+	$goals = BURST()->goals->get_goals();
 	// if not null return true
 	$response_data = array(
 		'deleted'         => $deleted !== null,
@@ -1069,6 +1044,45 @@ function burst_rest_api_goals_delete( $request, $ajax_data = false ) {
 		ob_clean();
 	}
 	$response = new WP_REST_Response( $response_data );
+	$response->set_status( 200 );
+
+	return $response;
+}
+
+/**
+ * @param WP_REST_Request $request
+ *
+ * @return WP_REST_Response|WP_Error $response
+ */
+
+function burst_rest_api_goals_add_predefined( $request, $ajax_data = false ) {
+	if ( ! burst_user_can_manage() ) {
+		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
+	}
+	$data  = $ajax_data ?: $request->get_json_params();
+	$nonce = $data['nonce'];
+	if ( ! wp_verify_nonce( $nonce, 'burst_nonce' ) ) {
+		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
+	}
+	$id      = $data['id'];
+
+	require_once burst_path . 'goals/class-goal.php';
+	$goal = new burst_goal();
+	$goal = $goal->add_predefined( $id );
+	if ( ob_get_length() ) {
+		ob_clean();
+	}
+
+	if ( ! $goal ) {
+		return new WP_Error( 'rest_goal_not_added', 'The predefined goal was not added.', array( 'status' => 400 ) );
+	}
+
+	$response = new WP_REST_Response(
+		array(
+			'request_success' => true,
+			'goal'            => $goal,
+		)
+	);
 	$response->set_status( 200 );
 
 	return $response;
@@ -1090,7 +1104,11 @@ function burst_rest_api_goals_add( $request, $ajax_data = false ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	$goal = BURST()->goals->set( array(), 'insert' );
+
+	require_once burst_path . 'goals/class-goal.php';
+	$goal = new burst_goal();
+	$goal->save();
+
 	if ( ob_get_length() ) {
 		ob_clean();
 	}
@@ -1216,7 +1234,7 @@ function burst_sanitize_ip_field( $value ) {
 
 function burst_get_user_roles(): array {
 	if ( ! burst_user_can_manage() ) {
-		return array();
+		return [];
 	}
 
 	global $wp_roles;
@@ -1238,8 +1256,36 @@ function burst_get_posts( $request, $ajax_data = false ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
+    //option to bypass the more complex query, in case this causes issues
+    if (defined('BURST_DISABLE_POSTS_QUERY') && BURST_DISABLE_POSTS_QUERY){
+	    $resultArray = [];
+        $args = [
+            'post_type' => [],
+            'num_posts' => -1,
+        ];
+	    $posts = get_posts($args);
+	    foreach ( $posts as $post ) {
+		    $page_url      = get_permalink($post);
+		    $resultArray[] = array(
+			    'page_url'   => $page_url,
+			    'page_id'    => $post->ID,
+			    'post_title' => $post->post_title,
+			    'pageviews'  => (int) get_post_meta($post->ID, 'burst_total_pageviews_count', true),
+		    );
+	    }
+
+	    return new WP_REST_Response(
+		    array(
+			    'request_success' => true,
+			    'posts'           => $resultArray,
+		    ),
+		    200
+	    );
+
+    }
+
 	// Initialize an empty array for results
-	$resultArray = array();
+	$resultArray = [];
 
 	// Base query for wp_posts
 	$posts_query = "

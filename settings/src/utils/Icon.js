@@ -10,6 +10,7 @@ const iconColors = {
   'yellow-faded': 'var(--rsp-yellow-faded)',
   'red-faded': 'var(--rsp-red-faded)',
   'grey': 'var(--rsp-grey-400)',
+  'white': 'var(--rsp-white)',
 };
 
 const IconHtml = memo(({name = 'bullet', color = 'black', size = 15}) => {
@@ -688,11 +689,17 @@ const IconHtml = memo(({name = 'bullet', color = 'black', size = 15}) => {
   );
 
 });
-const Icon = ({name, color, size, tooltip}) => {
+const Icon = ({name, color, size, tooltip, onClick}) => {
   // set defaults if not set
   const iconName = name || 'bullet';
   const iconColor = color || 'black';
   let iconSize = size || 15;
+
+  const handleClick = () => {
+      if ( onClick ) {
+          onClick();
+      }
+  }
 
   let tooltipClass = tooltip ? 'tooltip-' : '';
   let randomId = Math.floor(Math.random() * 1000000000);
@@ -710,7 +717,7 @@ const Icon = ({name, color, size, tooltip}) => {
   }
 
   return (
-      <div className={'burst-icon burst-' + tooltipClass + 'icon burst-icon-' +
+      <div onClick={(e) => handleClick(e) } className={'burst-icon burst-' + tooltipClass + 'icon burst-icon-' +
           iconName + ' burst-' + iconColor}>
         <IconHtml name={iconName} color={iconColor} size={iconSize}/>
       </div>

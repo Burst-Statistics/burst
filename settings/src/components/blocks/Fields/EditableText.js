@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import {useGoalFieldsStore} from "../../../store/useGoalFieldsStore";
+import {useGoalsStore} from '../../../store/useGoalsStore';
+
 import Tooltip from '../../common/Tooltip';
 
 export default function EditableText({ value, id, onChange }) {
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef(null);
-  const saveGoalTitle = useGoalFieldsStore((state) => state.saveGoalTitle);
+  const saveGoalTitle = useGoalsStore((state) => state.saveGoalTitle);
 
 
   useEffect(() => {

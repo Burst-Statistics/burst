@@ -48,12 +48,12 @@ const handle_viewport_goals = () => {
  * @param goal
  */
 const burst_setup_viewport_tracker = (goal) => {
-  if ( goal.setup.value.length === 0 ) {
+  if ( goal.attribute_value.length === 0 ) {
     return;
   }
 
-  let selector = goal.setup.attribute === 'id' ? '#' : '.';
-  let elements = document.querySelectorAll( selector + goal.setup.value);
+  let selector = goal.attribute === 'id' ? '#' : '.';
+  let elements = document.querySelectorAll( selector + goal.attribute_value);
 
   for (let i = 0; i < elements.length; i++) {
     let element = elements[i];
@@ -131,8 +131,8 @@ const burst_setup_click_tracker = (goal) => {
 };
 
 const burst_recursive_trigger_check = (target, goal) => {
-  let selector = goal.setup.attribute === 'id' ? '#' : '.';
-  if (target.matches(selector + goal.setup.value)) {
+  let selector = goal.attribute === 'id' ? '#' : '.';
+  if (target.matches(selector + goal.attribute_value)) {
     burst_goal_triggered(goal);
   } else if (target.parentElement) {
     burst_recursive_trigger_check(target.parentElement, goal);

@@ -4,12 +4,10 @@ import Help from "./Help";
 import {useState} from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import {useFields} from "../../store/useFieldsStore";
-
-import {useGoalFieldsStore} from "../../store/useGoalFieldsStore";
 import {useMenu} from "../../store/useMenuStore";
 import {toast} from 'react-toastify';
-
 import ErrorBoundary from "../ErrorBoundary";
+import {useGoalsStore} from '../../store/useGoalsStore';
 
 /**
  * Renders the selected settings
@@ -24,8 +22,7 @@ const Settings = (props) => {
   const subMenuLoaded = useMenu((state) => state.subMenuLoaded);
   const subMenu = useMenu((state) => state.subMenu);
   const selectedSubMenuItem = useMenu((state) => state.selectedSubMenuItem);
-  const saveChangedGoalValues = useGoalFieldsStore((state) => state.saveChangedGoalValues);
-  const setChangedGoalValues = useGoalFieldsStore((state) => state.setChangedGoalValues);
+  const saveGoals = useGoalsStore((state) => state.saveGoals);
 
   const toggleNotices = () => {
     setNoticesExpanded(!noticesExpanded);
@@ -33,7 +30,7 @@ const Settings = (props) => {
 
   const saveData = async () => {
     // add 500ms timeout so animations work and the user can see the toast
-    const response = Promise.all([saveFields(), saveChangedGoalValues(), new Promise(resolve => setTimeout(resolve, 600))]);
+    const response = Promise.all([saveFields(), saveGoals(), new Promise(resolve => setTimeout(resolve, 600))]);
     toast.promise(
         response,
         {
@@ -42,10 +39,6 @@ const Settings = (props) => {
           error: __('Something went wrong', 'burst-statistics'),
         }
     )
-    response.then((response) => {
-      setChangedGoalValues([]);
-    });
-    // await saveCookies(); // save goals
   }
 
   const { menu_items: menuItems } = subMenu;

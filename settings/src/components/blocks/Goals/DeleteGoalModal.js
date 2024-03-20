@@ -3,6 +3,7 @@ import {formatUnixToDate} from '../../../utils/formatting';
 import {__} from '@wordpress/i18n';
 import Icon from '../../../utils/Icon';
 import {Close} from '@radix-ui/react-dialog';
+import {useState} from "react";
 
 const Content = ({goal}) => (
     <>
@@ -19,33 +20,56 @@ const Content = ({goal}) => (
     </>
 );
 
-const Footer = ({onDelete}) => {
+const Footer = ({deleteGoal, onClose, isDisabled}) => {
 
   return (
       <>
       <Close asChild aria-label="Close">
-        <button className={"burst-button burst-button--secondary"}>
+        <button className={"burst-button burst-button--secondary"} onClick={onClose}>
           {__('Cancel', 'burst-statistics')}
         </button>
       </Close>
-        <button className={'burst-button burst-button--tertiary'} onClick={() => onDelete()}>
+        <button disabled={isDisabled} className={'burst-button burst-button--tertiary'} onClick={() => deleteGoal()}>
           {__('Delete goal', 'burst-statistics')}
         </button>
       </>
   );
 }
 
-const DeleteGoalModal = ({goal, onDelete}) => {
+const DeleteGoalModal = ({goal, deleteGoal}) => {
+    const [isOpen, setOpen] = useState(false);
+    const [isDisabled, setDisabled] = useState(false);
+    const handleClose = () => {
+        setOpen( false );
+    };
+    const handleOpen = (e) => {
+        e.preventDefault();
+        setOpen(true);
+    }
+
+    const handleDelete = async () => {
+        setDisabled(true);
+        await deleteGoal();
+        setDisabled(false);
+        setOpen(false);
+    }
+
   return (
+      <>
       <Modal
+          isOpen={isOpen}
+          onClose={handleClose}
           title={__('Delete goal', 'burst-statistics')}
-          content={<Content goal={goal} />}
-          footer={<Footer onDelete={onDelete} />}
-          triggerClassName={'burst-button-icon burst-button-icon--delete'}
+          content={<Content goal={goal}/>}
+          footer={<Footer deleteGoal={handleDelete} onClose={handleClose} isDisabled={isDisabled}/>}
       >
-        <Icon name={'trash'} size={18}/>
       </Modal>
-  );
+        <button className="burst-button-icon burst-button-icon--delete" onClick={(e) => handleOpen(e)}>
+            <Icon name={'trash'} size={18}/>
+        </button>
+          </>
+)
+    ;
 };
 
 export default DeleteGoalModal;

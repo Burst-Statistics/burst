@@ -156,7 +156,10 @@ const Field = (props) => {
 		return (
 			<div className={highLightClass}>
 			  {field.parent_label && <div className="burst-parent-label"><label>{field.parent_label}</label></div>}
-			  <div className="burst-label-container" htmlFor={field.id}><label>{field.label}</label><Pro field={field} /></div>
+			  <div className="burst-label-container" htmlFor={field.id}>
+					<label>{field.label}</label>
+					{/*<Pro field={field} />*/}
+				</div>
 			  <RadioControl
 				  label=''
 				  disabled = {disabled}

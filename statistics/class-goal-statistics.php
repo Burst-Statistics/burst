@@ -29,8 +29,9 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 
 			$goal_id      = $this->get_goal_id( $args['goal_id'] );
 			$today        = strtotime( 'today midnight' );
-			$goal         = BURST()->goals->get_goal_setup( $goal_id );
-			$goal_url     = $goal['url'] ?? '';
+			require_once burst_path . 'goals/class-goal.php';
+			$goal = new burst_goal($goal_id);
+			$goal_url     = $goal->url;
 			$goal_url_sql = $goal_url === '' || $goal_url === '*' ? '' : $wpdb->prepare( 'AND statistics.page_url = %s', $goal_url );
 
 			$sql = $wpdb->prepare("SELECT COUNT(*)
@@ -57,16 +58,15 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 
 			// Sanitize input
 			$goal_id    = (int) $this->get_goal_id( $args['goal_id'] );
-			$goal       = BURST()->goals->get_goal_setup( $goal_id );
-			$goal_url   = $goal['url'] ?? '';
-			$current_unix = strtotime( 'today midnight' );
-			$goal_start = (int) ($goal['date_start'] ?? $current_unix);
-			$goal_end   = (int) ($goal['date_end'] ?? $current_unix);
-			$goal_created = (int) ($goal['date_created'] ?? $current_unix);
-			$status = $goal['status'] ?? 'inactive';
-
-			$goal_type = $goal['type'] ?? 'clicks';
-			$goal_conversion_metric = $goal['conversion_metric'] ?? 'visitors';
+			require_once burst_path . 'goals/class-goal.php';
+			$goal = new burst_goal($goal_id);
+			$goal_url   = $goal->url;
+			$goal_start = $goal->date_start;
+			$goal_end   = $goal->date_end;
+			$goal_created =$goal->date_created;
+			$status = $goal->status;
+			$goal_type = $goal->type;
+			$goal_conversion_metric = $goal->conversion_metric;
 
 			// Initialize data array
 			$data = array();
@@ -94,7 +94,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 					'tooltip' => '',
 					'icon'   => 'sessions'
 				);
-				$conversion_metric_select = "COUNT(DISTINCT(stats.session_id))";
+				$conversion_metric_select = "COUNT(DISTINCT(statistics.session_id))";
 			} else { // visitors
 				$data['conversionMetric'] = array(
 					'title'   => __( 'Visitors', 'burst-statistics' ),
@@ -102,7 +102,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 					'tooltip' => '',
 					'icon'   => 'visitors'
 				);
-				$conversion_metric_select = "COUNT(DISTINCT(stats.uid))";
+				$conversion_metric_select = "COUNT(DISTINCT(statistics.uid))";
 			}
 			$data['conversionPercentage'] = array(
 				'title'   => __( 'Conversion rate', 'burst-statistics' ),
@@ -124,22 +124,22 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			if ( $goal_id !== 0 ) {
 				// Query to get total number of goal completions
 
-				$goal_end_sql = $goal_end > 0 ? $wpdb->prepare("AND stats.time < %s", $goal_end) : '';
-				$goal_url_sql = $goal_url === '' || $goal_url === '*' || $goal_type === 'visits' ? '' : $wpdb->prepare( 'AND stats.page_url = %s', $goal_url );
-				$total_sql    = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics AS stats
+				$goal_end_sql = $goal_end > 0 ? $wpdb->prepare("AND statistics.time < %s", $goal_end) : '';
+				$goal_url_sql = $goal_url === '' || $goal_url === '*' || $goal_type === 'visits' ? '' : $wpdb->prepare( 'AND statistics.page_url = %s', $goal_url );
+				$total_sql    = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics AS statistics
 								INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
-								ON stats.ID = goals.statistic_id
-								WHERE stats.bounce = 0 AND goals.goal_id = %s AND stats.time > %s {$goal_end_sql} {$goal_url_sql}", $goal_id, $goal_start);
+								ON statistics.ID = goals.statistic_id
+								WHERE statistics.bounce = 0 AND goals.goal_id = %s AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}", $goal_id, $goal_start);
 
 				$data['total']['value'] = $wpdb->get_var( $total_sql );
 
 				// Query to get top performing page
 
-				$top_performer_sql    = $wpdb->prepare("SELECT COUNT(*) AS value, stats.page_url AS title FROM {$wpdb->prefix}burst_statistics AS stats
+				$top_performer_sql    = $wpdb->prepare("SELECT COUNT(*) AS value, statistics.page_url AS title FROM {$wpdb->prefix}burst_statistics AS statistics
 											INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
-											ON stats.ID = goals.statistic_id
-											WHERE stats.bounce = 0 AND goals.goal_id = %s AND stats.time > %s {$goal_end_sql} {$goal_url_sql}
-											GROUP BY stats.page_url ORDER BY COUNT(*) DESC LIMIT 1", $goal_id, $goal_start);
+											ON statistics.ID = goals.statistic_id
+											WHERE statistics.bounce = 0 AND goals.goal_id = %s AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
+											GROUP BY statistics.page_url ORDER BY COUNT(*) DESC LIMIT 1", $goal_id, $goal_start);
 				$top_performer_result = $wpdb->get_row( $top_performer_sql );
 				if ( $top_performer_result ) {
 					$data['topPerformer']['title'] = $top_performer_result->title;
@@ -147,21 +147,21 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 				}
 
 				// Query to get total number of visitors, sessions or pageviews with get_sql_table
-				$conversionMetric               = $wpdb->prepare("SELECT {$conversion_metric_select} FROM {$wpdb->prefix}burst_statistics as stats
-												WHERE stats.time > %s {$goal_end_sql} AND stats.bounce = 0 {$goal_url_sql}", $goal_start);
+				$conversionMetric               = $wpdb->prepare("SELECT {$conversion_metric_select} FROM {$wpdb->prefix}burst_statistics as statistics
+												WHERE statistics.time > %s {$goal_end_sql} AND statistics.bounce = 0 {$goal_url_sql}", $goal_start);
 				$data['conversionMetric']['value'] = $wpdb->get_var( $conversionMetric );
 
 				// Query to get best performing device
-				$device_sql    = $wpdb->prepare("SELECT COUNT(*) AS value, stats.device AS title FROM {$wpdb->prefix}burst_statistics AS stats
+				$device_sql    = $wpdb->prepare("SELECT COUNT(*) AS value, statistics.device AS title FROM {$wpdb->prefix}burst_statistics AS statistics
 											INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
-											ON stats.ID = goals.statistic_id
-											WHERE stats.bounce = 0 AND goals.goal_id = %s AND stats.time > %s {$goal_end_sql} {$goal_url_sql}
-											GROUP BY stats.device ORDER BY value DESC LIMIT 4", $goal_id, $goal_start);
+											ON statistics.ID = goals.statistic_id
+											WHERE statistics.bounce = 0 AND goals.goal_id = %s AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
+											GROUP BY statistics.device ORDER BY value DESC LIMIT 4", $goal_id, $goal_start);
 				$device_result = $wpdb->get_results( $device_sql );
 
-				$pageviews_per_device = $wpdb->prepare("SELECT COUNT(*) AS value, device FROM {$wpdb->prefix}burst_statistics as stats
-											WHERE stats.bounce = 0 AND stats.time > %s {$goal_end_sql} {$goal_url_sql}
-											GROUP BY stats.device ORDER BY value DESC LIMIT 4", $goal_start);
+				$pageviews_per_device = $wpdb->prepare("SELECT COUNT(*) AS value, device FROM {$wpdb->prefix}burst_statistics as statistics
+											WHERE statistics.bounce = 0 AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
+											GROUP BY statistics.device ORDER BY value DESC LIMIT 4", $goal_start);
 
 				$pageviews_per_device_result = $wpdb->get_results($pageviews_per_device);
 
@@ -192,7 +192,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
  * Install goal statistic table
  * */
 
-add_action( 'plugins_loaded', 'burst_install_goal_statistics_table', 10 );
+add_action( 'burst_install_tables', 'burst_install_goal_statistics_table', 10 );
 function burst_install_goal_statistics_table() {
 	if ( get_option( 'burst_goal_stats_db_version' ) !== burst_version ) {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );

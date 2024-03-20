@@ -46,11 +46,158 @@ if ( ! class_exists( "burst_admin" ) ) {
 
             // remove tables on multisite uninstall
 			add_filter( 'wpmu_drop_tables', array( $this, 'ms_remove_tables' ), 10, 2 );
+
+
+			add_filter( 'burst_after_saved_fields', array( $this, 'create_js_file' ), 10, 1 );
+			add_action( 'upgrader_process_complete', array( $this, 'create_js_file'), 10, 1);
+			add_action( 'wp_initialize_site', array( $this, 'create_js_file'), 10, 1);
+			add_action( 'admin_init', array( $this, 'activation' ) );
+
+			add_action('admin_bar_menu', array($this, 'add_to_admin_bar_menu'), 35);
+			add_action('admin_bar_menu', array($this, 'add_top_bar_menu'), 400 );
+
+			add_action( 'burst_activation', array( $this, 'run_table_init_hook'), 10, 1);
+			add_action( 'upgrader_process_complete', array( $this, 'run_table_init_hook'), 10, 1);
+			add_action( 'wp_initialize_site', array( $this, 'run_table_init_hook'), 10, 1);
+			add_action( 'burst_upgrade', array( $this, 'run_table_init_hook'), 10, 1);
 		}
 
 
-		static function this() {
+		public static function this() {
 			return self::$_this;
+		}
+
+		public function add_to_admin_bar_menu( $wp_admin_bar ) {
+			if ( ! burst_user_can_view() || is_admin() ) {
+				return;
+			}
+
+			//don't show on subsites if networkwide activated, and this is not the main site.
+			if ( burst_is_networkwide_active() && !is_main_site() ) {
+				return;
+			}
+
+			$wp_admin_bar->add_node(
+				array(
+					'parent' => 'site-name',
+					'id' => 'burst-statistics',
+					'title' => __('Statistics', 'burst-statistics'),
+					'href' => burst_dashboard_url,
+				)
+			);
+		}
+
+		/**
+		 * Add top bar menu for page views
+		 * @param $wp_admin_bar
+		 *
+		 * @return void
+		 */
+		public function add_top_bar_menu( $wp_admin_bar ) {
+			global $wp_admin_bar;
+			global $wpdb;
+			if ( is_admin() ) {
+				return;
+			}
+
+			if ( ! burst_user_can_view() ) {
+				return;
+			}
+
+			global $post;
+			if ( $post && is_object($post) ) {
+				$post_id = $post->ID;
+				$count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
+			} else {
+				$count = 0;
+			}
+			$wp_admin_bar->add_menu(
+				array(
+					'id' => 'burst-front-end',
+					'title' => $count . ' ' . __('Pageviews', 'burst-statistics'),
+				));
+			$wp_admin_bar->add_menu(
+				array(
+					'parent' => 'burst-front-end',
+					'id' => 'burst-statistics-link',
+					'title' => __('Go to dashboard', 'burst-statistics'),
+					'href' => burst_dashboard_url,
+				));
+		}
+
+		public function activation(){
+			if ( !burst_admin_logged_in() ){
+				return;
+			}
+
+			if ( get_option( 'burst_run_activation' ) ) {
+				delete_option( 'burst_run_activation' );
+			}
+		}
+
+		public function create_js_file() {
+			if ( ! burst_user_can_manage() ) {
+				return;
+			}
+			burst_error_log("create js file");
+            $cookieless      = burst_get_option( 'enable_cookieless_tracking' );
+			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
+			$beacon_enabled  = (int) burst_tracking_status_beacon();
+
+			$localize_args = apply_filters(
+				'burst_tracking_options',
+				array(
+					'page_id'               => get_queried_object_id(),
+					'cookie_retention_days' => 30,
+					'beacon_url'            => burst_get_beacon_url(),
+					'options'               => array(
+						'beacon_enabled'             => $beacon_enabled,
+						'enable_cookieless_tracking' => (int) $cookieless,
+						'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
+						'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
+					),
+					'goals'                 => burst_get_active_goals(),
+					'goals_script_url'      => burst_get_goals_script_url(),
+				)
+			);
+
+			$js = "";
+			$js .= "let burst = ".json_encode($localize_args).";";
+			$js .= file_get_contents(burst_path . "assets/js/build/burst$cookieless_text.min.js");
+
+			$upload_dir = burst_upload_dir('js');
+			$file = $upload_dir . 'burst.min.js';
+			if ( file_exists($upload_dir) && is_writable($upload_dir) ){
+				$handle = fopen($file, 'wb' );
+				fwrite($handle, $js);
+				fclose($handle);
+			}
+		}
+
+		/**
+		 * On Multisite site creation, run table init hook as well.
+		 * @return void
+		 */
+		public function run_table_init_hook(){
+            //if already running, exit
+            if ( defined('BURST_INSTALL_TABLES_RUNNING') ) {
+                return;
+            }
+
+            define('BURST_INSTALL_TABLES_RUNNING', true);
+
+			do_action( 'burst_install_tables' );
+			//we need to run table creation across subsites as well.
+			if ( is_multisite() ) {
+				$sites = get_sites();
+				if (count($sites)>0) {
+					foreach ($sites as $site) {
+						switch_to_blog($site->blog_id);
+						do_action( 'burst_install_tables' );
+						restore_current_blog();
+					}
+				}
+			}
 		}
 
 		/**
@@ -97,7 +244,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 		public function setup_defaults(): void {
             if ( get_option('burst_set_defaults') ){
                 update_option( 'burst_activation_time', time(), false );
-
+                $this->run_table_init_hook();
                 $exclude_roles = burst_get_option( 'user_role_blocklist' );
                 if ( ! $exclude_roles ) {
                     $defaults = [ 'administrator' ];
@@ -114,13 +261,10 @@ if ( ! class_exists( "burst_admin" ) ) {
                 $goals = BURST()->goals->get_goals();
                 $count = count( $goals );
                 if ( $count === 0 ) {
-                    BURST()->goals->set( array(
-                        'title'        => __( 'Default goal', 'burst-statistics' ),
-                        'type'         => 'clicks',
-                        'status'       => 'inactive',
-                        'server_side'  => 0,
-                        'date_created' => time(),
-                    ) );
+	                require_once burst_path . 'goals/class-goal.php';
+	                $goal = new burst_goal();
+                    $goal->title = __( 'Default goal', 'burst-statistics' );
+                    $goal->save();
                 }
 	            delete_option('burst_set_defaults');
 		    }

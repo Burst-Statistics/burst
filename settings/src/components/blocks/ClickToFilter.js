@@ -1,6 +1,6 @@
 import React from '@wordpress/element';
 import {useFiltersStore} from '../../store/useFiltersStore';
-import {useGoalFieldsStore} from '../../store/useGoalFieldsStore';
+import {useGoalsStore} from '../../store/useGoalsStore';
 import {useInsightsStore} from '../../store/useInsightsStore';
 import {useDate} from '../../store/useDateStore';
 import Tooltip from '../common/Tooltip';
@@ -27,13 +27,10 @@ const ClickToFilter = ({
   startDate,
   endDate,
 }) => {
-  if (!filter || !filterValue) {
-    return <>{children}</>;
-  }
 
   const setFilters = useFiltersStore((state) => state.setFilters);
   const setAnimate = useFiltersStore((state) => state.setAnimate);
-  const goalFields = useGoalFieldsStore((state) => state.goalFields);
+  const goalFields = useGoalsStore((state) => state.goalFields);
   const setInsightsMetrics = useInsightsStore(
       (state) => state.setMetrics);
   const insightsMetrics = useInsightsStore((state) => state.getMetrics());
@@ -177,6 +174,10 @@ const ClickToFilter = ({
       setRange('custom');
     }
   };
+
+  if (!filter || !filterValue) {
+    return <>{children}</>;
+  }
 
   return (
       <Tooltip content={tooltip} >

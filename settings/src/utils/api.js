@@ -67,6 +67,7 @@ const makeRequest = async (path, method = 'GET', data = {}) => {
 		return response;
 	})
 	.catch(error => {
+		console.log(error);
 		// If REST API fails, try AJAX request
 		return ajaxRequest(method, path, data)
 		.catch(() => {
@@ -155,12 +156,12 @@ export const setFields = (data) => {
 	return makeRequest('burst/v1/fields/set'+glue(), 'POST', {fields:data});
 }
 
-export const getGoalFields = () => makeRequest('burst/v1/goal_fields/get'+glue()+getNonce());
-export const setGoalFields = (data) => { return makeRequest('burst/v1/goal_fields/set'+glue()+getNonce(), 'POST', {fields:data} )};
+export const setGoals = (data) => { return makeRequest('burst/v1/goals/set'+glue()+getNonce(), 'POST', data )};
 
 export const getGoals = () => makeRequest('burst/v1/goals/get'+glue()+getNonce());
 export const deleteGoal = (id) => makeRequest('burst/v1/goals/delete'+glue()+getNonce(), 'POST', {id:id});
 export const addGoal = () => makeRequest('burst/v1/goals/add'+glue()+getNonce(), 'POST', {});
+export const addPredefinedGoal = (id) => makeRequest('burst/v1/goals/add_predefined'+glue()+getNonce(), 'POST', {id:id});
 
 export const getBlock = (block) => makeRequest('burst/v1/block/'+block+glue()+getNonce());
 export const doAction = (action, data = {}) => makeRequest(`burst/v1/do_action/${action}`, 'POST', {action_data:data}).then(response => {

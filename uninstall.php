@@ -3,8 +3,10 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
-// get all burst transients
+
 global $wpdb;
+
+// get all burst transients
 $results = $wpdb->get_results(
 	"SELECT `option_name` AS `name`, `option_value` AS `value`
                                 FROM  $wpdb->options

@@ -380,8 +380,12 @@ if ( ! function_exists( 'burst_get_date_ranges' ) ) {
 }
 
 if ( ! function_exists('burst_sanitize_filters') ) {
+	/**
+	 * @param $filters
+	 *
+	 * @return array
+	 */
     function burst_sanitize_filters( $filters ) {
-        // sanitize key value pairs, but value can also be an array. Just one layer deep though. Also remove keys where value is empty. Also add comments to explain the code
         $filters = array_filter( $filters, static function( $item ) {
             return $item !== false && $item !== '';
         } );
@@ -459,19 +463,19 @@ if ( ! function_exists( 'burst_get_beacon_url' ) ) {
      *
      * @return string
      */
-    function burst_get_beacon_url(): string {
-        if ( is_multisite() && burst_is_networkwide_active() ) {
-            if ( is_main_site() ) {
-	            return burst_url . 'beacon.php';
-            } else {
-                //replace the subsite url with the main site url in burst_url
-                //get main site_url
-                $main_site_url = get_site_url(get_main_site_id());
-                return str_replace(site_url(), $main_site_url, burst_url) . 'endpoint.php';
-            }
-        }
-        return burst_url . 'endpoint.php';
-    }
+	function burst_get_beacon_url(): string {
+		if ( is_multisite() && burst_get_option('track_network_wide') && burst_is_networkwide_active() ) {
+			if ( is_main_site() ) {
+				return burst_url . 'endpoint.php';
+			} else {
+				//replace the subsite url with the main site url in burst_url
+				//get main site_url
+				$main_site_url = get_site_url(get_main_site_id());
+				return str_replace(site_url(), $main_site_url, burst_url) . 'endpoint.php';
+			}
+		}
+		return burst_url . 'endpoint.php';
+	}
 }
 
 if ( ! function_exists( 'burst_remote_file_exists' ) ) {
@@ -509,6 +513,21 @@ if ( ! function_exists('burst_upload_dir')) {
 	}
 }
 
+if ( ! function_exists('burst_upload_url')) {
+	/**
+	 * Get the upload url
+	 *
+	 * @param string $path
+	 *
+	 * @return string
+	 */
+	function burst_upload_url( string $path=''): string {
+		$uploads    = wp_upload_dir();
+		$upload_url = $uploads['baseurl'];
+		$upload_url = trailingslashit( apply_filters('burst_upload_url', $upload_url) );
+		return trailingslashit($upload_url.'burst/'.$path);
+	}
+}
 
 /**
  * Create directories recursively

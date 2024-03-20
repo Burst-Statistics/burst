@@ -1,4 +1,4 @@
-import {__} from '@wordpress/i18n';
+import {__, setLocaleData} from '@wordpress/i18n';
 import {useState, useEffect, useRef} from '@wordpress/element';
 import Tooltip from '../common/Tooltip';
 import ClickToFilter from './ClickToFilter';
@@ -41,11 +41,21 @@ const GoalsBlock = () => {
   const [interval, setInterval] = useState(5000);
   const goalId = useDashboardGoalsStore((state) => state.goalId);
   const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
-  const goals = useGoalsStore((state) => state.goals);
 
+  const goals = useGoalsStore((state) => state.goals);
   const currentDateWithOffset = getDateWithOffset();
   const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
   const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+
+  useEffect(() => {
+    if (!goalId) {
+      //get first entry of the goals array
+      let firstGoal = goals.hasOwnProperty(0) ? goals[0] : false;
+      if ( firstGoal ) {
+        setGoalId(goals[0].id);
+      }
+    }
+  },[goals]);
 
   let goalStart = goals[goalId] && goals[goalId].date_start;
   let goalEnd = goals[goalId] && goals[goalId].date_end;
@@ -142,7 +152,7 @@ const GoalsBlock = () => {
           className={'border-to-border burst-goals'}
           title={__('Goals', 'burst-statistics')}
           controls={<GoalsHeader goalId={goalId} goals={goals}/>}
-          footer={Object.keys(goals).length !== 0 && (
+          footer={ goals.length !== 0 && (
               <>
                 <a className={'burst-button burst-button--secondary'}
                    href={'#settings/goals'}>{__('View setup',

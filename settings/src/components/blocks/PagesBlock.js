@@ -11,12 +11,6 @@ import {useState} from '@wordpress/element';
 import PopoverFilter from './PopoverFilter';
 import {getLocalStorage, setLocalStorage} from '../../utils/api';
 
-const percentageSort = (rowA, rowB, field) => {
-  const numA = parseFloat(rowA[field]);
-  const numB = parseFloat(rowB[field]);
-  return numA - numB;
-};
-
 const PagesBlock = () => {
   const {startDate, endDate, range} = useDate((state) => state);
   const filters = useFiltersStore((state) => state.filters);
@@ -84,9 +78,6 @@ const PagesBlock = () => {
         item => item.page_url.toLowerCase().includes(filterText.toLowerCase()));
   }
 
-  const onApplyColumns = (value) => {
-    setColumns(value);
-  }
   return (
       <GridItem
           className={'burst-column-2 border-to-border datatable'}
@@ -101,7 +92,7 @@ const PagesBlock = () => {
               <PopoverFilter
                   selectedOptions={columns}
                   options={columnsOptions}
-                  onApply={onApplyColumns}
+                  onApply={setColumns}
               />
             </>
           }

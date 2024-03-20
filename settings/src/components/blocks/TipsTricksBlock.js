@@ -9,7 +9,7 @@ const TipsTricksBlock = (props) => {
     },
     {
       content: 'What is Cookieless tracking?',
-      link: 'https://burst-statistics.com/what-is-cookieless-tracking/',
+      link: 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
     },
     {
       content: 'Why is Burst Privacy-Friendly?',

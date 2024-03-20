@@ -1,22 +1,34 @@
-import React, {useState, useEffect} from '@wordpress/element';
+import React, {useState} from '@wordpress/element';
 import Icon from '../../../utils/Icon';
 import Tooltip from '../../common/Tooltip';
 import {__} from '@wordpress/i18n';
 import GoalField from './GoalField';
 import EditableText from '../Fields/EditableText';
 import {ToggleControl} from '@wordpress/components';
-import {useGoalsStore} from '../../../store/useGoalsStore';
 import DeleteGoalModal from './DeleteGoalModal';
 import {setOption} from '../../../utils/api';
+import {useEffect} from "react";
+import {updateFieldsListWithConditions} from "../../../store/useFieldsStore";
 
-
-const GoalSetup = (props) => {
-  const { id, goal, goalFields, setGoalValue,onRemove, onUpdate } = props;
+const GoalSetup = ({ goal, goalFields, setGoalValue, deleteGoal, onUpdate }) => {
   if (!goalFields) {
     return null;
   }
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [status, setStatus] = useState(goalFields.goal_status.value === 'active');
+  const [status, setStatus] = useState(goal.status === 'active');
+  const [fields, setFields] = useState([]);
+
+  useEffect(() => {
+    if ( goalFields.length>0 ) {
+      //give each field a value property
+      let updatedFields = goalFields.map(field => {
+        let goalField = {...field};
+        goalField.value = goal[goalField.id];
+        return goalField;
+      });
+      setFields(updateFieldsListWithConditions(updatedFields));
+
+    }
+  }, [goalFields, goal]);
 
   function handleStatusToggle(value) {
     if ( burst_settings.goals_information_shown == '0') {
@@ -25,18 +37,16 @@ const GoalSetup = (props) => {
 
     }
     setStatus(value);
-    setGoalValue(id, 'goal_status', value ? 'active' : 'inactive');
+    setGoalValue(goal.id, 'status', value ? 'active' : 'inactive');
   }
 
   function handleTitleChange(value) {
-    setGoalValue(id, 'goal_title', value);
+    setGoalValue(goal.id, 'title', value);
   }
-
-  let type = goalFields.goal_type.value;
-  let iconName = type && goalFields.goal_type.options[type] ? goalFields.goal_type.options[type].icon : 'eye';
-  let title = goalFields.goal_title.value ? goalFields.goal_title.value : '';
+  let type = goal.type;
+  let iconName = type && fields.type && fields.type.options && fields.type.options[type] ? fields.type.options[type].icon : 'eye';
+  let title = goal.title.length>0 ? goal.title : ' ';
   let dateCreated = goal && goal.date_created !== undefined && goal.date_created > 1 ? goal.date_created : 1;
-
   return (
       <div className="burst-settings-goals__list__item">
         <details>
@@ -44,19 +54,17 @@ const GoalSetup = (props) => {
             <Icon name={iconName} size={20} />
             <span>
               <EditableText value={title}
-                            id={id}
+                            id={goal.id}
                             defaultValue={__('New goal', 'burst-statistics')}
                             onChange={handleTitleChange}/>
             </span>
             <DeleteGoalModal
                 goal={{ name: title, status: status ? __('Active', 'burst-statistics') : __('Inactive', 'burst-statistics') , dateCreated: dateCreated }} // Replace with actual goal data
-                onDelete={() => {
-                  onRemove(id);
+                deleteGoal={() => {
+                  deleteGoal(goal.id);
                 }}
             />
-            <Tooltip content={status ? __('Click to de-activate',
-                'burst-statistics') : __(
-                'Click to activate', 'burst-statistics')}>
+            <Tooltip content={status ? __('Click to de-activate', 'burst-statistics') : __('Click to activate', 'burst-statistics')}>
               <span className="burst-click-to-filter">
                 <ToggleControl
                     checked={status}
@@ -68,13 +76,12 @@ const GoalSetup = (props) => {
             <Icon name={'chevron-down'} size={18}/>
           </summary>
           <div className="burst-settings-goals__list__item__fields">
-            {Object.keys(goalFields).map((i, index) => {
-              let field = goalFields[i];
+            {fields.length>0 && fields.map((field, i) => {
               return (
                   <GoalField
-                      key={index}
+                      key={i}
                       field={field}
-                      goal_id={id}
+                      goal={goal}
                       value={field.value}
                       setGoalValue={setGoalValue}
                   />

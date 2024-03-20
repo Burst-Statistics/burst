@@ -142,26 +142,14 @@ if ( ! class_exists( "burst_notices" ) ) {
 						],
 					],
 				],
-				'new_delete_old_data' => [
-					'callback'  => '_true_',
-					'output'    => [
-						'true' => [
-							'msg'         => __( "New! Automatically remove outdated data to optimize your database size.", 'burst-statistics' ),
-							'icon'        => 'new',
-							'url'         => '#settings/data',
-							'dismissible' => true,
-							'plusone'     => burst_is_pro() ? false : true,
-						],
-					],
-				],
-				'new_country_information' => [
+				'new_parameters' => [
 					'condition' => [
 						'burst_is_pro'
 					],
 					'callback'  => '_true_',
 					'output'    => [
 						'true' => [
-							'msg'         => __( "New! Keep track of what country your visitors come from.", 'burst-statistics' ),
+							'msg'         => __( "New! Track your UTM Campaigns and URL Parameters! Click on the 'Pages' dropdown in the Statistics tab.", 'burst-statistics' ),
 							'icon'        => 'new',
 							'url'         => '#statistics',
 							'dismissible' => true,

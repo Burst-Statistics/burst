@@ -23,6 +23,10 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 		 */
 
 		public function init() {
+			if (defined('BURST_NO_UPGRADE') && BURST_NO_UPGRADE) {
+				return;
+			}
+
 			if ( ! burst_admin_logged_in() ) {
 				return;
 			}
@@ -105,9 +109,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			$result = $wpdb->query( $sql );
 			if ( $result === false ) {
-				if ( WP_DEBUG ) {
-					error_log( 'Burst Statistics: db upgrade bounces multiple sessions failed' );
-				}
+				burst_error_log( 'db upgrade bounces multiple sessions failed' );
 				return;
 			}
 
@@ -120,9 +122,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $result !== false ) {
 				delete_option( 'burst_db_upgrade_bounces');
 			} else {
-				if ( WP_DEBUG ) {
-					error_log( 'Burst Statistics: db upgrade bounces failed' );
-				}
+				burst_error_log( 'db upgrade bounces failed' );
 			}
 		}
 

@@ -2,29 +2,28 @@ import {TextControl} from '@wordpress/components';
 import Icon from "../../../utils/Icon";
 import RadioButtons from '../Fields/RadioButtons';
 import ClassId from '../Fields/ClassId';
+import Hook from '../Fields/Hook';
 import SelectPage from '../Fields/SelectPage';
 import {useEffect, useState} from '@wordpress/element';
 
-const GoalField = (props) => {
-  const {
-    field = {},
-    goal_id = false,
-    value = false,
-    setGoalValue
-  } = props;
+const GoalField = ({
+                       field = {},
+                       goal,
+                       value,
+                       setGoalValue
+                   }) => {
+
   const [validated, setValidated] = useState(false);
 
   useEffect(() => {
     validateInput(field, value);
   }, []);
 
-
   const onChangeHandler = (value) => {
-    let field = props.field;
     validateInput(field, value);
     // if value is validated, set it
     if (validated) {
-      setGoalValue(goal_id, field.id, value);
+      setGoalValue(goal.id, field.id, value);
     }
   }
 
@@ -49,28 +48,12 @@ const GoalField = (props) => {
     setValidated(valid);
   }
 
-
-  let className = 'burst-'+props.field.type;
-  let visible;
+  let className = 'burst-'+field.type;
   let disabled = field.disabled;
 
-  //process pro field
-  if ( burst_settings.is_pro && field.pro ) {
-    disabled = false;
-  }
-
-  visible = !field.conditionallyDisabled;
-  if ( !visible ) {
-    return (
-        <div className={className} style={{display: 'none'}}></div>
-    );
-  }
-
-  if ( field.type==='hidden' ){
-    return (
-        <input type="hidden" value={field.value}/>
-    );
-  }
+    if ( field.type==='hidden' || field.conditionallyDisabled ){
+        return null;
+    }
 
   if ( field.type==='text' || field.type==='url' ){
     return (
@@ -95,11 +78,11 @@ const GoalField = (props) => {
         <div className={className}>
           <RadioButtons
               disabled={disabled}
-              field={props.field}
-              goal_id={props.goal_id}
+              field={field}
+              goal_id={goal.id}
               label={field.label}
               help={field.comment}
-              value={value}
+              value={goal[field.id]}
               onChangeHandler={ ( value ) => onChangeHandler(value) }
               className="radio-buttons"
           />
@@ -107,42 +90,53 @@ const GoalField = (props) => {
     );
   }
 
-  if (field.type === 'class-id') {
+  if ( field.type === 'hook' ) {
     return (
         <div className={className}>
-          <ClassId
+          <Hook
               disabled={disabled}
-              field={props.field}
-              goal_id={props.goal_id}
+              field={field}
+              goal={goal}
               label={field.label}
               help={field.comment}
-              value={value}
+              value={goal.hook}
               onChangeHandler={ ( value ) => onChangeHandler(value) }
           />
         </div>
     );
   }
 
-  if (field.type === 'select-page') {
+  if (field.type === 'class-id' ) {
+      return (
+        <div className={className}>
+          <ClassId
+              disabled={disabled}
+              field={field}
+              goal={goal}
+              label={field.label}
+              help={field.comment}
+              value={goal.attribute_value}
+              onChangeHandler={ ( value ) => onChangeHandler(value) }
+          />
+        </div>
+    );
+  }
+
+  if (field.type === 'select-page' ) {
     return (
         <div className={className}>
           <SelectPage
               disabled={disabled}
-              field={props.field}
-              goal_id={props.goal_id}
+              field={field}
+              goal_id={goal.id}
               label={field.label}
               help={field.comment}
-              value={value===false ? '' : value}
+              value={goal.url===false || goal.url==='*' ? '' : goal.url}
               onChangeHandler={ ( value ) => onChangeHandler(value) }
           />
         </div>
     );
   }
-
-  return (
-      'not found field type '+field.type
-  );
-
 }
 
 export default GoalField;

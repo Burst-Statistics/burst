@@ -148,6 +148,7 @@
   }
 
   .burst-radio-buttons__list {
+
     display: grid;
     grid-template-columns: repeat(2, minmax(49%, 1fr));
     gap: var(--rsp-spacing-s);
@@ -178,7 +179,9 @@
         grid-template-columns: auto auto auto 1fr;
         gap: var(--rsp-spacing-xs);
         align-items: center;
-
+        &.burst-disabled-radio{
+          background:inherit;
+        }
         .burst-icon {
           width: 24px;
           height: 24px;
@@ -201,7 +204,7 @@
       }
     }
   }
-  .burst-class-id{
+  .burst-class-id, .burst-hook {
     display: flex;
     flex-wrap: wrap;
     align-content: stretch;
@@ -265,4 +268,58 @@
 }
 .MuiDialog-container .MuiPaper-rounded{
   border-radius: var(--rsp-border-radius-s);
+}
+
+.burst-settings-goals__add-goal {
+  display:flex;
+  .burst-button {
+    margin-right:10px;
+    align-self: flex-start;
+    &.burst-inactive {
+      color: var(--rsp-grey-400 );
+    }
+  }
+}
+.burst-button-dropdown-container {
+  position:relative;
+  .burst-button {
+    display:flex;
+    .burst-icon {
+      margin-top: 6px;
+      margin-left: 5px;
+    }
+  }
+  .burst-button-dropdown {
+    //todo fix this
+    //@extend .burst-button;
+    //@extend .burst-button--secondary;
+    background: var(--rsp-grey-100);
+    color: var(--rsp-text-color-light);
+    border: 1px solid var(--rsp-grey-400);
+    width: fit-content;
+    font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
+    line-height: var(--button-line-height);
+    letter-spacing: var(--button-letter-spacing);
+    transition: var(--button-transition);
+    min-height: var(--button-min-height);
+    margin: 0;
+    padding: var(--button-padding);
+    border-radius: var(--button-border-radius);
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    &__row{
+      display:flex;
+      cursor:pointer;
+      &.burst-inactive{
+        color: var(--rsp-grey-400 );
+      }
+      .burst-icon {
+        margin-left: 5px;
+        margin-top:2px;
+      }
+    }
+
+  }
 }

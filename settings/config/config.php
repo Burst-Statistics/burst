@@ -73,6 +73,10 @@ function burst_menu() {
 							'id'    => 'tracking',
 							'title' => __( 'Tracking', 'burst-statistics' ),
 						],
+						[
+							'id'    => 'scripts',
+							'title' => __( 'Scripts', 'burst-statistics' ),
+						],
 					],
 				],
 
@@ -204,6 +208,20 @@ function burst_fields( $load_values = true ) {
 			'default'  => false,
 		],
 		[
+			'id'       => 'combine_vars_and_script',
+			'menu_id'  => 'advanced',
+			'group_id' => 'scripts',
+			'type'     => 'checkbox',
+			'label'    => __( 'Merge tracking settings and script', 'burst-statistics' ),
+			'help'     => [
+				'label' => 'default',
+				'title' => __( 'Merge tracking settings and script for optimized delivery', 'burst-statistics' ),
+				'text'  => __( 'Boost site speed by merging the Burst settings into the Burst script. This simplifies management and improves loading times, ideal for headless sites or strict security policies.', 'burst-statistics' ),
+			],
+			'disabled' => false,
+			'default'  => false,
+		],
+		[
 			'id'       => 'archive_data',
 			'menu_id'  => 'data',
 			'group_id' => 'data_archiving',
@@ -263,78 +281,6 @@ function burst_fields( $load_values = true ) {
 				],
 			],
 		],
-//		[
-//			'id'       => 'archive_data',
-//			'menu_id'  => 'data',
-//			'group_id' => 'data_archiving',
-//			'options'  => [
-//				'none' 	 => __('Never',"burst-statistics"),
-//				'archive' => __('Archive',"burst-statistics"),
-//				'delete' => __('Delete',"burst-statistics"),
-//			],
-//			'pro' => [
-//				'url' => 'https://burst-statistics.com/pricing/',
-//				'disabled' => false,
-//			],
-//			'help'     => [
-//				'label' => 'default',
-//				'title' => __( 'Do I need to archive my data?', 'burst-statistics' ),
-//				'text'  => __( 'In general, your hosting peformance and storage is related to your website traffic. In some cases, this might be skewed and you might want to minimize data stored in your database.', 'burst-statistics' ),
-//				'url'   => 'https://burst-statistics.com/do-I-need-to-archive-my-data/',
-//			],
-//			'disabled' => ['archive'],
-//			'type'     => 'select',
-//			'label'    => __( 'Do you want to automatically archive or delete statistics?', 'burst-statistics' ),
-//			'comment' => burst_admin_logged_in() ? sprintf(_x('Burst currently uses %s of your database.','e.g. Burst currently uses 10 MB of your database.', "burst-statistics"), get_option('burst_table_size')) : 'test',
-//			'default'  => false,
-//		],
-
-//		[
-//			'id'       => 'enable_automatic_archiving',
-//			'menu_id'  => 'data',
-//			'group_id' => 'data_archiving',
-//			'type'     => 'checkbox',
-//			'label'    => __( 'Enable monthly data archiving', 'burst-statistics' ),
-//			'pro' => [
-//				'url' => 'https://burst-statistics.com/pricing/',
-//				'disabled' => false,
-//			],
-//			'help'     => [
-//				'label' => 'default',
-//				'title' => __( 'Do I need to archive or delete my data?', 'burst-statistics' ),
-//				'text'  => __( 'In general, your hosting performance and storage is related to your website traffic. In some cases, this might be skewed and you might want to minimize data stored in your database.', 'burst-statistics' ),
-//				'url'   => 'https://burst-statistics.com/do-I-need-to-archive-my-data/',
-//			],
-//			'comment' => burst_admin_logged_in() ? sprintf(_x('Burst currently uses %s of your database.','e.g. Burst currently uses 10 MB of your database.', "burst-statistics"), get_option('burst_table_size')) : 'test',
-//			'disabled' => false,
-//			'default'  => false,
-//		],
-//
-//		[
-//			'id'       => 'archive_after_months',
-//			'menu_id'  => 'data',
-//			'group_id' => 'data_archiving',
-//			'min'   	 => 1,
-//			'type'     => 'select',
-//			'label'    => __( 'Archive data older than', 'burst-statistics' ),
-//			'disabled' => false,
-//			'default'  => '24',
-//			'options'  => [
-//				'3' 	 => __('3 months',"burst-statistics"),
-//				'6' => __('6 months',"burst-statistics"),
-//				'12' => __('1 year',"burst-statistics"),
-//				'24' => __('2 years',"burst-statistics"),
-//				'36' => __('3 years',"burst-statistics"),
-//				'48' => __('4 years',"burst-statistics"),
-//			],
-//			'react_conditions' => [
-//				'relation' => 'AND',
-//				[
-//					'enable_automatic_archiving' => true,
-//				],
-//			],
-//		],
-//
 		[
 			'id'       => 'restore_archives',
 			'menu_id'  => 'data',
@@ -343,47 +289,24 @@ function burst_fields( $load_values = true ) {
 			'disabled' => false,
 			'default'  => false,
 		],
-//
-//		[
-//			'id'       => 'enable_automatic_deletion',
-//			'menu_id'  => 'data',
-//			'group_id' => 'data_deleting',
-//			'type'     => 'checkbox',
-//			'label'    => __( 'Enable monthly data deleting', 'burst-statistics' ),
-//			'pro' => [
-//				'url' => 'https://burst-statistics.com/pricing/',
-//				'disabled' => false,
-//			],
-//			'disabled' => false,
-//			'default'  => false,
-//		],
-//
-//		[
-//			'id'       => 'delete_after_months',
-//			'menu_id'  => 'data',
-//			'group_id' => 'data_deleting',
-//			'min'   	 => 1,
-//			'type'     => 'select',
-//			'label'    => __( 'Delete data older than', 'burst-statistics' ),
-//			'warning' => __('This will delete all data older than the selected period. This cannot be undone.', 'burst-statistics'),
-//			'disabled' => false,
-//			'default'  => '24',
-//			'options'  => [
-//				'3' 	 => __('3 months',"burst-statistics"),
-//				'6' => __('6 months',"burst-statistics"),
-//				'12' => __('1 year',"burst-statistics"),
-//				'24' => __('2 years',"burst-statistics"),
-//				'36' => __('3 years',"burst-statistics"),
-//				'48' => __('4 years',"burst-statistics"),
-//			],
-//			'react_conditions' => [
-//				'relation' => 'AND',
-//				[
-//					'enable_automatic_deletion' => true,
-//				],
-//			],
-//		],
+
 	];
+
+	if ( is_multisite() && burst_is_networkwide_active() ) {
+		$fields[] = [
+			'id'       => 'track_network_wide',
+			'menu_id'  => 'advanced',
+			'group_id' => 'tracking',
+			'type'     => 'checkbox',
+			'label'    => __( 'Track all hits networkwide, and view them on the dashboard of your main site', 'burst-statistics' ),
+			'disabled' => true,
+			'pro' => [
+				'url' => 'https://burst-statistics.com/pricing/',
+				'disabled' => false,
+			],
+			'default'  => false,
+		];
+	}
 
 	$fields = apply_filters( 'burst_fields', $fields );
 	foreach ( $fields as $key => $field ) {
@@ -406,18 +329,19 @@ function burst_fields( $load_values = true ) {
 
 function burst_goal_fields() {
 	$goals = [
-		'goal_title' => [
-			'id'       => 'goal_title',
+		[
+			'id'       => 'title',
 			'type'     => 'hidden',
 			'default'  => false,
 		],
-		'goal_status' => [
-			'id'       => 'goal_status',
+		'status' => [
+			'id'       => 'status',
 			'type'     => 'hidden',
 			'default'  => false,
 		],
-		'goal_type' => [
-			'id'       => 'goal_type',
+
+		[
+			'id'       => 'type',
 			'type'     => 'radio-buttons',
 			'label'    => __( 'What type of goal do you want to set?', 'burst-statistics' ),
 			'options'  => [
@@ -426,25 +350,35 @@ function burst_goal_fields() {
 			          'description' => __('Track clicks on element', 'burst-statistics'),
 			          'type' => 'clicks',
 			          'icon' => 'mouse',
+					  'server_side' => false,
 				],
 				'views'  => [
 					'label'       => __( 'Views', 'burst-statistics' ),
 					'description' => __( 'Track views of element', 'burst-statistics' ),
 					'type'        => 'views',
 					'icon'        => 'eye',
+					'server_side' => false,
 				],
 				'visits' => [
 					'label'       => __( 'Visits', 'burst-statistics' ),
 					'description' => __( 'Track visits to page', 'burst-statistics' ),
 					'type'        => 'visits',
 					'icon'        => 'visitors',
+					'server_side' => true,
+				],
+				'hook' => [
+					'label'       => __( 'Hook', 'burst-statistics' ),
+					'description' => __( 'Track execution of a WordPress hook', 'burst-statistics' ),
+					'type'        => 'hook',
+					'icon'        => 'visitors',
+					'server_side' => true,
 				],
 			],
 			'disabled' => false,
 			'default'  => 'clicks',
 		],
-		'goal_page_or_website' => [
-			'id'               => 'goal_page_or_website',
+		[
+			'id'               => 'page_or_website',
 			'type'             => 'radio-buttons',
 			'label'            => __( 'Do you want to track a specific page or the entire website?', 'burst-statistics' ),
 			'options'          => [
@@ -461,17 +395,17 @@ function burst_goal_fields() {
 					'icon'        => 'website',
 				],
 			],
+			'disabled'         => false,
+			'default'          => 'website',
 			'react_conditions' => [
 				'relation' => 'AND',
 				[
-					'goal_type' => ['clicks', 'views'],
+					'type' => ['clicks', 'views'],
 				],
 			],
-			'disabled'         => false,
-			'default'          => 'website',
 		],
-		'goal_specific_page' => [
-			'id'               => 'goal_specific_page',
+		[
+			'id'               => 'specific_page',
 			'type'             => 'select-page',
 			'label'            => __( 'Which specific page do you want to track?', 'burst-statistics' ),
 			'disabled'         => false,
@@ -479,85 +413,73 @@ function burst_goal_fields() {
 			'react_conditions' => [
 				'relation' => 'OR',
 				[
-					'goal_page_or_website' => ['page'],
-					'goal_type' => ['visits'],
+					'page_or_website' => ['page'],
+					'type' => ['visits'],
 				],
 			],
 		],
-		'goal_element' => [
-			'id'               => 'goal_element',
-			'type'             => 'class-id',
-			'label'            => __( 'What element do you want to track?', 'burst-statistics' ),
-			'disabled'         => false,
-			'default'          => [
-				'attribute' => 'class',
-				'value'     => '',
-			],
+		[
+			'id'               => 'attribute',
+			'type'             => 'hidden',
+			'default'          => 'class',
 			'react_conditions' => [
 				'relation' => 'AND',
 				[
-					'goal_type'=> ['clicks', 'views'],
+					'type'=> ['clicks', 'views'],
 				],
 			],
 		],
-		'goal_conversion_metric' => [
-			'id'               => 'goal_conversion_metric',
+		[
+			'id'               => 'attribute_value',
+			'type'             => 'class-id',
+			'label'            => __( 'What element do you want to track?', 'burst-statistics' ),
+			'disabled'         => false,
+			'default'          => '',
+			'react_conditions' => [
+				'relation' => 'AND',
+				[
+					'type'=> ['clicks', 'views'],
+				],
+			],
+		],
+		[
+			'id'               => 'hook',
+			'type'             => 'hook',
+			'label'            => __( 'What hook do you want to track?', 'burst-statistics' ),
+			'disabled'         => false,
+			'default'          => '',
+			'react_conditions' => [
+				'relation' => 'AND',
+				[
+					'type'=> ['hook'],
+				],
+			],
+		],
+		[
+			'id'               => 'conversion_metric',
 			'type'             => 'radio-buttons',
-			// label for selecting which metric you want to select to calculate the conversion rate
 			'label'            => __( 'What metric do you want to use to calculate the conversion rate?', 'burst-statistics' ),
 			'options'          => [
 				'visitors'    => [
 					'label'       => __( 'Visitors', 'burst-statistics' ),
-//					'description' => __( 'Track page specific', 'burst-statistics' ),
 					'type'        => 'visitors',
 					'icon'        => 'visitors',
 				],
 				'sessions' => [
 					'label'       => __( 'Sessions', 'burst-statistics' ),
-//					'description' => __( 'Track on whole site', 'burst-statistics' ),
 					'type'        => 'sessions',
 					'icon'        => 'sessions',
 				],
 				'pageviews' => [
 					'label'       => __( 'Pageviews', 'burst-statistics' ),
-//					'description' => __( 'Track on whole site', 'burst-statistics' ),
 					'type'        => 'pageviews',
 					'icon'        => 'pageviews',
 				],
 			],
-//			'react_conditions' => [
-//				'relation' => 'AND',
-//				[
-//					'goal_type' => ['clicks', 'views'],
-//				],
-//			],
 			'disabled'         => false,
 			'default'          => 'visitors',
 		],
 	];
 
 	return apply_filters( 'burst_goal_fields', $goals );
-}
-
-/**
- * Render html based on template
- *
- * @param string $template
- *
- * @return string
- */
-
-function burst_get_template( $template ) {
-	if ( ! burst_user_can_view() ) {
-		return '';
-	}
-	$html = '';
-	$file = trailingslashit( burst_path ) . 'settings/templates/' . $template;
-	if ( file_exists( $file ) ) {
-		ob_start();
-		require $file;
-		$html = ob_get_clean();
-	}
-
-	return $html;
 }

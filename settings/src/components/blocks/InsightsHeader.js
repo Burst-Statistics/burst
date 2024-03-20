@@ -20,14 +20,11 @@ const InsightsHeader = ({selectedMetrics, filters}) => {
     'bounces': {
       'label': __('Bounces', 'burst-statistics'),
     },
-  };
-
-  if (filters.goal_id > 0) {
-    insightsOptions['conversions'] = {
+    'conversions': {
       'label': __('Conversions', 'burst-statistics'),
-      'default': true,
-    };
-  }
+      'default': filters.goal_id > 0,
+    }
+  };
 
   const onApply = (value) => {
     setMetrics(value);

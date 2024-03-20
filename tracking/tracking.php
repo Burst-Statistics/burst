@@ -5,6 +5,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use function burst\UserAgent\parse_user_agent;
 
+if ( ! function_exists( 'burst_error_log' ) ) {
+	/**
+	 * Log error to error_log
+	 *
+	 * @param $message
+	 */
+	function burst_error_log( $message ) {
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$logging_enabled = apply_filters( 'burst_enable_logging', true );
+			if ( $logging_enabled ) {
+				if ( is_array( $message ) || is_object( $message ) ) {
+					error_log( 'Burst Statistics: ' . print_r( $message, true ) );
+				} else {
+					error_log( 'Burst Statistics: ' . $message );
+				}
+			}
+		}
+	}
+}
+
 if ( ! function_exists( 'burst_register_track_hit_route' ) ) {
 	function burst_register_track_hit_route() {
 		register_rest_route(
@@ -30,131 +51,127 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 	 */
 	function burst_track_hit( $data ): string {
 		global $wpdb;
-		$user_agent_data = isset( $data['user_agent'] ) ? burst_get_user_agent_data( $data['user_agent'] ) : array(
-			'browser'         => '',
-			'browser_version' => '',
-			'platform'        => '',
-			'device'          => '',
-		);
-		$defaults = array(
-			'url'               => null,
-			'page_id'           => null,
-			'time'              => null,
-			'uid'               => null,
-			'fingerprint'       => null,
-			'referrer_url'      => null,
-			'user_agent'        => null,
-			'device_resolution' => null,
-			'time_on_page'      => null,
-			'completed_goals'   => null,
-		);
-		$data     = wp_parse_args( $data, $defaults );
-		$data['completed_goals'] = burst_sanitize_completed_goal_ids( $data['completed_goals'] );
 
-		// update array
-		$arr                      = array();
-		$arr['entire_page_url']   = burst_sanitize_entire_page_url( $data['url'] ); // required
-		$arr['page_url']          = burst_sanitize_page_url( $data['url'] ); // required
-		$arr['page_id']           = burst_sanitize_page_id( $data['page_id'] ); // required
-		$arr['uid']               = burst_sanitize_uid( $data['uid'] ); // required
-		$arr['fingerprint']       = burst_sanitize_fingerprint( $data['fingerprint'] );
-		$arr['referrer']          = burst_sanitize_referrer( $data['referrer_url'] );
-		if ( $arr['referrer'] === 'spammer' ) {
+		// validate & sanitize all data
+		$sanitized_data = burst_prepare_tracking_data( $data );
+		$sanitized_data = apply_filters( 'before_burst_track_hit', $sanitized_data );
+
+		if ( $sanitized_data['referrer'] === 'spammer' ) {
+			burst_error_log( 'Referrer spam prevented.' );
 			return 'referrer is spam';
 		}
-		$arr['browser']           = $user_agent_data['browser']; // already sanitized
-		$arr['browser_version']   = $user_agent_data['browser_version']; // already sanitized
-		$arr['platform']          = $user_agent_data['platform']; // already sanitized
-		$arr['device']            = $user_agent_data['device']; // already sanitized
-		$arr['device_resolution'] = burst_sanitize_device_resolution( $data['device_resolution'] );
-		$arr['time_on_page']      = burst_sanitize_time_on_page( $data['time_on_page'] );
-		$arr['bounce']            = 1;
 
+		// If new hit, get the last row
+		$result = burst_get_hit_type($sanitized_data);
 
-		// if user agent is not set then this is an update hit
-		$is_update_hit = empty( $data['user_agent'] );
-		$arr           = apply_filters( 'burst_before_track_hit', $arr );
-		$session_arr = array(
-			'last_visited_url' => $arr['page_url'],
+		if ($result === false) {
+			burst_error_log('Failed to determine hit type.');
+			return 'failed to determine hit type';
+		}
+
+		$hit_type = $result['hit_type']; // create or update
+		$previous_hit = $result['last_row']; // last row. create can also have a last row from the previous hit.
+
+		if ($previous_hit !== null) {
+			// Determine non-bounce conditions
+			$isDifferentPage = $previous_hit['entire_page_url'] !== $sanitized_data['entire_page_url'];
+			$isTimeOverThreshold = ($previous_hit['time_on_page'] + $sanitized_data['time_on_page']) > 5000;
+			$isPreviousHitNotBounce = (int) $previous_hit['bounce'] === 0;
+
+			if ($isPreviousHitNotBounce || $isDifferentPage || $isTimeOverThreshold) {
+				$sanitized_data['bounce'] = 0; // Not a bounce
+
+				// If the user visited more than one page, update all previous hits to not be a bounce
+				if ($isDifferentPage) {
+					burst_set_bounce_for_session($previous_hit['session_id']);
+				}
+			}
+		}
+
+		$sanitized_data           = apply_filters( 'burst_before_track_hit', $sanitized_data );
+		$session_arr   = array(
+			'last_visited_url' => $sanitized_data['entire_page_url'],
 			'goal_id'          => false,
-			'country_code'     => $arr['country_code'] ?? '',
+			'country_code'     => $sanitized_data['country_code'] ?? '',
 		);
-		unset( $arr['country_code'] );
+		unset( $sanitized_data['country_code'] );
 		// update burst_sessions table
 		// Get the last record with the same uid within 30 minutes. If it exists, use session_id. If not, create a new session.
-		if ( $is_update_hit ) { // if update hit, make sure that the URL matches.
-			$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'], $arr['page_url'] );
-		} else {
-			$last_statistic = burst_get_last_user_statistic( $arr['uid'], $arr['fingerprint'] );
-		}
 
-		// Determine if hit is a bounce
-		// - check if previous page was not a bounce, then this is also not a bounce
-		// - check if last_statistic page_url is different, then more than two pages are visited
-		// - check if last_statistic time_on_page + current time_on_page is more than 5 seconds, then it is not a bounce
-		if ( (int) $last_statistic['bounce'] !== 1 || ( $last_statistic['page_url'] !== null && $last_statistic['page_url'] !== $arr['page_url'] ) || $last_statistic['time_on_page'] + $arr['time_on_page'] > 5000 ) {
-			$arr['bounce'] = 0;
-			// if previous page was a bounce and curretn page is not, then this should be updated to a non-bounce
-			if ( $last_statistic['page_url'] !== null && $last_statistic['page_url'] !== $arr['page_url'] ) {
-				burst_update_statistic( array( 'ID' => $last_statistic['ID'], 'bounce' => 0 ) );
+		// Improved clarity and error handling for session management
+		if (isset($previous_hit) && $previous_hit['session_id'] > 0) {
+			// Existing session found, reuse the session ID
+			$sanitized_data['session_id'] = $previous_hit['session_id'];
+
+			// Update existing session with new data
+			if (!burst_update_session($sanitized_data['session_id'], $session_arr)) {
+				// Handle error if session update fails
+				burst_error_log("Failed to update session for session ID: " . $sanitized_data['session_id']);
+			}
+		} elseif ($previous_hit === null) {
+			// No previous hit, indicating a new session
+			$session_arr['first_visited_url'] = $sanitized_data['entire_page_url'];
+
+			// Attempt to create a new session and assign its ID
+			$sanitized_data['session_id'] = burst_create_session($session_arr);
+
+			// Verify session creation was successful
+			if (!$sanitized_data['session_id']) {
+				// Handle error if session creation fails
+				burst_error_log("Failed to create a new session.");
 			}
 		}
 
-		if ( $last_statistic['session_id'] > 0 ) {
-			$arr['session_id'] = $last_statistic['session_id'];
-			burst_update_session( $arr['session_id'], $session_arr );
-		} else if ( $last_statistic ) {
-			$session_arr['first_visited_url'] = $arr['page_url'];
-			$arr['session_id']                = burst_create_session( $session_arr );
-		}
 
 		// if there is a fingerprint use that instead of uid
-		if ( $arr['fingerprint'] && ! $arr['uid'] ) {
-			$arr['uid'] = $arr['fingerprint'];
+		if ( $sanitized_data['fingerprint'] && ! $sanitized_data['uid'] ) {
+			$sanitized_data['uid'] = $sanitized_data['fingerprint'];
 		}
-		unset( $arr['fingerprint'] );
+		unset( $sanitized_data['fingerprint'] );
 
 		// update burst_statistics table
-		// Get the last record with the same uid and page_url. If it exists update it. If not, create a new record and add time() to $arr['time']
-		if ( $is_update_hit && ( $last_statistic['page_url'] === $arr['page_url'] || $last_statistic['session_id'] === '' ) ) { // if update hit, make sure that the URL matches.
+		// Get the last record with the same uid and page_url. If it exists update it. If not, create a new record and add time() to $sanitized_data['time']
+		if ( $hit_type === 'update' && ( $previous_hit['entire_page_url'] === $sanitized_data['entire_page_url'] || $previous_hit['session_id'] === '' ) ) { // if update hit, make sure that the URL matches.
 			// add up time_on_page to the existing record
-			if ( $last_statistic ) {
-				$arr['time_on_page'] += $last_statistic['time_on_page'];
+			if ( $previous_hit ) {
+				$sanitized_data['time_on_page'] += $previous_hit['time_on_page'];
 			}
-			$arr['ID'] = $last_statistic['ID'];
-			burst_update_statistic( $arr );
-		} else if ( ! $is_update_hit ) {
-			$arr['time']             = time();
-			$arr['first_time_visit'] = burst_get_first_time_visit( $arr['uid'] );
+			$sanitized_data['ID'] = $previous_hit['ID'];
+			burst_update_statistic( $sanitized_data );
+		} else if ( $hit_type === 'create') {
+			// if it is not an update hit, create a new record
+			$sanitized_data['time']             = time();
+			$sanitized_data['first_time_visit'] = burst_get_first_time_visit( $sanitized_data['uid'] );
 
-			$insert_id = burst_create_statistic( $arr );
+			$insert_id = burst_create_statistic( $sanitized_data );
+			burst_create_parameters( $sanitized_data['parameters'], $insert_id );
 
 			// if postmeta burst_total_pageviews_count does not exist, create it with sql and set it to 1
 			// if it exists, add 1 to it via sql
 			$meta_key = 'burst_total_pageviews_count';
 			// get post meta via sql
-			$sql        = $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s", $arr['page_id'], $meta_key );
+			$sql        = $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s", $sanitized_data['page_id'], $meta_key );
 			$meta_value = $wpdb->get_var( $sql );
 
 			if ( (int) $meta_value > 0 ) {
 				$meta_value = (int) $meta_value + 1;
-				$sql        = $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %d WHERE post_id = %d AND meta_key = %s", $meta_value, $arr['page_id'], $meta_key );
+				$sql        = $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %d WHERE post_id = %d AND meta_key = %s", $meta_value, $sanitized_data['page_id'], $meta_key );
 				$wpdb->query( $sql );
 			} else {
 				$meta_value = 1;
-				$sql        = $wpdb->prepare( "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES (%d, %s, %d)", $arr['page_id'], $meta_key, $meta_value );
+				$sql        = $wpdb->prepare( "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES (%d, %s, %d)", $sanitized_data['page_id'], $meta_key, $meta_value );
 				$wpdb->query( $sql );
 			}
 		}
 
-		if ( array_key_exists( 'ID', $arr ) && $arr['ID'] > 0 ) {
-			$statistic_id = $arr['ID'];
+		if ( array_key_exists( 'ID', $sanitized_data ) && $sanitized_data['ID'] > 0 ) {
+			$statistic_id = $sanitized_data['ID'];
 		} else {
 			$statistic_id = $insert_id ?? 0;
 		}
 		if ( $statistic_id > 0 ) {
-			$completed_goals = burst_get_completed_goals( $data['completed_goals'], $arr['page_url'] );
-			// if $arr['completed_goals'] is not an empty array, update burst_goals table
+			$completed_goals = burst_get_completed_goals( $data['completed_goals'], $sanitized_data['page_url'] );
+			// if $sanitized_data['completed_goals'] is not an empty array, update burst_goals table
 			if ( ! empty( $completed_goals ) ) {
 				foreach ( $completed_goals as $goal_id ) {
 					$goal_arr = array(
@@ -223,15 +240,99 @@ if ( ! function_exists( 'burst_rest_track_hit' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_sanitize_entire_page_url' ) ) {
+if ( ! function_exists( 'burst_prepare_tracking_data' ) ) {
+	function burst_prepare_tracking_data( $data ) {
+		$user_agent_data         = isset( $data['user_agent'] ) ? burst_get_user_agent_data( $data['user_agent'] ) : array(
+			'browser'         => '',
+			'browser_version' => '',
+			'platform'        => '',
+			'device'          => '',
+		);
+		$defaults                = array(
+			'url'               => null,
+			'page_id'           => null,
+			'time'              => null,
+			'uid'               => null,
+			'fingerprint'       => null,
+			'referrer_url'      => null,
+			'user_agent'        => null,
+			'device_resolution' => null,
+			'time_on_page'      => null,
+			'completed_goals'   => null,
+		);
+		$data                    = wp_parse_args( $data, $defaults );
+		$data['completed_goals'] = burst_sanitize_completed_goal_ids( $data['completed_goals'] );
+
+		// update array
+		$sanitized_data                      = array();
+		$destructured_url         = burst_sanitize_url( $data['url'] );
+		$sanitized_data['entire_page_url']   = $destructured_url['path'] . $destructured_url['parameters'] . $destructured_url['fragment']; // required
+		$sanitized_data['page_url']          = $destructured_url['path']; // required
+		$sanitized_data['parameters']        = $destructured_url['parameters'];
+		$sanitized_data['fragment']          = $destructured_url['fragment'];
+		$sanitized_data['page_id']           = burst_sanitize_page_id( $data['page_id'] ); // required
+		$sanitized_data['uid']               = burst_sanitize_uid( $data['uid'] ); // required
+		$sanitized_data['fingerprint']       = burst_sanitize_fingerprint( $data['fingerprint'] );
+		$sanitized_data['referrer']          = burst_sanitize_referrer( $data['referrer_url'] );
+		$sanitized_data['browser']           = $user_agent_data['browser']; // already sanitized
+		$sanitized_data['browser_version']   = $user_agent_data['browser_version']; // already sanitized
+		$sanitized_data['platform']          = $user_agent_data['platform']; // already sanitized
+		$sanitized_data['device']            = $user_agent_data['device']; // already sanitized
+		$sanitized_data['device_resolution'] = burst_sanitize_device_resolution( $data['device_resolution'] );
+		$sanitized_data['time_on_page']      = burst_sanitize_time_on_page( $data['time_on_page'] );
+		$sanitized_data['bounce']            = 1;
+
+		return $sanitized_data;
+	}
+}
+if (!function_exists('burst_get_hit_type')) {
 	/**
-	 * Sanitize entire page URL
+	 * Determines if the current hit is an update or a create operation and retrieves the last row if applicable.
 	 *
-	 * @param string $url
-	 *
-	 * @return string
+	 * @param array $data Data for the current hit.
+	 * @return array|false Returns an array with 'hit_type' and 'last_row' if applicable, or false if conditions are not met.
 	 */
-	function burst_sanitize_entire_page_url( $url ): string {
+	function burst_get_hit_type($data) {
+		// Determine if it is an update hit based on the absence of certain data points
+		$is_update_hit = empty($data['browser']) && empty($data['browser_version']) && empty($data['platform']) && empty($data['device']);
+
+		// Attempt to get the last user statistic based on the presence or absence of certain conditions
+		if ($is_update_hit) {
+			// For an update hit, require matching uid, fingerprint, and entire_page_url
+			$last_row = burst_get_last_user_statistic($data['uid'], $data['fingerprint'], $data['entire_page_url']);
+		} else {
+			// For a potential create hit, uid and fingerprint are sufficient
+			$last_row = burst_get_last_user_statistic($data['uid'], $data['fingerprint']);
+		}
+
+		// Determine the appropriate action based on the result
+		if ($last_row) {
+			// A matching row exists, classify as update and return the last row
+			$hit_type = $is_update_hit ? 'update' : 'create';
+			return ['hit_type' => $hit_type, 'last_row' => $last_row];
+		} elseif ($is_update_hit) {
+			// No matching row exists for an update hit, indicating a data inconsistency or error
+			return false; // Indicate failure to find a matching row for an update
+		} else {
+			// No row exists and it's not an update hit, classify as create with no last row
+			return ['hit_type' => 'create', 'last_row' => null];
+		}
+	}
+}
+
+
+if ( ! function_exists( 'burst_sanitize_url' ) ) {
+	/**
+	 * @param $url
+	 *
+	 * @return array
+	 */
+	function burst_sanitize_url( $url ): array {
+		$url_destructured = [
+			'path'       => '',
+			'parameters' => '',
+			'fragment'   => '',
+		];
 		if ( ! function_exists( 'wp_kses_bad_protocol' ) ) {
 			require_once( ABSPATH . '/wp-includes/kses.php' );
 		}
@@ -244,37 +345,24 @@ if ( ! function_exists( 'burst_sanitize_entire_page_url' ) ) {
 			require_once( ABSPATH . '/wp-includes/http.php' );
 		}
 		$url = parse_url( esc_url_raw( $sanitized_url ) );
+
+		// log if path, parameters or fragment are too long
+		if ( strlen( $url['path'] ) > 255 ) {
+			burst_error_log( 'URL path is too long: ' . $url['path'] ) . ' - Please report this to the plugin author.';
+		}
+		if ( isset ( $url['query'] ) && strlen( $url['query'] ) > 255 ) {
+			burst_error_log( 'URL parameters are too long: ' . $url['query'] ) . ' - Please report this to the plugin author.';
+		}
+		if ( isset( $url['fragment'] ) && strlen( $url['fragment'] ) > 255 ) {
+			burst_error_log( 'URL fragment is too long: ' . $url['fragment'] ) . ' - Please report this to the plugin author.';
+		}
 		if ( isset( $url['host'] ) ) {
-			return trailingslashit( $url['path'] );
+			$url_destructured['path']       = substr( trailingslashit( $url['path'] ), 0, 255 );
+			$url_destructured['parameters'] = isset( $url['query'] ) ? substr( '?' . $url['query'], 0, 255 ) : '';
+			$url_destructured['fragment']   = isset( $url['fragment'] ) ? substr( '#' . $url['fragment'], 0, 255 ) : '';
 		}
 
-		return false;
-	}
-}
-
-if ( ! function_exists( 'burst_sanitize_page_url' ) ) {
-	/**
-	 * Sanitize page_url
-	 *
-	 * @param string $page_url
-	 *
-	 * @return string
-	 */
-	function burst_sanitize_page_url( $url ): string {
-		if ( ! function_exists( 'wp_kses_bad_protocol' ) ) {
-			require_once( ABSPATH . '/wp-includes/kses.php' );
-		}
-		$sanitized_url = filter_var( $url, FILTER_SANITIZE_URL );
-		if ( ! filter_var( $sanitized_url, FILTER_VALIDATE_URL ) ) {
-			return '';
-		}
-
-		$url = parse_url( esc_url_raw( $sanitized_url ) );
-		if ( isset( $url['host'] ) ) { //
-			return trailingslashit( $url['path'] );
-		}
-
-		return '';
+		return $url_destructured;
 	}
 }
 
@@ -440,13 +528,8 @@ if ( ! function_exists( 'burst_get_active_goals' ) ) {
 	 */
 	function burst_get_active_goals( $server_side = false ) {
 		global $wpdb;
-		$active_goals = [];
 		$server_side  = $server_side ? "AND server_side = 1" : "AND server_side = 0";
 		$goals        = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE status = 'active' {$server_side}", ARRAY_A );
-		foreach ( $goals as $key => $goal ) {
-			$goals[ $key ]['setup'] = json_decode( $goals[ $key ]['setup'], true );
-		}
-
 		return $goals;
 	}
 }
@@ -468,42 +551,46 @@ if ( ! function_exists( 'burst_get_active_goals_ids' ) ) {
 	 */
 	function burst_get_active_goals_ids( $server_side = false ) {
 		$active_goals     = burst_get_active_goals( $server_side );
-		$active_goals_ids = [];
-		foreach ( $active_goals as $goal ) {
-			$active_goals_ids[] = $goal['ID'];
-		}
-
-		return $active_goals_ids;
+		return wp_list_pluck($active_goals, 'ID' );
 	}
 }
 
 if ( ! function_exists( 'burst_goal_is_completed' ) ) {
 	/**
-	 * @param $goal_id
-	 * @param $completed_goals
+	 * Checks if a specified goal is completed based on the provided page URL.
 	 *
-	 * @return bool
+	 * @param int $goal_id The ID of the goal to check.
+	 * @param string $page_url The current page URL.
+	 * @return bool Returns true if the goal is completed, false otherwise.
 	 */
-	function burst_goal_is_completed( $goal, $page_url ) {
-		if (
-			! isset( $goal['type'] ) ||
-			! isset( $goal['setup']['url'] ) ||
-			! isset( $page_url )
-		) {
-			switch ( $goal['type'] ) {
-				case 'visits':
-					// @todo maybe add support to compare parts of url (e.g. /hello-world/ and /hello-world/?utm_source=google)
-					// if url in hit data is equal to goal url
-					if ( $page_url === $goal['url'] ) {
-						return true;
-					}
-					break;
-				default:
-					return false;
-			}
+	function burst_goal_is_completed( $goal_id, $page_url ) {
+		require_once burst_path . 'goals/class-goal.php';
+
+		$goal = new burst_goal( $goal_id );
+
+		// Check if the goal and page URL are properly set.
+		if ( empty( $goal->type ) || empty( $goal->url ) || empty( $page_url ) ) {
+			return false;
 		}
+
+		switch ( $goal->type ) {
+			case 'visits':
+				// Improved URL comparison logic could go here.
+				// @TODO: Maybe add support for * and ? wildcards?
+				if ( rtrim($page_url, '/') === rtrim($goal->url, '/') ) {
+					return true;
+				}
+				break;
+			// @todo Add more case statements for other types of goals.
+
+			default:
+				return false;
+		}
+
+		return false;
 	}
 }
+
 
 if ( ! function_exists( 'burst_get_completed_goals' ) ) {
 	/**
@@ -520,7 +607,7 @@ if ( ! function_exists( 'burst_get_completed_goals' ) ) {
 			// loop through server side goals
 			foreach ( $server_goals as $goal ) {
 				// if goal is completed
-				if ( burst_goal_is_completed( $goal, $page_url ) ) {
+				if ( burst_goal_is_completed( $goal['ID'], $page_url ) ) {
 					// add goal id to completed goals array
 					$completed_server_goals[] = $goal['ID'];
 				}
@@ -635,36 +722,24 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 	 *
 	 * @return null[]
 	 */
-	function burst_get_last_user_statistic( $uid, $fingerprint, $page_url = false ): array {
+	function burst_get_last_user_statistic( $uid, $fingerprint, $page_url = false ) {
 		global $wpdb;
 		// if fingerprint is send get the last user statistic with the same fingerprint
-		$search_uid   = $fingerprint ?: $uid;
-		$default_data = array(
-			'ID'           => null,
-			'session_id'   => null,
-			'page_url'     => null,
-			'time_on_page' => 0,
-			'bounce'       => 1,
-		);
+		$search_uid = $fingerprint ?: $uid;
 		if ( ! $search_uid ) {
-			return $default_data;
+			return null;
 		}
-		$where = $page_url ? $wpdb->prepare( " AND page_url = %s", $page_url ) : '';
+		$where = $page_url ? $wpdb->prepare( " AND entire_page_url = %s", $page_url ) : '';
 		$data  = $wpdb->get_row(
 			$wpdb->prepare(
-				"select ID, session_id, page_url, time_on_page, bounce
-							from {$wpdb->prefix}burst_statistics
-		                    where uid = %s AND time > %s {$where} ORDER BY ID DESC limit 1",
+				"select ID, session_id, entire_page_url, time_on_page, bounce
+      from {$wpdb->prefix}burst_statistics
+                     where uid = %s AND time > %s {$where} ORDER BY ID DESC limit 1",
 				$search_uid,
 				strtotime( "-30 minutes" )
 			)
 		);
-		if ( $data ) {
-			return array_merge( $default_data, (array) $data );
-		}
-
-		return $default_data;
-
+		return $data ? (array) $data : null;
 	}
 }
 
@@ -688,73 +763,145 @@ if ( ! function_exists( 'burst_create_session' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_update_session' ) ) {
+if (!function_exists('burst_update_session')) {
 	/**
 	 * Update session in {prefix}_burst_sessions
 	 *
-	 * @param $session_id
-	 * @param $data
+	 * @param int|string $session_id The session ID to update.
+	 * @param array $data Data to update in the session.
 	 *
-	 * @return void
+	 * @return bool|int False if the operation failed, or the number of rows affected.
 	 */
-	function burst_update_session( $session_id, $data ) {
+	function burst_update_session($session_id, $data) {
 		global $wpdb;
-		$data = burst_remove_empty_values( $data );
-		$wpdb->update(
+
+		// Remove empty values from the data array
+		$data = burst_remove_empty_values($data);
+
+		// Perform the update operation
+		$result = $wpdb->update(
 			$wpdb->prefix . 'burst_sessions',
 			$data,
-			array( 'ID' => (int) $session_id )
+			['ID' => (int)$session_id]
 		);
+
+		// Return the number of rows affected
+		return $result !== false;
 	}
 }
 
-if ( ! function_exists( 'burst_create_statistic' ) ) {
+if (!function_exists('burst_create_statistic')) {
 	/**
-	 * Create statistic in {prefix}_burst_statistics
+	 * Create a statistic in {prefix}_burst_statistics
 	 *
-	 * @param $data
+	 * @param array $data Data to insert.
+	 * @return int|false The newly created statistic ID on success, or false on failure.
+	 */
+	function burst_create_statistic($data) {
+		global $wpdb;
+		$data = burst_remove_empty_values($data);
+
+		if (!burst_required_values_set($data)) {
+			burst_error_log('Missing required values for statistic creation. Data: ' . print_r($data, true));
+			return false;
+		}
+
+		$inserted = $wpdb->insert($wpdb->prefix . 'burst_statistics', $data);
+
+		if ($inserted) {
+			return $wpdb->insert_id;
+		} else {
+			burst_error_log('Failed to create statistic. Error: ' . $wpdb->last_error);
+			return false;
+		}
+	}
+}
+if (!function_exists('burst_update_statistic')) {
+	/**
+	 * Update a statistic in {prefix}_burst_statistics
+	 *
+	 * @param array $data Data to update, must include 'ID' for the statistic.
+	 * @return bool|int The number of rows updated, or false on failure.
+	 */
+	function burst_update_statistic($data) {
+		global $wpdb;
+		$data = burst_remove_empty_values($data);
+
+		// Ensure 'ID' is present for update
+		if (!isset($data['ID'])) {
+			burst_error_log('Missing ID for statistic update. Data: ' . print_r($data, true));
+			return false;
+		}
+
+		// 'page_id' should not be updated; ensure it's not included in $data
+		unset($data['page_id']);
+
+		$updated = $wpdb->update($wpdb->prefix . 'burst_statistics', $data, ['ID' => (int) $data['ID']]);
+
+		if ($updated === false) {
+			burst_error_log('Failed to update statistic. Error: ' . $wpdb->last_error);
+			return false;
+		}
+
+		return $updated; // Number of rows affected
+	}
+}
+
+if ( ! function_exists( 'burst_create_parameters' ) ) {
+	/**
+	 * Create parameters in {prefix}_burst_parameters
+	 *
+	 * @param $parameters
+	 * @param $statistic_id
 	 *
 	 * @return void
 	 */
-	function burst_create_statistic( $data ) {
-		global $wpdb;
-		$data = burst_remove_empty_values( $data );
-		if ( ! burst_required_values_set( $data ) ) {
-			if ( WP_DEBUG ) {
-				error_log( 'Burst Statistics: burst_create_statistic->required values are not set. Stats: ' . print_r( $data, true ) );
+	function burst_create_parameters( $parameters, $statistic_id ) {
+		if ( isset( $parameters ) && $parameters !== '' && $statistic_id > 0 ) {
+			global $wpdb;
+			// if starts with ? remove it
+			$parameters = ltrim( $parameters, '?' );
+			$parameters = explode( '&', $parameters );
+			$campaigns  = [];
+			foreach ( $parameters as $parameter ) {
+				$parameter = explode( '=', $parameter );
+
+				// strip utm_ or burst_ from parameter name and add it to campaigns
+				if ( in_array( $parameter[0], [
+					'utm_source',
+					'utm_medium',
+					'utm_campaign',
+					'utm_term',
+					'utm_content',
+					'burst_source',
+					'burst_medium',
+					'burst_campaign',
+					'burst_term',
+					'burst_content',
+				] ) ) {
+					// strip utm  or burst from parameter name
+					$campaigns[ str_replace( [ 'utm_', 'burst_' ], '', $parameter[0]) ] = $parameter[1];
+				}
 			}
 
-			return;
+			$wpdb->insert(
+				$wpdb->prefix . 'burst_parameters',
+				array(
+					'statistic_id' => $statistic_id,
+					'parameter'    => $parameter[0],
+					'value'        => isset( $parameter[1] ) ? $parameter[1] : '',
+				)
+			);
+
+			if ( ! empty( $campaigns ) ) {
+				// add statistic_id to campaigns
+				$campaigns['statistic_id'] = $statistic_id;
+				$wpdb->insert(
+					$wpdb->prefix . 'burst_campaigns',
+					$campaigns
+				);
+			}
 		}
-		$id = $wpdb->insert(
-			$wpdb->prefix . 'burst_statistics',
-			$data
-		);
-
-		return $wpdb->insert_id;
-	}
-}
-
-if ( ! function_exists( 'burst_update_statistic' ) ) {
-	/**
-	 * Update statistics in {prefix}_burst_statistics
-	 *
-	 * @param array $data
-	 *
-	 * @return void
-	 */
-	function burst_update_statistic( $data ) {
-		global $wpdb;
-		$data = burst_remove_empty_values( $data );
-		// if page_id is set, unset it, because it should already be in the db. Otherwise it will be overwritten with 0
-		unset( $data['page_id'] );
-		$wpdb->update(
-			$wpdb->prefix . 'burst_statistics',
-			(array) $data,
-			array( 'ID' => (int) $data['ID'] )
-		);
-
-		return $wpdb->insert_id;
 	}
 }
 
@@ -770,10 +917,6 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 		global $wpdb;
 		// do not create goal statistic if statistic_id or goal_id is not set
 		if ( ! isset( $data['statistic_id'] ) || ! isset( $data['goal_id'] ) ) {
-			if ( WP_DEBUG ) {
-				error_log( 'Burst Statistics: Goal statistic not created because statistic_id or goal_id is not set' );
-			}
-
 			return;
 		}
 		// first get row with same statistics_id and goal_id
@@ -788,15 +931,43 @@ if ( ! function_exists( 'burst_create_goal_statistic' ) ) {
 
 		// goal already exists
 		if ( $goal_exists ) {
-			if ( WP_DEBUG ) {
-				error_log( 'Burst Statistics: Goal statistic already exists' );
-			}
 			return;
 		}
 		$wpdb->insert(
 			$wpdb->prefix . 'burst_goal_statistics',
 			$data
 		);
+	}
+}
+
+if ( ! function_exists('burst_set_bounce_for_session') ) {
+	/**
+	 * Sets the bounce flag to 0 for all hits within a session.
+	 *
+	 * @param string|int $session_id The ID of the session.
+	 * @return bool True on success, false on failure.
+	 */
+	function burst_set_bounce_for_session($session_id){
+		global $wpdb;
+
+		// Prepare table name to ensure it's properly quoted
+		$table_name = $wpdb->prefix . 'burst_statistics';
+
+		// Update query
+		$result = $wpdb->update(
+			$table_name,
+			['bounce' => 0], // data
+			['session_id' => $session_id] // where
+		);
+
+		// Check for errors
+		if ($result === false) {
+			// Handle error, log it or take other actions
+			burst_error_log('Error setting bounce to 0 for session ' . $session_id);
+			return false;
+		}
+
+		return true;
 	}
 }
 
@@ -869,12 +1040,12 @@ if ( ! function_exists( 'burst_is_ip_blocked' ) ) {
 		if ( is_array( $blocked_ips ) ) {
 			$blocked_ips_array = array_map( 'trim', $blocked_ips );
 			$ip_blocklist      = apply_filters( 'burst_ip_blocklist', $blocked_ips_array );
-			if ( in_array( $ip, $ip_blocklist ) ) {
-				if ( WP_DEBUG ) {
-					error_log( 'Burst Statistics: IP ' . $ip . ' is blocked for tracking' );
-				}
+			foreach ($ip_blocklist as $ip_range) {
+				if (burst_ip_in_range($ip, $ip_range)) {
+					burst_error_log( 'IP ' . $ip . ' is blocked for tracking' );
 
-				return true;
+					return true;
+				}
 			}
 		}
 
@@ -944,4 +1115,98 @@ if ( ! function_exists( 'burst_is_real_ip' ) ) {
 
 		return ! $ip || trim( $ip ) === '127.0.0.1' ? false : $ip;
 	}
+}
+
+/**
+ * Checks if a given IP address is within a specified IP range.
+ *
+ * This function supports both IPv4 and IPv6 addresses, and can handle ranges in
+ * both standard notation (e.g. "192.0.2.0") and CIDR notation (e.g. "192.0.2.0/24").
+ *
+ * In CIDR notation, the function uses a bitmask to check if the IP address falls within
+ * the range. For IPv4 addresses, it uses the `ip2long()` function to convert the IP
+ * address and subnet to their integer representations, and then uses the bitmask to
+ * compare them. For IPv6 addresses, it uses the `inet_pton()` function to convert the IP
+ * address and subnet to their binary representations, and uses a similar bitmask approach.
+ *
+ * If the range is not in CIDR notation, it simply checks if the IP equals the range.
+ *
+ * @param  string $ip  The IP address to check.
+ * @param  string $range  The range to check the IP address against.
+ *
+ * @return bool True if the IP address is within the range, false otherwise.
+ */
+function burst_ip_in_range( string $ip, string $range ): bool {
+	// Check if the IP address is properly formatted.
+	if ( ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 ) ) {
+		return false;
+	}
+	// Check if the range is in CIDR notation.
+	if ( strpos( $range, '/' ) !== false ) {
+		// The range is in CIDR notation, so we split it into the subnet and the bit count.
+		[ $subnet, $bits ] = explode( '/', $range );
+
+		if ( ! is_numeric( $bits ) || $bits < 0 || $bits > 128 ) {
+			return false;
+		}
+
+		// Check if the subnet is a valid IPv4 address.
+		if ( filter_var( $subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+			// Convert the IP address and subnet to their integer representations.
+			$ip     = ip2long( $ip );
+			$subnet = ip2long( $subnet );
+
+			// Create a mask based on the number of bits.
+			$mask = - 1 << ( 32 - $bits );
+
+			// Apply the mask to the subnet.
+			$subnet &= $mask;
+
+			// Compare the masked IP address and subnet.
+			return ( $ip & $mask ) === $subnet;
+		}
+
+		// Check if the subnet is a valid IPv6 address.
+		if ( filter_var( $subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+			// Convert the IP address and subnet to their binary representations.
+			$ip     = inet_pton( $ip );
+			$subnet = inet_pton( $subnet );
+			// Divide the number of bits by 8 to find the number of full bytes.
+			$full_bytes = floor( $bits / 8 );
+			// Find the number of remaining bits after the full bytes.
+			$partial_byte = $bits % 8;
+			// Initialize the mask.
+			$mask = '';
+			// Add the full bytes to the mask, each byte being "\xff" (255 in binary).
+			$mask .= str_repeat( "\xff", $full_bytes );
+			// If there are any remaining bits...
+			if ( 0 !== $partial_byte ) {
+				// Add a byte to the mask with the correct number of 1 bits.
+				// First, create a string with the correct number of 1s.
+				// Then, pad the string to 8 bits with 0s.
+				// Convert the binary string to a decimal number.
+				// Convert the decimal number to a character and add it to the mask.
+				$mask .= chr( bindec( str_pad( str_repeat( '1', $partial_byte ), 8, '0' ) ) );
+			}
+
+			// Fill in the rest of the mask with "\x00" (0 in binary).
+			// The total length of the mask should be 16 bytes, so subtract the number of bytes already added.
+			// If we added a partial byte, we need to subtract 1 more from the number of bytes to add.
+			$mask .= str_repeat( "\x00", 16 - $full_bytes - ( 0 !== $partial_byte ? 1 : 0 ) );
+
+			// Compare the masked IP address and subnet.
+			return ( $ip & $mask ) === $subnet;
+		}
+
+		// The subnet was not a valid IP address.
+		return false;
+	}
+
+	if ( ! filter_var( $range, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 ) ) {
+		// The range was not in CIDR notation and was not a valid IP address.
+		return false;
+	}
+
+	// The range is not in CIDR notation, so we simply check if the IP equals the range.
+	return $ip === $range;
 }

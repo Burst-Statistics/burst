@@ -44,6 +44,15 @@ export const useFields = create(( set, get ) => ({
     set((state) => ({fields: conditionallyEnabledFields}));
 
   },
+  getFieldValue : (id) => {
+    let fields = get().fields;
+    for (const fieldItem of fields){
+      if (fieldItem.id === id ){
+        return fieldItem.value;
+      }
+    }
+    return false;
+  },
   updateField: (id, value) => {
     set(
         produce((state) => {
@@ -153,22 +162,11 @@ const isNextButtonDisabled = (fields, selectedMenuItem) => {
   return requiredFields.length > 0;
 }
 
-// export const updateFieldsListWithConditions = (fields) => {
-//   let newFields = [];
-//   fields.forEach(function(field, i  ) {
-//     let enabled = !( field.hasOwnProperty('react_conditions') && !validateConditions(field.react_conditions, fields, field.id) );
-//     //we want to update the changed fields if this field has just become visible. Otherwise the new field won't get saved.
-//     const newField = {...field};
-//     newField.conditionallyDisabled = !enabled;
-//     newFields.push(newField);
-//   });
-//   return newFields;
-// }
 export const updateFieldsListWithConditions = (fields) => {
   return fields.map(field => {
     const enabled = !(field.hasOwnProperty('react_conditions') && !validateConditions(field.react_conditions, fields, field.id));
     const newField = {...field};
-
+    // console.log("condition check: ", field.id, enabled);
     if (newField.condition_action === 'disable') {
       newField.disabled = !enabled;
     } else {
@@ -178,82 +176,6 @@ export const updateFieldsListWithConditions = (fields) => {
     return newField;
   });
 }
-// export const validateConditions = (conditions, fields) => {
-//   let relation = conditions.relation === 'OR' ? 'OR' : 'AND';
-//   let conditionApplies = relation==='AND';
-//   let result = {};
-//
-//   for (const key in conditions) {
-//     if ( conditions.hasOwnProperty(key) ) {
-//       let thisConditionApplies = relation==='AND';
-//       let subConditionsArray = conditions[key];
-//       if ( subConditionsArray.hasOwnProperty('relation') ) {
-//         let subConditionsResult = validateConditions(subConditionsArray, fields);
-//         thisConditionApplies = subConditionsResult.conditionApplies;
-//       } else {
-//         for ( let conditionField in subConditionsArray ) {
-//           let invert = conditionField.indexOf('!')===0;
-//           if ( subConditionsArray.hasOwnProperty(conditionField) ) {
-//             let conditionValue = subConditionsArray[conditionField];
-//             conditionField = conditionField.replace('!','');
-//             let conditionFields = Array.isArray(fields) ? fields.filter(field => field.id === conditionField) : [];
-//             if (conditionFields.length > 0) {
-//               let field = conditionFields[0];
-//               let actualValue = field.value;
-//               if ( field.type==='checkbox' ) {
-//                 thisConditionApplies = actualValue === conditionValue;
-//               } else if ( field.type==='multicheckbox' ) {
-//                 thisConditionApplies = false;
-//                 let arrayValue = actualValue;
-//                 if ( arrayValue.length===0 ) {
-//                   thisConditionApplies = false;
-//                 } else {
-//                   for (const key of Object.keys(arrayValue)) {
-//                     if ( !Array.isArray(conditionValue) ) conditionValue = [conditionValue];
-//                     if ( conditionValue.includes(arrayValue[key])){
-//                       thisConditionApplies = true;
-//                       break;
-//                     }
-//                   }
-//                 }
-//               } else if ( field.type==='radio' ) {
-//                 if ( Array.isArray(conditionValue) ) {
-//                   thisConditionApplies = conditionValue.includes(actualValue);
-//                 } else {
-//                   thisConditionApplies = conditionValue === actualValue;
-//                 }
-//               } else {
-//                 if (typeof conditionValue === 'string' && conditionValue.indexOf('EMPTY')!==-1){
-//                   thisConditionApplies = actualValue.length===0;
-//                 } else if (Array.isArray(conditionValue)) {
-//                   thisConditionApplies = false;
-//                   for (const value of conditionValue) {
-//                     if (String(actualValue).toLowerCase() === value.toLowerCase()) {
-//                       thisConditionApplies = true;
-//                       break;
-//                     }
-//                   }
-//                 } else {
-//                   thisConditionApplies = String(actualValue).toLowerCase() === conditionValue.toLowerCase();
-//                 }
-//               }
-//             }
-//           }
-//           if ( invert ){
-//             thisConditionApplies = !thisConditionApplies;
-//           }
-//           if ( relation === 'AND' ) {
-//             conditionApplies = conditionApplies && thisConditionApplies;
-//           } else {
-//             conditionApplies = conditionApplies || thisConditionApplies;
-//           }
-//         }
-//       }
-//     }
-//   }
-//
-//   return conditionApplies ? 1 : 0;
-// }
 
 export const validateConditions = (conditions, fields, fieldId, isSub) => {
   let relation = conditions.relation === 'OR' ? 'OR' : 'AND';
