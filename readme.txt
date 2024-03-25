@@ -5,7 +5,7 @@ Tags: statistics, analytics, privacy, analytics alternative
 Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
-Tested up to: 6.4
+Tested up to: 6.5
 Stable tag: 1.6.0
 
 Self-hosted and privacy-friendly analytics for WordPress.
