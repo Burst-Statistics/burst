@@ -139,12 +139,14 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			$sanitized_data['ID'] = $previous_hit['ID'];
 			burst_update_statistic( $sanitized_data );
 		} else if ( $hit_type === 'create') {
+			do_action('burst_before_create_statistic', $sanitized_data);
 			// if it is not an update hit, create a new record
 			$sanitized_data['time']             = time();
 			$sanitized_data['first_time_visit'] = burst_get_first_time_visit( $sanitized_data['uid'] );
 
 			$insert_id = burst_create_statistic( $sanitized_data );
-			burst_create_parameters( $sanitized_data['parameters'], $insert_id );
+
+			do_action('burst_after_create_statistic', $insert_id, $sanitized_data);
 
 			// if postmeta burst_total_pageviews_count does not exist, create it with sql and set it to 1
 			// if it exists, add 1 to it via sql
@@ -844,64 +846,6 @@ if (!function_exists('burst_update_statistic')) {
 		}
 
 		return $updated; // Number of rows affected
-	}
-}
-
-if ( ! function_exists( 'burst_create_parameters' ) ) {
-	/**
-	 * Create parameters in {prefix}_burst_parameters
-	 *
-	 * @param $parameters
-	 * @param $statistic_id
-	 *
-	 * @return void
-	 */
-	function burst_create_parameters( $parameters, $statistic_id ) {
-		if ( isset( $parameters ) && $parameters !== '' && $statistic_id > 0 ) {
-			global $wpdb;
-			// if starts with ? remove it
-			$parameters = ltrim( $parameters, '?' );
-			$parameters = explode( '&', $parameters );
-			$campaigns  = [];
-			foreach ( $parameters as $parameter ) {
-				$parameter = explode( '=', $parameter );
-
-				// strip utm_ or burst_ from parameter name and add it to campaigns
-				if ( in_array( $parameter[0], [
-					'utm_source',
-					'utm_medium',
-					'utm_campaign',
-					'utm_term',
-					'utm_content',
-					'burst_source',
-					'burst_medium',
-					'burst_campaign',
-					'burst_term',
-					'burst_content',
-				] ) ) {
-					// strip utm  or burst from parameter name
-					$campaigns[ str_replace( [ 'utm_', 'burst_' ], '', $parameter[0]) ] = $parameter[1];
-				}
-			}
-
-			$wpdb->insert(
-				$wpdb->prefix . 'burst_parameters',
-				array(
-					'statistic_id' => $statistic_id,
-					'parameter'    => $parameter[0],
-					'value'        => isset( $parameter[1] ) ? $parameter[1] : '',
-				)
-			);
-
-			if ( ! empty( $campaigns ) ) {
-				// add statistic_id to campaigns
-				$campaigns['statistic_id'] = $statistic_id;
-				$wpdb->insert(
-					$wpdb->prefix . 'burst_campaigns',
-					$campaigns
-				);
-			}
-		}
 	}
 }
 

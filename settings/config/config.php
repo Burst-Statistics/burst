@@ -292,7 +292,7 @@ function burst_fields( $load_values = true ) {
 
 	];
 
-	if ( is_multisite() && burst_is_networkwide_active() ) {
+	if ( is_multisite() && burst_is_networkwide_active() && is_main_site() ) {
 		$fields[] = [
 			'id'       => 'track_network_wide',
 			'menu_id'  => 'advanced',
@@ -366,13 +366,13 @@ function burst_goal_fields() {
 					'icon'        => 'visitors',
 					'server_side' => true,
 				],
-				'hook' => [
-					'label'       => __( 'Hook', 'burst-statistics' ),
-					'description' => __( 'Track execution of a WordPress hook', 'burst-statistics' ),
-					'type'        => 'hook',
-					'icon'        => 'visitors',
-					'server_side' => true,
-				],
+//				'hook' => [
+//					'label'       => __( 'Hook', 'burst-statistics' ),
+//					'description' => __( 'Track execution of a WordPress hook', 'burst-statistics' ),
+//					'type'        => 'hook',
+//					'icon'        => 'visitors',
+//					'server_side' => true,
+//				],
 			],
 			'disabled' => false,
 			'default'  => 'clicks',

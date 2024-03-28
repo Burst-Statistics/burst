@@ -45,6 +45,19 @@ export const useGoalsStore = create((set, get) => {
     }
   };
 
+  const getGoal = (id)=>  {
+    let goals = get().goals;
+    if ( !Array.isArray(goals) ) {
+        return false;
+    }
+
+    let index = goals.findIndex(goal => goal.id === id);
+    if (index !== -1) {
+      return goals[index];
+    }
+    return false;
+  }
+
   const addGoal = async () => {
     try {
       const response = await toast.promise(burst_api.addGoal(), {
@@ -157,5 +170,6 @@ export const useGoalsStore = create((set, get) => {
     setGoalValue,
     saveGoals,
     saveGoalTitle,
+    getGoal,
   }
 });

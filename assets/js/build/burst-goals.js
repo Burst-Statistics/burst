@@ -131,6 +131,11 @@ const burst_setup_click_tracker = (goal) => {
 };
 
 const burst_recursive_trigger_check = (target, goal) => {
+  //if there is no attribute value, exit
+  if (goal.attribute_value.length === 0) {
+    return;
+  }
+
   let selector = goal.attribute === 'id' ? '#' : '.';
   if (target.matches(selector + goal.attribute_value)) {
     burst_goal_triggered(goal);

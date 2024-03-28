@@ -2764,6 +2764,10 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     padding-bottom: 0;
 }
 
+.burst div[class^=burst-wizard-] .burst-license .burst-task-element .burst-icon {
+    width: 15px;
+}
+
 .burst div[class^=burst-wizard-] .burst-license .burst-license-field {
     display: flex;
 }

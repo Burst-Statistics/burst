@@ -71,7 +71,6 @@ const getDataTableData = async ({
   columnsOptions,
 }) => {
   try {
-    console.log('args', args);
     const { data } = await getData('datatable', startDate, endDate, range, args);
     return transformDataTableData(data, columnsOptions);
   } catch (error) {

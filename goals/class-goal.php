@@ -3,21 +3,21 @@
 if ( ! class_exists( "burst_goal" ) ) {
 	class burst_goal {
 		public $id;
-		public $title;
+		public $title = '';
 		public $type = 'clicks';
 		public $status = 'active';
-		public $server_side;
-		public $url;
-		public $conversion_metric;
+		public $server_side = false;
+		public $url = '*';
+		public $conversion_metric = 'visitors';
 		public $date_start;
 		public $date_end;
 		public $date_created;
 		public $setup;
-		public $attribute;
-		public $attribute_value;
-		public $hook;
-		public $page_or_website;
-		public $specific_page;
+		public $attribute = 'class';
+		public $attribute_value = '';
+		public $hook = '';
+		public $page_or_website = 'website';
+		public $specific_page = '';
 
 		public function __construct( $id = 0 ) {
 			$this->id = (int) $id;
@@ -38,7 +38,7 @@ if ( ! class_exists( "burst_goal" ) ) {
 			return $this;
 		}
 
-		private function get(){
+		private function get( $upgrade = true ){
 			if ( $this->id === 0 ) {
 				return false;
 			}
@@ -67,12 +67,12 @@ if ( ! class_exists( "burst_goal" ) ) {
 			$this->specific_page = $this->page_or_website === 'page' ? $this->url : '';
 
 			//upgrade old structure data, then remove it
-			$setup = json_decode( $goal->setup, false );
-			if ( $setup !== null && isset($setup->attribute) && isset($setup->value) ) {
+			$setup = isset($goal->setup) ? json_decode( $goal->setup, false ) : null;
+			if ( $upgrade && $setup !== null && isset($setup->attribute) && isset($setup->value) ) {
 				$this->attribute = $setup->attribute;
 				$this->attribute_value = $setup->value;
 				$this->setup = null;
-				$this->save();
+				$this->save( );
 			}
 
 			return $this;
@@ -121,6 +121,9 @@ if ( ! class_exists( "burst_goal" ) ) {
 				$wpdb->insert( $table_name, $args );
 				$this->id = (int) $wpdb->insert_id;
 			}
+
+			//prevent loops by ensuring the save (for upgrading) doesn't get called again in the get method .
+			$this->get(false);
 		}
 
 		/**

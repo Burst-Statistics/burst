@@ -117,8 +117,6 @@ function burst_integrations() {
 			$file = apply_filters( 'burst_integration_path', burst_path . "integrations/plugins/$plugin.php", $plugin );
 			if ( file_exists( $file ) ) {
 				require_once( $file );
-			} else {
-				burst_error_log( "Searched for $plugin integration at $file, but did not find it" );
 			}
 		}
 	}
