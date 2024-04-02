@@ -107,7 +107,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 					'callback' => '_true_',
 					'output' => array(
 						'true' => array(
-							'msg' => __( "Please check if your REST API is loading correctly. Your site currently is using the slower Ajax fallback method to load the settings.", 'really-simple-ssl' ),
+							'msg' => __( "Please check if your REST API is loading correctly. Your site currently is using the slower Ajax fallback method to load the settings.", 'burst-statistics' ),
 							'icon' => 'warning',
 							'admin_notice' => false,
 							'url' => 'https://burst-statistics.com/instructions/rest-api-error/',
