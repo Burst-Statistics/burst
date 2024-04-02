@@ -61,9 +61,9 @@ if ( ! class_exists( "burst_goals_tracker" ) ) {
 			$burst_uid = isset($_COOKIE['burst_uid']) ? burst_sanitize_uid($_COOKIE['burst_uid']) : false;
 			//we assume there has at least been one interaction clientside, so there should be a uid.
 			if ( $burst_uid ) {
-				$statistic = burst_get_last_user_statistic($burst_uid, false);
-				$statistic_id = $statistic['ID'];
-				if (!$statistic_id) {
+				$statistic = burst_get_last_user_statistic( $burst_uid, false);
+				$statistic_id = $statistic['ID'] ?? false;
+				if ( !$statistic_id ) {
 					return;
 				}
 				//get the goal by $hook_name.

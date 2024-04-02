@@ -11,7 +11,9 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			self::$_this = $this;
 			// actions and filters
-			add_action( 'admin_init', array( $this, 'init' ) );
+			if ( !wp_doing_cron() ) {
+				add_action( 'admin_init', array( $this, 'init' ) );
+			}
 		}
 
 		/**
@@ -30,6 +32,12 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( ! burst_admin_logged_in() ) {
 				return;
 			}
+
+			$upgrade_running = get_transient('burst_upgrade_running');
+			if ($upgrade_running) {
+				return;
+			}
+			set_transient('burst_upgrade_running', true, 60);
 			// check if we need to upgrade
 			$db_upgrades = $this->get_db_upgrades();
 			// check if all upgrades are done
@@ -63,6 +71,8 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			if ( $do_upgrade === 'summary_table' ) {
 				BURST()->summary->upgrade_summary_table_alltime();
 			}
+
+			delete_transient('burst_upgrade_running');
 		}
 
 		/**

@@ -194,7 +194,7 @@ function burst_add_option_menu() {
 	}
 
     //if track network wide is enabled, show the menu only on the main site
-	if ( is_multisite() && burst_get_option('track_network_wide') && burst_is_networkwide_active() ) {
+	if ( is_multisite() && get_site_option('burst_track_network_wide') && burst_is_networkwide_active() ) {
 	    if (!is_main_site()){
             return;
         }
@@ -1344,6 +1344,22 @@ function burst_get_posts( $request, $ajax_data = false ) {
 		200
 	);
 }
+
+/**
+ * If the track_network_wide option is saved, we update the site_option which is used to handle this behaviour.
+ * @param $name
+ * @param $value
+ * @param $prev_value
+ * @param $type
+ *
+ * @return void
+ */
+function burst_update_for_multisite($name, $value, $prev_value, $type ){
+    if ( $name === 'track_network_wide' ) {
+        update_site_option('burst_track_network_wide', (bool) $value );
+    }
+}
+add_action( 'burst_after_save_field', 'burst_update_for_multisite', 10, 4 );
 
 
 

@@ -80,13 +80,8 @@ function burst_check_upgrade() {
 	}
 
 	if ( $prev_version
-	     && version_compare( $prev_version, '1.5.4', '<' ) ) {
-		update_option( 'burst_db_upgrade_summary_table', true, false);
-	}
-
-	if ( $prev_version
 	     && version_compare( $prev_version, '1.6.0', '<' ) ) {
-		update_option( 'burst_db_upgrade_summary_table', true, false);
+		BURST()->summary->restart_update_summary_table_alltime();
 	}
 
 	do_action( 'burst_upgrade', $prev_version );

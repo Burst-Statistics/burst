@@ -60,6 +60,8 @@ if ( ! class_exists( "burst_admin" ) ) {
 			add_action( 'upgrader_process_complete', array( $this, 'run_table_init_hook'), 10, 1);
 			add_action( 'wp_initialize_site', array( $this, 'run_table_init_hook'), 10, 1);
 			add_action( 'burst_upgrade', array( $this, 'run_table_init_hook'), 10, 1);
+			add_action( 'init', array( $this, 'run_table_init_hook'), 10, 1);
+			add_action( 'admin_init', array( $this, 'run_table_init_hook'), 10, 1);
 		}
 
 
@@ -186,6 +188,11 @@ if ( ! class_exists( "burst_admin" ) ) {
 
             define('BURST_INSTALL_TABLES_RUNNING', true);
 
+            if ( get_transient('burst_running_upgrade') ) {
+                return;
+            }
+
+            set_transient('burst_running_upgrade', true, 30);
 			do_action( 'burst_install_tables' );
 			//we need to run table creation across subsites as well.
 			if ( is_multisite() ) {
@@ -198,6 +205,7 @@ if ( ! class_exists( "burst_admin" ) ) {
 					}
 				}
 			}
+
 		}
 
 		/**

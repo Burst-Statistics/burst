@@ -123,6 +123,10 @@
       .burst-task-element {
         padding-top: var(--rsp-spacing-s);
         padding-bottom: 0;
+        //limit width of skeleton icon, which causes scrollbars in the side during loading
+        .burst-icon {
+          width:15px;
+        }
       }
 
       .burst-license-field {

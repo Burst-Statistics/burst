@@ -464,7 +464,7 @@ if ( ! function_exists( 'burst_get_beacon_url' ) ) {
      * @return string
      */
 	function burst_get_beacon_url(): string {
-		if ( is_multisite() && burst_get_option('track_network_wide') && burst_is_networkwide_active() ) {
+		if ( is_multisite() && get_site_option('burst_track_network_wide') && burst_is_networkwide_active() ) {
 			if ( is_main_site() ) {
 				return burst_url . 'endpoint.php';
 			} else {

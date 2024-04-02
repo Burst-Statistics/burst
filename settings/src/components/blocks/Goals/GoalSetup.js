@@ -45,7 +45,7 @@ const GoalSetup = ({ goal, goalFields, setGoalValue, deleteGoal, onUpdate }) => 
   }
   let type = goal.type;
   let iconName = type && fields.type && fields.type.options && fields.type.options[type] ? fields.type.options[type].icon : 'eye';
-  let title = goal.title.length>0 ? goal.title : ' ';
+  let title =  goal.title && goal.title.length>0 ? goal.title : ' ';
   let dateCreated = goal && goal.date_created !== undefined && goal.date_created > 1 ? goal.date_created : 1;
   return (
       <div className="burst-settings-goals__list__item">

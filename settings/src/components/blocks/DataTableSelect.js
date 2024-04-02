@@ -15,7 +15,6 @@ const DataTableSelect = ({ value, onChange, options }) => {
   // hasProOptions
   const hasProOptions = options.some((option) => option.pro);
   const firstOption = options[0];
-  console.log('firstOption', firstOption);
 
   if (hasProOptions && !isProActive) {
     return (

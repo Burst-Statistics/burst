@@ -105,11 +105,11 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 */
 		public function upgrade_summary_table_alltime(){
 			global $wpdb;
-			$first_statistics_date_unix = $wpdb->get_var("select min(time) from {$wpdb->prefix}burst_statistics");
+			$first_statistics_date_unix = $wpdb->get_var("select min(time) from {$wpdb->prefix}burst_statistics"); //1644260876
 			//convert unix to date and back to unix, to ensure that the date is at the start of the day, for comparison purposes
-			$first_statistics_date = BURST()->statistics->convert_unix_to_date( $first_statistics_date_unix);
+			$first_statistics_date = BURST()->statistics->convert_unix_to_date( $first_statistics_date_unix); //2022-02-07
 			//calculate days offset from first_statistics_date to today
-			$first_statistics_date = BURST()->statistics->convert_unix_to_date( strtotime($first_statistics_date));
+			$first_statistics_date_unix = strtotime($first_statistics_date);
 			$today = BURST()->statistics->convert_unix_to_date(strtotime('today'));
 			$max_days_offset = (strtotime($today) - $first_statistics_date_unix) / DAY_IN_SECONDS;
 			//round to integer
@@ -117,28 +117,22 @@ if ( ! class_exists( 'burst_summary' ) ) {
 			//if the offset is negative, set it to 0
 			$max_days_offset = $max_days_offset < 0 ? 0 : $max_days_offset;
 			$current_days_offset = (int) get_option('burst_summary_table_upgrade_days_offset', 0);
-
 			//check if the oldest summary date is more recent than the oldest statistics date
 			//we ensure that it will always run for today, by running if offset = 0.
-			if ( $current_days_offset === 0 || $max_days_offset > $current_days_offset ){
-				if ( !get_option('burst_summary_table_upgrade_days_offset')) {
-					update_option('burst_summary_table_upgrade_days_offset', 0, false);
-				}
-
+			if ( $max_days_offset >= $current_days_offset ){
 				for ( $i = 0; $i < 30; $i++ ) {
-					$current_days_offset++;
 					$success = $this->update_summary_table( $current_days_offset );
-					//if failed, set days_offset to one lower, and exit to try later.
+					//if failed, exit, and try again later
 					if ( !$success ) {
-						update_option( 'burst_summary_table_upgrade_days_offset', absint($current_days_offset-1), false);
 						return;
 					}
+					//if successful, increment days offset
+					$current_days_offset++;
 				}
 
 				update_option('burst_summary_table_upgrade_days_offset', $current_days_offset, false);
 			} else {
 				//completed
-				update_option('burst_summary_table_upgrade_days_offset', $max_days_offset, false);
 				delete_option('burst_db_upgrade_summary_table');
 			}
 		}
@@ -217,7 +211,7 @@ if ( ! class_exists( 'burst_summary' ) ) {
 			}
 
 			if ( !empty($limit) ) {
-				$sql .= ' order by '.$limit;
+				$sql .= ' '.$limit;
 			}
 			return $sql;
 		}

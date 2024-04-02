@@ -8,7 +8,6 @@ import Icon from "../../../utils/Icon";
 const License = (props) => {
     const {fields, updateField} = useFields();
     const {licenseStatus, setLicenseStatus} = useLicenseStore();
-    const [setNoticesLoaded] = useState(false);
     const disabledState = {output:{
             dismissible:false,
             icon:'skeleton',
@@ -33,7 +32,6 @@ const License = (props) => {
         getLicenseNotices().then(( response ) => {
             setLicenseStatus(response.licenseStatus);
             setNotices(response.notices);
-            setNoticesLoaded(true);
         });
     }, [fields] );
 
@@ -42,12 +40,10 @@ const License = (props) => {
     }
 
     const toggleActivation = () => {
-         setNoticesLoaded(false);
         if ( licenseStatus==='valid' ) {
             doAction('deactivate_license').then( ( response ) => {
                 setLicenseStatus(response.licenseStatus);
                 setNotices(response.notices);
-                setNoticesLoaded(true);
             });
         } else {
             let data = {};
@@ -56,7 +52,6 @@ const License = (props) => {
 			doAction('activate_license', data).then( ( response ) => {
                 setLicenseStatus(response.licenseStatus);
                 setNotices(response.notices);
-                setNoticesLoaded(true);
             });
         }
     }

@@ -145,7 +145,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 			// Query for most viewed page and top referrer
 			foreach (['mostViewed' => ['page_url', 'pageviews'], 'referrer' => ['referrer', 'pageviews']] as $key => $fields) {
-				$sql = $this->get_sql_table($start, $end, $fields, [], $fields[0], '1 DESC');
+				$sql = $this->get_sql_table($start, $end, $fields, [], $fields[0], 'pageviews DESC', 'LIMIT 1');
 				$query = $wpdb->get_row($sql, 'ARRAY_A');
 				if ($query) {
 					$data[$key]['title'] = $query[$fields[0]];
@@ -975,7 +975,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 *
 		 * @return string
 		 */
-		public function get_sql_table_raw( $start, $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [] ) {
+		public function get_sql_table_raw( int $start, int $end, $select = array( '*' ), $filters = array(), $group_by = '', $order_by = '', $limit = '', $joins = [] ) {
 			global $wpdb;
 			$filters = esc_sql( $filters);
 			$select = esc_sql( $select);
@@ -985,7 +985,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$select     = $this->get_sql_select_for_metrics( $select );
 			$table_name = $wpdb->prefix . 'burst_statistics';
 			$where = $this->get_where_clause_for_filters( $filters );
-			$joined_tables = [];
 
 			// if $select string contains referrer add where clause for referrer
 			if ( strpos( $select, 'referrer' ) !== false ) {
@@ -994,9 +993,14 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				$where      .= "AND referrer NOT LIKE '%$site_url%'";
 			}
 
-			if ( strpos( $select, 'parameter' ) !== false ) {
-				$where .= "AND parameter IS NOT NULL";
+			if ( burst_is_pro() && strpos( $select, 'parameters,' ) !== false ) {
+				$where .= "AND parameters IS NOT NULL AND parameters != ''";
 			}
+
+			if ( burst_is_pro() && strpos( $select, 'parameter,' ) !== false ) {
+				$where .= "AND parameter IS NOT NULL AND parameter != '='";
+			}
+
 
 			$available_joins = apply_filters( 'burst_available_joins', array(
 				'sessions' => array(
@@ -1029,24 +1033,25 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$table_name .= ' AS statistics';
 
 			// if parameter is in select, then we need to join the parameters table
-			if ( strpos( $select, 'parameter' ) !== false ) {
+			if ( strpos( $select, 'parameter,' ) !== false ) {
 				//replcae the group by with the parameter
 				$group_by = 'parameters.parameter, parameters.value';
+				// if parameters is also in the group by then we need to add the parameters table to the join
+				if ( strpos( $select, 'parameters,' ) !== false ) {
+					// if group by is set then we add a comma and statistics.parameters to the group by. If not then it just becomes statistics.parameters
+					$group_by = $group_by ? $group_by . ', statistics.parameters' : '';
+				}
 			}
+
 			$group_by = $group_by ? "GROUP BY $group_by" : '';
 			$order_by = $order_by ? "ORDER BY $order_by" : '';
 			$limit    = $limit ? 'LIMIT ' . (int) $limit : '';
-
-			return $wpdb->prepare(
-				"SELECT $select FROM $table_name $join_sql WHERE time > %d AND time < %d $where $group_by $order_by $limit",
-				$start,
-				$end
-			);
+			return "SELECT $select FROM $table_name $join_sql WHERE time > $start AND time < $end $where $group_by $order_by $limit";
 		}
 
 
 		function get_sql_select_for_metric( $metric ) {
-			$exclude_bounces = apply_filters( 'burst_exclude_bounces', 0 );
+			$exclude_bounces = apply_filters( 'burst_exclude_bounces', 1 );
 
 			global $wpdb;
 			// if metric starts with  'count(' and ends with ')', then it's a custom metric
@@ -1089,14 +1094,12 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				case 'referrer':
 					$remove   = array( 'http://www.', 'https://www.', 'http://', 'https://' );
 					$site_url = str_replace( $remove, '', site_url() );
-					$direct_text = 'Direct';
 					$sql         = $wpdb->prepare(
 						"CASE
-                       WHEN statistics.referrer = '' OR statistics.referrer IS NULL OR statistics.referrer LIKE %s THEN %s
+                       WHEN statistics.referrer = '' OR statistics.referrer IS NULL OR statistics.referrer LIKE %s THEN 'Direct'
                        ELSE trim( 'www.' from substring(statistics.referrer, locate('://', statistics.referrer) + 3))
                    END",
-						'%' . $wpdb->esc_like($site_url) . '%',
-						$direct_text
+						'%' . $wpdb->esc_like($site_url) . '%'
 					);
 					break;
 					case 'conversions':
