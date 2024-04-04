@@ -5,47 +5,48 @@ import {useGoalsStore} from '../../../store/useGoalsStore';
 import Tooltip from '../../common/Tooltip';
 
 export default function EditableText({ value, id, onChange }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const inputRef = useRef(null);
-  const saveGoalTitle = useGoalsStore((state) => state.saveGoalTitle);
+  const [ isEditing, setIsEditing ] = useState( false );
+  const inputRef = useRef( null );
+  const saveGoalTitle = useGoalsStore( ( state ) => state.saveGoalTitle );
 
 
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
+  useEffect( () => {
+    if ( isEditing && inputRef.current ) {
       inputRef.current.focus();
     }
-  }, [isEditing]);
+  }, [ isEditing ]);
 
-  function handleClick(e) {
+  function handleClick( e ) {
     e.preventDefault();
-    setIsEditing(true);
+    setIsEditing( true );
   }
 
   async function handleBlur() {
-    setIsEditing(false);
-    await saveGoalTitle(id, value);
+    setIsEditing( false );
+    await saveGoalTitle( id, value );
 
   }
 
-  function handleKeyDown(event) {
-    if (event.key === ' ') {
+  function handleKeyDown( event ) {
+    if ( ' ' === event.key ) {
       event.preventDefault();
+
       // add space to input
-      onChange(value + ' ');
+      onChange( value + ' ' );
     }
-    if (event.key === 'Enter') {
+    if ( 'Enter' === event.key ) {
       event.preventDefault();
-      setIsEditing(false);
+      setIsEditing( false );
     }
   }
 
-  function handleTextChange(event) {
+  function handleTextChange( event ) {
     event.preventDefault();
-    onChange(event.target.value);
+    onChange( event.target.value );
   }
 
   function handleFocus() {
-    setIsEditing(true);
+    setIsEditing( true );
   }
 
   return (
@@ -60,7 +61,7 @@ export default function EditableText({ value, id, onChange }) {
                 ref={inputRef}
             />
         ) : (
-            <Tooltip content={__('Click to edit', 'burst-statistics')}>
+            <Tooltip content={__( 'Click to edit', 'burst-statistics' )}>
               <h5 className="burst-tooltip-clicktoedit" tabIndex="0"
                   onClick={handleClick} onFocus={handleFocus}
                  >

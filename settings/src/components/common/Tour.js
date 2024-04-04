@@ -5,22 +5,22 @@ import * as burst_api from '../../utils/api';
 
 const newSteps = [
   {
-    title: __('Welcome to Burst Statistics', 'burst-statistics'),
-    text: '<p>' +  __('The plugin is now active.', 'burst-statistics') + ' ' + __('Follow a quick tour and make sure everything works.', 'burst-statistics') + '</p>',
+    title: __( 'Welcome to Burst Statistics', 'burst-statistics' ),
+    text: '<p>' +  __( 'The plugin is now active.', 'burst-statistics' ) + ' ' + __( 'Follow a quick tour and make sure everything works.', 'burst-statistics' ) + '</p>',
     classes: 'burst-shepherd',
     buttons: [
       {
         type: 'cancel',
         classes: 'burst-button burst-button--secondary',
-        text: __('Exit tour', 'burst-statistics'),
+        text: __( 'Exit tour', 'burst-statistics' )
       },
       {
         classes: 'burst-button burst-button--primary',
-        text: __('Start tour', 'burst-statistics'),
-        action () {
+        text: __( 'Start tour', 'burst-statistics' ),
+        action() {
           window.location.hash = 'dashboard';
-          return this.next()
-        },
+          return this.next();
+        }
       }
     ]
   },
@@ -31,22 +31,22 @@ const newSteps = [
     buttons: [
       {
         classes: 'burst-button burst-button--secondary',
-        text: __('Previous', 'burst-statistics'),
-        action () {
+        text: __( 'Previous', 'burst-statistics' ),
+        action() {
           window.location.hash = 'dashboard';
-          return this.back()
-        },
+          return this.back();
+        }
       },
       {
         classes: 'burst-button burst-button--primary',
-        text: __('Next', 'burst-statistics'),
-        action () {
+        text: __( 'Next', 'burst-statistics' ),
+        action() {
           window.location.hash = 'dashboard';
-          return this.next()
-        },
+          return this.next();
+        }
       }
     ],
-    attachTo: { element: '.burst-progress', on: 'auto' },
+    attachTo: { element: '.burst-progress', on: 'auto' }
   },
   {
     title: __( 'Real time data', 'burst-statistics' ),
@@ -55,22 +55,22 @@ const newSteps = [
     buttons: [
       {
         classes: 'burst-button burst-button--secondary',
-        text: __('Previous', 'burst-statistics'),
-        action () {
+        text: __( 'Previous', 'burst-statistics' ),
+        action() {
           window.location.hash = 'dashboard';
-          return this.back()
-        },
+          return this.back();
+        }
       },
       {
         classes: 'burst-button burst-button--primary',
-        text: __('Next', 'burst-statistics'),
-        action () {
+        text: __( 'Next', 'burst-statistics' ),
+        action() {
           window.location.hash = 'statistics';
-          return this.next()
-        },
+          return this.next();
+        }
       }
     ],
-    attachTo: { element: '.burst-today', on: 'auto' },
+    attachTo: { element: '.burst-today', on: 'auto' }
   },
   {
     title: __( 'Your website statistics', 'burst-statistics' ),
@@ -79,21 +79,22 @@ const newSteps = [
     buttons: [
       {
         classes: 'burst-button burst-button--secondary',
-        text: __('Previous', 'burst-statistics'),
-        action () {
+        text: __( 'Previous', 'burst-statistics' ),
+        action() {
           window.location.hash = 'dashboard';
-          return this.back()
-        },
+          return this.back();
+        }
       },
       {
         classes: 'burst-button burst-button--primary',
-        text: __('Next', 'burst-statistics'),
-        action () {
+        text: __( 'Next', 'burst-statistics' ),
+        action() {
           window.location.hash = 'statistics';
-          return this.next()
-        },
+          return this.next();
+        }
       }
     ]
+
     // attachTo: { element: '.burst-today', on: 'right' },
   },
   {
@@ -103,22 +104,22 @@ const newSteps = [
     buttons: [
       {
         classes: 'burst-button burst-button--secondary',
-        text: __('Previous', 'burst-statistics'),
-        action () {
+        text: __( 'Previous', 'burst-statistics' ),
+        action() {
           window.location.hash = 'statistics';
-          return this.back()
-        },
+          return this.back();
+        }
       },
       {
         classes: 'burst-button burst-button--primary',
-        text: __('Next', 'burst-statistics'),
-        action () {
+        text: __( 'Next', 'burst-statistics' ),
+        action() {
           window.location.hash = 'settings';
-          return this.next()
-        },
+          return this.next();
+        }
       }
     ],
-    attachTo: { element: '.burst-date-range-container', on: 'auto' },
+    attachTo: { element: '.burst-date-range-container', on: 'auto' }
   },
   {
     title: __( 'Your configuration', 'burst-statistics' ),
@@ -127,22 +128,22 @@ const newSteps = [
     buttons: [
       {
         classes: 'burst-button burst-button--secondary',
-        text: __('Previous', 'burst-statistics'),
-        action () {
+        text: __( 'Previous', 'burst-statistics' ),
+        action() {
           window.location.hash = 'statistics';
-          return this.back()
-        },
+          return this.back();
+        }
       },
       {
         classes: 'burst-button burst-button--primary',
-        text: __('Next', 'burst-statistics'),
-        action () {
+        text: __( 'Next', 'burst-statistics' ),
+        action() {
           window.location.hash = 'settings';
-          return this.next()
-        },
+          return this.next();
+        }
       }
     ],
-    attachTo: { element: '.burst-general', on: 'auto' },
+    attachTo: { element: '.burst-general', on: 'auto' }
   },
   {
     title: __( 'Support & feedback', 'burst-statistics' ),
@@ -151,31 +152,31 @@ const newSteps = [
     buttons: [
       {
         classes: 'burst-button burst-button--secondary',
-        text: __('Previous', 'burst-statistics'),
-        action () {
+        text: __( 'Previous', 'burst-statistics' ),
+        action() {
           window.location.hash = 'settings';
-          return this.back()
-        },
+          return this.back();
+        }
       },
       {
         type: 'cancel',
         classes: 'burst-button burst-button--primary',
-        text: __('Exit tour', 'burst-statistics'),
-      },
+        text: __( 'Exit tour', 'burst-statistics' )
+      }
     ]
-  },
+  }
 ];
 let tourEndRunning = false;
 const onTourEnd = () => {
-  if (! tourEndRunning) {
+  if ( ! tourEndRunning ) {
     tourEndRunning = true;
     let saveFields = [];
     saveFields.push({id: 'burst_tour_shown_once', value: '1', type: 'hidden'});
-    burst_api.setFields(saveFields).then((response) => {
+    burst_api.setFields( saveFields ).then( ( response ) => {
       tourEndRunning = false;
-    })
+    });
   }
-}
+};
 
 const tourOptions = {
   defaultStepOptions: {
@@ -185,15 +186,17 @@ const tourOptions = {
     keyboardNavigation: false
   },
   useModalOverlay: false,
-  margin: 15,
+  margin: 15
 };
 
 function TourInstance() {
-  const tour = useContext(ShepherdTourContext);
-  tour.on("cancel", onTourEnd);
-  useEffect(() => {
-    if (tour) tour.start();
-  }, [tour]);
+  const tour = useContext( ShepherdTourContext );
+  tour.on( 'cancel', onTourEnd );
+  useEffect( () => {
+    if ( tour ) {
+tour.start();
+}
+  }, [ tour ]);
 
   return <></>;
 }
@@ -204,6 +207,6 @@ const Tour = () => {
         <TourInstance />
       </ShepherdTour>
   );
-}
+};
 
 export default Tour;

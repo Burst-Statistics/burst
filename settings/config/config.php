@@ -30,6 +30,11 @@ function burst_menu() {
 							'id'    => 'general',
 							'title' => __( 'General', 'burst-statistics' ),
 						],
+						[
+							'id'    => 'email_reports',
+							'title' => __( 'Email reports', 'burst-statistics' ),
+							'description' => __( 'Get weekly or monthly reports sent to your email.', 'burst-statistics' ),
+						],
 					],
 				],
 				[
@@ -169,6 +174,35 @@ function burst_fields( $load_values = true ) {
 			'disabled'    => false,
 			'default'     => false,
 		],
+		[
+			'id'       => 'email_reports_mailinglist',
+			'menu_id'  => 'general',
+			'group_id' => 'email_reports',
+			'type'     => 'email_reports',
+			'label'    => __( 'Email reports', 'burst-statistics' ),
+			'disabled' => false,
+			'default'  => '',
+			'help'     => [
+				'label' => 'default',
+				'title' => __( 'Email reports', 'burst-statistics' ),
+				'text'  => __( "You can send your reports to multiple recipients. Separate the email addresses by a comma.", 'burst-statistics' ),
+				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
+			],
+		],
+		[
+			'id'          => 'logo_attachment_id',
+			'menu_id'     => 'general',
+			'group_id'    => 'email_reports',
+			'type'        => 'logo_editor',
+			'label'       => __( 'Change logo in the email reports', 'burst-statistics' ),
+			'pro' => [
+				'url' => 'https://burst-statistics.com/pricing/',
+				'disabled' => false,
+			],
+			'disabled'    => true,
+			'default'     => false,
+		],
+
 		[
 			'id'       => 'goals',
 			'menu_id'  => 'goals',

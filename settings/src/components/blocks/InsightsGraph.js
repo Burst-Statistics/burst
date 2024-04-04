@@ -7,7 +7,7 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend,
+  Legend
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -22,8 +22,8 @@ ChartJS.register(
 );
 
 const InsightsGraph = ({data, loading}) => {
-  const options = useMemo(() => ({
-    responsive: "true",
+  const options = useMemo( () => ({
+    responsive: 'true',
     maintainAspectRatio: false,
     cubicInterpolationMode: 'monotone',
     plugins: {
@@ -33,28 +33,28 @@ const InsightsGraph = ({data, loading}) => {
           padding: 15,
           font: {
             size: 13,
-            weight: 400,
-          },
-        },
-      },
+            weight: 400
+          }
+        }
+      }
     },
     scales: {
       y: {
         ticks: {
           beginAtZero: true,
           stepSize: 20,
-          maxTicksLimit: 6,
-        },
+          maxTicksLimit: 6
+        }
       },
       x: {
         ticks: {
-          maxTicksLimit: 8,
-        },
-      },
+          maxTicksLimit: 8
+        }
+      }
     },
     layout: {
-      padding: 0,
-    },
+      padding: 0
+    }
   }), []);
 
   const loadingClass = loading ? 'burst-loading' : '';

@@ -11,9 +11,9 @@ defined( 'ABSPATH' ) or die();
  * @return array
  */
 function burst_exclude_inline_js( $inline_js ) {
-    $inline_js[] = 'burst';
+	$inline_js[] = 'burst';
 
-    return $inline_js;
+	return $inline_js;
 }
 add_filter( 'rocket_excluded_inline_js_content', 'burst_exclude_inline_js' );
 
@@ -27,8 +27,8 @@ add_filter( 'rocket_excluded_inline_js_content', 'burst_exclude_inline_js' );
  * @return array
  */
 function burst_exclude_js( $excluded_js ) {
-    $excluded_js[] =  '(.*)timeme(.*)';
-    $excluded_js[] =  '(.*)burst(.*)';
-    return $excluded_js;
+	$excluded_js[] = '(.*)timeme(.*)';
+	$excluded_js[] = '(.*)burst(.*)';
+	return $excluded_js;
 }
 add_filter( 'rocket_exclude_js', 'burst_exclude_js' );

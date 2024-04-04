@@ -6,13 +6,13 @@ import Icon from '../../utils/Icon';
 import {
   endOfDay,
   format,
-  startOfDay,
+  startOfDay
 } from 'date-fns';
 import {
   formatTime,
   formatNumber,
   getPercentage,
-  getRelativeTime, getDateWithOffset,
+  getRelativeTime, getDateWithOffset
 } from '../../utils/formatting';
 import GoalStatus from './GoalStatus';
 import {useDashboardGoalsStore} from '../../store/useDashboardGoalsStore';
@@ -24,116 +24,116 @@ import {useQueries} from '@tanstack/react-query';
 import getLiveGoals from '../../api/getLiveGoals';
 import getGoalsData from '../../api/getGoalsData';
 
-function selectGoalIcon(value) {
-  value = parseInt(value);
-  if (value > 10) {
+function selectGoalIcon( value ) {
+  value = parseInt( value );
+  if ( 10 < value ) {
     return 'goals';
-  }
-  else if (value > 0) {
+  } else if ( 0 < value ) {
     return 'goals';
-  }
-  else {
+  } else {
     return 'goals-empty';
   }
 }
 
 const GoalsBlock = () => {
-  const [interval, setInterval] = useState(5000);
-  const goalId = useDashboardGoalsStore((state) => state.goalId);
-  const setGoalId = useDashboardGoalsStore((state) => state.setGoalId);
+  const [ interval, setInterval ] = useState( 5000 );
+  const goalId = useDashboardGoalsStore( ( state ) => state.goalId );
+  const setGoalId = useDashboardGoalsStore( ( state ) => state.setGoalId );
 
-  const goals = useGoalsStore((state) => state.goals);
+  const goals = useGoalsStore( ( state ) => state.goals );
   const currentDateWithOffset = getDateWithOffset();
-  const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
-  const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+  const startDate = format( startOfDay( currentDateWithOffset ), 'yyyy-MM-dd' );
+  const endDate = format( endOfDay( currentDateWithOffset ), 'yyyy-MM-dd' );
 
-  useEffect(() => {
-    if (!goalId) {
+  useEffect( () => {
+    if ( ! goalId ) {
+
       //get first entry of the goals array
-      let firstGoal = goals.hasOwnProperty(0) ? goals[0] : false;
+      let firstGoal = goals.hasOwnProperty( 0 ) ? goals[0] : false;
       if ( firstGoal ) {
-        setGoalId(goals[0].id);
+        setGoalId( goals[0].id );
       }
     }
-  },[goals]);
+  }, [ goals ]);
 
   let goalStart = goals[goalId] && goals[goalId].date_start;
   let goalEnd = goals[goalId] && goals[goalId].date_end;
 
-  if (goalStart == 0 || goalStart === undefined) {
+  if ( 0 == goalStart || goalStart === undefined ) {
     goalStart = startDate;
   }
-  if (goalEnd == 0 || goalEnd === undefined) {
+  if ( 0 == goalEnd || goalEnd === undefined ) {
     goalEnd = endDate;
   }
 
   const args = {
     goal_id: goalId,
     startDate: startDate,
-    endDate: endDate,
+    endDate: endDate
   };
   const placeholderData = {
     today: {
-      title: __('Today', 'burst-statistics'),
-      icon: 'goals',
+      title: __( 'Today', 'burst-statistics' ),
+      icon: 'goals'
     },
     total: {
-      title: __('Total', 'burst-statistics'),
+      title: __( 'Total', 'burst-statistics' ),
       value: '-',
-      icon: 'goals',
+      icon: 'goals'
     },
     topPerformer: {
       title: '-',
-      value: '-',
+      value: '-'
     },
     conversionMetric: {
       title: '-',
       value: '-',
-      icon: 'visitors',
+      icon: 'visitors'
     },
     conversionPercentage: {
       title: '-',
-      value: '-',
+      value: '-'
     },
     bestDevice: {
       title: '-',
       value: '-',
-      icon: 'desktop',
+      icon: 'desktop'
     },
     dateCreated: 0,
     dateStart: 0,
     dateEnd: 0,
-    status: 'inactive',
+    status: 'inactive'
   };
 
   const queries = useQueries({
         queries: [
           {
-            queryKey: ['live-goals', goalId],
-            queryFn: () => getLiveGoals(args),
+            queryKey: [ 'live-goals', goalId ],
+            queryFn: () => getLiveGoals( args ),
             refetchInterval: interval, // @todo: make this configurable
             placeholderData: '-',
-            onError: (error) => {
-              setInterval(0);
-            },
+            onError: ( error ) => {
+              setInterval( 0 );
+            }
           },
           {
-            queryKey: ['goals', goalId],
-            queryFn: () => getGoalsData(args),
+            queryKey: [ 'goals', goalId ],
+            queryFn: () => getGoalsData( args ),
             refetchInterval: interval * 2,
             placeholderData: placeholderData,
-            onError: (error) => {
-              setInterval(0);
-            },
-          },
-        ],
-      },
+            onError: ( error ) => {
+              setInterval( 0 );
+            }
+          }
+        ]
+      }
   );
 
   const onGoalsInfoClick = () => {
     return () => {
       burst_settings.goals_information_shown = '1';
-      setOption('goals_information_shown', true);
+      setOption( 'goals_information_shown', true );
+
       // change the #settings/goals to #settings/goals/add
       window.location.hash = '#settings/goals';
     };
@@ -141,22 +141,22 @@ const GoalsBlock = () => {
 
   const live = queries[0].data;
   let data = queries[1].data;
-  if (queries.some((query) => query.isError)) {
+  if ( queries.some( ( query ) => query.isError ) ) {
     data = placeholderData;
   }
-  const todayIcon = selectGoalIcon(live);
-  const totalIcon = selectGoalIcon(data.today.value);
-  let today = format(currentDateWithOffset, 'yyyy-MM-dd');
+  const todayIcon = selectGoalIcon( live );
+  const totalIcon = selectGoalIcon( data.today.value );
+  let today = format( currentDateWithOffset, 'yyyy-MM-dd' );
   return (
       <GridItem
           className={'border-to-border burst-goals'}
-          title={__('Goals', 'burst-statistics')}
+          title={__( 'Goals', 'burst-statistics' )}
           controls={<GoalsHeader goalId={goalId} goals={goals}/>}
-          footer={ goals.length !== 0 && (
+          footer={ 0 !== goals.length && (
               <>
                 <a className={'burst-button burst-button--secondary'}
-                   href={'#settings/goals'}>{__('View setup',
-                    'burst-statistics')}</a>
+                   href={'#settings/goals'}>{__( 'View setup',
+                    'burst-statistics' )}</a>
                 <div className={'burst-flex-push-right'}>
                   <GoalStatus data={data}/>
                 </div>
@@ -164,46 +164,46 @@ const GoalsBlock = () => {
           )}
       >
         <div className={'burst-goals burst-loading-container'}>
-          {burst_settings.goals_information_shown !== '1' && (
+          {'1' !== burst_settings.goals_information_shown && (
               <div className="information-overlay">
                 <div className="information-overlay-container">
-                  <h4>{__('Goals', 'burst-statistics')}</h4>
+                  <h4>{__( 'Goals', 'burst-statistics' )}</h4>
                   <p>{__(
                       'Keep track of customizable goals and get valuable insights. Add your first goal!',
-                      'burst-statistics')}</p>
+                      'burst-statistics' )}</p>
                   <p><a
                       href={'https://burst-statistics.com/how-to-set-goals/'}>{__(
                       'Learn how to set your first goal',
-                      'burst-statistics')}</a></p>
+                      'burst-statistics' )}</a></p>
                   <a onClick={onGoalsInfoClick()}
                      className="burst-button burst-button--primary">{__(
-                      'Create my first goal', 'burst-statistics')}</a>
+                      'Create my first goal', 'burst-statistics' )}</a>
                 </div>
               </div>
           )}
           <div className="burst-goals-select">
             <ClickToFilter filter="goal_id" filterValue={data.goalId}
                            label={data.today.tooltip +
-                               __('Goal and today', 'burst-statistics')}
+                               __( 'Goal and today', 'burst-statistics' )}
                            startDate={today}>
               <div className="burst-goals-select-item">
                 <Icon name={todayIcon} size="23"/>
                 <h2>{live}</h2>
-                <span><Icon name="sun" color={'yellow'} size="13"/> {__('Today',
-                    'burst-statistics')}</span>
+                <span><Icon name="sun" color={'yellow'} size="13"/> {__( 'Today',
+                    'burst-statistics' )}</span>
               </div>
             </ClickToFilter>
             <ClickToFilter filter="goal_id" filterValue={data.goalId}
                            label={data.today.tooltip +
-                               __('Goal and the start date',
-                                   'burst-statistics')}
+                               __( 'Goal and the start date',
+                                   'burst-statistics' )}
                            startDate={goalStart}
                            endDate={goalEnd}>
               <div className="burst-goals-select-item">
                 <Icon name={totalIcon} size="23"/>
                 <h2>{data.total.value}</h2>
                 <span><Icon name="total" size="13"
-                            color={'green'}/> {__('Total', 'burst-statistics')}</span>
+                            color={'green'}/> {__( 'Total', 'burst-statistics' )}</span>
               </div>
             </ClickToFilter>
           </div>
@@ -213,7 +213,7 @@ const GoalsBlock = () => {
                   >
                 <Icon name="winner"/>
                 <p className="burst-goals-list-item-text">{decodeURI(
-                    data.topPerformer.title)}</p>
+                    data.topPerformer.title )}</p>
                 <p className="burst-goals-list-item-number">{data.topPerformer.value}</p>
               </div>
             </Tooltip>

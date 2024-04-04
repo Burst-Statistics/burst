@@ -5,86 +5,87 @@ import {useGoalsStore} from '../../store/useGoalsStore';
 import { useInsightsStore } from '../../store/useInsightsStore';
 
 export const PageFilter = () => {
-  const filters = useFiltersStore((state) => state.filters);
-  const filtersConf = useFiltersStore((state) => state.filtersConf);
-  const setFilters = useFiltersStore((state) => state.setFilters);
-  const goals = useGoalsStore((state) => state.goals);
-  const getGoal = useGoalsStore((state) => state.getGoal);
-  const animate = useFiltersStore((state) => state.animate);
-  const setInsightsMetrics = useInsightsStore((state) => state.setMetrics);
-  const insightsMetrics = useInsightsStore((state) => state.getMetrics());
+  const filters = useFiltersStore( ( state ) => state.filters );
+  const filtersConf = useFiltersStore( ( state ) => state.filtersConf );
+  const setFilters = useFiltersStore( ( state ) => state.setFilters );
+  const goals = useGoalsStore( ( state ) => state.goals );
+  const getGoal = useGoalsStore( ( state ) => state.getGoal );
+  const animate = useFiltersStore( ( state ) => state.animate );
+  const setInsightsMetrics = useInsightsStore( ( state ) => state.setMetrics );
+  const insightsMetrics = useInsightsStore( ( state ) => state.getMetrics() );
   let title = '';
 
-  const getGoalsTitle = (id) => {
-    let goal = getGoal(id);
+  const getGoalsTitle = ( id ) => {
+    let goal = getGoal( id );
     if ( goal ) {
       return goal.title;
     }
     return '';
-  }
+  };
 
-  const getCountryTitle = (code) => {
-    if (!code) {
+  const getCountryTitle = ( code ) => {
+    if ( ! code ) {
       return '';
     }
     code = code.toUpperCase();
     const countryLabel = burst_settings.countries[code];
-    return countryLabel ? countryLabel : code
-  }
+    return countryLabel ? countryLabel : code;
+  };
 
-  const getDeviceTitle = (device) => {
-    switch (device) {
+  const getDeviceTitle = ( device ) => {
+    switch ( device ) {
       case 'desktop':
-        return __('Desktop', 'burst-statistics');
+        return __( 'Desktop', 'burst-statistics' );
       case 'tablet':
-        return __('Tablet', 'burst-statistics');
+        return __( 'Tablet', 'burst-statistics' );
       case 'mobile':
-        return __('Mobile', 'burst-statistics');
+        return __( 'Mobile', 'burst-statistics' );
       default:
-        return __('Other', 'burst-statistics');
+        return __( 'Other', 'burst-statistics' );
     }
-  }
+  };
 
   // if animate is set, add the class to the filter
-  const getFilterClass = (filter) => {
+  const getFilterClass = ( filter ) => {
     let className = 'burst-data-filter';
-    if (animate === filter) {
+    if ( animate === filter ) {
       className += ' burst-data-filter--animate';
     }
     return className;
-  }
+  };
 
-  const removeFilter = (filter) => {
-    setFilters(filter, '')
+  const removeFilter = ( filter ) => {
+    setFilters( filter, '' );
 
-    if (filter === 'goal_id') {
+    if ( 'goal_id' === filter ) {
+
       // also remove insight metrics conversions
-      setInsightsMetrics(insightsMetrics.filter((metric) => metric !== 'conversions'));
+      setInsightsMetrics( insightsMetrics.filter( ( metric ) => 'conversions' !== metric ) );
     }
-  }
+  };
 
   // map through the filtersConf and get filters that are set
   return (
       <>
-        {Object.keys(filtersConf).map((filter, index) => {
-          if (filters[filter] !== '') {
-            if (filter === 'goal_id') {
-              title = getGoalsTitle(filters[filter]);
-            } else if (filter === 'device') {
-              title = getDeviceTitle(filters[filter]);
-            } else if (filter === 'country_code') {
-              title = getCountryTitle(filters[filter]);
+        {Object.keys( filtersConf ).map( ( filter, index ) => {
+          if ( '' !== filters[filter]) {
+            if ( 'goal_id' === filter ) {
+              title = getGoalsTitle( filters[filter]);
+            } else if ( 'device' === filter ) {
+              title = getDeviceTitle( filters[filter]);
+            } else if ( 'country_code' === filter ) {
+              title = getCountryTitle( filters[filter]);
             } else {
               title = filters[filter];
             }
-            const icon = filtersConf[filter].icon !== '' ? filtersConf[filter].icon : 'filter';
+            const icon = '' !== filtersConf[filter].icon ? filtersConf[filter].icon : 'filter';
             return (
-                <div className={getFilterClass(filter)} key={index}>
+                <div className={getFilterClass( filter )} key={index}>
                   <Icon name={filtersConf[filter].icon} size="16"/>
-                  <p className={"burst-data-filter__label"}>{filtersConf[filter].label}</p>
-                  <span className={"burst-data-filter-divider"}></span>
-                  <p className={"burst-data-filter__value"}>{decodeURI(title)}</p>
-                  <button onClick={() => removeFilter(filter)}><Icon name="times" color={'var(--rsp-grey-500)'} size="16"/></button>
+                  <p className={'burst-data-filter__label'}>{filtersConf[filter].label}</p>
+                  <span className={'burst-data-filter-divider'}></span>
+                  <p className={'burst-data-filter__value'}>{decodeURI( title )}</p>
+                  <button onClick={() => removeFilter( filter )}><Icon name="times" color={'var(--rsp-grey-500)'} size="16"/></button>
                 </div>
             );
           }

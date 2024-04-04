@@ -2,15 +2,14 @@
 import {getData} from '../utils/api';
 import {formatNumber, formatTime} from '../utils/formatting';
 
-export const transformTodayData = (response) => {
+export const transformTodayData = ( response ) => {
 
-  for (let key in response) {
-    if (response.hasOwnProperty(key)) {
-      if (key === 'timeOnPage') {
-        response[key].value = formatTime(response[key].value);
-      }
-      else {
-        response[key].value = formatNumber(response[key].value);
+  for ( let key in response ) {
+    if ( response.hasOwnProperty( key ) ) {
+      if ( 'timeOnPage' === key ) {
+        response[key].value = formatTime( response[key].value );
+      } else {
+        response[key].value = formatNumber( response[key].value );
       }
     }
   }
@@ -27,7 +26,7 @@ export const transformTodayData = (response) => {
  * @param {Object} args.filters
  * @returns {Promise<*>}
  */
-const getTodayData = async (args) => {
+const getTodayData = async( args ) => {
   const { startDate, endDate, range, filters } = args;
   const { data } = await getData(
       'today',
@@ -36,8 +35,8 @@ const getTodayData = async (args) => {
       range,
       { filters }
   );
-  return transformTodayData(data);
+  return transformTodayData( data );
 
-}
+};
 export default getTodayData;
 

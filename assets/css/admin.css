@@ -2298,6 +2298,7 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     align-items: center;
     justify-content: space-between;
     gap: var(--rsp-spacing-xxs);
+    min-width: 15ch;
 }
 
 .burst .burst-select-group__trigger:hover:not([disabled]) {
@@ -2359,6 +2360,47 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     height: 25px;
     background-color: white;
     cursor: default;
+}
+
+.burst div[class^=burst-wizard-] .burst-email_reports .burst-table-header, .burst div[class^=burst-wizard-] .burst-email_reports .burst-field-description {
+    padding: var(--rsp-spacing-xs) var(--rsp-spacing-l);
+}
+
+.burst div[class^=burst-wizard-] .burst-email_reports .burst-field-wrap.burst-email_reports {
+    padding: 0;
+}
+
+.burst div[class^=burst-wizard-] .burst-email_reports .burst-email-reports-field__add {
+    margin-top: var(--rsp-spacing-xs);
+    padding: var(--rsp-spacing-xs) var(--rsp-spacing-l);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--rsp-spacing-xs);
+}
+
+.burst div[class^=burst-wizard-] .burst-email_reports .burst-email-reports-field__add input {
+    min-width: 30ch;
+}
+
+.burst div[class^=burst-wizard-] .burst-email_reports .burst-email-reports-field__add label {
+    margin: 0;
+    width: 100%;
+}
+
+.burst div[class^=burst-wizard-] .burst-email_reports .burst-button-icon--delete {
+    width: 3em;
+    height: 3em;
+    margin: 0;
+}
+
+.burst div[class^=burst-wizard-] .burst-email_reports .burst-warning {
+    margin: var(--rsp-spacing-xs) var(--rsp-spacing-l);
+    color: var(--rsp-color-error);
+    background-color: var(--rsp-red-faded);
+    padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
+    border: 1px solid var(--rsp-color-error);
+    border-radius: var(--rsp-border-radius-s);
 }
 
 .burst div[class^=burst-wizard-] .burst-helplink {
@@ -2665,8 +2707,8 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
 }
 
 .burst div[class^=burst-wizard-] .burst-grid-item-content label {
-    font-size: var(--rsp-fs-400);
-    font-weight: 400;
+    font-size: var(--rsp-fs-300);
+    font-weight: 600;
     line-height: 1.5;
     text-transform: unset;
     box-sizing: border-box;
@@ -3156,6 +3198,36 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
 .burst-button-dropdown-container .burst-button-dropdown__row .burst-icon {
     margin-left: 5px;
     margin-top: 2px;
+}
+
+.burst-logo-container {
+    display: flex;
+}
+
+.burst-logo-container .burst-logo-preview {
+    margin-top: 10px;
+    border: 1px var(--rsp-black) dashed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.burst-logo-container .burst-logo-preview.burst-clickable {
+    cursor: pointer;
+    height: calc(40px + 2 * var(--rsp-spacing-xs));
+    max-width: 100%;
+    border-radius: var(--rsp-border-radius-xs);
+    padding: var(--rsp-spacing-xs);
+}
+
+.burst-logo-container .burst-logo-preview.burst-clickable img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.burst-logo-container .burst-logo-preview.disabled {
+    pointer-events: none;
+    opacity: 0.5;
 }
 
 .burst .burst-insights {

@@ -8,33 +8,37 @@ import {__} from '@wordpress/i18n';
  * @param {Date} date - The reference date, defaults to the current date
  * @returns {string} The relative time string
  */
-const getRelativeTime = (relativeDate, date = new Date()) => {
+const getRelativeTime = ( relativeDate, date = new Date() ) => {
+
   // if relativeDate is a number, we assume it is an UTC timestamp
-  if (typeof relativeDate === 'number') {
+  if ( 'number' === typeof relativeDate ) {
+
     // convert to date object
-    relativeDate = new Date(relativeDate * 1000);
+    relativeDate = new Date( relativeDate * 1000 );
   }
-  if (!(relativeDate instanceof Date)) {
+  if ( ! ( relativeDate instanceof Date ) ) {
+
     // invalid date, probably still loading
     return '-';
   }
   let units = {
-    year  : 24 * 60 * 60 * 1000 * 365,
-    month : 24 * 60 * 60 * 1000 * 365/12,
-    day   : 24 * 60 * 60 * 1000,
-    hour  : 60 * 60 * 1000,
+    year: 24 * 60 * 60 * 1000 * 365,
+    month: 24 * 60 * 60 * 1000 * 365 / 12,
+    day: 24 * 60 * 60 * 1000,
+    hour: 60 * 60 * 1000,
     minute: 60 * 1000,
     second: 1000
-  }
-  let rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
-  let elapsed = relativeDate - date
+  };
+  let rtf = new Intl.RelativeTimeFormat( 'en', { numeric: 'auto' });
+  let elapsed = relativeDate - date;
+
   // "Math.abs" accounts for both "past" & "future" scenarios
-  for (let u in units) {
-    if (Math.abs(elapsed) > units[u] || u === 'second') {
-      return rtf.format(Math.round(elapsed/units[u]), u)
+  for ( let u in units ) {
+    if ( Math.abs( elapsed ) > units[u] || 'second' === u ) {
+      return rtf.format( Math.round( elapsed / units[u]), u );
     }
   }
-}
+};
 
 /**
  * Calculates the percentage of a value from the total and returns it as a formatted string or a number
@@ -43,20 +47,20 @@ const getRelativeTime = (relativeDate, date = new Date()) => {
  * @param {boolean} format - If true, returns the percentage as a formatted string, otherwise as a number
  * @returns {string | number} The formatted percentage or the raw percentage
  */
-const getPercentage = (val, total, format = true) => {
-  val = Number(val);
-  total = Number(total);
+const getPercentage = ( val, total, format = true ) => {
+  val = Number( val );
+  total = Number( total );
   let percentage = val / total;
-  if (isNaN(percentage)){
+  if ( isNaN( percentage ) ) {
     percentage = 0;
   }
   return format ? new Intl.NumberFormat(
       undefined,
       {
         style: 'percent',
-        maximumFractionDigits: 1,
-      }).format(percentage) : percentage;
-}
+        maximumFractionDigits: 1
+      }).format( percentage ) : percentage;
+};
 
 /**
  * Calculates the percentage change between two values and returns an object with the formatted percentage and status
@@ -64,13 +68,13 @@ const getPercentage = (val, total, format = true) => {
  * @param {number} prevValue - The previous value
  * @returns {Object} An object with a formatted percentage and a status ('positive' or 'negative')
  */
-function getChangePercentage(currValue, prevValue){
-  currValue = Number(currValue);
-  prevValue = Number(prevValue);
+function getChangePercentage( currValue, prevValue ) {
+  currValue = Number( currValue );
+  prevValue = Number( prevValue );
 
-  let change = {}
-  let percentage = (currValue - prevValue) / prevValue;
-  if (isNaN(percentage)){
+  let change = {};
+  let percentage = ( currValue - prevValue ) / prevValue;
+  if ( isNaN( percentage ) ) {
     percentage = 0;
   }
 
@@ -79,9 +83,9 @@ function getChangePercentage(currValue, prevValue){
       {
         style: 'percent',
         maximumFractionDigits: 1,
-        signDisplay: "exceptZero",
-      }).format(percentage);
-  change.status = (percentage > 0) ? 'positive' : 'negative';
+        signDisplay: 'exceptZero'
+      }).format( percentage );
+  change.status = ( 0 < percentage ) ? 'positive' : 'negative';
 
   if ( percentage === Infinity ) {
     change.val = '';
@@ -98,10 +102,10 @@ function getChangePercentage(currValue, prevValue){
  * @param {boolean} format - If true, returns the bounce percentage as a formatted string, otherwise as a number
  * @returns {string | number} The formatted bounce percentage or the raw bounce percentage
  */
-function getBouncePercentage(bounced_sessions, sessions, format = true){
-  bounced_sessions = Number(bounced_sessions);
-  sessions = Number(sessions);
-  return getPercentage(bounced_sessions, sessions + bounced_sessions, format);
+function getBouncePercentage( bounced_sessions, sessions, format = true ) {
+  bounced_sessions = Number( bounced_sessions );
+  sessions = Number( sessions );
+  return getPercentage( bounced_sessions, sessions + bounced_sessions, format );
 }
 
 /**
@@ -109,8 +113,8 @@ function getBouncePercentage(bounced_sessions, sessions, format = true){
  * @param {number} unixTimestamp - The Unix timestamp to format
  * @returns {string} The formatted date string
  */
-const formatUnixToDate = (unixTimestamp) => {
-  const formattedDate = dateI18n(burst_settings.date_format, new Date(unixTimestamp * 1000));
+const formatUnixToDate = ( unixTimestamp ) => {
+  const formattedDate = dateI18n( burst_settings.date_format, new Date( unixTimestamp * 1000 ) );
   return formattedDate;
 };
 
@@ -119,55 +123,57 @@ const formatUnixToDate = (unixTimestamp) => {
  * @param {string | number} date - The date to check
  * @return {boolean}
  */
-const  isValidDate = (date) => {
+const  isValidDate = ( date ) => {
   const MIN_START_DATE = 1640995200 * 1000; // January 1, 2022 in Unix timestamp
-  return date && (typeof date === 'number' || Date.parse(date) >= MIN_START_DATE);
-}
+  return date && ( 'number' === typeof date || Date.parse( date ) >= MIN_START_DATE );
+};
 
 /**
  * Converts a date to a Unix timestamp in milliseconds
  * @param {string | number} date - The date to convert
  * @return {number|number|number}
  */
-const toUnixTimestampMillis = (date) => {
-  if (typeof date === 'number') {
+const toUnixTimestampMillis = ( date ) => {
+  if ( 'number' === typeof date ) {
+
     // If the number is 10 digits long, assume it's in seconds and convert to milliseconds
-    return date.toString().length === 10 ? date * 1000 : date;
+    return 10 === date.toString().length ? date * 1000 : date;
   }
+
   // If it's a string, parse it to get milliseconds
-  return Date.parse(date);
-}
+  return Date.parse( date );
+};
 
 /**
  * Formats a duration given in milliseconds as a time string in the format 'HH:mm:ss'
  * @param {number} timeInMilliSeconds - The duration in milliseconds
  * @returns {string} The formatted time string
  */
-function formatTime(timeInMilliSeconds = 0) {
-  let timeInSeconds = Number(timeInMilliSeconds);
-  if (isNaN(timeInSeconds)) {
+function formatTime( timeInMilliSeconds = 0 ) {
+  let timeInSeconds = Number( timeInMilliSeconds );
+  if ( isNaN( timeInSeconds ) ) {
     timeInSeconds = 0;
   }
 
-  const seconds = Math.floor(timeInSeconds / 1000);
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds - (hours * 3600)) / 60);
-  const remainingSeconds = seconds - (hours * 3600) - (minutes * 60);
+  const seconds = Math.floor( timeInSeconds / 1000 );
+  const hours = Math.floor( seconds / 3600 );
+  const minutes = Math.floor( ( seconds - ( hours * 3600 ) ) / 60 );
+  const remainingSeconds = seconds - ( hours * 3600 ) - ( minutes * 60 );
 
-  const zeroPad = (num) => {
-    if (isNaN(num)) {
+  const zeroPad = ( num ) => {
+    if ( isNaN( num ) ) {
       return '00';
     }
-    return String(num).padStart(2, '0');
+    return String( num ).padStart( 2, '0' );
   };
 
   const formatted = [
     hours,
     minutes,
-    remainingSeconds,
-  ].map(zeroPad);
+    remainingSeconds
+  ].map( zeroPad );
 
-  return formatted.join(':');
+  return formatted.join( ':' );
 }
 
 /**
@@ -176,17 +182,17 @@ function formatTime(timeInMilliSeconds = 0) {
  * @param {number} decimals - The number of decimal places to use
  * @returns {string} The formatted number
  */
-function formatNumber(value, decimals = 1){
-  value = Number(value);
-  if (isNaN(value)){
+function formatNumber( value, decimals = 1 ) {
+  value = Number( value );
+  if ( isNaN( value ) ) {
     value = 0;
   }
-  return new Intl.NumberFormat(undefined, {
-    style: "decimal",
-    notation: "compact",
-    compactDisplay: "short",
-    maximumFractionDigits: decimals,
-  }).format(value);
+  return new Intl.NumberFormat( undefined, {
+    style: 'decimal',
+    notation: 'compact',
+    compactDisplay: 'short',
+    maximumFractionDigits: decimals
+  }).format( value );
 }
 
 /**
@@ -195,16 +201,16 @@ function formatNumber(value, decimals = 1){
  * @param {number} decimals - The number of decimal places to use
  * @returns {string} The formatted percentage
  */
-function formatPercentage(value, decimals = 1){
-  value = Number(value) / 100;
+function formatPercentage( value, decimals = 1 ) {
+  value = Number( value ) / 100;
 
-  if (isNaN(value)){
+  if ( isNaN( value ) ) {
     value = 0;
   }
-  return new Intl.NumberFormat(undefined, {
-    style: "percent",
-    maximumFractionDigits: decimals,
-  }).format(value);
+  return new Intl.NumberFormat( undefined, {
+    style: 'percent',
+    maximumFractionDigits: decimals
+  }).format( value );
 }
 
 /**
@@ -212,14 +218,15 @@ function formatPercentage(value, decimals = 1){
  * @param countryCode
  * @return {*}
  */
-function getCountryName(countryCode) {
-  if (countryCode) {
-    return burst_settings.countries[countryCode.toUpperCase()] || __('Unknown', 'burst-statistics');
+function getCountryName( countryCode ) {
+  if ( countryCode ) {
+    return burst_settings.countries[countryCode.toUpperCase()] || __( 'Unknown', 'burst-statistics' );
   }
-  return __('Unknown', 'burst-statistics');
+  return __( 'Unknown', 'burst-statistics' );
 }
 
-function getDateWithOffset(currentDate = new Date()) {
+function getDateWithOffset( currentDate = new Date() ) {
+
   // get client's timezone offset in minutes
   const clientTimezoneOffsetMinutes = currentDate.getTimezoneOffset();
 
@@ -227,13 +234,14 @@ function getDateWithOffset(currentDate = new Date()) {
   const clientTimezoneOffsetSeconds = clientTimezoneOffsetMinutes * -60;
 
   // get current unix timestamp
-  const currentUnix = Math.floor(currentDate.getTime() / 1000);
+  const currentUnix = Math.floor( currentDate.getTime() / 1000 );
+
   // add burst_settings.gmt_offset x hour and client's timezone offset in
   // seconds to currentUnix
   const currentUnixWithOffsets = currentUnix +
-      (burst_settings.gmt_offset * 3600) - clientTimezoneOffsetSeconds;
+      ( burst_settings.gmt_offset * 3600 ) - clientTimezoneOffsetSeconds;
 
-  const currentDateWithOffset = new Date(currentUnixWithOffsets * 1000);
+  const currentDateWithOffset = new Date( currentUnixWithOffsets * 1000 );
 
   return currentDateWithOffset;
 }
@@ -241,110 +249,110 @@ const currentDateWithOffset = getDateWithOffset();
 
 const availableRanges = {
   'today': {
-    label: __('Today', 'burst-statistics' ),
+    label: __( 'Today', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfDay(currentDateWithOffset),
-      endDate: endOfDay(currentDateWithOffset)
+      startDate: startOfDay( currentDateWithOffset ),
+      endDate: endOfDay( currentDateWithOffset )
     })
   },
   'yesterday': {
-    label: __('Yesterday', 'burst-statistics'),
+    label: __( 'Yesterday', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfDay(addDays(currentDateWithOffset, -1)),
-      endDate: endOfDay(addDays(currentDateWithOffset, -1))
+      startDate: startOfDay( addDays( currentDateWithOffset, -1 ) ),
+      endDate: endOfDay( addDays( currentDateWithOffset, -1 ) )
     })
   },
   'last-7-days': {
-    label: __('Last 7 days', 'burst-statistics'),
+    label: __( 'Last 7 days', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfDay(addDays(currentDateWithOffset, -7)),
-      endDate: endOfDay(addDays(currentDateWithOffset, -1))
+      startDate: startOfDay( addDays( currentDateWithOffset, -7 ) ),
+      endDate: endOfDay( addDays( currentDateWithOffset, -1 ) )
     })
   },
   'last-30-days': {
-    label: __('Last 30 days', 'burst-statistics' ),
+    label: __( 'Last 30 days', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfDay(addDays(currentDateWithOffset, -30)),
-      endDate: endOfDay(addDays(currentDateWithOffset, -1))
+      startDate: startOfDay( addDays( currentDateWithOffset, -30 ) ),
+      endDate: endOfDay( addDays( currentDateWithOffset, -1 ) )
     })
   },
   'last-90-days': {
-    label: __('Last 90 days', 'burst-statistics'),
+    label: __( 'Last 90 days', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfDay(addDays(currentDateWithOffset, -90)),
-      endDate: endOfDay(addDays(currentDateWithOffset, -1))
+      startDate: startOfDay( addDays( currentDateWithOffset, -90 ) ),
+      endDate: endOfDay( addDays( currentDateWithOffset, -1 ) )
     })
   },
   'last-month': {
-    label: __('Last month', 'burst-statistics' ),
+    label: __( 'Last month', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfMonth(addMonths(currentDateWithOffset, -1)),
-      endDate: endOfMonth(addMonths(currentDateWithOffset, -1))
+      startDate: startOfMonth( addMonths( currentDateWithOffset, -1 ) ),
+      endDate: endOfMonth( addMonths( currentDateWithOffset, -1 ) )
     })
   },
   'week-to-date': {
-    label: __('Week to date', 'burst-statistics' ),
+    label: __( 'Week to date', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfDay(addDays(currentDateWithOffset, -currentDateWithOffset.getDay())),
-      endDate: endOfDay(currentDateWithOffset)
+      startDate: startOfDay( addDays( currentDateWithOffset, -currentDateWithOffset.getDay() ) ),
+      endDate: endOfDay( currentDateWithOffset )
     })
   },
   'month-to-date': {
-    label: __('Month to date', 'burst-statistics' ),
+    label: __( 'Month to date', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfMonth(currentDateWithOffset),
-      endDate: endOfDay(currentDateWithOffset)
+      startDate: startOfMonth( currentDateWithOffset ),
+      endDate: endOfDay( currentDateWithOffset )
     })
   },
   'year-to-date': {
-    label: __('Year to date', 'burst-statistics' ),
+    label: __( 'Year to date', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfYear(currentDateWithOffset),
-      endDate: endOfDay(currentDateWithOffset)
+      startDate: startOfYear( currentDateWithOffset ),
+      endDate: endOfDay( currentDateWithOffset )
     })
   },
   'last-year': {
-    label: __('Last year', 'burst-statistics' ),
+    label: __( 'Last year', 'burst-statistics' ),
     range: () => ({
-      startDate: startOfYear(addYears(currentDateWithOffset, -1)),
-      endDate: endOfYear(addYears(currentDateWithOffset, -1))
+      startDate: startOfYear( addYears( currentDateWithOffset, -1 ) ),
+      endDate: endOfYear( addYears( currentDateWithOffset, -1 ) )
     })
-  },
-}
+  }
+};
 
-const getAvailableRanges = (selectedRanges) => {
-  return Object.values(selectedRanges).filter(Boolean).map((value) => {
+const getAvailableRanges = ( selectedRanges ) => {
+  return Object.values( selectedRanges ).filter( Boolean ).map( ( value ) => {
     const range = availableRanges[value];
     range.isSelected = isSelected;
     return range;
   });
 };
 
-const getAvailableRangesWithKeys = (selectedRanges) => {
+const getAvailableRangesWithKeys = ( selectedRanges ) => {
   let ranges = {};
-  Object.keys(availableRanges) // Get the keys from the availableRanges object
-      .filter(key => selectedRanges.includes(key)) // Filter the keys based on selectedRanges
-      .forEach(key => {
+  Object.keys( availableRanges ) // Get the keys from the availableRanges object
+      .filter( key => selectedRanges.includes( key ) ) // Filter the keys based on selectedRanges
+      .forEach( key => {
         ranges[key] = { // Assign a new object to the key on the ranges object
-          ...availableRanges[key], // Spread the properties from the range object
+          ...availableRanges[key] // Spread the properties from the range object
         };
       });
   return ranges;
 };
 
-const getDisplayDates = (startDate, endDate) => {
+const getDisplayDates = ( startDate, endDate ) => {
   const formatString = 'MMMM d, yyyy';
   return {
-    startDate: startDate ? format(new Date(startDate), formatString) : format(defaultStart, formatString),
-    endDate: endDate ? format(new Date(endDate), formatString) : format(defaultEnd, formatString),
+    startDate: startDate ? format( new Date( startDate ), formatString ) : format( defaultStart, formatString ),
+    endDate: endDate ? format( new Date( endDate ), formatString ) : format( defaultEnd, formatString )
   };
 };
 
-function isSelected(range) {
+function isSelected( range ) {
   const definedRange = this.range();
   return (
-      isSameDay(range.startDate, definedRange.startDate) &&
-      isSameDay(range.endDate, definedRange.endDate)
+      isSameDay( range.startDate, definedRange.startDate ) &&
+      isSameDay( range.endDate, definedRange.endDate )
   );
 }
 

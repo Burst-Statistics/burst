@@ -9,7 +9,7 @@ import {getData} from '../utils/api';
  * @param args
  * @returns {Promise<*>}
  */
-const getInsightsData = async ({ startDate, endDate, range, args } ) => {
+const getInsightsData = async({ startDate, endDate, range, args }) => {
   const { data } = await getData(
       'insights',
       startDate,
@@ -19,6 +19,6 @@ const getInsightsData = async ({ startDate, endDate, range, args } ) => {
   );
   return data;
 
-}
+};
 export default getInsightsData;
 

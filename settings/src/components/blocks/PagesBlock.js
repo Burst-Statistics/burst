@@ -12,45 +12,45 @@ import PopoverFilter from './PopoverFilter';
 import {getLocalStorage, setLocalStorage} from '../../utils/api';
 
 const PagesBlock = () => {
-  const {startDate, endDate, range} = useDate((state) => state);
-  const filters = useFiltersStore((state) => state.filters);
-  const [filterText, setFilterText] = useState('');
-  const defaultColumns = ['page_url', 'pageviews'];
-  const [columns, setColumnsState] = useState(getLocalStorage('pages_columns', defaultColumns));
-  const setColumns = (value) => {
-    setColumnsState(value);
-    setLocalStorage('pages_columns', value);
-  }
+  const {startDate, endDate, range} = useDate( ( state ) => state );
+  const filters = useFiltersStore( ( state ) => state.filters );
+  const [ filterText, setFilterText ] = useState( '' );
+  const defaultColumns = [ 'page_url', 'pageviews' ];
+  const [ columns, setColumnsState ] = useState( getLocalStorage( 'pages_columns', defaultColumns ) );
+  const setColumns = ( value ) => {
+    setColumnsState( value );
+    setLocalStorage( 'pages_columns', value );
+  };
   const columnsOptions = {
     'pageviews': {
-      'label': __('Pageviews', 'burst-statistics'),
-      'default': true,
+      'label': __( 'Pageviews', 'burst-statistics' ),
+      'default': true
     },
     'sessions': {
-      'label': __('Sessions', 'burst-statistics'),
-      'pro': true,
+      'label': __( 'Sessions', 'burst-statistics' ),
+      'pro': true
     },
     'visitors': {
-      'label': __('Visitors', 'burst-statistics'),
-      'pro': true,
+      'label': __( 'Visitors', 'burst-statistics' ),
+      'pro': true
     },
     'bounce_rate': {
-      'label': __('Bounce rate', 'burst-statistics'),
+      'label': __( 'Bounce rate', 'burst-statistics' ),
       'format': 'percentage',
       'pro': true,
-      'sortFunction': percentageSort,
+      'sortFunction': percentageSort
     },
     'avg_time_on_page': {
-      'label': __('Time on page', 'burst-statistics'),
+      'label': __( 'Time on page', 'burst-statistics' ),
       'pro': true,
       'format': 'time'
-    },
+    }
   };
 
   const args = {'filters': filters, 'metrics': columns};
   const query = useQuery({
-    queryKey: ['pages', startDate, endDate, args],
-    queryFn: () => getPagesData({startDate, endDate, range, args, columnsOptions}),
+    queryKey: [ 'pages', startDate, endDate, args ],
+    queryFn: () => getPagesData({startDate, endDate, range, args, columnsOptions})
   });
 
   const data = query.data || {};
@@ -60,10 +60,10 @@ const PagesBlock = () => {
   const loadingClass = loading ? 'burst-loading' : '';
 
   // if data is an empty array, show the empty data table
-  if (query.isFetched && 0 !== data.length && data.columns) {
-    const renderPageUrlCell = (row) => (
+  if ( query.isFetched && 0 !== data.length && data.columns ) {
+    const renderPageUrlCell = ( row ) => (
         <ClickToFilter filter="page_url" filterValue={row.page_url}>
-          {decodeURI(row.page_url)}
+          {decodeURI( row.page_url )}
         </ClickToFilter>
     );
 
@@ -73,21 +73,21 @@ const PagesBlock = () => {
   let tableData = data.data;
   let columnsData = data.columns;
   let filteredData = [];
-  if (Array.isArray(tableData)) {
+  if ( Array.isArray( tableData ) ) {
     filteredData = tableData.filter(
-        item => item.page_url.toLowerCase().includes(filterText.toLowerCase()));
+        item => item.page_url.toLowerCase().includes( filterText.toLowerCase() ) );
   }
 
   return (
       <GridItem
           className={'burst-column-2 border-to-border datatable'}
-          title={__('Per page', 'burst-statistics')}
+          title={__( 'Per page', 'burst-statistics' )}
           controls={
             <>
               <input className="burst-datatable-search" type="text"
-                     placeholder={__('Search', 'burst-statistics')}
+                     placeholder={__( 'Search', 'burst-statistics' )}
                      value={filterText}
-                     onChange={e => setFilterText(e.target.value)}
+                     onChange={e => setFilterText( e.target.value )}
               />
               <PopoverFilter
                   selectedOptions={columns}
@@ -104,14 +104,14 @@ const PagesBlock = () => {
               defaultSortFieldId={2}
               defaultSortAsc={false}
               pagination
-              paginationRowsPerPageOptions={[10, 25, 50, 100, 200]}
+              paginationRowsPerPageOptions={[ 10, 25, 50, 100, 200 ]}
               paginationPerPage={10}
               paginationComponentOptions={{
                 rowsPerPageText: '',
-                rangeSeparatorText: __('of', 'burst-statistics'),
+                rangeSeparatorText: __( 'of', 'burst-statistics' ),
                 noRowsPerPage: false,
                 selectAllRowsItem: true,
-                selectAllRowsItemText: __('All', 'burst-statistics'),
+                selectAllRowsItemText: __( 'All', 'burst-statistics' )
               }}
               noDataComponent={<EmptyDataTable/>}
           />
