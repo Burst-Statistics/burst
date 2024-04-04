@@ -16,15 +16,16 @@ if ( ! class_exists( 'burst_mail_reports' ) ) {
 		}
 
 		public function test_report() {
-			$frequency = $_GET['burst_test_report'] === 'monthly' ? 'monthly' : 'weekly';
-			if ( isset( $_GET['burst_test_report'] ) ) {
-				$mailinglist = burst_get_option( 'email_reports_mailinglist' );
-				$emails      = [];
-				foreach ( $mailinglist as $mailing ) {
-					$emails[] = $mailing['email'];
-				}
-				$this->send_report( $emails, $frequency );
+			if ( ! isset( $_GET['burst_test_report'] ) ) {
+				return;
 			}
+			$frequency = $_GET['burst_test_report'] === 'monthly' ? 'monthly' : 'weekly';
+			$mailinglist = burst_get_option( 'email_reports_mailinglist' );
+			$emails      = [];
+			foreach ( $mailinglist as $mailing ) {
+				$emails[] = $mailing['email'];
+			}
+			$this->send_report( $emails, $frequency );
 		}
 
 		/**
