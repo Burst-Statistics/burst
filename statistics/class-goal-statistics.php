@@ -213,6 +213,6 @@ function burst_install_goal_statistics_table() {
 		 * We use b-tree index as it can be used for < or > operations, which is not possible for HASH
 		 */
 		dbDelta( $sql );
-		update_option( 'burst_goal_stats_db_version', burst_version );
+		update_option( 'burst_goal_stats_db_version', burst_version, false );
 	}
 }

@@ -6,44 +6,45 @@ import ProPill from '../ProPill';
 
 const AcquisitionSwitch = ({
   value = 'referrers',
-  onChange,
+  onChange
 }) => {
+
   // options array with icon and label
   const options = [
     {
       value: 'referrers',
-      label: __('Referrers', 'burst-statistics'),
+      label: __( 'Referrers', 'burst-statistics' ),
       icon: 'referrers',
-      pro: false,
+      pro: false
     },
     {
       value: 'countries',
-      label: __('Countries', 'burst-statistics'),
+      label: __( 'Countries', 'burst-statistics' ),
       icon: 'world',
-      pro: true,
-    },
+      pro: true
+    }
   ];
 
   return (
       <div
           className="burst-acquisition-switch"
       >
-        {options.map((option) => {
+        {options.map( ( option ) => {
           let selected = value === option.value;
-          let disabled = option.pro && !burst_settings.is_pro;
+          let disabled = option.pro && ! burst_settings.is_pro;
           let className = 'burst-acquisition-switch__option';
-          if (selected) {
+          if ( selected ) {
             className += ' burst-acquisition-switch__option--selected';
           }
-          if (disabled) {
+          if ( disabled ) {
             className += ' burst-acquisition-switch__option--pro';
             return (
                 <ProPopover
                     key={option.value}
                     className={className}
                     onClick={() => {
-                      if (!disabled) {
-                        onChange(option.value);
+                      if ( ! disabled ) {
+                        onChange( option.value );
                       }
                     }}
                 >
@@ -59,8 +60,8 @@ const AcquisitionSwitch = ({
                   key={option.value}
                   className={className}
                   onClick={() => {
-                    if (!disabled) {
-                      onChange(option.value);
+                    if ( ! disabled ) {
+                      onChange( option.value );
                     }
                   }}
               >
@@ -74,4 +75,4 @@ const AcquisitionSwitch = ({
   );
 };
 
-export default memo(AcquisitionSwitch);
+export default memo( AcquisitionSwitch );

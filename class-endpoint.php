@@ -1,12 +1,16 @@
-<?php defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
-if ( ! class_exists( "burst_endpoint" ) ) {
+<?php defined( 'ABSPATH' ) or die( 'you do not have access to this page!' );
+if ( ! class_exists( 'burst_endpoint' ) ) {
 	class burst_endpoint {
 		private static $_this;
 
 		public function __construct() {
 			if ( isset( self::$_this ) ) {
-				wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.',
-					get_class( $this ) ) );
+				wp_die(
+					burst_sprintf(
+						'%s is a singleton class and you cannot create a second instance.',
+						get_class( $this )
+					)
+				);
 			}
 
 			self::$_this = $this;
@@ -28,12 +32,12 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 			$status    = get_option( 'burst_tracking_status' );
 			$last_test = get_transient( 'burst_ran_test' ); // casts strings 'true' & 'false' to bool true
 			if ( $last_test < 1 || $last_test === false ) {
-				$status = $this->test_tracking_status();
+				$status    = $this->test_tracking_status();
 				$last_test = time();
 				set_transient( 'burst_ran_test', $last_test, HOUR_IN_SECONDS );
 			}
 			return [
-				'status' => $status,
+				'status'    => $status,
 				'last_test' => $last_test,
 			];
 		}
@@ -51,6 +55,7 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		/**
 		 * Test tracking status
 		 * Only returns 'error', 'rest', 'beacon'
+		 *
 		 * @return string
 		 */
 		public function test_tracking_status(): string {
@@ -74,16 +79,19 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		 */
 		public function endpoint_test_request(): bool {
 			$url  = burst_get_beacon_url();
-			$data = array( 'request' => 'test' );
+			$data = [ 'request' => 'test' ];
 
-			$response = wp_remote_post( $url, array(
-				'method'      => 'POST',
-				'headers'     => array( "Content-type" => "application/x-www-form-urlencoded" ),
-				'body'        => $data,
-				'sslverify'   => false
-			));
-			$status = false;
-			if ( !is_wp_error( $response ) && !empty( $response['response']['code'] ) ) {
+			$response = wp_remote_post(
+				$url,
+				array(
+					'method'    => 'POST',
+					'headers'   => [ 'Content-type' => 'application/x-www-form-urlencoded' ],
+					'body'      => $data,
+					'sslverify' => false,
+				)
+			);
+			$status   = false;
+			if ( ! is_wp_error( $response ) && ! empty( $response['response']['code'] ) ) {
 				$status = $response['response']['code'];
 			}
 			if ( $status === 200 ) {
@@ -92,23 +100,23 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 			// otherwise try with file_get_contents
 
 			// use key 'http' even if you send the request to https://...
-			$options = array(
-				'http' => array(
+			$options = [
+				'http' => [
 					'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
 					'method'  => 'POST',
 					'content' => http_build_query( $data ),
-				),
-				"ssl" => array(
-					"verify_peer"=>false,
-					"verify_peer_name"=>false,
-				),
-			);
+				],
+				'ssl'  => [
+					'verify_peer'      => false,
+					'verify_peer_name' => false,
+				],
+			];
 			$context = stream_context_create( $options );
 			@file_get_contents( $url, false, $context );
 			$status_line = $http_response_header[0] ?? '';
 
 			$status = false;
-			if ( preg_match('{HTTP\/\S*\s(\d{3})}', $status_line, $matches) ) {
+			if ( preg_match( '{HTTP\/\S*\s(\d{3})}', $status_line, $matches ) ) {
 				$status = $matches[1];
 			}
 
@@ -122,14 +130,17 @@ if ( ! class_exists( "burst_endpoint" ) ) {
 		 */
 		public function rest_api_test_request(): bool {
 			$url      = get_rest_url( null, 'burst/v1/track' );
-			$data = '{"request":"test"}';
-			$response = wp_remote_post( $url, array(
-				'headers'     => array( 'Content-Type' => 'application/json; charset=utf-8' ),
-				'method'      => 'POST',
-				'body'        => json_encode( $data ),
-				'data_format' => 'body',
-				'timeout'     => 5,
-			) );
+			$data     = '{"request":"test"}';
+			$response = wp_remote_post(
+				$url,
+				array(
+					'headers'     => [ 'Content-Type' => 'application/json; charset=utf-8' ],
+					'method'      => 'POST',
+					'body'        => json_encode( $data ),
+					'data_format' => 'body',
+					'timeout'     => 5,
+				)
+			);
 			if ( is_wp_error( $response ) ) {
 				return false;
 			}

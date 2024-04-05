@@ -265,7 +265,21 @@ function burst_fields( $load_values = true ) {
 				],
 			],
 		],
-
+		[
+			'id'       => 'reset',
+			'menu_id'  => 'data',
+			'group_id' => 'data_archiving',
+			'type'     => 'button',
+			'warnTitle'     => __( 'Are you sure?', 'burst-statistics' ),
+			'warnContent'  => __( 'This will permanently delete all statistics, goals, and goal statistics.', 'burst-statistics' ) . ' ' . __( 'This action can not be undone.', 'burst-statistics' ),
+			'warnType' => 'danger', // 'info', 'warning', 'danger
+			'action'   => 'reset',
+			'button_text'     => __('Reset statistics', 'burst-statistics'),
+			'label'    => __( 'Reset statistics', 'burst-statistics' ),
+			'comment'   => __( 'This will permanently delete all statistics, goals, and goal statistics.', 'burst-statistics' ),
+			'disabled' => false,
+			'default'  => false,
+		],
 		[
 			'id'       => 'confirm_delete_data',
 			'menu_id'  => 'data',

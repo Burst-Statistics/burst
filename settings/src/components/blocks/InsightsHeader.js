@@ -3,31 +3,31 @@ import {useInsightsStore} from '../../store/useInsightsStore';
 import PopoverFilter from './PopoverFilter';
 
 const InsightsHeader = ({selectedMetrics, filters}) => {
-  const setMetrics = useInsightsStore((state) => state.setMetrics);
+  const setMetrics = useInsightsStore( ( state ) => state.setMetrics );
 
   const insightsOptions = {
     'pageviews': {
-      'label': __('Pageviews', 'burst-statistics'),
-      'default': true,
+      'label': __( 'Pageviews', 'burst-statistics' ),
+      'default': true
     },
     'visitors': {
-      'label': __('Visitors', 'burst-statistics'),
-      'default': true,
+      'label': __( 'Visitors', 'burst-statistics' ),
+      'default': true
     },
     'sessions': {
-      'label': __('Sessions', 'burst-statistics'),
+      'label': __( 'Sessions', 'burst-statistics' )
     },
     'bounces': {
-      'label': __('Bounces', 'burst-statistics'),
+      'label': __( 'Bounces', 'burst-statistics' )
     },
     'conversions': {
-      'label': __('Conversions', 'burst-statistics'),
-      'default': filters.goal_id > 0,
+      'label': __( 'Conversions', 'burst-statistics' ),
+      'default': 0 < filters.goal_id
     }
   };
 
-  const onApply = (value) => {
-    setMetrics(value);
+  const onApply = ( value ) => {
+    setMetrics( value );
   };
 
   return (

@@ -32,7 +32,7 @@
 const Notices = () => {
   return (
       <></>
-  )
-}
+  );
+};
 
 export default Notices;

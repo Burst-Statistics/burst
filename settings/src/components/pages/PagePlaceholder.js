@@ -1,8 +1,8 @@
 import {
-  Fragment,
+  Fragment
 } from '@wordpress/element';
 
-const PagePlaceholder = (props) => {
+const PagePlaceholder = ( props ) => {
     return (
         <>
           <div className="burst-content-area burst-grid burst-dashboard burst-page-placeholder">
@@ -13,7 +13,7 @@ const PagePlaceholder = (props) => {
           </div>
         </>
     );
-}
+};
 
 export default PagePlaceholder;
 

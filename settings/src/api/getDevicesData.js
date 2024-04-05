@@ -3,44 +3,44 @@ import {getData} from '../utils/api';
 import {
   formatNumber, formatTime,
   getBouncePercentage,
-  getChangePercentage, getPercentage,
+  getChangePercentage, getPercentage
 } from '../utils/formatting';
 
 const deviceNames = {
-  'desktop': __('Desktop', 'burst-statistics'),
-  'tablet': __('Tablet', 'burst-statistics'),
-  'mobile': __('Mobile', 'burst-statistics'),
-  'other': __('Other', 'burst-statistics'),
+  'desktop': __( 'Desktop', 'burst-statistics' ),
+  'tablet': __( 'Tablet', 'burst-statistics' ),
+  'mobile': __( 'Mobile', 'burst-statistics' ),
+  'other': __( 'Other', 'burst-statistics' )
 };
 
 // Existing transform function for title and value
-export const transformDevicesTitleAndValue = (response) => {
+export const transformDevicesTitleAndValue = ( response ) => {
   let data = {};
-  for (const [key, value] of Object.entries(deviceNames)) {
-    Object.assign(data, {
+  for ( const [ key, value ] of Object.entries( deviceNames ) ) {
+    Object.assign( data, {
       [key]: {
         'title': value,
-        'value': getPercentage(response[key].count, response['all'].count),
-      },
+        'value': getPercentage( response[key].count, response.all.count )
+      }
     });
   }
   return data;
-}
+};
 
 // New transform function for subtitle
-export const transformDevicesSubtitle = (response) => {
+export const transformDevicesSubtitle = ( response ) => {
   let data = {};
-  for (const [key] of Object.entries(deviceNames)) {
+  for ( const [ key ] of Object.entries( deviceNames ) ) {
     let os = response[key].os ? response[key].os : '';
     let browser = response[key].browser ? response[key].browser : '';
-    Object.assign(data, {
+    Object.assign( data, {
       [key]: {
-        'subtitle': os === '' && browser === '' ? '-' : os + ' / ' + browser,
-      },
+        'subtitle': '' === os && '' === browser ? '-' : os + ' / ' + browser
+      }
     });
   }
   return data;
-}
+};
 
 
 /**
@@ -52,7 +52,7 @@ export const transformDevicesSubtitle = (response) => {
  * @param {Object} args.filters
  * @returns {Promise<*>}
  */
-export const getDevicesTitleAndValueData = async ({ startDate, endDate, range, args } ) => {
+export const getDevicesTitleAndValueData = async({ startDate, endDate, range, args }) => {
   const { data } = await getData(
       'devicesTitleAndValue',
       startDate,
@@ -60,9 +60,9 @@ export const getDevicesTitleAndValueData = async ({ startDate, endDate, range, a
       range,
       args
   );
-  return transformDevicesTitleAndValue(data);
+  return transformDevicesTitleAndValue( data );
 
-}
+};
 
 /**
  * Get live visitors
@@ -73,7 +73,7 @@ export const getDevicesTitleAndValueData = async ({ startDate, endDate, range, a
  * @param {Object} args.filters
  * @returns {Promise<*>}
  */
-export const getDevicesSubtitleData = async ({ startDate, endDate, range, args } ) => {
+export const getDevicesSubtitleData = async({ startDate, endDate, range, args }) => {
   const { data } = await getData(
       'devicesSubtitle',
       startDate,
@@ -81,6 +81,6 @@ export const getDevicesSubtitleData = async ({ startDate, endDate, range, args }
       range,
       args
   );
-  return transformDevicesSubtitle(data);
+  return transformDevicesSubtitle( data );
 
-}
+};

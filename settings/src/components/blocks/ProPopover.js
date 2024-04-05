@@ -12,13 +12,13 @@ const ProPopover = ({
   subtitle,
   bulletPoints = [], // array of objects with text and icon for bullet points
   primaryButtonUrl,
-  secondaryButtonUrl,
+  secondaryButtonUrl
 }) => {
-  const [open, setOpen] = useState(false);
+  const [ open, setOpen ] = useState( false );
 
   return (
       <Popover.Root open={open} onOpenChange={setOpen}>
-        <Popover.Trigger className={"burst-pro-popover-trigger " + className} onMouseEnter={() => setOpen(true)}>
+        <Popover.Trigger className={'burst-pro-popover-trigger ' + className} onMouseEnter={() => setOpen( true )}>
           {children}
         </Popover.Trigger>
         <Popover.Portal>
@@ -36,14 +36,14 @@ const ProPopover = ({
               <h6>{subtitle}</h6>
             </div>
             <div className={'burst-pro-popover__bullet-list'} >
-              <p className={'burst-small-text'}>{__('Pro features include:', 'burst-statistics')}</p>
-              {bulletPoints.map(({ text, icon }) => (
+              <p className={'burst-small-text'}>{__( 'Pro features include:', 'burst-statistics' )}</p>
+              {bulletPoints.map( ({ text, icon }) => (
                   <span key={text}><Icon name={icon} /><p>{text}</p></span>
-              ))}
+              ) )}
             </div>
             <div className={'burst-pro-popover__footer'}>
-              <a href={primaryButtonUrl} target="_blank" className={'burst-button burst-button--pro'}>{__('Upgrade to Pro', 'burst-statistics')}</a>
-              <a href={secondaryButtonUrl} target="_blank" className={'burst-button burst-button--secondary'}>{__('Learn More', 'burst-statistics')}</a>
+              <a href={primaryButtonUrl} target="_blank" className={'burst-button burst-button--pro'} rel="noreferrer">{__( 'Upgrade to Pro', 'burst-statistics' )}</a>
+              <a href={secondaryButtonUrl} target="_blank" className={'burst-button burst-button--secondary'} rel="noreferrer">{__( 'Learn More', 'burst-statistics' )}</a>
             </div>
           </Popover.Content>
         </Popover.Portal>

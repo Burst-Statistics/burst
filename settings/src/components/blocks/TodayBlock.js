@@ -8,72 +8,70 @@ import Icon from '../../utils/Icon';
 import {endOfDay, format, startOfDay} from 'date-fns';
 import {useState} from '@wordpress/element';
 import GridItem from '../common/GridItem';
-import {getDateWithOffset} from "../../utils/formatting";
+import {getDateWithOffset} from '../../utils/formatting';
 
-function selectVisitorIcon(value) {
-  value = parseInt(value);
-  if (value > 100) {
+function selectVisitorIcon( value ) {
+  value = parseInt( value );
+  if ( 100 < value ) {
     return 'visitors-crowd';
-  }
-  else if (value > 10) {
+  } else if ( 10 < value ) {
     return 'visitors';
-  }
-  else {
+  } else {
     return 'visitor';
   }
 }
 
 const TodayBlock = () => {
-  const [interval, setInterval] = useState(5000);
+  const [ interval, setInterval ] = useState( 5000 );
   const currentDateWithOffset = getDateWithOffset();
-  const startDate = format(startOfDay(currentDateWithOffset), 'yyyy-MM-dd');
-  const endDate = format(endOfDay(currentDateWithOffset), 'yyyy-MM-dd');
+  const startDate = format( startOfDay( currentDateWithOffset ), 'yyyy-MM-dd' );
+  const endDate = format( endOfDay( currentDateWithOffset ), 'yyyy-MM-dd' );
 
   const placeholderData = {
     live: {
-      title: __('Live', 'burst-statistics'),
-      icon: 'visitor',
+      title: __( 'Live', 'burst-statistics' ),
+      icon: 'visitor'
     },
     today: {
-      title: __('Total', 'burst-statistics'),
+      title: __( 'Total', 'burst-statistics' ),
       value: '-',
-      icon: 'visitor',
+      icon: 'visitor'
     },
     mostViewed: {
       title: '-',
-      value: '-',
+      value: '-'
     },
     pageviews: {
       title: '-',
-      value: '-',
+      value: '-'
     },
     referrer: {
       title: '-',
-      value: '-',
+      value: '-'
     },
     timeOnPage: {
       title: '-',
-      value: '-',
-    },
+      value: '-'
+    }
   };
   const queries = useQueries({
         queries: [
           {
-            queryKey: ['live-visitors'],
+            queryKey: [ 'live-visitors' ],
             queryFn: getLiveVisitors,
             refetchInterval: interval,
             placeholderData: '-',
-            onError: (error) => {
-              setInterval(0);
+            onError: ( error ) => {
+              setInterval( 0 );
             }
           },
           {
-            queryKey: ['today'],
+            queryKey: [ 'today' ],
             queryFn: () => getTodayData({startDate, endDate}),
             refetchInterval: interval * 2,
             placeholderData: placeholderData,
-            onError: (error) => {
-              setInterval(0);
+            onError: ( error ) => {
+              setInterval( 0 );
             }
           }
         ]
@@ -81,26 +79,24 @@ const TodayBlock = () => {
   );
 
 
-
   // Your existing code
   const live = queries[0].data;
   let data = queries[1].data;
-  if (queries.some((query) => query.isError)) {
+  if ( queries.some( ( query ) => query.isError ) ) {
     data = placeholderData;
   }
-  let liveIcon = selectVisitorIcon(live ? live : 0);
+  let liveIcon = selectVisitorIcon( live ? live : 0 );
   let todayIcon = 'loading';
-  if (data && data.today) {
-    todayIcon = selectVisitorIcon(data.today.value ? data.today.value : 0);
+  if ( data && data.today ) {
+    todayIcon = selectVisitorIcon( data.today.value ? data.today.value : 0 );
   }
-
 
 
   return (
       <GridItem
           className={'border-to-border burst-today'}
-          title={__('Today', 'burst-statistics')}
-          controls={<>{queries[0].isFetching ? <Icon name={"loading"} /> : null }</>}
+          title={__( 'Today', 'burst-statistics' )}
+          controls={<>{queries[0].isFetching ? <Icon name={'loading'} /> : null }</>}
       >
         <div className="burst-today">
           <div className="burst-today-select">
@@ -108,7 +104,7 @@ const TodayBlock = () => {
               <div className="burst-today-select-item burst-tooltip-live">
                 <Icon name={liveIcon} size="23"/>
                 <h2>{live}</h2>
-                <span><Icon name="live" size="12" color={'red'}/> {__('Live', 'burst-statistics')}</span>
+                <span><Icon name="live" size="12" color={'red'}/> {__( 'Live', 'burst-statistics' )}</span>
               </div>
             </Tooltip>
             <Tooltip content={data.today.tooltip} >
@@ -116,7 +112,7 @@ const TodayBlock = () => {
                 <Icon name={todayIcon} size="23"/>
                 <h2>{data.today.value}</h2>
                 <span><Icon name="total" size="13"
-                            color={'green'}/> {__('Total', 'burst-statistics')}</span>
+                            color={'green'}/> {__( 'Total', 'burst-statistics' )}</span>
               </div>
             </Tooltip>
           </div>
@@ -124,14 +120,14 @@ const TodayBlock = () => {
             <Tooltip  content={data.mostViewed.tooltip}>
               <div className="burst-today-list-item burst-tooltip-mostviewed">
                 <Icon name="winner"/>
-                <p className="burst-today-list-item-text">{decodeURI(data.mostViewed.title)}</p>
+                <p className="burst-today-list-item-text">{decodeURI( data.mostViewed.title )}</p>
                 <p className="burst-today-list-item-number">{data.mostViewed.value}</p>
               </div>
             </Tooltip>
             <Tooltip content={data.referrer.tooltip}>
               <div className="burst-today-list-item burst-tooltip-referrer">
                 <Icon name="referrer"/>
-                <p className="burst-today-list-item-text">{decodeURI(data.referrer.title)}</p>
+                <p className="burst-today-list-item-text">{decodeURI( data.referrer.title )}</p>
                 <p className="burst-today-list-item-number">{data.referrer.value}</p>
               </div>
             </Tooltip>
