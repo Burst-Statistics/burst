@@ -53,12 +53,13 @@ if ( ! class_exists( 'burst_mail_reports' ) ) {
 			$first_day_of_week = (int) get_option( 'start_of_week' ); // 1 = Monday, 0 = Sunday
 
 			//check if it is currently first day of the week, after 08:00 am and before 20:00
-			if ( (int) date( 'N' ) === $first_day_of_week && date( 'H' ) > 8 || date( 'H' ) > 20 ) {
+			if ( (int) date( 'N' ) === $first_day_of_week && date( 'H' ) >= 8 && date( 'H' ) < 20 ) {
+
 				$this->send_report( $weekly_list, 'weekly' );
 			}
 
 			// check if it is currently first day of the month, after 08:00 am and before 20:00
-			if ( (int) date( 'd' ) === 1 && date( 'H' ) > 8 || date( 'H' ) > 20 ) {
+			if ( (int) date( 'd' ) === 1 && date( 'H' ) > 8 && date( 'H' ) < 20 ) {
 				$this->send_report( $monthly_list, 'monthly' );
 			}
 		}
