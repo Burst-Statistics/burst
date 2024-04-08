@@ -1,21 +1,21 @@
 import {__} from '@wordpress/i18n';
-import Icon from "../../utils/Icon";
+import Icon from '../../utils/Icon';
 
-const TaskElement = (props) => {
+const TaskElement = ( props ) => {
     const handleClick = () => {
-        props.highLightField(props.notice.output.highlight_field_id);
-    }
+        props.highLightField( props.notice.output.highlight_field_id );
+    };
     let notice = props.notice;
 
-        return(
+        return (
             <div className="burst-task-element">
                 <span className={'burst-task-status burst-' + notice.output.icon}>{ notice.output.label }</span>
-                {notice.output.icon!=='skeleton' && <p className="burst-task-message" dangerouslySetInnerHTML={{__html: notice.output.msg}}></p>}
-                {notice.output.icon==='skeleton' && <div className="burst-task-message" ><Icon name="loading" /></div>}
-                {notice.output.url && <a target="_blank" href={notice.output.url}>{__("More info", "burst-statistics")}</a> }
-                {notice.output.highlight_field_id && <span className="burst-task-enable" onClick={handleClick}>{__("Fix", "burst-statistics")}</span> }
+                {'skeleton' !== notice.output.icon && <p className="burst-task-message" dangerouslySetInnerHTML={{__html: notice.output.msg}}></p>}
+                {'skeleton' === notice.output.icon && <div className="burst-task-message" ><Icon name="loading" /></div>}
+                {notice.output.url && <a target="_blank" href={notice.output.url} rel="noreferrer">{__( 'More info', 'burst-statistics' )}</a> }
+                {notice.output.highlight_field_id && <span className="burst-task-enable" onClick={handleClick}>{__( 'Fix', 'burst-statistics' )}</span> }
                 {notice.output.plusone && <span className='burst-plusone'>1</span>}
-                {notice.output.dismissible && notice.output.status!=='completed' &&
+                {notice.output.dismissible && 'completed' !== notice.output.status &&
                     <div className="burst-task-dismiss">
                       <button type='button' data-id={notice.id} onClick={props.onCloseTaskHandler}>
                               <span className='burst-close-warning-x'>
@@ -29,6 +29,6 @@ const TaskElement = (props) => {
                 }
             </div>
         );
-}
+};
 
 export default TaskElement;

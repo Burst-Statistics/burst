@@ -5,7 +5,7 @@ import {__} from '@wordpress/i18n';
 import {useInsightsStore} from './useInsightsStore';
 
 // define the store
-export const useFiltersStore = create((set, get) => ({
+export const useFiltersStore = create( ( set, get ) => ({
   filters: {
     page_id: '',
     page_url: '',
@@ -14,53 +14,54 @@ export const useFiltersStore = create((set, get) => ({
     device: '',
     browser: '',
     platform: '',
-    country_code: '',
+    country_code: ''
   },
   filtersConf: {
     page_url: {
-      label: __('Page', 'burst-statistics'),
-      icon: 'page',
+      label: __( 'Page', 'burst-statistics' ),
+      icon: 'page'
     },
     goal_id: {
-      label: __('Goal', 'burst-statistics'),
-      icon: 'goals',
+      label: __( 'Goal', 'burst-statistics' ),
+      icon: 'goals'
     },
     referrer: {
-      label: __('Referrer URL', 'burst-statistics'),
-      icon: 'referrer',
+      label: __( 'Referrer URL', 'burst-statistics' ),
+      icon: 'referrer'
     },
     device: {
-      label: __('Device', 'burst-statistics'),
-      icon: 'desktop',
+      label: __( 'Device', 'burst-statistics' ),
+      icon: 'desktop'
     },
     browser: {
-      label: __('Browser', 'burst-statistics'),
-      icon: 'browser',
+      label: __( 'Browser', 'burst-statistics' ),
+      icon: 'browser'
     },
     platform: {
-      label: __('Operating System', 'burst-statistics'),
-      icon: 'operating-system',
+      label: __( 'Operating System', 'burst-statistics' ),
+      icon: 'operating-system'
     },
     country_code: {
-      label: __('Country', 'burst-statistics'),
-      icon: 'world',
+      label: __( 'Country', 'burst-statistics' ),
+      icon: 'world'
     }
   },
   animate: null,
-  setAnimate: (animate) => set({animate}),
-  setFilters: (filter, value, animate = false) => {
+  setAnimate: ( animate ) => set({animate}),
+  setFilters: ( filter, value, animate = false ) => {
+
     // check if value is not empty or false
     // use zustand to produce a new state
-    set(state => produce(state, draft => {
+    set( state => produce( state, draft => {
       draft.filters[filter] = value;
-    }));
-    if (animate) {
-      get().setAnimate(filter);
+    }) );
+    if ( animate ) {
+      get().setAnimate( filter );
     }
   },
-  deleteFilter: (filter) => {
-    set(state => produce(state, draft => {
+  deleteFilter: ( filter ) => {
+    set( state => produce( state, draft => {
       draft.filters[filter] = '';
-    }));
-  },
-}));
+    }) );
+  }
+}) );

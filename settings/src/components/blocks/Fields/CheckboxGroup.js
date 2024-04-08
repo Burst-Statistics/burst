@@ -1,23 +1,23 @@
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { __ } from '@wordpress/i18n';
 import Icon from '../../../utils/Icon';
-import {useEffect, useState, memo} from "@wordpress/element";
+import {useEffect, useState, memo} from '@wordpress/element';
 
 const CheckboxGroup = ({ indeterminate, label, value, id, onChange, required, disabled, options = {} }) => {
-	const [isBoolean, setIsBoolean] = useState(false);
-	const [loadMoreExpanded, setLoadMoreExpanded] = useState(false);
+	const [ isBoolean, setIsBoolean ] = useState( false );
+	const [ loadMoreExpanded, setLoadMoreExpanded ] = useState( false );
 
 	let valueValidated = value;
-	if ( !Array.isArray(valueValidated) ){
-		valueValidated = valueValidated === '' ? [] : [valueValidated];
+	if ( ! Array.isArray( valueValidated ) ) {
+		valueValidated = '' === valueValidated ? [] : [ valueValidated ];
 	}
 
-	useEffect (() => {
-		let isBool = (Object.keys(options).length === 1) && Object.keys(options)[0] === 'true';
-		setIsBoolean(isBool);
-	},[]);
+	useEffect ( () => {
+		let isBool = ( 1 === Object.keys( options ).length ) && 'true' === Object.keys( options )[0];
+		setIsBoolean( isBool );
+	}, []);
 
-	if (indeterminate){
+	if ( indeterminate ) {
 		value = true;
 	}
 
@@ -27,55 +27,56 @@ const CheckboxGroup = ({ indeterminate, label, value, id, onChange, required, di
 	// check if there are more options than the loadmore count
 	let loadMoreEnabled = false;
 
-	if (Object.keys(options).length > loadMoreCount) {
+	if ( Object.keys( options ).length > loadMoreCount ) {
 		loadMoreEnabled = true;
 	}
 
-	const handleCheckboxChange = (e, option) => {
-		if (isBoolean) {
-			onChange(!value);
+	const handleCheckboxChange = ( e, option ) => {
+		if ( isBoolean ) {
+			onChange( ! value );
 		} else {
-			const newSelected = selected.includes(""+option) || selected.includes(parseInt(option))
-				? selected.filter((item) => item !== ""+option && item !== parseInt(option) )
-				: [...selected, option];
-			onChange(newSelected);
+			const newSelected = selected.includes( '' + option ) || selected.includes( parseInt( option ) ) ?
+				selected.filter( ( item ) => item !== '' + option && item !== parseInt( option ) ) :
+				[ ...selected, option ];
+			onChange( newSelected );
 		}
 	};
 
-	const isEnabled = (id) => {
+	const isEnabled = ( id ) => {
+
 		// if there is only one option, we use the value as a boolean
 		//selected can both be array of strings or integers.
-		return isBoolean ? value : selected.includes(""+id) || selected.includes(parseInt(id));
+		return isBoolean ? value : selected.includes( '' + id ) || selected.includes( parseInt( id ) );
 	};
 
 	const loadMoreHandler = () => {
-		setLoadMoreExpanded(!loadMoreExpanded);
+		setLoadMoreExpanded( ! loadMoreExpanded );
 	};
-	let allDisabled = disabled && !Array.isArray(disabled);
+	let allDisabled = disabled && ! Array.isArray( disabled );
 
-	if (Object.keys(options).length===0){
+	if ( 0 === Object.keys( options ).length ) {
 		return (
-			<>{__("No options found", "burst-statistics")}</>
-		)
+			<>{__( 'No options found', 'burst-statistics' )}</>
+		);
 	}
 
 	return (
 		<div className={'burst-checkbox-group'}>
-			{Object.entries(options).map(([key, optionLabel], i) => (
+			{Object.entries( options ).map( ([ key, optionLabel ], i ) => (
 				<div
 					key={key}
 					className={`burst-checkbox-group__item${
-						!loadMoreExpanded && i > loadMoreCount-1 ? ' burst-hidden' : ''
+						! loadMoreExpanded && i > loadMoreCount - 1 ? ' burst-hidden' : ''
 					}`}
 				>
 					<Checkbox.Root
 						className="burst-checkbox-group__checkbox"
 						id={id + '_' + key}
-						checked={isEnabled(key)}
+						checked={isEnabled( key )}
 						aria-label={label}
-						disabled={allDisabled || (Array.isArray(disabled) && disabled.includes(key)) }
+						disabled={allDisabled || ( Array.isArray( disabled ) && disabled.includes( key ) ) }
 						required={required}
-						onCheckedChange={(e) => handleCheckboxChange(e, key)}
+						onCheckedChange={( e ) => handleCheckboxChange( e, key )}
 					>
 						<Checkbox.Indicator className="burst-checkbox-group__indicator">
 							<Icon name={indeterminate ? 'indeterminate' : 'check'} size={14} color={'dark-blue'} />
@@ -85,19 +86,19 @@ const CheckboxGroup = ({ indeterminate, label, value, id, onChange, required, di
 						{optionLabel}
 					</label>
 				</div>
-			))}
-			{!loadMoreExpanded && loadMoreEnabled && (
+			) )}
+			{! loadMoreExpanded && loadMoreEnabled && (
 				<button onClick={()=>loadMoreHandler()}>
-					{__('Show more', 'burst-statistics')}
+					{__( 'Show more', 'burst-statistics' )}
 				</button>
 			)}
 			{loadMoreExpanded && loadMoreEnabled && (
 				<button onClick={() => loadMoreHandler()}>
-					{__('Show less', 'burst-statistics')}
+					{__( 'Show less', 'burst-statistics' )}
 				</button>
 			)}
 		</div>
 	);
 };
 
-export default memo(CheckboxGroup);
+export default memo( CheckboxGroup );

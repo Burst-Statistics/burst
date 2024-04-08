@@ -15,31 +15,32 @@ import { __ } from '@wordpress/i18n';
 const EmptyDataTable = ({
   isLoading,
   error,
-  noData,
+  noData
 }) => {
+
   // Loading state
-  if (isLoading) {
+  if ( isLoading ) {
     return (
         <div className="burst-datatable-message burst-loading">
-          <p>{__('Loading data...', 'burst-statistics')}</p>
+          <p>{__( 'Loading data...', 'burst-statistics' )}</p>
         </div>
     );
   }
 
   // Error state
-  if (error) {
+  if ( error ) {
     return (
         <div className="burst-datatable-message burst-error">
-          <p>{__('Error:', 'burst-statistics')} {error.message}</p>
+          <p>{__( 'Error:', 'burst-statistics' )} {error.message}</p>
         </div>
     );
   }
 
   // No data state
-  if (noData) {
+  if ( noData ) {
     return (
         <div className="burst-datatable-message burst-no-data">
-          <p>{__('No data available in table', 'burst-statistics')}</p>
+          <p>{__( 'No data available in table', 'burst-statistics' )}</p>
         </div>
     );
   }
@@ -47,7 +48,7 @@ const EmptyDataTable = ({
   // Fallback or unexpected error state
   return (
       <div className="burst-datatable-message burst-unexpected-error">
-        <p>{__('Unexpected error', 'burst-statistics')}</p>
+        <p>{__( 'Unexpected error', 'burst-statistics' )}</p>
       </div>
   );
 };

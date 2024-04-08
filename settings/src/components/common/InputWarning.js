@@ -1,19 +1,19 @@
 import { useState, useEffect } from '@wordpress/element';
 
 const InputWarning = ({
-  type = "warning",
+  type = 'warning',
   message,
   timeout = 5000,
-  onTimeout = () => {},
+  onTimeout = () => {}
 }) => {
-  const [visible, setVisible] = useState(true);
+  const [ visible, setVisible ] = useState( true );
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  useEffect( () => {
+    const timer = setTimeout( () => {
       onTimeout();
-      clearTimeout(timer);
-    }, timeout);
-  }, [timeout, onTimeout]);
+      clearTimeout( timer );
+    }, timeout );
+  }, [ timeout, onTimeout ]);
 
   const className = `burst-warning ${type}`;
 

@@ -6,15 +6,15 @@
       return el(
           'p',
           { className: 'burst-pageviews' },
-          sprintf(__('This page has been viewed %d times.', 'burst-statistics'), 0)
+          sprintf( __( 'This page has been viewed %d times.', 'burst-statistics' ), 0 )
       );
-  }
+  };
 
   blocks.registerBlockType( 'burst/pageviews-block', {
-    title: __('Pageviews Counter', 'burst-statistics'),
+    title: __( 'Pageviews Counter', 'burst-statistics' ),
     icon: 'analytics',
     category: 'widgets',
     edit: blockContent,
-    save: blockContent,
-  } );
-} )( window.wp.blocks, window.wp.element, window.wp.i18n );
+    save: blockContent
+  });
+}( window.wp.blocks, window.wp.element, window.wp.i18n ) );

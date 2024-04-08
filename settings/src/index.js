@@ -6,13 +6,14 @@ import Page from './components/Page';
 import {
   QueryClient,
   QueryCache,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+  QueryClientProvider
+} from '@tanstack/react-query';
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 const HOUR_IN_SECONDS = 3600;
 const queryCache = new QueryCache({
-  onError: (error) => {
+  onError: ( error ) => {
+
     // any error handling code...
   }
 });
@@ -21,17 +22,18 @@ let config = {
     queries: {
       staleTime: HOUR_IN_SECONDS * 1000, // hour in ms
       refetchOnWindowFocus: false,
-      retry: false,
-    },
+      retry: false
+    }
   }
-}
+};
+
 // merge queryCache with config
 config = {...config, ...{queryCache}};
 
-const queryClient = new QueryClient(config);
+const queryClient = new QueryClient( config );
 
-document.addEventListener('DOMContentLoaded', () => {
-  const container = document.getElementById('burst-statistics');
+document.addEventListener( 'DOMContentLoaded', () => {
+  const container = document.getElementById( 'burst-statistics' );
   if ( container ) {
     if ( createRoot ) {
       createRoot( container ).render(
@@ -42,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <ReactQueryDevtools />
             </QueryClientProvider>
-          </React.StrictMode>,
+          </React.StrictMode>
            );
     } else {
       render(

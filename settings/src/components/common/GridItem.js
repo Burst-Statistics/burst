@@ -13,7 +13,7 @@ import ErrorBoundary from '../ErrorBoundary';
 const GridItem = ({ className, title, controls, children, footer }) => {
   return (
       <ErrorBoundary fallback={'Could not load page'}>
-        <div className={"burst-grid-item " + className}>
+        <div className={'burst-grid-item ' + className}>
           <div className="burst-grid-item-header">
             <h3 className="burst-grid-title burst-h4">{title}</h3>
             <div className="burst-grid-item-controls">
@@ -28,6 +28,6 @@ const GridItem = ({ className, title, controls, children, footer }) => {
           </div>
         </div>
       </ErrorBoundary>
-  )
-}
+  );
+};
 export default GridItem;

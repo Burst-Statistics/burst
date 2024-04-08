@@ -12,15 +12,15 @@ import {useFiltersStore} from '../../store/useFiltersStore';
 import {useDate} from '../../store/useDateStore';
 
 const StatisticsPage = () => {
-  const { filters } = useFiltersStore((state) => ({
-    filters: state.filters,
-  }));
+  const { filters } = useFiltersStore( ( state ) => ({
+    filters: state.filters
+  }) );
 
-  const { startDate, endDate, range } = useDate((state) => ({
+  const { startDate, endDate, range } = useDate( ( state ) => ({
     startDate: state.startDate,
     endDate: state.endDate,
-    range: state.range,
-  }));
+    range: state.range
+  }) );
 
   const commonProps = { filters, startDate, endDate, range };
 
@@ -33,8 +33,8 @@ const StatisticsPage = () => {
         <InsightsBlock filters={filters} />
         <CompareBlock {...commonProps} />
         <DevicesBlock {...commonProps} />
-        <DataTableBlock {...commonProps} allowedConfigs={['pages', 'parameters', 'campaigns']} id={1}/>
-        <DataTableBlock {...commonProps} allowedConfigs={['referrers', 'countries']} id={2} />
+        <DataTableBlock {...commonProps} allowedConfigs={[ 'pages', 'parameters', 'campaigns' ]} id={1}/>
+        <DataTableBlock {...commonProps} allowedConfigs={[ 'referrers', 'countries' ]} id={2} />
       </div>
   );
 };

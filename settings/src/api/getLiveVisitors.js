@@ -1,6 +1,7 @@
 
 import {getData} from '../utils/api';
 import {formatNumber} from '../utils/formatting';
+
 /**
  * Get live visitors
  * @param {Object} args
@@ -10,7 +11,7 @@ import {formatNumber} from '../utils/formatting';
  * @param {Object} args.filters
  * @returns {Promise<*>}
  */
-const getLiveVisitors = async (args) => {
+const getLiveVisitors = async( args ) => {
   const { startDate, endDate, range, filters } = args;
   const { data } = await getData(
     'live-visitors',
@@ -19,7 +20,7 @@ const getLiveVisitors = async (args) => {
     range,
     { filters }
   );
-  return formatNumber(data);
+  return formatNumber( data );
 
-}
+};
 export default getLiveVisitors;

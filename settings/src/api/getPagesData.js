@@ -2,21 +2,22 @@ import {__} from '@wordpress/i18n';
 import {getData} from '../utils/api';
 import {formatPercentage, formatTime} from '../utils/formatting';
 
-export const transformPagesData = (response, columnOptions) => {
+export const transformPagesData = ( response, columnOptions ) => {
   const metrics = response.metrics;
+
   // Update columns
-  response.columns = response.columns.map((column, index) => {
+  response.columns = response.columns.map( ( column, index ) => {
     const updatedColumn = {...column};
 
-    if (index > 0) {
-      updatedColumn.selector = (row) => row[column.id];
+    if ( 0 < index ) {
+      updatedColumn.selector = ( row ) => row[column.id];
     }
 
     // Apply custom sort function to percentage columns
-    if (columnOptions[column.id]?.format === 'percentage') {
-      updatedColumn.sortFunction = (rowA, rowB) => {
-        const numA = parseFloat(rowA[column.id]);
-        const numB = parseFloat(rowB[column.id]);
+    if ( 'percentage' === columnOptions[column.id]?.format ) {
+      updatedColumn.sortFunction = ( rowA, rowB ) => {
+        const numA = parseFloat( rowA[column.id]);
+        const numB = parseFloat( rowB[column.id]);
         return numA - numB;
       };
     }
@@ -25,43 +26,44 @@ export const transformPagesData = (response, columnOptions) => {
   });
 
   // Convert metric values to integers
-  response.data.forEach((row, index) => {
-    for (let key in metrics) {
+  response.data.forEach( ( row, index ) => {
+    for ( let key in metrics ) {
+
       // check if the format in the columns is percentage
-      if (columnOptions[metrics[key]].format === 'percentage') {
+      if ( 'percentage' === columnOptions[metrics[key]].format ) {
         response.data[index][metrics[key]] = formatPercentage(
             row[metrics[key]]);
         continue;
       }
-      if (columnOptions[metrics[key]].format === 'time') {
-        response.data[index][metrics[key]] = formatTime(row[metrics[key]]);
+      if ( 'time' === columnOptions[metrics[key]].format ) {
+        response.data[index][metrics[key]] = formatTime( row[metrics[key]]);
         continue;
       }
-      response.data[index][metrics[key]] = parseInt(row[metrics[key]]);
+      response.data[index][metrics[key]] = parseInt( row[metrics[key]]);
     }
   });
 
-  if (metrics[1] === 'conversions') {
-    response.columns[1].name = __('Conversions', 'burst-statistics');
+  if ( 'conversions' === metrics[1]) {
+    response.columns[1].name = __( 'Conversions', 'burst-statistics' );
   }
 
   return response;
 };
 
-const getPagesData = async ({
+const getPagesData = async({
   startDate,
   endDate,
   range,
   args,
-  columnsOptions,
+  columnsOptions
 }) => {
   const {data} = await getData(
       'pages',
       startDate,
       endDate,
       range,
-      args,
+      args
   );
-  return transformPagesData(data, columnsOptions);
+  return transformPagesData( data, columnsOptions );
 };
 export default getPagesData;

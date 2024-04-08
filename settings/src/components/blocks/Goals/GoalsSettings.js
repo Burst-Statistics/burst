@@ -4,37 +4,37 @@ import {__} from '@wordpress/i18n';
 import Icon from '../../../utils/Icon';
 import GoalSetup from '../Goals/GoalSetup';
 import {useEffect, useState} from '@wordpress/element';
-import Pro from "../Fields/Pro";
-import {useFields} from "../../../store/useFieldsStore";
+import Pro from '../Fields/Pro';
+import {useFields} from '../../../store/useFieldsStore';
 
-const GoalsSettings = (props) => {
+const GoalsSettings = ( props ) => {
   const { goals, goalFields, predefinedGoals, addGoal, deleteGoal, updateGoal, addPredefinedGoal, setGoalValue } = useGoalsStore();
   const {licenseStatus} = useLicenseStore();
-  const [predefinedGoalsVisible, setPredefinedGoalsVisible] = useState(false);
-    const getFieldValue = useFields((state) => state.getFieldValue);
-    const fieldsLoaded = useFields((state) => state.fieldsLoaded);
-    const [cookieless, setCookieless] = useState(false);
+  const [ predefinedGoalsVisible, setPredefinedGoalsVisible ] = useState( false );
+    const getFieldValue = useFields( ( state ) => state.getFieldValue );
+    const fieldsLoaded = useFields( ( state ) => state.fieldsLoaded );
+    const [ cookieless, setCookieless ] = useState( false );
 
-    useEffect(() => {
-        if (fieldsLoaded) {
-            setCookieless(getFieldValue('enable_cookieless_tracking')==1);
+    useEffect( () => {
+        if ( fieldsLoaded ) {
+            setCookieless( 1 == getFieldValue( 'enable_cookieless_tracking' ) );
         }
-    }, [fieldsLoaded, getFieldValue('enable_cookieless_tracking') ]);
+    }, [ fieldsLoaded, getFieldValue( 'enable_cookieless_tracking' ) ]);
 
-    const handleAddPredefinedGoal = async (goal) => {
-        await addPredefinedGoal(goal.id, goal.type, cookieless );
+    const handleAddPredefinedGoal = async( goal ) => {
+        await addPredefinedGoal( goal.id, goal.type, cookieless );
 
-        setPredefinedGoalsVisible(false);
-    }
+        setPredefinedGoalsVisible( false );
+    };
 
-  let predefinedGoalsButtonClass = !predefinedGoals || predefinedGoals.length===0 ? 'burst-inactive' : '';
+  let predefinedGoalsButtonClass = ! predefinedGoals || 0 === predefinedGoals.length ? 'burst-inactive' : '';
   return (
       <div className="burst-burst-settings-goals">
         <div className="burst-settings-goals__introduction">
-          {__('Goals are a great way to track your progress and keep you motivated.', 'burst-statistics')}
+          {__( 'Goals are a great way to track your progress and keep you motivated.', 'burst-statistics' )}
         </div>
         <div className="burst-settings-goals__list">
-          { goals.length>0 && goals.map((goal, index) => {
+          { 0 < goals.length && goals.map( ( goal, index ) => {
             return (
                 <GoalSetup
                     key={index}
@@ -47,13 +47,13 @@ const GoalsSettings = (props) => {
             );
           })}
 
-          { ( licenseStatus === 'valid' || goals.length === 0 ) && (
+          { ( 'valid' === licenseStatus || 0 === goals.length ) && (
               <div className={'burst-settings-goals__add-goal'}>
                   <button
                       className={'burst-button burst-button--secondary'}
                       onClick={addGoal}
                   >
-                      {__('Add goal', 'burst-statistics')}
+                      {__( 'Add goal', 'burst-statistics' )}
                   </button>
                   {/*<div className="burst-button-dropdown-container">*/}
                   {/*    <button*/}
@@ -86,18 +86,18 @@ const GoalsSettings = (props) => {
                   {/*</div>*/}
               </div>
           )}
-            {!burst_settings.is_pro && (
+            {! burst_settings.is_pro && (
                 <div className={'burst-settings-goals__upgrade'}>
                     <Icon name={'goals'} size={24} color="grey"/>
-                    <h4>{__('Want more goals?', 'burst-statistics')}</h4>
+                    <h4>{__( 'Want more goals?', 'burst-statistics' )}</h4>
                 <div className="burst-divider" />
-                <p>{__('Upgrade to Burst Pro', 'burst-statistics')}</p>
+                <p>{__( 'Upgrade to Burst Pro', 'burst-statistics' )}</p>
                 <a
                     href={'https://burst-statistics.com/pricing/?src=plugin-burst-more-goals'}
                     target={'_blank'}
-                    className={'burst-button burst-button--pro'}
+                    className={'burst-button burst-button--pro'} rel="noreferrer"
                 >
-                  {__('Upgrade to Pro', 'burst-statistics')}
+                  {__( 'Upgrade to Pro', 'burst-statistics' )}
                 </a>
               </div>
           )}

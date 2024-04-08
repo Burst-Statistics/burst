@@ -11,10 +11,11 @@ $results = $wpdb->get_results(
 	"SELECT `option_name` AS `name`, `option_value` AS `value`
                                 FROM  $wpdb->options
                                 WHERE `option_name` LIKE '%transient_burst%'
-                                ORDER BY `option_name`", 'ARRAY_A'
+                                ORDER BY `option_name`",
+	'ARRAY_A'
 );
 // loop through all burst transients and delete
-foreach ($results as $key => $value){
-	$transient_name = substr($value['name'], 11);
-	delete_transient($transient_name);
+foreach ( $results as $key => $value ) {
+	$transient_name = substr( $value['name'], 11 );
+	delete_transient( $transient_name );
 }

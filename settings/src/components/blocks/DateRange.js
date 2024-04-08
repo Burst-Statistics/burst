@@ -3,7 +3,7 @@ import {useCallback, useMemo, useRef, useState} from '@wordpress/element';
 import {DateRangePicker} from 'react-date-range';
 import {
   format,
-  parseISO,
+  parseISO
 } from 'date-fns';
 import Icon from '../../utils/Icon';
 import {useDate} from '../../store/useDateStore';
@@ -15,8 +15,8 @@ import {
 } from '../../utils/formatting';
 import * as ReactPopover from '@radix-ui/react-popover';
 
-const DateRange = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
+const DateRange = ( props ) => {
+  const [ isOpen, setIsOpen ] = useState( false );
 const {
   startDate,
   endDate,
@@ -35,37 +35,37 @@ const {
       [ selectedRanges ]);
   const display = getDisplayDates( startDate, endDate );
 
-  const updateDateRange = useCallback((ranges) => {
+  const updateDateRange = useCallback( ( ranges ) => {
     countClicks.current++;
 
     const {startDate, endDate} = ranges.selection;
-    const startStr = format(startDate, 'yyyy-MM-dd');
-    const endStr = format(endDate, 'yyyy-MM-dd');
+    const startStr = format( startDate, 'yyyy-MM-dd' );
+    const endStr = format( endDate, 'yyyy-MM-dd' );
 
-    setSelectionRangeStartDate(parseISO(startStr));
-    setSelectionRangeEndDate(parseISO(endStr));
+    setSelectionRangeStartDate( parseISO( startStr ) );
+    setSelectionRangeEndDate( parseISO( endStr ) );
 
-    const selectedRangeKey = Object.keys(availableRanges).find(key =>
-        availableRanges[key].isSelected(ranges.selection),
+    const selectedRangeKey = Object.keys( availableRanges ).find( key =>
+        availableRanges[key].isSelected( ranges.selection )
     );
     const range = selectedRangeKey || 'custom';
 
-    const isSecondClick = countClicks.current === 2;
-    const isRange = range !== 'custom';
+    const isSecondClick = 2 === countClicks.current;
+    const isRange = 'custom' !== range;
     const isTwoDifferentDates = startStr !== endStr;
 
-    if (isSecondClick || isRange || isTwoDifferentDates) {
+    if ( isSecondClick || isRange || isTwoDifferentDates ) {
       countClicks.current = 0;
-      setStartDate(startStr);
-      setEndDate(endStr);
-      setRange(range);
-      setIsOpen(false);
+      setStartDate( startStr );
+      setEndDate( endStr );
+      setRange( range );
+      setIsOpen( false );
     }
-  }, [setStartDate, setEndDate, setRange]);
+  }, [ setStartDate, setEndDate, setRange ]);
   const selectionRange = {
     startDate: selectionRangeStartDate,
     endDate: selectionRangeEndDate,
-    key: 'selection',
+    key: 'selection'
   };
   return (
       <div className="burst-date-range-container">
@@ -73,13 +73,13 @@ const {
           <ReactPopover.Trigger
               id="burst-date-range-picker-open-button"
               className={'burst-button burst-button--secondary burst-button--date-range'}
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setIsOpen( ! isOpen )}
           >
             <Icon name="calendar" size={'18'}/>
 
-            {range === 'custom' && display.startDate + ' - ' +
+            {'custom' === range && display.startDate + ' - ' +
                 display.endDate}
-            {range !== 'custom' && availableRanges[range].label}
+            {'custom' !== range && availableRanges[range].label}
             <Icon name="chevron-down"/>
           </ReactPopover.Trigger>
           <ReactPopover.Portal>
@@ -92,16 +92,18 @@ const {
             >
               <span className={'burst-popover__arrow'}></span>
               <DateRangePicker
-                  ranges={[selectionRange]}
-                  rangeColors={['var(--rsp-brand-primary)']}
+                  ranges={[ selectionRange ]}
+                  rangeColors={[ 'var(--rsp-brand-primary)' ]}
                   dateDisplayFormat={'dd MMMM yyyy'}
                   monthDisplayFormat="MMMM"
-                  onChange={(ranges) => {updateDateRange(ranges);}}
+                  onChange={( ranges ) => {
+updateDateRange( ranges );
+}}
                   inputRanges={[]}
                   showSelectionPreview={true}
                   months={2}
                   direction="horizontal"
-                  minDate={new Date(2022, 0, 1)}
+                  minDate={new Date( 2022, 0, 1 )}
                   maxDate={getDateWithOffset()}
                   staticRanges={dateRanges}
               />
