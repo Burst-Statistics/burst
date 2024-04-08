@@ -1,0 +1,42 @@
+{
+  "name": "burst-statistics",
+  "version": "1.5.0",
+  "description": "Burst UI",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "set \"INLINE_RUNTIME_CHUNK=false\" && export BURST_ENV=development && wp-scripts start",
+    "build": "set \"INLINE_RUNTIME_CHUNK=false\" && export BURST_ENV=production && wp-scripts build"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^23.4.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "wp-scripts": "^0.0.1-security"
+  },
+  "dependencies": {
+    "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-select": "^1.2.2",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "@tanstack/react-query": "^4.29.19",
+    "@tanstack/react-query-devtools": "^4.29.19",
+    "@wordpress/api-fetch": "^6.19.0",
+    "@wordpress/date": "^4.32.0",
+    "chart.js": "^3.9.1",
+    "date-fns": "^2.29.2",
+    "immer": "^9.0.21",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^4.3.1",
+    "react-data-table-component": "^7.5.3",
+    "react-date-range": "^1.4.0",
+    "react-select": "^5.7.0",
+    "react-shepherd": "^4.1.0",
+    "react-svg": "^16.1.22",
+    "react-toastify": "^9.1.1",
+    "styled-components": "^6.1.0",
+    "zustand": "^4.3.6"
+  },
+  "author": "Really Simple Plugins",
+  "license": "GPL-2.0-only"
+}
