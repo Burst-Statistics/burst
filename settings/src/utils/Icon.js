@@ -6,8 +6,6 @@ const iconColors = {
   'green': 'var(--rsp-green)',
   'yellow': 'var(--rsp-yellow)',
   'red': 'var(--rsp-red)',
-  'blue': 'var(--rsp-blue)',
-  'dark-blue': 'var(--rsp-dark-blue)',
   'green-faded': 'var(--rsp-green-faded)',
   'yellow-faded': 'var(--rsp-yellow-faded)',
   'red-faded': 'var(--rsp-red-faded)',

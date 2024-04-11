@@ -85,7 +85,7 @@ if ( ! function_exists( 'burst_add_manage_capability' ) ) {
 	 */
 	function burst_add_manage_capability( bool $handle_subsites = true ) {
 		$capability = 'manage_burst_statistics';
-		$roles      = apply_filters( 'burst_burst_add_manage_capability', [ 'administrator', 'editor' ] );
+		$roles      = apply_filters( 'burst_burst_add_manage_capability', [ 'administrator' ] );
 		foreach ( $roles as $role ) {
 			$role = get_role( $role );
 			if ( $role && ! $role->has_cap( $capability ) ) {
@@ -305,6 +305,7 @@ if ( ! function_exists( 'burst_format_number' ) ) {
 function burst_get_option( $name, $default = false ) {
 	$name    = sanitize_title( $name );
 	$options = get_option( 'burst_options_settings', [] );
+
 	$value = isset( $options[ $name ] ) ? $options[ $name ] : false;
 	if ( $value === false && $default !== false ) {
 		$value = $default;
@@ -542,7 +543,7 @@ if ( ! function_exists( 'burst_upload_url' ) ) {
 
 if ( ! function_exists( 'burst_create_missing_directories_recursively' ) ) {
 	function burst_create_missing_directories_recursively( string $path ) {
-		if ( ! burst_user_can_manage() ) {
+		if ( ! burst_user_can_view() ) {
 			return;
 		}
 

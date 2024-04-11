@@ -263,12 +263,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 					burst_update_option( 'user_role_blocklist', $defaults );
 				}
 
-				$mailinglist = burst_get_option( 'email_reports_mailinglist' );
-                if ( ! $mailinglist ) {
-                    $defaults = array( array('email' => get_option( 'admin_email' ), 'frequency' => 'monthly') );
-                    burst_update_option( 'email_reports_mailinglist', $defaults );
-                }
-
 				if ( get_option( 'burst_goals_db_version' ) === false ) {
 					// if there is no goals db version, then we can assume there are no goals database.
 					// rerun so this code is not executed

@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) or die();
 
 require_once burst_path . 'settings/config/config.php';
 require_once burst_path . 'settings/rest-api-optimizer/rest-api-optimizer.php';
-require_once burst_path . 'settings/media/media-override.php';
 
 /**
  * WordPress doesn't allow for translation of chunks resulting of code splitting.
@@ -123,7 +122,7 @@ function burst_localized_settings( $js_data ) {
 function burst_rest_api_fallback() {
 	$response = [];
 	$error    = $action = $do_action = $data = $data_type = false;
-	if ( ! burst_user_can_manage() ) {
+	if ( ! burst_user_can_view() ) {
 		$error = true;
 	}
 
@@ -411,7 +410,7 @@ function burst_settings_rest_route() {
 				],
 			],
 			'permission_callback' => function () {
-				return burst_user_can_view();
+				return burst_user_can_manage();
 			},
 		]
 	);
@@ -424,7 +423,7 @@ function burst_settings_rest_route() {
  * @return WP_REST_Response | WP_Error
  */
 function burst_do_action( $request, $ajax_data = false ) {
-	if ( ! burst_user_can_manage() ) {
+	if ( ! burst_user_can_view() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', [ 'status' => 403 ] );
 	}
 	$action = sanitize_title( $request->get_param( 'action' ) );
@@ -579,7 +578,6 @@ function burst_get_data( WP_REST_Request $request ) {
 		'date_end'   => BURST()->statistics->convert_date_to_unix( $request->get_param( 'date_end' ) . ' 23:59:59' ),
 		// add 23:59:59 to date
 	];
-
 	if ( isset( $request->get_params()['args'] ) ) {
 		$request_args = json_decode( $request->get_param( 'args' ), true );
 	} else {
@@ -707,7 +705,6 @@ function burst_sanitize_field_type( $type ) {
 		'email',
 		'select',
 		'ip_blocklist',
-        'email_reports',
 		'user_role_blocklist',
 		'license',
 	);
@@ -854,7 +851,7 @@ function burst_update_option( $name, $value ) {
  */
 function burst_rest_api_fields_get( $request ) {
 
-	if ( ! burst_user_can_manage() ) {
+	if ( ! burst_user_can_view() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
 
@@ -908,7 +905,7 @@ function burst_rest_api_fields_get( $request ) {
 }
 
 function burst_rest_api_goals_get( $request ) {
-	if ( ! burst_user_can_manage() ) {
+	if ( ! burst_user_can_view() ) {
 		return new WP_Error( 'rest_forbidden', 'You do not have permission to perform this action.', array( 'status' => 403 ) );
 	}
 
@@ -1204,8 +1201,6 @@ function burst_sanitize_field( $value, $type, $id ) {
 			return (int) $value;
 		case 'ip_blocklist':
 			return burst_sanitize_ip_field( $value );
-        case 'email_reports':
-            return burst_sanitize_email_reports( $value );
 		default:
 			return sanitize_text_field( $value );
 	}
@@ -1224,48 +1219,6 @@ function burst_sanitize_ip_field( $value ) {
 
 	return implode( PHP_EOL, $ips );
 }
-
-/**
- * Sanitize and validate filters for email reports.
- *
- * @param array $email_reports Array of email reports to sanitize and validate.
- *
- * @return array|bool Sanitized and validated array, or false if user can't manage.
- */
-function burst_sanitize_email_reports($email_reports) {
-	// Check if the current user has the capability to manage the settings.
-	if (!burst_user_can_manage()) {
-		return false;
-	}
-
-	$sanitized_email_reports = [];
-
-	foreach ($email_reports as $report) {
-		// Initialize an array to hold sanitized report.
-		$sanitized_report = [];
-
-		// Sanitize the email field.
-		if (isset($report['email'])) {
-			$sanitized_report['email'] = sanitize_email($report['email']);
-		}
-
-		// Validate and sanitize the frequency field.
-		if (isset($report['frequency']) && in_array($report['frequency'], ['monthly', 'weekly'], true)) {
-			$sanitized_report['frequency'] = sanitize_text_field($report['frequency']);
-		} else {
-			$sanitized_report['frequency'] = 'monthly';
-		}
-
-		// Add the sanitized report to the array.
-		$sanitized_email_reports[] = $sanitized_report;
-	}
-    // maximum of 10 email reports
-    $sanitized_email_reports = array_slice($sanitized_email_reports, 0, 10);
-
-	return $sanitized_email_reports;
-}
-
-
 
 /**
  * Get user roles for the settings page in Burst

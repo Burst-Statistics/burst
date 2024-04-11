@@ -4,43 +4,41 @@
 
 let viewportGoals = [];
 const burst_goals_setup = () => {
-
   // loop through goals and remove any that don't match the current path or
   // don't have a path
-  for ( let i = 0; i < burst.goals.length; i++ ) {
+  for (let i = 0; i < burst.goals.length; i++) {
     let goal = burst.goals[i];
-    if ( goal.url && ( goal.url !== window.location.pathname && '*' !== goal.url ) ) {
-      burst.goals.splice( i, 1 );
+    if (goal.url && (goal.url !== window.location.pathname && goal.url !== '*')) {
+      burst.goals.splice(i, 1);
     }
   }
-
   // loop through all goals and setup event listeners
-  for ( let i = 0; i < burst.goals.length; i++ ) {
+  for (let i = 0; i < burst.goals.length; i++) {
     let goal = burst.goals[i];
-    switch ( goal.type ) {
+    switch (goal.type) {
       case 'views':
-        burst_setup_viewport_tracker( goal );
+        burst_setup_viewport_tracker(goal);
         break;
       case 'clicks':
       default:
-        burst_setup_click_tracker( goal );
+        burst_setup_click_tracker(goal);
         break;
     }
   }
 
-  window.addEventListener( 'scroll', handle_viewport_goals, true );
+  window.addEventListener('scroll', handle_viewport_goals, true);
 };
 
 /**
  * Check if any goals are in the viewport.
  */
 const handle_viewport_goals = () => {
-  viewportGoals.forEach( ( goalData, index ) => {
-    if ( burst_is_element_in_viewport( goalData.element ) ) {
-      burst_goal_triggered( goalData.goal );
+  viewportGoals.forEach((goalData, index) => {
+    if (burst_is_element_in_viewport(goalData.element)) {
+      burst_goal_triggered(goalData.goal);
 
       // Remove the goal from the viewportGoals array
-      viewportGoals.splice( index, 1 );
+      viewportGoals.splice(index, 1);
     }
   });
 };
@@ -49,24 +47,22 @@ const handle_viewport_goals = () => {
  * Setup a viewport tracker for a goal.
  * @param goal
  */
-const burst_setup_viewport_tracker = ( goal ) => {
-  if ( 0 === goal.attribute_value.length ) {
+const burst_setup_viewport_tracker = (goal) => {
+  if ( goal.attribute_value.length === 0 ) {
     return;
   }
 
-  let selector = 'id' === goal.attribute ? '#' : '.';
-  let elements = document.querySelectorAll( selector + goal.attribute_value );
+  let selector = goal.attribute === 'id' ? '#' : '.';
+  let elements = document.querySelectorAll( selector + goal.attribute_value);
 
-  for ( let i = 0; i < elements.length; i++ ) {
+  for (let i = 0; i < elements.length; i++) {
     let element = elements[i];
 
     // Check if already in viewport
-    if ( burst_is_element_in_viewport( element ) ) {
-      burst_goal_triggered( goal );
-
+    if (burst_is_element_in_viewport(element)) {
+      burst_goal_triggered(goal);
       // remove from list of elements to monitor
     } else {
-
       // Add to our list of elements to monitor
       viewportGoals.push({element, goal});
     }
@@ -78,18 +74,16 @@ const burst_setup_viewport_tracker = ( goal ) => {
  * @param element
  * @return {boolean|boolean|*}
  */
-const is_element_truly_visible = ( element ) => {
-  if ( ! element ) {
-return true;
-}
+const is_element_truly_visible = (element) => {
+  if (!element) return true;
 
-  const style = window.getComputedStyle( element );
+  const style = window.getComputedStyle(element);
 
-  if ( 'none' === style.display || '0' === style.opacity ) {
+  if (style.display === "none" || style.opacity === "0") {
     return false;
   }
 
-  return is_element_truly_visible( element.parentElement );
+  return is_element_truly_visible(element.parentElement);
 };
 
 /**
@@ -97,18 +91,18 @@ return true;
  * @param element
  * @returns {boolean}
  */
-const burst_is_element_in_viewport = ( element ) => {
-  if ( ! is_element_truly_visible( element ) ) {
+const burst_is_element_in_viewport = (element) => {
+  if (!is_element_truly_visible(element)) {
     return false;
   }
 
   let rect = element.getBoundingClientRect();
   return (
-      0 <= rect.top &&
-      0 <= rect.left &&
+      rect.top >= 0 &&
+      rect.left >= 0 &&
       rect.bottom <=
-      ( window.innerHeight || document.documentElement.clientHeight ) && /* or $(window).height() */
-      rect.right <= ( window.innerWidth || document.documentElement.clientWidth ) /* or $(window).width() */
+      (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
   );
 };
 
@@ -117,51 +111,48 @@ const burst_is_element_in_viewport = ( element ) => {
  * @param element
  * @param goal
  */
-const burst_listener_view = ( element, goal ) => {
-    if ( burst_is_element_in_viewport( element ) ) {
-      burst_goal_triggered( goal );
-
+const burst_listener_view = (element, goal) => {
+    if (burst_is_element_in_viewport(element)) {
+      burst_goal_triggered(goal);
       // @todo event listener does not get removed
-      window.removeEventListener( 'scroll',
-          () => burst_listener_view( element, goal ), true );
+      window.removeEventListener('scroll',
+          () => burst_listener_view(element, goal), true);
     }
-};
+}
 
 /**
  * Setup a click tracker for a goal.
  * @param goal
  */
-const burst_setup_click_tracker = ( goal ) => {
-  document.body.addEventListener( 'click', function( event ) {
-      burst_recursive_trigger_check( event.target, goal );
+const burst_setup_click_tracker = (goal) => {
+  document.body.addEventListener('click', function(event) {
+      burst_recursive_trigger_check(event.target, goal);
   });
 };
 
-const burst_recursive_trigger_check = ( target, goal ) => {
-
+const burst_recursive_trigger_check = (target, goal) => {
   //if there is no attribute value, exit
-  if ( 0 === goal.attribute_value.length ) {
+  if (goal.attribute_value.length === 0) {
     return;
   }
 
-  let selector = 'id' === goal.attribute ? '#' : '.';
-  if ( target.matches( selector + goal.attribute_value ) ) {
-    burst_goal_triggered( goal );
-  } else if ( target.parentElement ) {
-    burst_recursive_trigger_check( target.parentElement, goal );
+  let selector = goal.attribute === 'id' ? '#' : '.';
+  if (target.matches(selector + goal.attribute_value)) {
+    burst_goal_triggered(goal);
+  } else if (target.parentElement) {
+    burst_recursive_trigger_check(target.parentElement, goal);
   }
-};
+}
 
 /**
  * Trigger a goal and add to the completed goals array.
  * @param goal
  */
-const burst_goal_triggered = ( goal ) => {
-
+const burst_goal_triggered = (goal) => {
   // if burst_completed_goals does not contain goal.id, add it
-  if ( -1 === burst_completed_goals.indexOf( goal.ID ) ) {
-    burst_completed_goals.push( goal.ID );
-    viewportGoals = viewportGoals.filter( goalData => goalData.goal.ID !== goal.ID );
+  if (burst_completed_goals.indexOf(goal.ID) === -1) {
+    burst_completed_goals.push(goal.ID);
+    viewportGoals = viewportGoals.filter(goalData => goalData.goal.ID !== goal.ID);
   }
 };
 

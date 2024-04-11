@@ -350,13 +350,13 @@ if ( ! function_exists( 'burst_sanitize_url' ) ) {
 
 		// log if path, parameters or fragment are too long
 		if ( strlen( $url['path'] ) > 255 ) {
-			burst_error_log( 'URL path is too long: ' . $url['path'] ) . ' - Please report this to the plugin author.';
+			burst_error_log( 'URL path is too long: ' . $url['path']  . ' - Please report this to the plugin author.' );
 		}
 		if ( isset ( $url['query'] ) && strlen( $url['query'] ) > 255 ) {
-			burst_error_log( 'URL parameters are too long: ' . $url['query'] ) . ' - Please report this to the plugin author.';
+			burst_error_log( 'URL parameters are too long: ' . $url['query'] .  ' - Please report this to the plugin author.' ) ;
 		}
 		if ( isset( $url['fragment'] ) && strlen( $url['fragment'] ) > 255 ) {
-			burst_error_log( 'URL fragment is too long: ' . $url['fragment'] ) . ' - Please report this to the plugin author.';
+			burst_error_log( 'URL fragment is too long: ' . $url['fragment']  . ' - Please report this to the plugin author.' );
 		}
 		if ( isset( $url['host'] ) ) {
 			$url_destructured['path']       = substr( trailingslashit( $url['path'] ), 0, 255 );

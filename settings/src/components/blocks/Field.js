@@ -8,7 +8,6 @@ import {
 import {useState, useEffect} from '@wordpress/element';
 import {useFields} from '../../store/useFieldsStore';
 import Hyperlink from '../../utils/Hyperlink';
-import LogoEditor from './Fields/LogoEditor';
 import Icon from '../../utils/Icon';
 import IpBlock from './Fields/IpBlock';
 import UserRoleBlock from './Fields/UserRoleBlock';
@@ -18,7 +17,6 @@ import SelectInput from './Fields/SelectInput';
 import License from './Fields/License';
 import RestoreArchivesControl from './Fields/RestoreArchivesControl';
 import LabelWrapper from './Fields/LabelWrapper';
-import EmailReports from './Fields/EmailReports';
 
 /*
  * https://react-data-table-component.netlify.app
@@ -317,23 +315,6 @@ const Field = ( props ) => {
 		);
 	}
 
-	if ( 'logo_editor' === field.type ) {
-
-		return (
-			<div className={highLightClass}>
-				<LogoEditor
-					name={field.id}
-					disabled={disabled}
-					field={field}
-					label={<LabelWrapper field={field} />}
-					value={fieldValue}
-					onChange={ ( fieldValue ) => onChangeHandler( fieldValue ) }
-				/>
-			</div>
-
-		);
-	}
-
 	if ( 'goals' === field.type ) {
 
 		return (
@@ -366,20 +347,6 @@ const Field = ( props ) => {
 							value={fieldValue}
 							onChange={ ( fieldValue ) => onChangeHandler( fieldValue ) }
 							className="radio-buttons"
-					/>
-				</div>
-		);
-	}
-
-	if ( 'email_reports' === field.type ) {
-		return (
-				<div className={highLightClass}>
-					<EmailReports
-							disabled={disabled}
-							field={field}
-							label={field.label}
-							value={fieldValue}
-							onChange={ ( fieldValue ) => onChangeHandler( fieldValue ) }
 					/>
 				</div>
 		);

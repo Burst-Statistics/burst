@@ -20,10 +20,6 @@ function burst_schedule_cron() {
 			wp_schedule_event( time(), 'burst_daily', 'burst_daily' );
 		}
 
-		if ( ! wp_next_scheduled( 'burst_weekly' ) ) {
-			wp_schedule_event( time(), 'burst_weekly', 'burst_weekly' );
-		}
-
 		add_action( 'burst_every_5_minutes', array( BURST()->db_upgrade, 'init' ) );
 	} else {
 		//add_action( 'init', array( BURST()->statistics, 'init' ) );

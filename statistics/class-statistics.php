@@ -30,7 +30,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$defaults = $this->get_metrics();
 			foreach ( $metrics as $metric => $value ) {
 				if ( ! isset( $defaults[ $value ] ) ) {
-					burst_error_log( 'Metric ' . $value . ' does not exist' );
+						burst_error_log( 'Metric ' . $value . ' does not exist' );
 					unset( $metrics[ $metric ] );
 				}
 			}
@@ -145,12 +145,10 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			}
 
 			// Query for most viewed page and top referrer
-			foreach (
-				array(
-					'mostViewed' => [ 'page_url', 'pageviews' ],
-					'referrer'   => array( 'referrer', 'pageviews' ),
-				) as $key => $fields
-			) {
+			foreach ( array(
+				'mostViewed' => [ 'page_url', 'pageviews' ],
+				'referrer'   => array( 'referrer', 'pageviews' ),
+			) as $key => $fields ) {
 				$sql   = $this->get_sql_table( $start, $end, $fields, array(), $fields[0], 'pageviews DESC', 'LIMIT 1' );
 				$query = $wpdb->get_row( $sql, 'ARRAY_A' );
 				if ( $query ) {
@@ -164,10 +162,10 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 
 		/**
-		 * @param $date_start    int
+		 * @param $date_start int
 		 *                       Unix timestamp
-		 * @param $date_end      int
-		 *                       Unix timestamp
+		 * @param $date_end int
+		 *                     Unix timestamp
 		 *
 		 * @return array
 		 */
@@ -176,7 +174,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 			$week_string         = _x( 'Week', 'Week 1, as in Week number 1', 'burst-statistics' );
 			$escaped_week_string = '';
-			for ( $i = 0, $iMax = strlen( $week_string ); $i < $iMax; $i ++ ) {
+			for ( $i = 0, $iMax = strlen( $week_string ); $i < $iMax; $i++ ) {
 				$escaped_week_string .= '\\' . $week_string[ $i ];
 			}
 
@@ -191,16 +189,16 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			// Determine the interval
 			if ( $nr_of_days > 364 ) {
 				$interval = 'month';
-			} else if ( $nr_of_days > 48 ) {
+			} elseif ( $nr_of_days > 48 ) {
 				$interval = 'week';
-			} else if ( $nr_of_days > 2 ) {
+			} elseif ( $nr_of_days > 2 ) {
 				$interval = 'day';
 			} else {
 				$interval = 'hour';
 			}
 
 			// Extract settings based on the determined interval
-			list( $sql_date_format, $php_date_format, $php_pretty_date_format, $interval_in_seconds ) = $intervals[ $interval ];
+			list($sql_date_format, $php_date_format, $php_pretty_date_format, $interval_in_seconds) = $intervals[ $interval ];
 
 			$nr_of_intervals = $this->get_nr_of_periods( $interval, $date_start, $date_end );
 
@@ -252,8 +250,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			}
 
 			$date = $date_start;
-			for ( $i = 0; $i < $date_modifiers['nr_of_intervals']; $i ++ ) {
-				$date                      += $date_modifiers['interval_in_seconds'];
+			for ( $i = 0; $i < $date_modifiers['nr_of_intervals']; $i++ ) {
+				$date                     += $date_modifiers['interval_in_seconds'];
 				$formatted_date            = date_i18n( $date_modifiers['php_date_format'], $date );
 				$labels[ $formatted_date ] = date_i18n( $date_modifiers['php_pretty_date_format'], $date );
 
@@ -288,7 +286,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				// strip keys from array $datasets to make it a simple array
 				$datasets[ $metric_key ]['data'] = array_values( $datasets[ $metric_key ]['data'] );
 			}
-
 			return [
 				'labels'   => $labels,
 				'datasets' => $datasets,
@@ -304,17 +301,11 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			];
 			$args     = wp_parse_args( $args, $defaults );
 
-			$start = (int) $args['date_start'];
-			$end   = (int) $args['date_end'];
-
-			if ( isset($args['compare_date_start']) && isset($args['compare_date_end'] )) {
-				$start_diff = (int) $args['compare_date_start'];
-				$end_diff   = (int) $args['compare_date_end'];
-			} else {
-				$diff       = $end - $start;
-				$start_diff = $start - $diff;
-				$end_diff   = $end - $diff;
-			}
+			$start      = (int) $args['date_start'];
+			$end        = (int) $args['date_end'];
+			$diff       = $end - $start;
+			$start_diff = $start - $diff;
+			$end_diff   = $end - $diff;
 
 			$filters = burst_sanitize_filters( $args['filters'] );
 
@@ -420,7 +411,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		private function get_bounces( $start, $end, $filters ) {
 			global $wpdb;
 			$sql = $this->get_sql_table( $start, $end, [ 'bounces' ], $filters );
-
 			return (int) $wpdb->get_var( $sql );
 		}
 
@@ -488,7 +478,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				$devices[ $name ] = [
 					'count' => $data['count'],
 				];
-				$total            += $data['count'];
+				$total           += $data['count'];
 			}
 			$devices['all'] = [
 				'count' => $total,
@@ -512,7 +502,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					'count' => 0,
 				],
 			];
-
 			return wp_parse_args( $devices, $default_data );
 		}
 
@@ -610,8 +599,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				'date_start' => 0,
 				'date_end'   => 0,
 				'metrics'    => [ 'pageviews' ],
-				'filters'    => [],
-				'limit'     => '',
 			];
 			$args     = wp_parse_args( $args, $defaults );
 			$filters  = burst_sanitize_filters( $args['filters'] );
@@ -623,7 +610,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$start         = (int) $args['date_start'];
 			$end           = (int) $args['date_end'];
 			$columns       = array();
-			$limit         = (int) $args['limit'] ?? '';
+			$data          = array();
 
 			// if metrics are not set return error
 			if ( empty( $metrics ) ) {
@@ -647,24 +634,14 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$last_metric_count = (int) count( $metrics ) - 1;
 			$order_by          = $metrics[ $last_metric_count ] . ' DESC';
 
-			$sql  = $this->get_sql_table( $start, $end, $metrics, $filters, $group_by, $order_by, $limit );
+			$sql  = $this->get_sql_table( $start, $end, $metrics, $filters, $group_by, $order_by );
 			$data = $wpdb->get_results( $sql, ARRAY_A );
-
 
 			return [
 				'columns' => $columns,
 				'data'    => $data,
 				'metrics' => $metrics,
 			];
-		}
-
-		public function get_referrers_sql( $start, $end, $filters = [] ) {
-			$remove   = array( 'http://www.', 'https://www.', 'http://', 'https://' );
-			$site_url = str_replace( $remove, '', site_url() );
-			$sql      = $this->get_sql_table( $start, $end, array( 'count', 'referrer' ), $filters );
-			$sql      .= "AND referrer NOT LIKE '%$site_url%' GROUP BY referrer ORDER BY 1 DESC";
-
-			return $sql;
 		}
 
 		/**
@@ -836,7 +813,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			if ( isset( $top_referrer[0] ) ) {
 				if ( $top_referrer[0]->referrer == 'Direct' ) {
 					$top_referrer[0]->referrer = __( 'Direct', 'burst-statistics' );
-				} else if ( $top_referrer[0]->pageviews === 0 ) {
+				} elseif ( $top_referrer[0]->pageviews === 0 ) {
 					$top_referrer[0]->referrer = __( 'No referrers', 'burst-statistics' );
 				}
 			}
@@ -859,7 +836,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			if ( isset( $most_visited[0] ) ) {
 				if ( $most_visited[0]->page_url === '/' ) {
 					$most_visited[0]->page_url = __( 'Homepage', 'burst-statistics' );
-				} else if ( ! $most_visited[0]->pageviews === 0 ) {
+				} elseif ( ! $most_visited[0]->pageviews === 0 ) {
 					$most_visited[0]->page_url = __( 'No pageviews', 'burst-statistics' );
 				}
 			}
@@ -932,8 +909,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					'device'       => 'statistics.device',
 					'browser'      => 'statistics.browser',
 					'platform'     => 'statistics.platform',
-					'country_code' => 'sessions.country_code',
-					// Assuming 'country_code' filter is in the 'sessions' table.
+					'country_code' => 'sessions.country_code', // Assuming 'country_code' filter is in the 'sessions' table.
 				]
 			);
 
@@ -1013,7 +989,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			if ( strpos( $select, 'referrer' ) !== false ) {
 				$remove   = [ 'http://www.', 'https://www.', 'http://', 'https://' ];
 				$site_url = str_replace( $remove, '', site_url() );
-				$where    .= "AND referrer NOT LIKE '%$site_url%'";
+				$where   .= "AND referrer NOT LIKE '%$site_url%'";
 			}
 
 			if ( burst_is_pro() && strpos( $select, 'parameters,' ) !== false ) {
@@ -1052,7 +1028,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				$join_table = $wpdb->prefix . $join['table'];
 				$join_on    = $join['on'];
 				$join_type  = $join['type'] ?? 'INNER';
-				$join_sql   .= " {$join_type} JOIN {$join_table} AS {$key} ON {$join_on}";
+				$join_sql  .= " {$join_type} JOIN {$join_table} AS {$key} ON {$join_on}";
 			}
 
 			$table_name .= ' AS statistics';
@@ -1071,7 +1047,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$group_by = $group_by ? "GROUP BY $group_by" : '';
 			$order_by = $order_by ? "ORDER BY $order_by" : '';
 			$limit    = $limit ? 'LIMIT ' . (int) $limit : '';
-
 			return "SELECT $select FROM $table_name $join_sql WHERE time > $start AND time < $end $where $group_by $order_by $limit";
 		}
 
@@ -1160,7 +1135,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					// so we change the $metric name to 'metric'_count
 					if ( substr( $metric, 0, 6 ) === 'count(' && substr( $metric, - 1 ) === ')' ) {
 						// strip the 'count(' and ')' from the metric
-						$metric = substr( $metric, 6, - 1 );
+						$metric  = substr( $metric, 6, - 1 );
 						$metric .= '_count';
 					}
 					$select .= $sql . ' as ' . $metric;
@@ -1171,7 +1146,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 				if ( $count !== $i ) { // if it's not the last metric, then we need to add a comma
 					$select .= ', ';
 				}
-				++ $i;
+				++$i;
 			}
 
 			return $select;
@@ -1231,7 +1206,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 			if ( $uplift > 0 ) {
 				$status = 'positive';
-			} else if ( $uplift < 0 ) {
+			} elseif ( $uplift < 0 ) {
 				$status = 'negative';
 			}
 
