@@ -1,4 +1,5 @@
-import { ReactSVG } from 'react-svg'
+import { ReactSVG } from 'react-svg';
+
 /**
  * Display a flag with SVG icon from pro/assets/flags/4x3
  * @param country
@@ -6,14 +7,15 @@ import { ReactSVG } from 'react-svg'
  * @constructor
  */
 const Flag = ({country, countryNiceName = ''}) => {
+
   // country to lowercase
   // check if country is a string
-  if (typeof country !== 'string') {
+  if ( 'string' !== typeof country ) {
     return (
         <span className={'burst-flag-wrapper'}>{countryNiceName}</span>
     );
   }
-  if (countryNiceName === '') {
+  if ( '' === countryNiceName ) {
     countryNiceName = country;
   }
 
@@ -22,5 +24,5 @@ const Flag = ({country, countryNiceName = ''}) => {
   return (
       <span className={'burst-flag-wrapper'}><ReactSVG src={src} className={`burst-flag burst-flag-${country}`} title={countryNiceName}/> {countryNiceName}</span>
   );
-}
+};
 export default Flag;

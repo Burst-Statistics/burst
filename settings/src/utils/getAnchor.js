@@ -3,41 +3,43 @@
  * @param ms
  * @returns {function(*): Promise<unknown>}
  */
-const getAnchor = (level) => {
+const getAnchor = ( level ) => {
         let url = window.location.href;
-        if ( url.indexOf('#') === -1) {
+        if ( -1 === url.indexOf( '#' ) ) {
             return false;
         }
 
-       let queryString = url.split('#');
-        if ( queryString.length === 1) {
+       let queryString = url.split( '#' );
+        if ( 1 === queryString.length ) {
             return false;
         }
 
         let urlPart = queryString[1];
 
         //for submenu, we have to get the string after the slash.
-        if ( level === 'menu' ) {
+        if ( 'menu' === level ) {
+
             //if there is no slash, there is no menu level
-            if ( urlPart.indexOf('/') === -1 ) {
+            if ( -1 === urlPart.indexOf( '/' ) ) {
                 return false;
             } else {
-                let urlParts = urlPart.split('/');
-                if (urlParts.length<=1) {
+                let urlParts = urlPart.split( '/' );
+                if ( 1 >= urlParts.length ) {
                     return false;
                 } else {
                     return urlParts[1];
                 }
             }
         } else {
+
             //main, just get the first.
-            if ( urlPart.indexOf('/') === -1 ) {
+            if ( -1 === urlPart.indexOf( '/' ) ) {
                 return urlPart;
             } else {
-                let urlParts = urlPart.split('/');
+                let urlParts = urlPart.split( '/' );
                return urlParts[0];
             }
         }
         return false;
-}
+};
 export default getAnchor;

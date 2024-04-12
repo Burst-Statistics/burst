@@ -68,6 +68,7 @@
 
 	<!-- Add in some extra rules from other standards. -->
 	<rule ref="Generic.Commenting.Todo"/>
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
 
 	<!-- Check for PHP cross-version compatibility. -->
 	<!--
@@ -110,7 +111,6 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="burst-statistics"/>
-				<element value="library-textdomain"/>
 			</property>
 		</properties>
 	</rule>
@@ -124,7 +124,6 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="burst-statistics"/>
-				<element value="library-textdomain"/>
 			</property>
 		</properties>
 	</rule>
@@ -138,7 +137,6 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="burst-statistics"/>
-				<element value="library-textdomain"/>
 			</property>
 		</properties>
 	</rule>
@@ -147,7 +145,6 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="burst-statistics"/>
-				<element value="library-textdomain"/>
 			</property>
 		</properties>
 	</rule>
@@ -156,7 +153,6 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="burst-statistics"/>
-				<element value="library-textdomain"/>
 			</property>
 		</properties>
 	</rule>
@@ -165,7 +161,6 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="burst-statistics"/>
-				<element value="library-textdomain"/>
 			</property>
 		</properties>
 	</rule>
@@ -174,7 +169,6 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="burst-statistics"/>
-				<element value="library-textdomain"/>
 			</property>
 		</properties>
 	</rule>
@@ -189,53 +183,3 @@
 	</rule>
 
 </ruleset>
-
-
-
-<!--		<?xml version="1.0"?>-->
-<!--<ruleset name="WordPress Coding Standards based custom ruleset for your plugin">-->
-<!--<description>Generally-applicable sniffs for WordPress plugins.</description>-->
-
-<!--&lt;!&ndash; What to scan &ndash;&gt;-->
-<!--<file>.</file>-->
-<!--<exclude-pattern>/vendor/</exclude-pattern>-->
-<!--<exclude-pattern>/node_modules/</exclude-pattern>-->
-
-<!--&lt;!&ndash; How to scan &ndash;&gt;-->
-<!--&lt;!&ndash; Usage instructions: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Usage &ndash;&gt;-->
-<!--&lt;!&ndash; Annotated ruleset: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml &ndash;&gt;-->
-<!--<arg value="sp"/> &lt;!&ndash; Show sniff and progress &ndash;&gt;-->
-<!--<arg name="basepath" value="./"/>&lt;!&ndash; Strip the file paths down to the relevant bit &ndash;&gt;-->
-<!--<arg name="colors"/>-->
-<!--<arg name="extensions" value="php"/>-->
-<!--<arg name="parallel" value="8"/>&lt;!&ndash; Enables parallel processing when available for faster results. &ndash;&gt;-->
-
-<!--&lt;!&ndash; Rules: Check PHP version compatibility &ndash;&gt;-->
-<!--&lt;!&ndash; https://github.com/PHPCompatibility/PHPCompatibility#sniffing-your-code-for-compatibility-with-specific-php-versions &ndash;&gt;-->
-<!--<config name="testVersion" value="5.6-"/>-->
-<!--&lt;!&ndash; https://github.com/PHPCompatibility/PHPCompatibilityWP &ndash;&gt;-->
-<!--<rule ref="PHPCompatibilityWP"/>-->
-
-<!--&lt;!&ndash; Rules: WordPress Coding Standards &ndash;&gt;-->
-<!--&lt;!&ndash; https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards &ndash;&gt;-->
-<!--&lt;!&ndash; https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties &ndash;&gt;-->
-<!--<config name="minimum_supported_wp_version" value="4.6"/>-->
-<!--<rule ref="WordPress"/>-->
-<!--<rule ref="WordPress.NamingConventions.PrefixAllGlobals">-->
-<!--	<properties>-->
-<!--		&lt;!&ndash; Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. &ndash;&gt;-->
-<!--		<property name="prefixes" type="array" value="my-plugin"/>-->
-<!--	</properties>-->
-<!--</rule>-->
-<!--<rule ref="WordPress.WP.I18n">-->
-<!--	<properties>-->
-<!--		&lt;!&ndash; Value: replace the text domain used. &ndash;&gt;-->
-<!--		<property name="text_domain" type="array" value="my-plugin"/>-->
-<!--	</properties>-->
-<!--</rule>-->
-<!--<rule ref="WordPress.WhiteSpace.ControlStructureSpacing">-->
-<!--	<properties>-->
-<!--		<property name="blank_line_check" value="true"/>-->
-<!--	</properties>-->
-<!--</rule>-->
-<!--</ruleset>-->

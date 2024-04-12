@@ -1,7 +1,7 @@
 const TextInput = ({ name, label, value, onChangeHandler }) => {
 
-  function handleChange(e) {
-    onChangeHandler(e.target.value);
+  function handleChange( e ) {
+    onChangeHandler( e.target.value );
   }
   return (
     <div className="burst-field">
@@ -15,5 +15,5 @@ const TextInput = ({ name, label, value, onChangeHandler }) => {
       />
     </div>
   );
-}
+};
 export default TextInput;

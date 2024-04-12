@@ -1,6 +1,6 @@
 import {__} from '@wordpress/i18n';
-import Icon from "../../../utils/Icon";
-import Pro from "./Pro";
+import Icon from '../../../utils/Icon';
+import Pro from './Pro';
 const LabelWrapper = ({field}) => {
     let id = field.id;
     let label = field.label;
@@ -8,13 +8,15 @@ const LabelWrapper = ({field}) => {
     let pro = field.pro;
     let required = field.required;
     let type = field.type;
-    if (!label || label.length===0) return null;
+    if ( ! label || 0 === label.length ) {
+return null;
+}
     return (
-        <div className={"burst-label-container "}>
+        <div className={'burst-label-container '}>
             <label htmlFor={id}>
                 {label}
-                {required && type!=='radio' && type!=='document' && <span className="burst-required">
-                    {__('required', 'burst-statistics')}
+                {required && 'radio' !== type && 'document' !== type && <span className="burst-required">
+                    {__( 'required', 'burst-statistics' )}
                     </span>
                 }
             </label>

@@ -2,8 +2,8 @@ import {getRelativeTime} from '../../utils/formatting';
 import Icon from '../../utils/Icon';
 import {__} from '@wordpress/i18n';
 
-const getStatusColor = (status) => {
-  switch (status) {
+const getStatusColor = ( status ) => {
+  switch ( status ) {
     case 'active':
       return 'green';
     case 'inactive':
@@ -13,24 +13,24 @@ const getStatusColor = (status) => {
   }
 };
 
-const getStatusLabel = (status) => {
-  switch (status) {
+const getStatusLabel = ( status ) => {
+  switch ( status ) {
     case 'active':
-      return __('Active', 'burst-statistics');
+      return __( 'Active', 'burst-statistics' );
     case 'inactive':
-      return __('Inactive', 'burst-statistics');
+      return __( 'Inactive', 'burst-statistics' );
     default:
-      return __('Unknown', 'burst-statistics');
+      return __( 'Unknown', 'burst-statistics' );
   }
-}
+};
 const GoalStatus = ({data}) => {
   const {dateStart, dateEnd, dateCreated, status} = data;
 
-  const iconColor = getStatusColor(status);
+  const iconColor = getStatusColor( status );
   const startedOrCreatedDate = dateStart || dateCreated;
-  const dateTitle = dateStart ? __('Started', 'burst-statistics') : __('Created', 'burst-statistics');
-  const relativeTime = getRelativeTime(startedOrCreatedDate);
-  const statusLabel = getStatusLabel(status);
+  const dateTitle = dateStart ? __( 'Started', 'burst-statistics' ) : __( 'Created', 'burst-statistics' );
+  const relativeTime = getRelativeTime( startedOrCreatedDate );
+  const statusLabel = getStatusLabel( status );
 
   return (
       <div className="burst-goal-status">

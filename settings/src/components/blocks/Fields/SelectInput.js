@@ -1,6 +1,6 @@
 import {memo} from '@wordpress/element';
 import * as Select from '@radix-ui/react-select';
-import Icon from '../../../utils/Icon'
+import Icon from '../../../utils/Icon';
 import { __ } from '@wordpress/i18n';
 
 const SelectInput = ({
@@ -12,31 +12,35 @@ const SelectInput = ({
   options = {},
   canBeEmpty = false,
   label,
-  innerRef,
+  innerRef
 }) => {
+
   // convert options to object if array
-  if (Array.isArray(options)) {
+  if ( Array.isArray( options ) ) {
     let newOptions = {};
-    options.map((option) => {
+    options.map( ( option ) => {
       newOptions[option.value] = option.label;
     });
     options = newOptions;
   }
+
   // add empty option
   if ( canBeEmpty ) {
+
     //only add this if no value is selected yet.
-    let valueIsEmpty = !value || value.lenght===0 || value === 0;
-    if (valueIsEmpty) {
-      value='0';
+    let valueIsEmpty = ! value || 0 === value.lenght || 0 === value;
+    if ( valueIsEmpty ) {
+      value = '0';
       options = {
-        0: __('Select an option', 'burst-statistics'),
-        ...options,
+        0: __( 'Select an option', 'burst-statistics' ),
+        ...options
       };
     }
   } else {
+
     // set first option as default
-    if (!value) {
-      value = Object.keys(options)[0];
+    if ( ! value ) {
+      value = Object.keys( options )[0];
     }
   }
 
@@ -45,12 +49,13 @@ const SelectInput = ({
       <div className="burst-input-group burst-select-group" key={label}>
         <label className="burst-input-group__label">{label}</label>
         <Select.Root
+
             //ref={innerRef}
             value={value}
             defaultValue={defaultValue}
             onValueChange={onChange}
             required={required}
-            disabled={disabled && !Array.isArray(disabled)}
+            disabled={disabled && ! Array.isArray( disabled )}
         >
           <Select.Trigger className="burst-select-group__trigger">
             <Select.Value/>
@@ -66,15 +71,15 @@ const SelectInput = ({
             </Select.ScrollUpButton>
             <Select.Viewport className="burst-select-group__viewport">
               <Select.Group>
-                {Object.entries(options).map(([optionValue, optionText]) => (
+                {Object.entries( options ).map( ([ optionValue, optionText ]) => (
                     <Select.Item
-                        disabled={Array.isArray(disabled) && disabled.includes(optionValue) }
+                        disabled={Array.isArray( disabled ) && disabled.includes( optionValue ) }
                         className={'burst-select-group__item'}
                         key={optionValue}
                         value={optionValue}>
                       <Select.ItemText>{optionText}</Select.ItemText>
                     </Select.Item>
-                ))}
+                ) )}
               </Select.Group>
             </Select.Viewport>
             <Select.ScrollDownButton
@@ -87,4 +92,4 @@ const SelectInput = ({
   );
 };
 
-export default memo(SelectInput);
+export default memo( SelectInput );

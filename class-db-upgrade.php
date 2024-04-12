@@ -1,17 +1,21 @@
-<?php defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
-if ( ! class_exists( "burst_db_upgrade" ) ) {
+<?php defined( 'ABSPATH' ) or die( 'you do not have access to this page!' );
+if ( ! class_exists( 'burst_db_upgrade' ) ) {
 	class burst_db_upgrade {
 		private static $_this;
 
 		public function __construct() {
 			if ( isset( self::$_this ) ) {
-				wp_die( burst_sprintf( '%s is a singleton class and you cannot create a second instance.',
-					get_class( $this ) ) );
+				wp_die(
+					burst_sprintf(
+						'%s is a singleton class and you cannot create a second instance.',
+						get_class( $this )
+					)
+				);
 			}
 
 			self::$_this = $this;
 			// actions and filters
-			if ( !wp_doing_cron() ) {
+			if ( ! wp_doing_cron() ) {
 				add_action( 'admin_init', array( $this, 'init' ) );
 			}
 		}
@@ -23,9 +27,8 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 		 *
 		 * return void
 		 */
-
 		public function init() {
-			if (defined('BURST_NO_UPGRADE') && BURST_NO_UPGRADE) {
+			if ( defined( 'BURST_NO_UPGRADE' ) && BURST_NO_UPGRADE ) {
 				return;
 			}
 
@@ -33,11 +36,11 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 				return;
 			}
 
-			$upgrade_running = get_transient('burst_upgrade_running');
-			if ($upgrade_running) {
+			$upgrade_running = get_transient( 'burst_upgrade_running' );
+			if ( $upgrade_running ) {
 				return;
 			}
-			set_transient('burst_upgrade_running', true, 60);
+			set_transient( 'burst_upgrade_running', true, 60 );
 			// check if we need to upgrade
 			$db_upgrades = $this->get_db_upgrades();
 			// check if all upgrades are done
@@ -72,7 +75,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 				BURST()->summary->upgrade_summary_table_alltime();
 			}
 
-			delete_transient('burst_upgrade_running');
+			delete_transient( 'burst_upgrade_running' );
 		}
 
 		/**
@@ -80,17 +83,19 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 		 *
 		 * @return array
 		 */
-
 		private function get_db_upgrades() {
-			return apply_filters( 'burst_db_upgrades', [
-				'bounces',
-				'goals_remove_columns',
-				'goals_set_conversion_metric',
-				'drop_user_agent',
-				'empty_referrer_when_current_domain',
-				'strip_domain_names_from_entire_page_url',
-				'summary_table'
-			] );
+			return apply_filters(
+				'burst_db_upgrades',
+				array(
+					'bounces',
+					'goals_remove_columns',
+					'goals_set_conversion_metric',
+					'drop_user_agent',
+					'empty_referrer_when_current_domain',
+					'strip_domain_names_from_entire_page_url',
+					'summary_table',
+				)
+			);
 		}
 
 		private function upgrade_bounces() {
@@ -104,7 +109,7 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_statistics';
 
-			$sql    = "UPDATE $table_name
+			$sql = "UPDATE $table_name
 					SET bounce = 0
 					WHERE
 					  (session_id IN (
@@ -130,13 +135,13 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			// if query is successful
 			if ( $result !== false ) {
-				delete_option( 'burst_db_upgrade_bounces');
+				delete_option( 'burst_db_upgrade_bounces' );
 			} else {
 				burst_error_log( 'db upgrade bounces failed' );
 			}
 		}
 
-		private function upgrade_goals_remove_columns(){
+		private function upgrade_goals_remove_columns() {
 			if ( ! burst_admin_logged_in() ) {
 				return;
 			}
@@ -149,24 +154,23 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			// check if columns exist first
 			$columns = $wpdb->get_col( "DESC $table_name", 0 );
 			if ( ! in_array( 'event', $columns ) || ! in_array( 'action', $columns ) ) {
-				delete_option( 'burst_db_upgrade_goals_remove_columns');
+				delete_option( 'burst_db_upgrade_goals_remove_columns' );
 				return;
 			}
 
 			// run an sql query to remove the columns `event` and `action`
-			$sql    = "ALTER TABLE $table_name
+			$sql = "ALTER TABLE $table_name
 					DROP COLUMN `event`,
 					DROP COLUMN `action`";
 
 			$remove = $wpdb->query( $sql );
 
 			if ( $remove !== false ) {
-				delete_option( 'burst_db_upgrade_goals_remove_columns');
+				delete_option( 'burst_db_upgrade_goals_remove_columns' );
 			}
-
 		}
 
-		private function upgrade_goals_set_conversion_metric(){
+		private function upgrade_goals_set_conversion_metric() {
 			if ( ! burst_admin_logged_in() ) {
 				return;
 			}
@@ -179,18 +183,18 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			$table_name = $wpdb->prefix . 'burst_goals';
 
 			// set conversion_metric to 'pageviews' for all goals
-			$sql    = "UPDATE $table_name
+			$sql = "UPDATE $table_name
 					SET conversion_metric = 'pageviews'
 					WHERE conversion_metric IS NULL OR conversion_metric = ''";
 
 			$add_conversion_metric = $wpdb->query( $sql );
 
 			if ( $add_conversion_metric !== false ) {
-				delete_option( $option_name);
+				delete_option( $option_name );
 			}
 		}
 
-		private function upgrade_drop_user_agent(){
+		private function upgrade_drop_user_agent() {
 			if ( ! burst_admin_logged_in() ) {
 				return;
 			}
@@ -211,17 +215,17 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			}
 
 			// drop user_agent column
-			$sql    = "ALTER TABLE $table_name
+			$sql = "ALTER TABLE $table_name
 					DROP COLUMN `user_agent`";
 
 			$drop_user_agent = $wpdb->query( $sql );
 
 			if ( $drop_user_agent !== false ) {
-				delete_option( $option_name);
+				delete_option( $option_name );
 			}
 		}
 
-		private function upgrade_empty_referrer_when_current_domain(){
+		private function upgrade_empty_referrer_when_current_domain() {
 			if ( ! burst_admin_logged_in() ) {
 				return;
 			}
@@ -232,20 +236,20 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 
 			global $wpdb;
 			$table_name = $wpdb->prefix . 'burst_statistics';
-			$home_url = home_url();
+			$home_url   = home_url();
 			// empty referrer when starts with current domain
-			$sql    = "UPDATE $table_name
+			$sql = "UPDATE $table_name
 					SET referrer = null
 					WHERE referrer LIKE '$home_url%'";
 
 			$empty_referrer_when_current_domain = $wpdb->query( $sql );
 
 			if ( $empty_referrer_when_current_domain !== false ) {
-				delete_option( $option_name);
+				delete_option( $option_name );
 			}
 		}
 
-		private function upgrade_strip_domain_names_from_entire_page_url(){
+		private function upgrade_strip_domain_names_from_entire_page_url() {
 			if ( ! burst_admin_logged_in() ) {
 				return;
 			}
@@ -259,16 +263,15 @@ if ( ! class_exists( "burst_db_upgrade" ) ) {
 			// make sure it does not end with slash
 			$home_url = untrailingslashit( home_url() );
 
-
 			// strip home url from entire_page_url where it starts with home_url
-			$sql    = "UPDATE $table_name
+			$sql = "UPDATE $table_name
 					SET entire_page_url = REPLACE(entire_page_url, '$home_url', '')
 					WHERE entire_page_url LIKE '$home_url%'";
 
 			$strip_domain_names_from_entire_page_url = $wpdb->query( $sql );
 
 			if ( $strip_domain_names_from_entire_page_url !== false ) {
-				delete_option( $option_name);
+				delete_option( $option_name );
 			}
 		}
 	}

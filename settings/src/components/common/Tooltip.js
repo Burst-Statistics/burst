@@ -3,9 +3,9 @@ import * as TooltipUI from '@radix-ui/react-tooltip';
 
 const Tooltip = ({
   children,
-  content,
+  content
 }) => {
-  if (!content) {
+  if ( ! content ) {
     return <>{children}</>;
   }
   return (

@@ -14,7 +14,7 @@ const Popover = ({
         <ReactPopover.Trigger
             id="burst-filter-button"
             className={`burst-filter-button${isOpen ? ' active' : ''}`}
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen( ! isOpen )}
         >
           <Icon name="filter"/>
         </ReactPopover.Trigger>

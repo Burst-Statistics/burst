@@ -1,4 +1,4 @@
-import {memo} from "@wordpress/element";
+import {memo} from '@wordpress/element';
 import * as Switch from '@radix-ui/react-switch';
 
 const SwitchInput = ({
@@ -7,14 +7,15 @@ const SwitchInput = ({
 	required,
 	disabled,
 	className,
-	label,
+	label
 }) => {
 	let val = value;
+
 	//if value is "0" or "1", convert to boolean
 	//cookiebanner values can be "0" or "1", because of the way they're loaded,
 	// but the switch needs a boolean
-	if (value === '0' || value === '1') {
-		val = value === '1';
+	if ( '0' === value || '1' === value ) {
+		val = '1' === value;
 	}
 
 	return (
@@ -33,4 +34,4 @@ const SwitchInput = ({
 	);
 };
 
-export default memo(SwitchInput);
+export default memo( SwitchInput );

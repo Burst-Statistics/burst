@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
+defined( 'ABSPATH' ) or die( 'you do not have access to this page!' );
 /**
  * Add burst cookies to list of detected cookies during scan
  *
@@ -7,7 +7,6 @@ defined( 'ABSPATH' ) or die( "you do not have access to this page!" );
  *
  * @return array
  */
-
 function burst_complianz_add_cookies( $cookies ): array {
 	$cookies['burst_uid'] = 'uid';
 

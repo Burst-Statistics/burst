@@ -1,5 +1,6 @@
 import {getData} from '../utils/api';
 import {formatNumber} from '../utils/formatting';
+
 /**
  * Get live goals
  * @param {Object} args
@@ -9,9 +10,9 @@ import {formatNumber} from '../utils/formatting';
  * @param {Object} args.filters
  * @returns {Promise<*>}
  */
-const getLiveGoals = async (args) => {
+const getLiveGoals = async( args ) => {
   const { startDate, endDate, range, filters, goal_id } = args;
-  if (!goal_id) {
+  if ( ! goal_id ) {
     return '-';
   }
   const { data } = await getData(
@@ -21,7 +22,7 @@ const getLiveGoals = async (args) => {
       range,
       { goal_id: goal_id }
   );
-  return formatNumber(data);
+  return formatNumber( data );
 
-}
+};
 export default getLiveGoals;

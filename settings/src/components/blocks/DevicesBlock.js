@@ -13,51 +13,52 @@ import {getDevicesTitleAndValueData, getDevicesSubtitleData} from '../../api/get
 
 
 const DevicesBlock = () => {
-  const {startDate, endDate, range} = useDate( (state) => state);
-  const filters = useFiltersStore((state) => state.filters);
+  const {startDate, endDate, range} = useDate( ( state ) => state );
+  const filters = useFiltersStore( ( state ) => state.filters );
   const args = { 'filters': filters};
 
   const deviceNames = {
-    'desktop': __('Desktop', 'burst-statistics'),
-    'tablet': __('Tablet', 'burst-statistics'),
-    'mobile': __('Mobile', 'burst-statistics'),
-    'other': __('Other', 'burst-statistics'),
+    'desktop': __( 'Desktop', 'burst-statistics' ),
+    'tablet': __( 'Tablet', 'burst-statistics' ),
+    'mobile': __( 'Mobile', 'burst-statistics' ),
+    'other': __( 'Other', 'burst-statistics' )
   };
   let emptyDataTitleValue = {};
   let emptyDataSubtitle = {};
   let placeholderData = {};
+
 // loop through metrics and set default values
-  Object.keys(deviceNames).forEach(function(key) {
+  Object.keys( deviceNames ).forEach( function( key ) {
     emptyDataTitleValue[key] = {
       'title': deviceNames[key],
-      'value': '-%',
+      'value': '-%'
     };
     emptyDataSubtitle[key] = {
-      'subtitle': '-',
-    }
+      'subtitle': '-'
+    };
     placeholderData[key] = {
       'title': deviceNames[key],
       'value': '-%',
-      'subtitle': '-',
-    }
+      'subtitle': '-'
+    };
   });
   const titleAndValueQuery = useQuery({
-    queryKey: ['devicesTitleAndValue', startDate, endDate, args],
+    queryKey: [ 'devicesTitleAndValue', startDate, endDate, args ],
     queryFn: () => getDevicesTitleAndValueData({startDate, endDate, range, args}),
-    placeholderData: emptyDataTitleValue,
+    placeholderData: emptyDataTitleValue
   });
 
   const subtitleQuery = useQuery({
-    queryKey: ['devicesSubtitle', startDate, endDate, args],
+    queryKey: [ 'devicesSubtitle', startDate, endDate, args ],
     queryFn: () => getDevicesSubtitleData({startDate, endDate, range, args}),
-    placeholderData: emptyDataSubtitle,
+    placeholderData: emptyDataSubtitle
   });
 
   let data = placeholderData;
-  if (titleAndValueQuery.data && subtitleQuery.data) {
+  if ( titleAndValueQuery.data && subtitleQuery.data ) {
     data = {...titleAndValueQuery.data}; // Clone data to avoid mutation
-    Object.keys(data).forEach((key) => {
-      if (subtitleQuery.data[key]) { // Check if it exists in subtitle data
+    Object.keys( data ).forEach( ( key ) => {
+      if ( subtitleQuery.data[key]) { // Check if it exists in subtitle data
         data[key] = { ...data[key], ...subtitleQuery.data[key] };
       }
     });
@@ -70,10 +71,10 @@ const DevicesBlock = () => {
 
   return (
       <GridItem
-          title={__('Devices', 'burst-statistics')}
+          title={__( 'Devices', 'burst-statistics' )}
       >
         <div className={'burst-loading-container ' + loadingClass}>
-          {Object.keys(data).map((key, i) => {
+          {Object.keys( data ).map( ( key, i ) => {
             let m = data[key];
             return (
                 <ClickToFilter key={key} filter="device" filterValue={key}
