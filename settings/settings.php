@@ -97,11 +97,9 @@ function burst_localized_settings( $js_data ) {
 			'site_url'                => get_rest_url(),
 			'admin_ajax_url'          => add_query_arg( array( 'action' => 'burst_rest_api_fallback' ), admin_url( 'admin-ajax.php' ) ),
 			'dashboard_url'           => add_query_arg( [ 'page' => 'burst' ], burst_admin_url() ),
-			'upgrade_link'            => is_multisite() ? 'https://burst-statistics.com/pricing/?src=burst-plugin' : 'https://burst-statistics.com/pricing/?src=burst-plugin',
 			'plugin_url'              => burst_url,
 			'network_link'            => network_site_url( 'plugins.php' ),
-			'is_pro'                  => burst_is_pro(),
-			'networkwide_active'      => ! is_multisite(), // true for single sites and network wide activated
+			'is_pro'                  => !burst_is_pro(),
 			'nonce'                   => wp_create_nonce( 'wp_rest' ), // to authenticate the logged in user
 			'burst_nonce'             => wp_create_nonce( 'burst_nonce' ),
 			'current_ip'              => burst_get_ip_address(),
@@ -111,6 +109,8 @@ function burst_localized_settings( $js_data ) {
 			'tour_shown'              => burst_get_option( 'burst_tour_shown_once' ),
 			'gmt_offset'              => get_option( 'gmt_offset' ),
 			'goals_information_shown' => (int) get_option( 'burst_goals_information_shown' ),
+            'burst_version'           => burst_version,
+            'burst_pro'               => defined( 'burst_pro' ),
 		]
 	);
 }

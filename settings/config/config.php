@@ -66,7 +66,10 @@ function burst_menu() {
 							'id'    => 'restore_archives',
 							'title' => __( 'Archived Data', 'burst-statistics' ),
 							'pro'      => true,
-							'upgrade'     => 'https://burst-statistics.com/pricing?src=plugin-burst-archive-data',
+							'upgrade'     => burst_get_website_url('pricing/', [
+								'burst_source'   => 'setting-upgrade',
+								'burst_content'   => 'data-archiving',
+							]),
 							'pro_text' => __( "Manage your archived data with %sBurst Pro%s", 'burst-statistics' ),
 						],
 					],
@@ -143,7 +146,10 @@ function burst_fields( $load_values = true ) {
 				'label' => 'default',
 				'title' => __( 'What is Turbo mode?', 'burst-statistics' ),
 				'text'  => __( 'Turbo mode improves pagespeed. When enabled, the script is no longer loaded in the header asynchronously, but is loaded in the footer and deferred. You could lose data from visitors who leave before the page has fully loaded.', 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/definition/turbo-mode/',
+				'url'   => burst_get_website_url( '/definition/turbo-mode/', [
+					'burst_source'   => 'setting-help',
+					'burst_content'   => 'turbo-mode',
+				] ),
 			],
 			'disabled' => false,
 			'default'  => false,
@@ -158,7 +164,10 @@ function burst_fields( $load_values = true ) {
 				'label' => 'default',
 				'title' => __( 'What is Cookieless tracking?', 'burst-statistics' ),
 				'text'  => __( "With cookieless tracking enabled, Burst will not use cookies to determine the number of unique visitors. It will use contextual data, like the browser version and device, also called 'fingerprinting'. The latter could be less reliable for some users.", 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
+				'url'   => burst_get_website_url( '/definition/what-is-cookieless-tracking/', [
+					'burst_source'   => 'setting-help',
+					'burst_content'   => 'cookieless-tracking',
+				] ),
 			],
 			'disabled' => false,
 			'default'  => false,
@@ -191,12 +200,6 @@ function burst_fields( $load_values = true ) {
 			'label'    => __( 'Email reports', 'burst-statistics' ),
 			'disabled' => false,
 			'default'  => '',
-			'help'     => [
-				'label' => 'default',
-				'title' => __( 'Email reports', 'burst-statistics' ),
-				'text'  => __( "You can send your reports to multiple recipients. Separate the email addresses by a comma.", 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
-			],
 		],
 		[
 			'id'          => 'logo_attachment_id',
@@ -205,7 +208,10 @@ function burst_fields( $load_values = true ) {
 			'type'        => 'logo_editor',
 			'label'       => __( 'Change logo in the email reports', 'burst-statistics' ),
 			'pro' => [
-				'url' => 'https://burst-statistics.com/pricing/',
+				'url' => burst_get_website_url('pricing/', [
+					'burst_source'   => 'setting-upgrade',
+					'burst_content'   => 'email-reports',
+				]),
 				'disabled' => false,
 			],
 			'disabled'    => true,
@@ -222,7 +228,10 @@ function burst_fields( $load_values = true ) {
 				'label' => 'default',
 				'title' => __( 'How to set goals?', 'burst-statistics' ),
 				'text'  => __( "To set goals for a website, you need to identify the purpose of the site and the key actions you want visitors to take. Set measurable and achievable goals for each action and track your progress.", 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/how-to-set-goals/',
+				'url'   => burst_get_website_url( 'how-to-set-goals/', [
+					'burst_source'   => 'setting-help',
+					'burst_content'   => 'goals',
+				] ),
 			],
 			'default' => [],
 		],
@@ -236,7 +245,10 @@ function burst_fields( $load_values = true ) {
 				'label' => 'default',
 				'title' => __( 'Excluding visitors', 'burst-statistics' ),
 				'text'  => __( 'You can exclude visitors by user role and IP address. This will affect new data only.', 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/exclude-ip-addresses-from-burst-statistics/',
+				'url'   => burst_get_website_url( 'exclude-ip-addresses-from-burst-statistics/', [
+					'burst_source'   => 'setting-help',
+					'burst_content'   => 'exclude-visitors',
+				] ),
 			],
 			'disabled' => false,
 			'default'  => false,
@@ -275,20 +287,26 @@ function burst_fields( $load_values = true ) {
 				'delete' => __('Automatically Delete',"burst-statistics"),
 			],
 			'pro' => [
-				'url' => 'https://burst-statistics.com/pricing/',
+				'url' => burst_get_website_url('pricing/', [
+					'burst_source'   => 'setting-upgrade',
+					'burst_content'   => 'data-archiving',
+				]),
 				'disabled' => false,
 			],
 			'help'     => [
 				'label' => 'default',
 				'title' => __( 'Why should I manage old data?', 'burst-statistics' ),
 				'text'  => __( 'Managing old data can optimize storage and improve site performance. Choose to archive or delete based on your needs.', 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/do-I-need-to-archive-my-data/',
+				'url'   => burst_get_website_url( 'do-I-need-to-archive-my-data/', [
+					'burst_source'   => 'setting-help',
+					'burst_content'   => 'data-archiving',
+				] ),
 			],
 			'disabled' => ['archive'],
 			'type'     => 'select',
 			'label'    => __( 'Choose how to manage old statistics', 'burst-statistics' ),
 			// option is string with more than 1 letter
-			'comment' => burst_admin_logged_in() && strlen( get_option( 'burst_table_size' ) ) > 1
+			'comment' => strlen( get_option( 'burst_table_size' ) ) > 1
 				? sprintf( _x( 'Burst currently uses %s of your database.', 'e.g. Burst currently uses 10 MB of your database.', "burst-statistics" ), get_option( 'burst_table_size' ) ) : '',
 			'default' => false,
 		],
@@ -358,7 +376,10 @@ function burst_fields( $load_values = true ) {
 			'label'    => __( 'Track all hits networkwide, and view them on the dashboard of your main site', 'burst-statistics' ),
 			'disabled' => true,
 			'pro' => [
-				'url' => 'https://burst-statistics.com/pricing/',
+				'url' => burst_get_website_url('pricing/', [
+					'burst_source'   => 'setting-upgrade',
+					'burst_content'   => 'network-wide',
+				]),
 				'disabled' => false,
 			],
 			'default'  => false,

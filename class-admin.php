@@ -307,7 +307,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			$support_link = defined( 'burst_free' )
 				? 'https://wordpress.org/support/plugin/burst-statistics'
-				: 'https://burst-statistics.com/support';
+				: burst_get_website_url('support', [
+                        'burst_source' => 'plugin-overview',
+                        'burst_content' => 'support-link',
+                ]);
 			$faq_link     = '<a target="_blank" href="' . $support_link . '">'
 			                . __( 'Support', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $faq_link );

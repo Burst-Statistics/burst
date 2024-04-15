@@ -4,7 +4,7 @@ import {__} from '@wordpress/i18n';
 import Icon from '../../../utils/Icon';
 import GoalSetup from '../Goals/GoalSetup';
 import {useEffect, useState} from '@wordpress/element';
-import Pro from '../Fields/Pro';
+import {burst_get_website_url} from '../../../utils/lib';
 import {useFields} from '../../../store/useFieldsStore';
 
 const GoalsSettings = ( props ) => {
@@ -93,7 +93,10 @@ const GoalsSettings = ( props ) => {
                 <div className="burst-divider" />
                 <p>{__( 'Upgrade to Burst Pro', 'burst-statistics' )}</p>
                 <a
-                    href={'https://burst-statistics.com/pricing/?src=plugin-burst-more-goals'}
+                    href={burst_get_website_url( '/pricing/', {
+                      burst_source: 'goals-setting',
+                      burst_content: 'more-goals'
+                    })}
                     target={'_blank'}
                     className={'burst-button burst-button--pro'} rel="noreferrer"
                 >
