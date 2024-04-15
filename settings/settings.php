@@ -99,7 +99,7 @@ function burst_localized_settings( $js_data ) {
 			'dashboard_url'           => add_query_arg( [ 'page' => 'burst' ], burst_admin_url() ),
 			'plugin_url'              => burst_url,
 			'network_link'            => network_site_url( 'plugins.php' ),
-			'is_pro'                  => !burst_is_pro(),
+			'is_pro'                  => burst_is_pro(),
 			'nonce'                   => wp_create_nonce( 'wp_rest' ), // to authenticate the logged in user
 			'burst_nonce'             => wp_create_nonce( 'burst_nonce' ),
 			'current_ip'              => burst_get_ip_address(),
