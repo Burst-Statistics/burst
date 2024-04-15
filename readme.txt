@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.5
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 
 Self-hosted and privacy-friendly analytics for WordPress.
 
@@ -87,6 +87,12 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.6.1 =
+* Feature: Email reporting. You can now receive a weekly or monthly email with your website statistics. Add up to 10 email addresses to receive the report.
+* Feature: Reset statistics. You can now reset your statistics to start fresh. This will remove all data from the database. Settings will remain the same.
+* Fix: Issue where the capabilities where not set properly.
+* Fix: Issue where the Dashboard was returning lot's of errors when a user only has view access for Burst Statistics.
+
 = 1.6.0 =
 * Tested up to: WordPress 6.5
 * Feature: (Pro) Tracking of URL parameters and UTM Campaigns. This will allow you to track the performance of your marketing campaigns and see how your site is being used.
