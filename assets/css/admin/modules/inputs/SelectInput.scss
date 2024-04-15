@@ -22,6 +22,7 @@
         align-items: center;
         justify-content: space-between;
         gap: var(--rsp-spacing-xxs);
+        min-width: 15ch;
 
         &:hover:not([disabled]) {
           background-color: var(--rsp-brand-primary-faded);

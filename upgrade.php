@@ -84,6 +84,21 @@ function burst_check_upgrade() {
 		BURST()->summary->restart_update_summary_table_alltime();
 	}
 
+	if ( $prev_version
+		&& version_compare( $prev_version, '1.6.1', '<' ) ) {
+		// add the admin to the email reports mailing list
+		$mailinglist = burst_get_option( 'email_reports_mailinglist' );
+		if ( ! $mailinglist ) {
+			$defaults = array(
+				[
+					'email'     => get_option( 'admin_email' ),
+					'frequency' => 'monthly',
+				],
+			);
+			burst_update_option( 'email_reports_mailinglist', $defaults );
+		}
+	}
+
 	do_action( 'burst_upgrade', $prev_version );
 	update_option( 'burst-current-version', $new_version, false );
 }

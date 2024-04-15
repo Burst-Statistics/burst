@@ -149,6 +149,6 @@ function burst_install_goals_table() {
 		dbDelta( $sql );
 
 		// insert default goal
-		update_option( 'burst_goals_db_version', burst_version );
+		update_option( 'burst_goals_db_version', burst_version, false );
 	}
 }

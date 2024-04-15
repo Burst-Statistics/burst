@@ -32,8 +32,9 @@
     }
 
     .burst-grid-item-content label {
+      color: var(--rsp-text-color);
       font-size: var(--rsp-fs-400);
-      font-weight: 400;
+      font-weight: 500;
       line-height: 1.5;
       text-transform: unset;
       box-sizing: border-box;
@@ -178,6 +179,9 @@
     .button {
       margin-top: var(--rsp-spacing-xs);
     }
+  }
+  .burst-comment {
+   width: 100%;
   }
 }
 

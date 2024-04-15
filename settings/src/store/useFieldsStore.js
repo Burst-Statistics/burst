@@ -184,7 +184,6 @@ export const updateFieldsListWithConditions = ( fields ) => {
     const enabled = ! ( field.hasOwnProperty( 'react_conditions' ) && ! validateConditions( field.react_conditions, fields, field.id ) );
     const newField = {...field};
 
-    // console.log("condition check: ", field.id, enabled);
     if ( 'disable' === newField.condition_action ) {
       newField.disabled = ! enabled;
     } else {

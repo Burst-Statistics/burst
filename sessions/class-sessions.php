@@ -31,6 +31,6 @@ function burst_install_sessions_table() {
               KEY `goal_id_index` (goal_id)
             ) $charset_collate;";
 		dbDelta( $sql );
-		update_option( 'burst_sessions_db_version', burst_version );
+		update_option( 'burst_sessions_db_version', burst_version, false );
 	}
 }

@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) or die( 'you do not have access to this page!' );
 if ( ! class_exists( 'burst_admin' ) ) {
 	class burst_admin {
 		private static $_this;
-		public $error_message   = '';
+		public $error_message = '';
 		public $success_message = '';
 		public $grid_items;
 		public $default_grid_item;
@@ -51,6 +51,8 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// remove tables on multisite uninstall
 			add_filter( 'wpmu_drop_tables', [ $this, 'ms_remove_tables' ], 10, 2 );
 
+			add_filter( 'burst_do_action', array( $this, 'maybe_delete_all_data' ), 10, 3 );
+
 			add_filter( 'burst_after_saved_fields', [ $this, 'create_js_file' ], 10, 1 );
 			add_action( 'upgrader_process_complete', [ $this, 'create_js_file' ], 10, 1 );
 			add_action( 'wp_initialize_site', [ $this, 'create_js_file' ], 10, 1 );
@@ -60,11 +62,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			add_action( 'admin_bar_menu', array( $this, 'add_top_bar_menu' ), 400 );
 
 			add_action( 'burst_activation', [ $this, 'run_table_init_hook' ], 10, 1 );
+			add_action( 'after_reset_stats', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'upgrader_process_complete', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'wp_initialize_site', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'burst_upgrade', [ $this, 'run_table_init_hook' ], 10, 1 );
-			add_action( 'init', [ $this, 'run_table_init_hook' ], 10, 1 );
-			add_action( 'admin_init', [ $this, 'run_table_init_hook' ], 10, 1 );
 		}
 
 
@@ -147,7 +148,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( ! burst_user_can_manage() ) {
 				return;
 			}
-			burst_error_log( 'create js file' );
 			$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
 			$beacon_enabled  = (int) burst_tracking_status_beacon();
@@ -169,7 +169,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				]
 			);
 
-			$js  = '';
+			$js = '';
 			$js .= 'let burst = ' . json_encode( $localize_args ) . ';';
 			$js .= file_get_contents( burst_path . "assets/js/build/burst$cookieless_text.min.js" );
 
@@ -257,11 +257,18 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( get_option( 'burst_set_defaults' ) ) {
 				update_option( 'burst_activation_time', time(), false );
 				$this->run_table_init_hook();
+                // tables installed, now set defaults
 				$exclude_roles = burst_get_option( 'user_role_blocklist' );
 				if ( ! $exclude_roles ) {
 					$defaults = array( 'administrator' );
 					burst_update_option( 'user_role_blocklist', $defaults );
 				}
+
+				$mailinglist = burst_get_option( 'email_reports_mailinglist' );
+                if ( ! $mailinglist ) {
+                    $defaults = array( array('email' => get_option( 'admin_email' ), 'frequency' => 'monthly') );
+                    burst_update_option( 'email_reports_mailinglist', $defaults );
+                }
 
 				if ( get_option( 'burst_goals_db_version' ) === false ) {
 					// if there is no goals db version, then we can assume there are no goals database.
@@ -293,16 +300,16 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		 */
 		public function plugin_settings_link( $links ) {
 			$settings_link = '<a href="'
-							. admin_url( 'index.php?page=burst' )
-							. '" class="burst-settings-link">'
-							. __( 'Settings', 'burst-statistics' ) . '</a>';
+			                 . admin_url( 'index.php?page=burst' )
+			                 . '" class="burst-settings-link">'
+			                 . __( 'Settings', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $settings_link );
 
 			$support_link = defined( 'burst_free' )
 				? 'https://wordpress.org/support/plugin/burst-statistics'
 				: 'https://burst-statistics.com/support';
 			$faq_link     = '<a target="_blank" href="' . $support_link . '">'
-							. __( 'Support', 'burst-statistics' ) . '</a>';
+			                . __( 'Support', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $faq_link );
 
 			// if ( ! defined( 'burst_pro' ) ) {
@@ -321,6 +328,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		 * @param $column_title
 		 * @param $post_type
 		 * @param $cb
+		 *
 		 * @return void
 		 * @since 1.1
 		 */
@@ -328,8 +336,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// Add column
 			add_filter(
 				'manage_' . $post_type . '_posts_columns',
-				function ( $columns ) use ( $column_name, $column_title ) {
+				function( $columns ) use ( $column_name, $column_title ) {
 					$columns[ $column_name ] = $column_title;
+
 					return $columns;
 				}
 			);
@@ -337,7 +346,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// Add column content
 			add_action(
 				'manage_' . $post_type . '_posts_custom_column',
-				function ( $column, $post_id ) use ( $column_name, $column_title, $cb ) {
+				function( $column, $post_id ) use ( $column_name, $column_title, $cb ) {
 					if ( $column_name === $column ) {
 						$cb( $post_id );
 					}
@@ -350,8 +359,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( $sortable ) {
 				add_filter(
 					'manage_edit-' . $post_type . '_sortable_columns',
-					function ( $columns ) use ( $column_name, $column_title ) {
+					function( $columns ) use ( $column_name, $column_title ) {
 						$columns[ $column_name ] = $column_name;
+
 						return $columns;
 					}
 				);
@@ -378,7 +388,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 					__( 'Pageviews', 'burst-statistics' ),
 					$post_type,
 					true,
-					function ( $post_id ) {
+					function( $post_id ) {
 						$burst_total_pageviews_count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
 						$count                       = (int) $burst_total_pageviews_count ?: 0;
 						echo $count;
@@ -414,12 +424,13 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			$current_day   = date( 'j' );// e.g. 4
 
 			if ( $current_year == 2023 &&
-				$current_month == 11 &&
-				$current_day >= $start_day &&
-				$current_day <= $end_day
+			     $current_month == 11 &&
+			     $current_day >= $start_day &&
+			     $current_day <= $end_day
 			) {
 				return true;
 			}
+
 			return false;
 		}
 
@@ -427,7 +438,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		 *
 		 * Add a button and thickbox to deactivate the plugin
 		 *
-		 * @since 1.0
+		 * @since  1.0
 		 *
 		 * @access public
 		 */
@@ -441,144 +452,156 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			?>
 			<?php add_thickbox(); ?>
-			<style>
+            <style>
 
-				#TB_ajaxContent.burst-deactivation-popup {
-					text-align: center !important;
-				}
-				#TB_window.burst-deactivation-popup {
-					height: min-content !important;
-					margin-top:initial!important;
-					margin-left:initial!important;
-					display:flex;
-					flex-direction: column;
-					top: 50%!important;
-					left: 50%;
-					transform: translate(-50%, -50%);
-					width: 500px !important;
-					border-radius: 12px!important;
-					min-width: min-content;
-				}
-				.burst-deactivation-popup #TB_title{
-					padding-bottom: 20px;
-					border-radius:12px;
-					border-bottom:none!important;
-					background:#fff !important;
-				}
-				.burst-deactivation-popup #TB_ajaxWindowTitle {
-					font-weight:bold;
-					font-size:20px;
-					padding: 20px;
-					background:#fff !important;
-					border-radius: 12px 12px 0 0;
-					width: calc( 100% - 40px );
-				}
+                #TB_ajaxContent.burst-deactivation-popup {
+                    text-align: center !important;
+                }
 
-				.burst-deactivation-popup .tb-close-icon {
-					color:#333;
-					width: 25px;
-					height: 25px;
-					top: 12px;
-					right: 20px;
-				}
-				.burst-deactivation-popup .tb-close-icon:before {
-					font: normal 25px/25px dashicons;
-				}
-				.burst-deactivation-popup #TB_closeWindowButton:focus .tb-close-icon {
-					outline:0;
-					color:#666;
-				}
-				.burst-deactivation-popup #TB_closeWindowButton .tb-close-icon:hover {
-					color:#666;
-				}
-				.burst-deactivation-popup #TB_closeWindowButton:focus {
-					outline:0;
-				}
-				.burst-deactivation-popup #TB_ajaxContent {
-					width: 90% !important;
-					height:initial!important;
-					padding-left: 20px!important;
-				}
+                #TB_window.burst-deactivation-popup {
+                    height: min-content !important;
+                    margin-top: initial !important;
+                    margin-left: initial !important;
+                    display: flex;
+                    flex-direction: column;
+                    top: 50% !important;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 500px !important;
+                    border-radius: 12px !important;
+                    min-width: min-content;
+                }
 
-				.burst-deactivation-popup .button-burst-tertiary.button {
-					background-color: #D7263D !important;
-					color: white !important;
-					border-color: #D7263D;
-				}
+                .burst-deactivation-popup #TB_title {
+                    padding-bottom: 20px;
+                    border-radius: 12px;
+                    border-bottom: none !important;
+                    background: #fff !important;
+                }
 
-				.burst-deactivation-popup .button-burst-tertiary.button:hover {
-					background-color: #f1f1f1 !important;
-					color: #d7263d !important;
-				}
+                .burst-deactivation-popup #TB_ajaxWindowTitle {
+                    font-weight: bold;
+                    font-size: 20px;
+                    padding: 20px;
+                    background: #fff !important;
+                    border-radius: 12px 12px 0 0;
+                    width: calc(100% - 40px);
+                }
 
-				.burst-deactivate-notice-content h3, .burst-deactivate-notice-content ul{
-				}
+                .burst-deactivation-popup .tb-close-icon {
+                    color: #333;
+                    width: 25px;
+                    height: 25px;
+                    top: 12px;
+                    right: 20px;
+                }
 
-				.burst-deactivate-notice-footer {
-					display: flex;
-					gap:10px;
-					padding: 15px 10px 0 10px;
-				}
+                .burst-deactivation-popup .tb-close-icon:before {
+                    font: normal 25px/25px dashicons;
+                }
 
-				.burst-deactivation-popup ul {
-					list-style: disc;
-					padding-left: 20px;
-				}
-				.burst-deactivate-notice-footer .button {
-					min-width: fit-content;
-					white-space: nowrap;
-					cursor: pointer;
-					text-decoration: none;
-					text-align: center;
-				}
-			</style>
-			<script>
-				jQuery(document).ready(function ($) {
-					$('#burst_close_tb_window').click(tb_remove);
+                .burst-deactivation-popup #TB_closeWindowButton:focus .tb-close-icon {
+                    outline: 0;
+                    color: #666;
+                }
 
-					$(document).on('click', '#deactivate-<?php echo $slug; ?>', function(e){
-						e.preventDefault();
-						tb_show( '', '#TB_inline?height=420&inlineId=deactivate_and_delete_data', 'null');
-						$("#TB_window").addClass('burst-deactivation-popup');
+                .burst-deactivation-popup #TB_closeWindowButton .tb-close-icon:hover {
+                    color: #666;
+                }
 
-					});
-					if ($('#deactivate-<?php echo $slug; ?>').length){
-						$('.burst-button-deactivate').attr('href',  $('#deactivate-<?php echo $slug; ?>').attr('href') );
-					}
+                .burst-deactivation-popup #TB_closeWindowButton:focus {
+                    outline: 0;
+                }
 
-				});
-			</script>
+                .burst-deactivation-popup #TB_ajaxContent {
+                    width: 90% !important;
+                    height: initial !important;
+                    padding-left: 20px !important;
+                }
 
-			<div id="deactivate_and_delete_data" style="display: none;">
-					<div class="burst-deactivate-notice-content">
-						<h4 style="margin:0 0 20px 0; text-align: left; font-size: 1.1em;">
-							<?php _e( 'To deactivate the plugin correctly, please select if you want to:', 'burst-statistics' ); ?></h4>
-						<ul style="text-align: left;">
+                .burst-deactivation-popup .button-burst-tertiary.button {
+                    background-color: #D7263D !important;
+                    color: white !important;
+                    border-color: #D7263D;
+                }
 
-							<li><?php _e( 'Deactivate', 'burst-statistics' ); ?></li>
-							<li>
-								<?php _e( 'Deactivate, and remove all statistics, experiments and settings.', 'burst-statistics' ); ?>
-								<?php _e( 'The data will be gone forever.', 'burst-statistics' ); ?>
-							</li>
-						</ul>
-					</div>
+                .burst-deactivation-popup .button-burst-tertiary.button:hover {
+                    background-color: #f1f1f1 !important;
+                    color: #d7263d !important;
+                }
 
-					<?php
-					$token                              = wp_create_nonce( 'burst_deactivate_plugin' );
-					$deactivate_and_remove_all_data_url = add_query_arg(
-						array(
-							'action' => 'uninstall_delete_all_data',
-							'token'  => $token,
-						),
-						admin_url( 'plugins.php' )
-					);
-					?>
-					<div class="burst-deactivate-notice-footer">
-						<a class="button button-default" href="#" id="burst_close_tb_window"><?php _e( 'Cancel', 'burst-statistics' ); ?></a>
-						<a class="button button-primary burst-button-deactivate" href="#"><?php _e( 'Deactivate', 'burst-statistics' ); ?></a>
-						<a class="button button-burst-tertiary" href="<?php echo esc_url( $deactivate_and_remove_all_data_url ); ?>"><?php _e( 'Deactivate and delete all data', 'burst-statistics' ); ?></a>
-					</div>
-			</div>
+                .burst-deactivate-notice-content h3, .burst-deactivate-notice-content ul {
+                }
+
+                .burst-deactivate-notice-footer {
+                    display: flex;
+                    gap: 10px;
+                    padding: 15px 10px 0 10px;
+                }
+
+                .burst-deactivation-popup ul {
+                    list-style: disc;
+                    padding-left: 20px;
+                }
+
+                .burst-deactivate-notice-footer .button {
+                    min-width: fit-content;
+                    white-space: nowrap;
+                    cursor: pointer;
+                    text-decoration: none;
+                    text-align: center;
+                }
+            </style>
+            <script>
+              jQuery(document).ready(function($) {
+                $('#burst_close_tb_window').click(tb_remove);
+
+                $(document).on('click', '#deactivate-<?php echo $slug; ?>', function(e) {
+                  e.preventDefault();
+                  tb_show('', '#TB_inline?height=420&inlineId=deactivate_and_delete_data', 'null');
+                  $('#TB_window').addClass('burst-deactivation-popup');
+
+                });
+                if ($('#deactivate-<?php echo $slug; ?>').length) {
+                  $('.burst-button-deactivate').attr('href', $('#deactivate-<?php echo $slug; ?>').attr('href'));
+                }
+
+              });
+            </script>
+
+            <div id="deactivate_and_delete_data" style="display: none;">
+                <div class="burst-deactivate-notice-content">
+                    <h4 style="margin:0 0 20px 0; text-align: left; font-size: 1.1em;">
+						<?php _e( 'To deactivate the plugin correctly, please select if you want to:', 'burst-statistics' ); ?></h4>
+                    <ul style="text-align: left;">
+
+                        <li><?php _e( 'Deactivate', 'burst-statistics' ); ?></li>
+                        <li>
+							<?php _e( 'Deactivate, and remove all statistics, experiments and settings.', 'burst-statistics' ); ?>
+							<?php _e( 'The data will be gone forever.', 'burst-statistics' ); ?>
+                        </li>
+                    </ul>
+                </div>
+
+				<?php
+				$token                              = wp_create_nonce( 'burst_deactivate_plugin' );
+				$deactivate_and_remove_all_data_url = add_query_arg(
+					array(
+						'action' => 'uninstall_delete_all_data',
+						'token'  => $token,
+					),
+					admin_url( 'plugins.php' )
+				);
+				?>
+                <div class="burst-deactivate-notice-footer">
+                    <a class="button button-default" href="#"
+                       id="burst_close_tb_window"><?php _e( 'Cancel', 'burst-statistics' ); ?></a>
+                    <a class="button button-primary burst-button-deactivate"
+                       href="#"><?php _e( 'Deactivate', 'burst-statistics' ); ?></a>
+                    <a class="button button-burst-tertiary"
+                       href="<?php echo esc_url( $deactivate_and_remove_all_data_url ); ?>"><?php _e( 'Deactivate and delete all data', 'burst-statistics' ); ?></a>
+                </div>
+            </div>
 			<?php
 		}
 
@@ -599,6 +622,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// check for action
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
 				$this->delete_all_burst_data();
+                $this->delete_all_burst_configuration();
 				$plugin  = burst_plugin;
 				$plugin  = plugin_basename( trim( $plugin ) );
 				$current = get_option( 'active_plugins', [] );
@@ -610,6 +634,38 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		}
 
 		/**
+		 * Clear all data from the reset button in the settings
+		 *
+		 * @param array  $output
+		 * @param string $action
+		 * @param        $data
+		 *
+		 * @return array
+		 */
+		public function maybe_delete_all_data( array $output, string $action, $data ) {
+			if ( ! burst_user_can_manage() ) {
+				return $output;
+			}
+			if ( $action === 'reset' ) {
+				// delete everything
+				$this->delete_all_burst_data();
+
+				// reset to defaults
+				burst_set_defaults(false);
+
+                // immediately run setup defaults, so db tables get made
+                $this->setup_defaults();
+
+				$output = [
+					'success' => true,
+					'message' => __( 'Successfully cleared data.', 'burst-statistics' ),
+				];
+			}
+
+			return $output;
+		}
+
+		/**
 		 * Remove the plugin from the active plugins array when called from listen_for_deactivation
 		 * */
 		public function remove_plugin_from_array( $plugin, $current ) {
@@ -617,6 +673,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( false !== $key ) {
 				unset( $current[ $key ] );
 			}
+
 			return $current;
 		}
 
@@ -628,7 +685,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				return;
 			}
 			global $wpdb;
-			global $wp_roles;
 
 			// post meta to delete
 			$post_meta = array(
@@ -642,6 +698,66 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				delete_post_meta_by_key( $post_meta_key );
 			}
 
+			// tables to delete
+			$table_names = apply_filters(
+				'burst_all_tables',
+                [
+                    'burst_statistics',
+                    'burst_sessions',
+                    'burst_goals',
+                    'burst_goal_statistics',
+                    'burst_summary',
+	                'burst_archived_months',
+                ],
+            );
+
+			// delete tables
+			foreach ( $table_names as $table_name ) {
+				$sql = "DROP TABLE IF EXISTS $wpdb->prefix$table_name";
+				$wpdb->query( $sql );
+			}
+
+			// options to delete
+			$options = apply_filters(
+                   'burst_table_db_options',
+                   [
+                       'burst_stats_db_version',
+	                   'burst_sessions_db_version',
+                       'burst_goals_db_version',
+                       'burst_goal_stats_db_version',
+                       'burst_archive_db_version'
+                   ],
+                );
+
+			// delete options
+			foreach ( $options as $option_name ) {
+				delete_option( $option_name );
+				delete_site_option( $option_name );
+			}
+
+		}
+
+		public function delete_all_burst_configuration() {
+			if ( ! current_user_can( 'activate_plugins' ) ) {
+				return;
+			}
+
+			global $wp_roles;
+			// capabilities to delete
+			$roles        = $wp_roles->roles;
+			$capabilities = [
+				'manage_burst_statistics',
+				'view_burst_statistics',
+			];
+
+			// delete user capabilities from all user roles
+			foreach ( $roles as $role_name => $role_info ) {
+				foreach ( $capabilities as $capability ) {
+					$wp_roles->remove_cap( $role_name, $capability );
+				}
+			}
+
+
 			// options to delete
 			$options = [
 				'burst_activation_time',
@@ -649,7 +765,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				'burst_review_notice_shown',
 				'burst_run_premium_upgrade',
 				'burst_tracking_status',
-				'burst_goals_db_version',
 				'burst_table_size',
 				'burst_import_geo_ip_on_activation',
 				'burst_geo_ip_import_error',
@@ -668,36 +783,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				delete_site_option( $option_name );
 			}
 
-			// capabilities to delete
-			$roles        = $wp_roles->roles;
-			$capabilities = [
-				'manage_burst_statistics',
-				'view_burst_statistics',
-			];
-
-			// delete user capabilities from all user roles
-			foreach ( $roles as $role_name => $role_info ) {
-				foreach ( $capabilities as $capability ) {
-					$wp_roles->remove_cap( $role_name, $capability );
-				}
-			}
-
-			// tables to delete
-			$table_names = [
-				$wpdb->prefix . 'burst_statistics',
-				$wpdb->prefix . 'burst_sessions',
-				$wpdb->prefix . 'burst_goals',
-				$wpdb->prefix . 'burst_archived_months',
-				$wpdb->prefix . 'burst_goal_statistics',
-				$wpdb->prefix . 'burst_summary',
-			];
-
-			// delete tables
-			foreach ( $table_names as $table_name ) {
-				$sql = "DROP TABLE IF EXISTS $table_name";
-				$wpdb->query( $sql );
-			}
-
 			// get all burst transients
 			$results = $wpdb->get_results(
 				"SELECT `option_name` AS `name`, `option_value` AS `value`
@@ -711,6 +796,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				$transient_name = substr( $value['name'], 11 );
 				delete_transient( $transient_name );
 			}
+
 		}
 
 		/**
@@ -721,7 +807,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		 *
 		 * @return array
 		 */
-		public function ms_remove_tables( $tables, $blog_id ) {
+		public
+		function ms_remove_tables(
+			$tables, $blog_id
+		) {
 			global $wpdb;
 
 			$tables[] = $wpdb->get_blog_prefix( $blog_id ) . 'burst_sessions';
