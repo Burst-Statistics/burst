@@ -1,4 +1,8 @@
-const TextInput = ({ name, label, value, onChangeHandler }) => {
+const TextInput = ( props ) => {
+  console.log( 'TextInput', props );
+  const { id, label, value, onChangeHandler } = props;
+
+  console.log( 'TextInput', id, label, value, onChangeHandler );
 
   function handleChange( e ) {
     onChangeHandler( e.target.value );
@@ -8,8 +12,8 @@ const TextInput = ({ name, label, value, onChangeHandler }) => {
       <p className="burst-label">{label}</p>
       <input
         type="text"
-        name={name}
-        id={name}
+        name={id}
+        id={id}
         value={value}
         onChange={handleChange}
       />

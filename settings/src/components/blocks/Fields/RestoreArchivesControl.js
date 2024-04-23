@@ -17,7 +17,6 @@ const RestoreArchivesControl = () => {
       {
         name: <input type="checkbox" disabled={true}/>,
         grow: 1,
-        minWidth: '50px'
       },
       {
         name: __( 'Archive', 'burst-statistics' ),
@@ -26,7 +25,7 @@ const RestoreArchivesControl = () => {
       {
         name: __( 'Size', 'burst-statistics' ),
         grow: 2,
-        right: true
+        right: 1
       }
     ];
 
@@ -300,7 +299,6 @@ const RestoreArchivesControl = () => {
                    onChange={( e ) => handleSelectEntirePage( e.target.checked )}/>,
       selector: row => row.selectControl,
       grow: 1,
-      minWidth: '50px'
     },
     {
       name: __( 'Archive', 'burst-statistics' ),
@@ -313,7 +311,7 @@ const RestoreArchivesControl = () => {
       selector: row => row.size,
       sortable: true,
       grow: 2,
-      right: true
+      right: 1
     }
   ];
 

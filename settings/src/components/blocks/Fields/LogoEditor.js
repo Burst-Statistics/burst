@@ -4,7 +4,7 @@ import {memo, useState} from '@wordpress/element';
 import {useEffect} from 'react';
 import Icon from '../../../utils/Icon';
 
-const LogoEditor = ({ disabled, name, label, value, onChangeHandler }) => {
+const LogoEditor = ({ id, disabled, label, value, onChangeHandler }) => {
     const updateField = useFields( ( state ) => state.updateField );
     const setChangedField = useFields( ( state ) => state.setChangedField );
     const [ attachmentId, setAttachmentId ] = useState( value );
@@ -74,8 +74,8 @@ const LogoEditor = ({ disabled, name, label, value, onChangeHandler }) => {
                     let image_url = image.url;
                     setAttachmentId( thumbnail_id );
                     setAttachmentUrl( image_url );
-                    updateField( name, thumbnail_id );
-                    setChangedField( name, thumbnail_id );
+                    updateField( id, thumbnail_id );
+                    setChangedField( id, thumbnail_id );
                 }
 
             }

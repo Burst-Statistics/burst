@@ -19,6 +19,7 @@ import RestoreArchivesControl from './Fields/RestoreArchivesControl';
 import LabelWrapper from './Fields/LabelWrapper';
 import EmailReports from './Fields/EmailReports';
 import ButtonControl from './Fields/ButtonControl';
+import SnippetBlock from './Fields/SnippetBlock';
 
 const Field = ( props ) => {
   const [ validated, setValidated ] = useState([]);
@@ -378,6 +379,20 @@ const Field = ( props ) => {
     return (
         <div className={highLightClass}>
           <EmailReports
+              disabled={disabled}
+              field={field}
+              label={field.label}
+              value={fieldValue}
+              onChange={( fieldValue ) => onChangeHandler( fieldValue )}
+          />
+        </div>
+    );
+  }
+
+  if ( 'snippet_block' === field.type ) {
+    return (
+        <div className={highLightClass}>
+          <SnippetBlock
               disabled={disabled}
               field={field}
               label={field.label}

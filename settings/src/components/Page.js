@@ -66,6 +66,39 @@ const Page = () => {
   }, [ fields ]);
 
   useEffect( () => {
+    if ( ! burst_settings.tour_shown || ( 'dashboard' === getAnchor() && 'tour' === getAnchor( 'menu' ) ) && ! Tour ) {
+      import ( './common/Tour' ).then( ({default: Tour}) => {
+        setTour( () => Tour );
+      });
+    }
+    if ( 'dashboard' === selectedMainMenuItem && ! DashboardPage ) {
+      import ( './pages/DashboardPage' ).then( ({default: DashboardPage}) => {
+        setDashboardPage( () => DashboardPage );
+      });
+    }
+    if ( 'statistics' === selectedMainMenuItem && ! StatisticsPage ) {
+      import ( './pages/StatisticsPage' ).then( ({default: StatisticsPage}) => {
+        setStatisticsPage( () => StatisticsPage );
+      });
+    }
+    if ( 'settings' === selectedMainMenuItem && ! SettingsPage ) {
+      import ( './pages/SettingsPage' ).then( ({default: SettingsPage}) => {
+        setSettingsPage( () => SettingsPage );
+      });
+    }
+  }, [ selectedMainMenuItem ]);
+
+  // change pages
+  useEffect( () => {
+      if ( fieldsLoaded ) {
+        fetchSubMenuData( fields );
+      }
+      window.addEventListener( 'hashchange', () => {
+        fetchSubMenuData( fields );
+      });
+  }, [ fields ]);
+
+  useEffect( () => {
     let subMenuItem = getAnchor( 'menu' );
     fetchFieldsData( subMenuItem );
 

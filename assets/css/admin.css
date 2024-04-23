@@ -196,6 +196,16 @@
     font-size: 1em;
 }
 
+.burst ul {
+    padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
+    margin: 0;
+}
+
+.burst ol {
+    padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
+    margin: 0;
+}
+
 .burst .burst-notice-hook-element {
     display: none !important;
 }
@@ -1730,6 +1740,71 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     min-width: fit-content;
 }
 
+.burst details {
+    background-color: var(--rsp-grey-100);
+    border-radius: var(--rsp-border-radius);
+    border: 1px solid var(--rsp-grey-300);
+}
+
+.burst details .burst-details-content {
+    padding-top: var(--rsp-spacing-s);
+}
+
+.burst details .burst-details-content p {
+    margin-bottom: var(--rsp-spacing-xxs);
+}
+
+.burst details .burst-details-content code {
+    display: inline-block;
+    padding: var(--rsp-spacing-xs);
+    line-height: 1.7;
+    margin: var(--rsp-spacing-xs) 0;
+}
+
+.burst details summary {
+    padding: var(--rsp-spacing-xs) var(--rsp-spacing-s);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--rsp-spacing-s);
+    list-style: none;
+}
+
+.burst details summary::-webkit-details-marker {
+    display: none;
+}
+
+.burst details summary::marker {
+    display: none;
+}
+
+.burst details summary h5 {
+    font-weight: 600;
+    display: inline-block;
+}
+
+.burst details summary .burst-icon-chevron-down {
+    transition: all 0.25s ease-in-out;
+    transform: rotate(0deg);
+}
+
+.burst details[open] summary {
+    border-bottom: 1px solid var(--rsp-grey-300);
+}
+
+.burst details[open] summary .burst-icon-chevron-down {
+    transform: rotate(180deg);
+}
+
+.burst details[open] {
+    padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
+}
+
+.burst details[open] summary {
+    padding: 0;
+    padding-bottom: var(--rsp-spacing-xs);
+}
+
 .burst-tips-tricks-container {
     display: flex !important;
     flex-direction: row;
@@ -2499,24 +2574,24 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     margin-top: var(--rsp-spacing-xs);
 }
 
-.burst-wizard-help {
+.burst .burst-wizard-help {
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
     gap: var(--rsp-spacing-xs);
 }
 
-.burst-wizard-help details {
+.burst .burst-wizard-help details {
     font-size: var(--rsp-fs-200);
 }
 
-.burst-wizard-help details .burst-help-more-info {
+.burst .burst-wizard-help details .burst-help-more-info {
     display: flex;
     flex-direction: row;
     margin-top: 12px;
 }
 
-.burst-wizard-help details summary {
+.burst .burst-wizard-help details summary {
     display: grid;
     grid-template-columns: 1fr auto;
     justify-content: space-between;
@@ -2525,53 +2600,54 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     cursor: pointer;
 }
 
-.burst-wizard-help details summary::-webkit-details-marker {
+.burst .burst-wizard-help details summary::-webkit-details-marker {
     display: none;
 }
 
-.burst-wizard-help details summary:first-of-type {
+.burst .burst-wizard-help details summary:first-of-type {
     list-style-type: none;
 }
 
-.burst-wizard-help details summary .burst-icon {
+.burst .burst-wizard-help details summary .burst-icon {
     transition: all 0.25s ease-in-out;
     transform: rotate(0deg);
 }
 
-.burst-wizard-help summary, .burst-wizard-help p {
+.burst .burst-wizard-help summary, .burst .burst-wizard-help p {
     font-size: var(--rsp-fs-200);
 }
 
-.burst-wizard-help details[open] {
+.burst .burst-wizard-help details[open] {
     padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
 }
 
-.burst-wizard-help details[open] summary {
+.burst .burst-wizard-help details[open] summary {
     padding: 0;
     padding-bottom: var(--rsp-spacing-xs);
+    border-bottom: 0 solid transparent;
 }
 
-.burst-wizard-help details[open] summary .burst-icon {
+.burst .burst-wizard-help details[open] summary .burst-icon {
     transform: rotate(180deg);
 }
 
-.burst-wizard-help .burst-help-header {
+.burst .burst-wizard-help .burst-help-header {
     width: 100%;
     display: flex;
     padding: 10px;
 }
 
-.burst-wizard-help .burst-help-header .burst-help-title {
+.burst .burst-wizard-help .burst-help-header .burst-help-title {
     font-size: var(--rsp-fs-400);
     font-weight: 500;
 }
 
-.burst-wizard-help .burst-help-header .burst-help-control {
+.burst .burst-wizard-help .burst-help-header .burst-help-control {
     margin-left: auto;
     cursor: pointer;
 }
 
-.burst-wizard-help-notice {
+.burst details.burst-wizard-help-notice {
     width: 100%;
     background: var(--rsp-background-block-color);
     box-shadow: var(--rsp-box-shadow);
@@ -2581,11 +2657,11 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     background-color: var(--rsp-dark-blue-faded);
 }
 
-.burst-wizard-help-notice.burst-warning {
+.burst details.burst-wizard-help-notice.burst-warning {
     background-color: var(--rsp-yellow-faded);
 }
 
-.burst-wizard-help-notice summary, .burst-wizard-help-notice p {
+.burst details.burst-wizard-help-notice summary, .burst details.burst-wizard-help-notice p {
     padding: var(--rsp-spacing-s) var(--rsp-spacing-m);
 }
 
@@ -2741,6 +2817,17 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
 
 .burst div[class^=burst-wizard-] .burst-grid-item .burst-grid-item-content {
     padding: var(--rsp-spacing-xs) 0;
+}
+
+.burst div[class^=burst-wizard-] .burst-grid-item .burst-grid-item-content.burst-snippet-content {
+    padding: var(--rsp-spacing-xs) var(--rsp-spacing-l);
+}
+
+.burst div[class^=burst-wizard-] .burst-grid-item .burst-grid-item-content.burst-snippet-content code {
+    padding: var(--rsp-spacing-m);
+    display: block;
+    margin-top: var(--rsp-spacing-l);
+    margin-bottom: var(--rsp-spacing-l);
 }
 
 .burst div[class^=burst-wizard-] .burst-field-wrap, .burst div[class^=burst-wizard-] .burst-settings-block-intro {

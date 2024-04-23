@@ -69,6 +69,15 @@
     .burst-grid-item {
       .burst-grid-item-content {
         padding: var(--rsp-spacing-xs) 0;
+        &.burst-snippet-content {
+          padding: var(--rsp-spacing-xs) var(--rsp-spacing-l);
+          code {
+            padding: var(--rsp-spacing-m);
+            display:block;
+            margin-top: var(--rsp-spacing-l);
+            margin-bottom: var(--rsp-spacing-l);
+          }
+        }
       }
     }
 

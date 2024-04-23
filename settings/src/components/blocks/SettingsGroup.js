@@ -3,7 +3,6 @@ import Hyperlink from '../../utils/Hyperlink';
 import {__} from '@wordpress/i18n';
 import {useMenu} from '../../store/useMenuStore';
 import useLicenseStore from '../../store/useLicenseStore';
-import {burst_get_website_url} from '../../utils/lib';
 
 import ErrorBoundary from '../ErrorBoundary';
 
@@ -11,10 +10,7 @@ import ErrorBoundary from '../ErrorBoundary';
  * Render a grouped block of settings
  */
 const SettingsGroup = ( props ) => {
-  let upgrade = burst_get_website_url( '/pricing/', {
-    burst_source: 'settings-group',
-    burst_content: 'upgrade'
-  });
+  let upgrade = 'https://burst-statistics.com/pricing/?src=plugin-burst-settings-group';
   const subMenu = useMenu( state => state.subMenu );
   const selectedSubMenuItem = useMenu( state => state.selectedSubMenuItem );
   const {licenseStatus} = useLicenseStore();
@@ -78,7 +74,7 @@ const SettingsGroup = ( props ) => {
   let disabledClass = disabled ? 'burst-disabled' : '';
   return (
       <ErrorBoundary fallback={'Could not load page'}>
-        <div className={'burst-grid-item burst-' + activeGroup.id + ' ' +
+        <div key={activeGroup.id} className={'burst-grid-item burst-' + activeGroup.id + ' ' +
             disabledClass}>
           {activeGroup.title && <div className="burst-grid-item-header">
             <h3 className="burst-h4">{activeGroup.title}</h3>
@@ -91,9 +87,9 @@ const SettingsGroup = ( props ) => {
             {activeGroup.intro && <div
                 className="burst-settings-block-intro">{activeGroup.intro}</div>}
             {selectedFields.map( ( field, i ) =>
-                <ErrorBoundary key={i} fallback={'Could ot load field'}>
+                <ErrorBoundary key={i} fallback={'Could not load field'}>
                   <Field key={i} index={i} field={field}
-                         fields={selectedFields}/>
+                          fields={selectedFields}/>
                 </ErrorBoundary> )}
           </div>
           {disabled && <div className="burst-locked">

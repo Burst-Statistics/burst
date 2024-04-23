@@ -40,7 +40,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// column
 			add_action( 'admin_init', array( $this, 'add_burst_admin_columns' ), 1 );
 			add_action( 'pre_get_posts', array( $this, 'posts_orderby_total_pageviews' ), 1 );
-
 			add_action( 'admin_init', array( $this, 'setup_defaults' ) );
 
 			// deactivating
@@ -50,17 +49,14 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			// remove tables on multisite uninstall
 			add_filter( 'wpmu_drop_tables', [ $this, 'ms_remove_tables' ], 10, 2 );
-
 			add_filter( 'burst_do_action', array( $this, 'maybe_delete_all_data' ), 10, 3 );
-
+			add_filter( 'burst_do_action', array( $this, 'get_snippet' ), 10, 3 );
 			add_filter( 'burst_after_saved_fields', [ $this, 'create_js_file' ], 10, 1 );
 			add_action( 'upgrader_process_complete', [ $this, 'create_js_file' ], 10, 1 );
 			add_action( 'wp_initialize_site', [ $this, 'create_js_file' ], 10, 1 );
 			add_action( 'admin_init', [ $this, 'activation' ] );
-
 			add_action( 'admin_bar_menu', array( $this, 'add_to_admin_bar_menu' ), 35 );
 			add_action( 'admin_bar_menu', array( $this, 'add_top_bar_menu' ), 400 );
-
 			add_action( 'burst_activation', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'after_reset_stats', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'upgrader_process_complete', [ $this, 'run_table_init_hook' ], 10, 1 );
@@ -215,6 +211,63 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		}
 
 		/**
+		 * @param array           $data
+		 * @param string          $action
+		 * @param WP_REST_Request $request
+		 *
+		 * @return array
+		 */
+		public function get_snippet( array $output, string $action, $data ): array {
+			if ( ! burst_user_can_manage() ) {
+				return $output;
+			}
+
+			if ( $action === 'get_snippet' ) {
+				$src            = "helpers/timeme/timeme.min.js";
+				$timeme_snippet = '<script async src="' . burst_url . $src . '?v=' . filemtime( burst_path . $src ) . '"></script>';
+
+				$beacon_enabled          = (int) burst_tracking_status_beacon();
+				$combine_vars_and_script = burst_get_option( 'combine_vars_and_script' );
+				if ( $combine_vars_and_script ) {
+					$upload_url    = burst_upload_url( 'js' );
+					$upload_path   = burst_upload_dir( 'js' );
+					$src           = "burst.min.js";
+					$burst_snippet = '<script defer src="' . $upload_url . $src . '?v=' . filemtime( $upload_path . $src ) . '"></script>';
+				} else {
+					$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
+					$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
+					$localize_args   = apply_filters(
+						'burst_tracking_options',
+						array(
+							'page_id'               => get_queried_object_id(),
+							'cookie_retention_days' => 30,
+							'beacon_url'            => burst_get_beacon_url(),
+							'options'               => array(
+								'beacon_enabled'             => $beacon_enabled,
+								'enable_cookieless_tracking' => (int) $cookieless,
+								'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
+								'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
+							),
+							'goals'                 => burst_get_active_goals(),
+							'goals_script_url'      => burst_get_goals_script_url(),
+						)
+					);
+					$burst_snippet   = "<script>let burst = " . json_encode( $localize_args ) . ";</script>\n";
+					$src             = "assets/js/build/burst$cookieless_text.min.js";
+					$burst_snippet   .= '<script defer src="' . burst_url . $src . '?v=' . filemtime( burst_path . $src ) . '"></script>';
+				}
+
+				$output = [
+					'timeme' => $timeme_snippet,
+					'burst'  => $burst_snippet,
+				];
+			}
+
+			return $output;
+		}
+
+
+		/**
 		 * Add some privacy info
 		 */
 		public function add_privacy_info() {
@@ -257,7 +310,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( get_option( 'burst_set_defaults' ) ) {
 				update_option( 'burst_activation_time', time(), false );
 				$this->run_table_init_hook();
-                // tables installed, now set defaults
+				// tables installed, now set defaults
 				$exclude_roles = burst_get_option( 'user_role_blocklist' );
 				if ( ! $exclude_roles ) {
 					$defaults = array( 'administrator' );
@@ -265,10 +318,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				}
 
 				$mailinglist = burst_get_option( 'email_reports_mailinglist' );
-                if ( ! $mailinglist ) {
-                    $defaults = array( array('email' => get_option( 'admin_email' ), 'frequency' => 'monthly') );
-                    burst_update_option( 'email_reports_mailinglist', $defaults );
-                }
+				if ( ! $mailinglist ) {
+					$defaults = array( array( 'email' => get_option( 'admin_email' ), 'frequency' => 'monthly' ) );
+					burst_update_option( 'email_reports_mailinglist', $defaults );
+				}
 
 				if ( get_option( 'burst_goals_db_version' ) === false ) {
 					// if there is no goals db version, then we can assume there are no goals database.
@@ -307,10 +360,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			$support_link = defined( 'burst_free' )
 				? 'https://wordpress.org/support/plugin/burst-statistics'
-				: burst_get_website_url('support', [
-                        'burst_source' => 'plugin-overview',
-                        'burst_content' => 'support-link',
-                ]);
+				: 'https://burst-statistics.com/support';
 			$faq_link     = '<a target="_blank" href="' . $support_link . '">'
 			                . __( 'Support', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $faq_link );
@@ -611,6 +661,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		/**
 		 * Deactivate the plugin, based on made choice regarding data
 		 */
+
 		public function listen_for_deactivation(): void {
 			// check user role
 			if ( ! current_user_can( 'activate_plugins' ) ) {
@@ -625,7 +676,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// check for action
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
 				$this->delete_all_burst_data();
-                $this->delete_all_burst_configuration();
+				$this->delete_all_burst_configuration();
 				$plugin  = burst_plugin;
 				$plugin  = plugin_basename( trim( $plugin ) );
 				$current = get_option( 'active_plugins', [] );
@@ -654,10 +705,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				$this->delete_all_burst_data();
 
 				// reset to defaults
-				burst_set_defaults(false);
+				burst_set_defaults( false );
 
-                // immediately run setup defaults, so db tables get made
-                $this->setup_defaults();
+				// immediately run setup defaults, so db tables get made
+				$this->setup_defaults();
 
 				$output = [
 					'success' => true,
@@ -704,15 +755,15 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// tables to delete
 			$table_names = apply_filters(
 				'burst_all_tables',
-                [
-                    'burst_statistics',
-                    'burst_sessions',
-                    'burst_goals',
-                    'burst_goal_statistics',
-                    'burst_summary',
-	                'burst_archived_months',
-                ],
-            );
+				[
+					'burst_statistics',
+					'burst_sessions',
+					'burst_goals',
+					'burst_goal_statistics',
+					'burst_summary',
+					'burst_archived_months',
+				],
+			);
 
 			// delete tables
 			foreach ( $table_names as $table_name ) {
@@ -722,15 +773,15 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			// options to delete
 			$options = apply_filters(
-                   'burst_table_db_options',
-                   [
-                       'burst_stats_db_version',
-	                   'burst_sessions_db_version',
-                       'burst_goals_db_version',
-                       'burst_goal_stats_db_version',
-                       'burst_archive_db_version'
-                   ],
-                );
+				'burst_table_db_options',
+				[
+					'burst_stats_db_version',
+					'burst_sessions_db_version',
+					'burst_goals_db_version',
+					'burst_goal_stats_db_version',
+					'burst_archive_db_version',
+				],
+			);
 
 			// delete options
 			foreach ( $options as $option_name ) {
@@ -759,7 +810,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 					$wp_roles->remove_cap( $role_name, $capability );
 				}
 			}
-
 
 			// options to delete
 			$options = [
@@ -791,6 +841,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				"SELECT `option_name` AS `name`, `option_value` AS `value`
                                 FROM  $wpdb->options
                                 WHERE `option_name` LIKE '%transient_burst%'
+
                                 ORDER BY `option_name`",
 				'ARRAY_A'
 			);
@@ -799,7 +850,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				$transient_name = substr( $value['name'], 11 );
 				delete_transient( $transient_name );
 			}
-
 		}
 
 		/**

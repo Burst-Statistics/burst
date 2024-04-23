@@ -5,7 +5,20 @@ import useLicenseStore from '../../../store/useLicenseStore';
 import {useState, useEffect} from '@wordpress/element';
 import TaskElement from '../TaskElement';
 import Icon from '../../../utils/Icon';
-const License = ( props ) => {
+
+const License = ({
+  field = {}, // Ensure field has a default value to prevent destructuring errors
+  value = '',
+  onChange = () => {},
+  required = false,
+  disabled = false,
+  className = '',
+  label = ''
+}) => {
+  if ( ! field.id ) { // Check for field.id as a required property
+    console.error( 'License: \'field\' prop is missing the \'id\' or is invalid' );
+    return <div>Error: Configuration error.</div>;
+  }
     const {fields, updateField} = useFields();
     const {licenseStatus, setLicenseStatus} = useLicenseStore();
     const disabledState = {output: {
@@ -47,7 +60,7 @@ const License = ( props ) => {
             });
         } else {
             let data = {};
-            data.license = props.field.value;
+            data.license = field.value;
 
 			doAction( 'activate_license', data ).then( ( response ) => {
                 setLicenseStatus( response.licenseStatus );
@@ -56,7 +69,6 @@ const License = ( props ) => {
         }
     };
 
-    let field = props.field;
     const buttonClass = 'valid' !== licenseStatus ? 'button-primary' : 'button-secondary';
 
 	/**
