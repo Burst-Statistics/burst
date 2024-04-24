@@ -50,6 +50,8 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 	 * @return string
 	 */
 	function burst_track_hit( $data ): string {
+		error_log("incoming hit from Burst");
+		error_log(print_r($data, true));
 		global $wpdb;
 
 		// validate & sanitize all data
