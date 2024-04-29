@@ -13,7 +13,7 @@ Self-hosted and privacy-friendly analytics for WordPress.
 == Description ==
 
 = Unlock the Power of Privacy-Friendly Analytics with Burst Statistics! =
-Burst Statistics keeps all data on your server, making it compatible with privacy laws. Our dashboards offer clear and concise insights, allowing you to make informed decisions without feeling overwhelmed by abundant data. Choose Burst Statistics for seamless and reliable analytics trusted by over 100,000 users.
+Burst Statistics keeps all data on your server, making it compatible with privacy laws. Our dashboards offer clear and concise insights, allowing you to make informed decisions without feeling overwhelmed by abundant data. Choose Burst Statistics for seamless and reliable analytics trusted by over 200,000 users.
 
 **This plugin is free and does not require an account.**
 
