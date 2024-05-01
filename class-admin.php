@@ -256,6 +256,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		public function setup_defaults(): void {
 			if ( get_option( 'burst_set_defaults' ) ) {
 				update_option( 'burst_activation_time', time(), false );
+				update_option( 'burst_last_cron_hit', time(), false );
 				$this->run_table_init_hook();
                 // tables installed, now set defaults
 				$exclude_roles = burst_get_option( 'user_role_blocklist' );

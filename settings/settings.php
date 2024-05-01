@@ -70,7 +70,7 @@ function burst_plugin_admin_scripts() {
 	if ( empty( $js_data ) ) {
 		return;
 	}
-
+	burst_wp_enqueue_media();
 	wp_enqueue_script(
 		'burst-settings',
 		plugins_url( 'build/' . $js_data['js_file'], __FILE__ ),

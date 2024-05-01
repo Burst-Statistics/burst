@@ -33,14 +33,11 @@ const ButtonControl = ({label, field, disabled}) => {
     const executeAction = async( e ) => {
       let data = {};
       await burst_api.doAction( field.action, data ).then( ( response ) => {
-        console.log( response );
         if ( response.success ) {
           toast.success( response.message );
         }
       });
     };
-
-    console.log( field );
 
     return (
         <>

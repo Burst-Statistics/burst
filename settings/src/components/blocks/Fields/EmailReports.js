@@ -120,7 +120,7 @@ const EmailReports = ({name, value, onChange, comment}) => {
                     options={frequencyOptions}
                 />
             ),
-            right: true
+            right: 1
           },
           {
             name: 'Remove',
@@ -129,7 +129,7 @@ const EmailReports = ({name, value, onChange, comment}) => {
                                      value.filter( item => item.email !== row.email ) )}>
                   <Icon name={'trash'} size={18}/>
                 </button>,
-            right: true
+            right: 1
           }
         ]}
                    data={value}

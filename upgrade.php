@@ -99,6 +99,12 @@ function burst_check_upgrade() {
 		}
 	}
 
+	if ( $prev_version
+		&& version_compare( $prev_version, '1.6.2', '<' ) ) {
+		// set default value for the cron check
+		update_option( 'burst_last_cron_hit', time(), false );
+	}
+
 	do_action( 'burst_upgrade', $prev_version );
 	update_option( 'burst-current-version', $new_version, false );
 }

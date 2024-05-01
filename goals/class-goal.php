@@ -5,7 +5,7 @@ if ( ! class_exists( 'burst_goal' ) ) {
 		public $id;
 		public $title             = '';
 		public $type              = 'clicks';
-		public $status            = 'active';
+		public $status            = 'inactive';
 		public $server_side       = false;
 		public $url               = '*';
 		public $conversion_metric = 'visitors';

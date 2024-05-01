@@ -6,9 +6,40 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		function __construct() {
 			add_action( 'burst_every_hour', array( $this, 'update_summary_table_today' ) );
 			add_filter( 'burst_do_action', array( $this, 'refresh_data' ), 10, 3 );
+			add_filter( 'burst_notices', array( $this, 'add_cron_warning'));
+
 			if ( defined( 'BURST_RESTART_SUMMARY_UPGRADE' ) && BURST_RESTART_SUMMARY_UPGRADE ) {
 				$this->restart_update_summary_table_alltime();
 			}
+		}
+
+		/**
+		 *
+		 * @param $warnings
+		 *
+		 * @return array
+		 */
+		public function add_cron_warning( $warnings ){
+			//if this option is still here, don't add the warning just yet.
+			if ( $this->cron_active() ) {
+				return $warnings;
+			}
+
+			$warnings['cron']  = array(
+				'callback' => '_true_',
+				'status' => 'all',
+				'output' => array(
+					'true' => array(
+						'msg' => __( 'Because your cron has not been triggered more than 24 hours, Burst has stopped using the summary tables, which allow the dashboard to load faster.', 'burst-statistics' ),
+						'icon' => 'warning',
+						'url'          => 'https://burst-statistics.com/instructions/cron-error/',
+						'dismissible' => true,
+					),
+				),
+			);
+
+
+			return $warnings;
 		}
 
 		/**
@@ -92,12 +123,30 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 *
 		 * @return bool
 		 */
-		public function upgrade_completed() {
+		public function upgrade_completed(): bool {
 			// if option set to never use summary tables, return false for upgrade completed.
 			if ( defined( 'BURST_DONT_USE_SUMMARY_TABLE' ) ) {
 				return false;
 			}
+
+			if ( burst_get_option('disable_summary') ) {
+				return false;
+			}
+
 			return ! get_option( 'burst_db_upgrade_summary_table' );
+		}
+
+		/**
+		 * Check if the cron has run the last 24 hours
+		 *
+		 * @return bool
+		 */
+		public function cron_active(): bool {
+			$now = time();
+			$last_cron_hit = get_option( 'burst_last_cron_hit', 0 );
+			$diff = $now - $last_cron_hit;
+
+			return $diff <= DAY_IN_SECONDS;
 		}
 
 		/**
@@ -145,6 +194,10 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 * @return void
 		 */
 		public function update_summary_table_today() {
+			if ( ! $this->cron_active() ) {
+				burst_update_option('disable_summary', true);
+			}
+			update_option( 'burst_last_cron_hit', time(), false );
 			// we want to update for yesterday at least once on the next day, to ensure completeness. If completed, continue with normal update process
 			if ( ! $this->summary_table_updated_yesterday() ) {
 				$this->update_summary_table( 1 );

@@ -191,12 +191,6 @@ function burst_fields( $load_values = true ) {
 			'label'    => __( 'Email reports', 'burst-statistics' ),
 			'disabled' => false,
 			'default'  => '',
-			'help'     => [
-				'label' => 'default',
-				'title' => __( 'Email reports', 'burst-statistics' ),
-				'text'  => __( "You can send your reports to multiple recipients. Separate the email addresses by a comma.", 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
-			],
 		],
 		[
 			'id'          => 'logo_attachment_id',
@@ -251,6 +245,15 @@ function burst_fields( $load_values = true ) {
 			'default'  => false,
 		],
 		[
+			'id'       => 'disable_summary',
+			'menu_id'  => 'advanced',
+			'group_id' => 'tracking',
+			'type'     => 'checkbox',
+			'label'    => __( 'Disable the usage of summary tables, speeds up the dashboard on higher traffic environments', 'burst-statistics' ),
+			'disabled' => false,
+			'default'  => false,
+		],
+		[
 			'id'       => 'combine_vars_and_script',
 			'menu_id'  => 'advanced',
 			'group_id' => 'scripts',
@@ -264,6 +267,7 @@ function burst_fields( $load_values = true ) {
 			'disabled' => false,
 			'default'  => false,
 		],
+
 		[
 			'id'       => 'archive_data',
 			'menu_id'  => 'data',

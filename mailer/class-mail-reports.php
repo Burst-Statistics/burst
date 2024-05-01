@@ -23,7 +23,9 @@ if ( ! class_exists( 'burst_mail_reports' ) ) {
 			$mailinglist = burst_get_option( 'email_reports_mailinglist' );
 			$emails      = [];
 			foreach ( $mailinglist as $mailing ) {
-				$emails[] = $mailing['email'];
+				if ( isset($mailing['emails']) ) {
+					$emails[] = $mailing['email'];
+				}
 			}
 			$this->send_report( $emails, $frequency );
 		}
