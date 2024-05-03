@@ -743,6 +743,8 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			}
 
 			global $wp_roles;
+            global $wpdb;
+
 			// capabilities to delete
 			$roles        = $wp_roles->roles;
 			$capabilities = [
