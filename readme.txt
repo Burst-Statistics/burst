@@ -41,6 +41,7 @@ Our team is always working on improving our plugin, and your input as a user can
 Unlock comprehensive insights into your website’s user behavior with Burst Pro. Benefit from advanced features designed to improve performance, boost engagement, and drive conversions. [Elevate your data analysis experience by upgrading to Burst Pro today.](https://burst-statistics.com/pricing/)
 
 Burst Pro Features Include:
+
 * Geo-Tracking: Identify the countries your visitors are coming from.
 * Data Archiving: Automatic archiving and manual restore options.
 * Multiple Goals: Track multiple objectives to measure your site’s success.
