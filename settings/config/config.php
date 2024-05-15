@@ -191,12 +191,6 @@ function burst_fields( $load_values = true ) {
 			'label'    => __( 'Email reports', 'burst-statistics' ),
 			'disabled' => false,
 			'default'  => '',
-			'help'     => [
-				'label' => 'default',
-				'title' => __( 'Email reports', 'burst-statistics' ),
-				'text'  => __( "You can send your reports to multiple recipients. Separate the email addresses by a comma.", 'burst-statistics' ),
-				'url'   => 'https://burst-statistics.com/definition/what-is-cookieless-tracking/',
-			],
 		],
 		[
 			'id'          => 'logo_attachment_id',

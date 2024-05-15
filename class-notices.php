@@ -157,6 +157,18 @@ if ( ! class_exists( "burst_notices" ) ) {
 						],
 					],
 				],
+				'new_email_reporting' => [
+					'callback'  => '_true_',
+					'output'    => [
+						'true' => [
+							'msg'         => __( "New! Send weekly or monthly email reports to multiple recipients.", 'burst-statistics' ),
+							'icon'        => 'new',
+							'url'         => '#settings',
+							'dismissible' => true,
+							'plusone'     => false,
+						],
+					],
+				],
 				'leave-feedback' => [
 					'callback' => '_true_',
 					'status' => 'all',
