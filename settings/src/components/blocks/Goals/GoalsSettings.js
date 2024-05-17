@@ -4,6 +4,7 @@ import {__} from '@wordpress/i18n';
 import Icon from '../../../utils/Icon';
 import GoalSetup from '../Goals/GoalSetup';
 import {useEffect, useState} from '@wordpress/element';
+import * as Popover from '@radix-ui/react-popover';
 import Pro from '../Fields/Pro';
 import {useFields} from '../../../store/useFieldsStore';
 
@@ -21,8 +22,8 @@ const GoalsSettings = ( props ) => {
         }
     }, [ fieldsLoaded, getFieldValue( 'enable_cookieless_tracking' ) ]);
 
-    const handleAddPredefinedGoal = async( goal ) => {
-        await addPredefinedGoal( goal.id, goal.type, cookieless );
+    const handleAddPredefinedGoal = ( goal ) => {
+      addPredefinedGoal( goal.id, goal.type, cookieless );
 
         setPredefinedGoalsVisible( false );
     };
@@ -55,35 +56,34 @@ const GoalsSettings = ( props ) => {
                   >
                       {__( 'Add goal', 'burst-statistics' )}
                   </button>
-                  {/*<div className="burst-button-dropdown-container">*/}
-                  {/*    <button*/}
-                  {/*        className={ predefinedGoalsButtonClass+' burst-button burst-button--secondary'}*/}
-                  {/*        onClick={() => setPredefinedGoalsVisible(!predefinedGoalsVisible) }*/}
-                  {/*    >*/}
-                  {/*        {__('Add predefined goal', 'burst-statistics')} <Pro pro={{url:'https://burst-statistics.com/predefined-goals'}} id={'predefined-goals'}/>*/}
-                  {/*        <Icon name={predefinedGoalsVisible? "chevron-up" : "chevron-down"} color={'grey'}/>*/}
-                  {/*    </button>*/}
-                  {/*    {*/}
-                  {/*        predefinedGoalsVisible && <div className="burst-button-dropdown">*/}
-                  {/*            { !predefinedGoals || predefinedGoals.length ===0 &&*/}
-                  {/*                    <div className={'burst-button-dropdown__row'}>*/}
-                  {/*                        {__("No predefined goals available", "burst-statistics")}*/}
-                  {/*                    </div>*/}
-                  {/*            }*/}
-                  {/*            { predefinedGoals && predefinedGoals.length>0 && predefinedGoals.map((goal, index) => {*/}
-                  {/*                return (*/}
-                  {/*                        <div key={index} className={goal.type === 'hook' && cookieless ? 'burst-button-dropdown__row burst-inactive' : 'burst-button-dropdown__row'} onClick={() => handleAddPredefinedGoal(goal) }>*/}
-                  {/*                            {goal.title}*/}
-                  {/*                            {goal.type === 'hook' && cookieless && <>*/}
-                  {/*                              <Icon name={'error'} color={'black'} tooltip={__("Not available in combination with cookieless tracking", 'burst-statistics')}/>*/}
-                  {/*                            </>}*/}
-                  {/*                        </div>*/}
-                  {/*                    )*/}
-                  {/*                })*/}
-                  {/*            }*/}
-                  {/*      </div>*/}
-                  {/*    }*/}
-                  {/*</div>*/}
+                { predefinedGoals && 1 <= predefinedGoals.length &&
+                    <Popover.Root open={predefinedGoalsVisible} onOpenChange={setPredefinedGoalsVisible}>
+                      <Popover.Trigger asChild>
+                        <button className={ predefinedGoalsButtonClass + ' burst-button burst-button--secondary'}>
+                          {__( 'Add predefined goal', 'burst-statistics' )} <Pro pro={{url: 'https://burst-statistics.com/predefined-goals'}} id={'predefined-goals'}/>
+                          <Icon name={predefinedGoalsVisible ? 'chevron-up' : 'chevron-down'} color={'grey'}/>
+                      </button>
+                      </Popover.Trigger>
+                      <Popover.Portal>
+                        <Popover.Content
+                            className="burst-button-dropdown"
+                            sideOffset={5}
+                            align={'end'}
+                        >
+                              {  predefinedGoals.map( ( goal, index ) => {
+                                  return (
+                                          <div key={index} className={'hook' === goal.type && cookieless ? 'burst-button-dropdown__row burst-inactive' : 'burst-button-dropdown__row'} onClick={() => handleAddPredefinedGoal( goal ) }>
+                                            <Icon name={'plus'} size={18} color="grey"/>
+                                              {goal.title}
+                                              {'hook' === goal.type && cookieless && <Icon name={'error'} color={'black'} tooltip={__( 'Not available in combination with cookieless tracking', 'burst-statistics' )}/>}
+                                          </div>
+                                      );
+                                  })
+                              }
+                        </Popover.Content>
+                      </Popover.Portal>
+                    </Popover.Root>
+                }
               </div>
           )}
             {! burst_settings.is_pro && (

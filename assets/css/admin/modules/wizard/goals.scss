@@ -281,7 +281,7 @@
   }
 }
 .burst-button-dropdown-container {
-  position:relative;
+  background: var(--rsp-grey-100);
   .burst-button {
     display:flex;
     .burst-icon {
@@ -289,37 +289,41 @@
       margin-left: 5px;
     }
   }
-  .burst-button-dropdown {
-    //todo fix this
-    //@extend .burst-button;
-    //@extend .burst-button--secondary;
-    background: var(--rsp-grey-100);
-    color: var(--rsp-text-color-light);
-    border: 1px solid var(--rsp-grey-400);
-    width: fit-content;
-    font-size: var(--button-font-size);
-    font-weight: var(--button-font-weight);
-    line-height: var(--button-line-height);
-    letter-spacing: var(--button-letter-spacing);
-    transition: var(--button-transition);
-    min-height: var(--button-min-height);
-    margin: 0;
-    padding: var(--button-padding);
-    border-radius: var(--button-border-radius);
-    text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    &__row{
-      display:flex;
-      cursor:pointer;
-      &.burst-inactive{
-        color: var(--rsp-grey-400 );
-      }
-      .burst-icon {
-        margin-left: 5px;
-        margin-top:2px;
-      }
+}
+
+.burst-button-dropdown {
+  background: var(--rsp-grey-100);
+  color: var(--rsp-text-color-light);
+  border: 1px solid var(--rsp-grey-400);
+  width: fit-content;
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  line-height: var(--button-line-height);
+  letter-spacing: var(--button-letter-spacing);
+  transition: var(--button-transition);
+  min-height: var(--button-min-height);
+  margin: 0;
+  border-radius: var(--button-border-radius);
+  text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+  &__row{
+    display:flex;
+    cursor:pointer;
+    padding: var(--rsp-spacing-xxs) var(--rsp-spacing-xs);
+    gap: var(--rsp-spacing-xs);
+    align-items: center;
+    &:hover{
+      background: var(--rsp-grey-300);
     }
 
+    &.burst-inactive{
+      color: var(--rsp-grey-400 );
+    }
+    .burst-icon {
+      margin-left: 5px;
+      margin-top:2px;
+    }
   }
+
 }

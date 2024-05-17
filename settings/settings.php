@@ -1314,6 +1314,7 @@ function burst_get_posts( $request, $ajax_data = false ) {
 			);
 		}
 
+
 		return new WP_REST_Response(
 			array(
 				'request_success' => true,

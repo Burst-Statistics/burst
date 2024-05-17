@@ -4,22 +4,25 @@ defined( 'ABSPATH' ) or die();
 if ( ! class_exists( "burst_goals_tracker" ) ) {
 	class burst_goals_tracker {
 		public function __construct() {
-			add_action('init', array( $this, 'add_dynamic_hooks' ) );
+			add_action( 'init', array( $this, 'add_dynamic_hooks' ) );
+
 		}
 
 		public function add_dynamic_hooks(): void {
-			$goals = burst_get_active_goals(true);
+			error_log( 'add_dynamic_hooks' );
+			$goals = burst_get_active_goals( true );
 			require_once burst_path . 'goals/class-goal.php';
-			foreach ( $goals as $goal) {
-				$goal = new burst_goal($goal['ID']);
+			foreach ( $goals as $goal ) {
+				$goal = new burst_goal( $goal['ID'] );
 				if ( $goal->type !== 'hook' ) {
 					continue;
 				}
 				$hook = $goal->hook;
 				if ( $hook ) {
-					add_action( $hook, function() use ($hook) {
-						$this->handle_hook($hook);
-					});
+					error_log( 'add_action ' . $hook );
+					add_action( $hook, function() use ( $hook ) {
+						$this->handle_hook( $hook );
+					} );
 				}
 			}
 		}
@@ -29,23 +32,24 @@ if ( ! class_exists( "burst_goals_tracker" ) ) {
 		 *
 		 * @param string $find_hook_name
 		 *
-		 * @return int|bool
+		 * @return burst_goal|bool
 		 */
-		public function get_goal_by_hook_name( string $find_hook_name) {
-			$goals = burst_get_active_goals(true);
+		public function get_goal_by_hook_name( string $find_hook_name ) {
+			$goals = burst_get_active_goals( true );
 			require_once burst_path . 'goals/class-goal.php';
 
-			foreach ( $goals as $goal) {
-				$goal = new burst_goal($goal['ID']);
+			foreach ( $goals as $goal ) {
+				$goal = new burst_goal( $goal['ID'] );
 				if ( $goal->type !== 'hook' ) {
 					continue;
 				}
 
 				$hook = $goal->hook;
 				if ( $hook === $find_hook_name ) {
-					return $goal->id;
+					return $goal;
 				}
 			}
+
 			return false;
 		}
 
@@ -56,23 +60,44 @@ if ( ! class_exists( "burst_goals_tracker" ) ) {
 		 *
 		 * @return void
 		 */
-		public function handle_hook( string $hook_name): void {
-			//get cookie burst_uid
-			$burst_uid = isset($_COOKIE['burst_uid']) ? burst_sanitize_uid($_COOKIE['burst_uid']) : false;
-			//we assume there has at least been one interaction clientside, so there should be a uid.
+		public function handle_hook( string $hook_name ): void {
+			error_log( 'handle_hook ' . $hook_name );
+
+			// get cookie burst_uid
+			$burst_uid = isset( $_COOKIE['burst_uid'] ) ? burst_sanitize_uid( $_COOKIE['burst_uid'] ) : false;
+			// we assume there has at least been one interaction clientside, so there should be a uid.
 			if ( $burst_uid ) {
-				$statistic = burst_get_last_user_statistic( $burst_uid, false);
+				error_log( 'burst_uid ' . $burst_uid );
+				$statistic    = burst_get_last_user_statistic( $burst_uid, false );
 				$statistic_id = $statistic['ID'] ?? false;
-				if ( !$statistic_id ) {
+				if ( ! $statistic_id ) {
 					return;
 				}
+				$page_url = $statistic['entire_page_url'] ?? false;
+
 				//get the goal by $hook_name.
-				$goal_id = $this->get_goal_by_hook_name($hook_name);
+				$goal = $this->get_goal_by_hook_name( $hook_name );
+				if ( ! $goal ) {
+					return;
+				}
+				//if the goal should be tracked on a specific page only, check if the current page is the page to track.
+				if ( $goal->page_or_website === 'page' ) {
+					//this is a relative url
+					$tracking_page = $goal->specific_page;
+					if ( $page_url && strpos( $page_url, $tracking_page ) === false ) {
+						return;
+					}
+				}
+
 				$goal_arr = array(
-					'goal_id'      => $goal_id,
+					'goal_id'      => $goal->id,
 					'statistic_id' => $statistic_id,
 				);
+				error_log( 'burst_create_goal_statistic' );
+				error_log( print_r( $goal_arr, true ) );
 				burst_create_goal_statistic( $goal_arr );
+			} else {
+				burst_error_log( 'No burst_uid found in handle_hook' );
 			}
 		}
 
