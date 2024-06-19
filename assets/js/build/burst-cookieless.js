@@ -1286,9 +1286,11 @@ let burst_api_request = obj => {
 
 		// if browser supports sendBeacon use it
 		if ( burst.options.beacon_enabled ) {
-
-			// send the request using sendBeacon
-			window.navigator.sendBeacon( burst.beacon_url, JSON.stringify( obj.data ) );
+			const headers = {
+				type: 'application/json',
+			};
+			const blob = new Blob([JSON.stringify(obj.data)], headers);
+			window.navigator.sendBeacon(burst.beacon_url, blob);
 			resolve( 'ok' );
 		} else {
 			let burst_token = 'token=' + Math.random().toString( 36 ).replace( /[^a-z]+/g, '' ).substring( 0, 7 );
