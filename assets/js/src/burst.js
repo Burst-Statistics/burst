@@ -405,6 +405,27 @@ document.addEventListener( 'load', burst_track_hit );
 		burst_track_hit();
 	});
 
+	//for Single Page Applications, we listen to the url changes as well.
+	const originalPushState = history.pushState;
+	const originalReplaceState = history.replaceState;
+
+	const handleUrlChange = () => {
+		burst_initial_track_hit = false;
+		burst_track_hit();
+	}
+
+	history.pushState = function(state, title, url) {
+		originalPushState.apply(history, arguments);
+		handleUrlChange();
+	};
+
+	history.replaceState = function(state, title, url) {
+		originalReplaceState.apply(history, arguments);
+		handleUrlChange();
+	};
+
+	window.addEventListener('popstate', handleUrlChange);
+
 	// add event so other plugins can add their own events
 	document.addEventListener( 'burst_enable_cookies', function() {
 		burst_enable_cookies();
