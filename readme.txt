@@ -6,14 +6,13 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.5
-Stable tag: 1.6.1
+Stable tag: 1.6.0
 
-Self-hosted and privacy-friendly analytics for WordPress.
+Self-hosted, privacy-friendly WordPress stats. Simple interface, no setup. Get detailed analytics with Burst Statistics.
 
 == Description ==
-
 = Unlock the Power of Privacy-Friendly Analytics with Burst Statistics! =
-Burst Statistics keeps all data on your server, making it compatible with privacy laws. Our dashboards offer clear and concise insights, allowing you to make informed decisions without feeling overwhelmed by abundant data. Choose Burst Statistics for seamless and reliable analytics trusted by over 200,000 users.
+Self-hosted, privacy-friendly WordPress stats with Burst Statistics! Our dashboards offer clear and concise insights, allowing you to make informed decisions without feeling overwhelmed by abundant data. Choose Burst Statistics for seamless and reliable analytics trusted by over 200,000 users.
 
 **This plugin is free and does not require an account.**
 
@@ -24,6 +23,7 @@ Burst Statistics keeps all data on your server, making it compatible with privac
 * **Track Your Goals:** Easily track your custom goals and keep track of conversions.
 * **Free Support:** Feel free to reach out to us for assistance. We would be happy to help in any way we can.
 * **Simplicity:** User-friendly analytics that does not overwhelm you with data.
+* **Email Reporting:** Receive regular email reports on your website’s stats.
 
 = Here’s a review from one of our users: =
 >“On-premise Analytics is a great, if not the best, alternative to Google Analytics in the GDPR era. On top of that, since it’s native to WordPress, it’s so easy to configure Goals, etc. That’s awesome.”
@@ -40,13 +40,15 @@ Our team is always working on improving our plugin, and your input as a user can
 = Get even more insight with Burst Pro =
 Unlock comprehensive insights into your website’s user behavior with Burst Pro. Benefit from advanced features designed to improve performance, boost engagement, and drive conversions. [Elevate your data analysis experience by upgrading to Burst Pro today.](https://burst-statistics.com/pricing/)
 
-Burst Pro Features Include:
+Burst Pro Features include:
 
-* Geo-Tracking: Identify the countries your visitors are coming from.
-* Data Archiving: Automatic archiving and manual restore options.
-* Multiple Goals: Track multiple objectives to measure your site’s success.
-* More metrics: Get more insights into your website’s performance.
-* Premium Support: Premium Support from our fantastic team.
+* **Geo-Tracking:** Identify the countries your visitors are coming from.
+* **Data Archiving:** Automatic archiving and manual restore options.
+* **Multiple Goals:** Track multiple objectives to measure your site’s success.
+* **More metrics:** Get more insights into your website’s performance.
+* **Premium Support:** Premium Support from our fantastic team.
+* **URL Parameter Tracking:** Monitor the effectiveness of your URL parameters.
+* **UTM Campaign Tracking:** Track the performance of your marketing campaigns.
 
 For upcoming features, please [visit our roadmap on our website.](https://burst-statistics.com/development-roadmap/)
 
