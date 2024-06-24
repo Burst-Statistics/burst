@@ -8,6 +8,17 @@ let burst_page_url = window.location.href;
 let burst_completed_goals = [];
 let burst_goals_script_url = burst.goals_script_url ? burst.goals_script_url : './burst-goals.js';
 
+// Set up a promise for when the page is activated,
+// which is needed for prerendered pages.
+const pageIsRendered = new Promise((resolve) => {
+	if ( document.prerendering ) {
+		document.addEventListener('prerenderingchange', resolve, {once: true});
+	} else {
+		resolve();
+	}
+});
+
+
 /**
  * Setup Goals if they exist for current page
  * @returns {Promise<void>}
@@ -258,15 +269,16 @@ let burst_api_request = obj => {
  */
 
 async function burst_update_hit( update_uid = false ) {
+	await pageIsRendered;
 	if ( burst_is_user_agent() ) {
-return;
-}
+		return;
+	}
 	if ( burst_is_do_not_track() ) {
-return;
-}
+		return;
+	}
 	if ( ! burst_initial_track_hit ) {
-return;
-}
+		return;
+	}
 
 	let event = new CustomEvent( 'burst_before_update_hit', {detail: burst});
 	document.dispatchEvent( event );
@@ -305,6 +317,8 @@ return;
  *
  */
 async function burst_track_hit() {
+	await pageIsRendered;
+
 	if ( burst_initial_track_hit ) { // if the initial track hit has already been fired, we just update the hit
 		burst_update_hit();
 		return;
