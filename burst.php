@@ -8,7 +8,7 @@
  * Requires PHP: 7.2
  * Text Domain: burst-statistics
  * Domain Path: /languages
- * Author: Burst Statistics - Analytics & Stats
+ * Author: Burst Statistics - Stats & Analytics
  * Author URI: https://burst-statistics.com
  */
 
