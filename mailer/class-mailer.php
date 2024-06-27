@@ -36,7 +36,7 @@ if ( ! class_exists( 'burst_mailer' ) ) {
 			$this->domain                      = '<a class="burst-intro-url" href="' . site_url() . '">' . $this->pretty_domain . '</a>';
 			$this->logo                        = burst_url . '/assets/img/burst-email-logo.png';
 			$this->sent_by_text                = __( 'This e-mail is sent from your own WordPress website, which is:', 'burst-statistics' ) . ' ' . $this->pretty_domain . '.' . '<br />' .
-									__( "If you don't want to receive these e-mails in your inbox. Please go to the Burst settings page on your website and disable the email report setting or contact the administrator of your website.", 'burst-statistics' );
+									__( "If you don't want to receive these e-mails in your inbox, please go to the Burst settings page on your website and disable the email report setting or contact the administrator of your website.", 'burst-statistics' );
 			$this->subject                     = sprintf( _x( "You're weekly insights for %s are here!", 'domain name', 'burst-statistics' ), $this->pretty_domain );
 			$this->button_text                 = __( 'See full report', 'burst-statistics' );
 			$this->title                       = sprintf( _x( "You're weekly insights for %s are here!", 'domain name', 'burst-statistics' ), '<br /><span style="font-size: 30px; font-weight: 700">' . $this->pretty_domain . '</span><br />' );

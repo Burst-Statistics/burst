@@ -20,6 +20,63 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			}
 		}
 
+
+		/**
+		 * Mapping of shifted columsn to correct columns
+		 * fragment should be cleared for affected rows.
+		 * parameters should be cleared for affected rows
+		 * referrer should get values from parameters
+		 * browser should get values from fragment
+		 * browser_vesion should get values from referrer
+		 * platform should get values from browser
+		 *
+		 * @return void
+		 */
+
+		public function fix_shifted_columns(): void {
+			if ( !burst_admin_logged_in() ) {
+				return;
+			}
+
+			$option_name = 'burst_db_upgrade_shifted_columns';
+			if ( ! get_option( $option_name ) ) {
+				return;
+			}
+
+			if ( ! $this->has_shifted_columns() ) {
+				burst_error_log("no shifted columns detected");
+				delete_option( $option_name );
+				return;
+			}
+
+			burst_error_log("fixing shifted columns");
+			global $wpdb;
+			$sql = "UPDATE {$wpdb->prefix}_burst_statistics
+					SET 
+					    referrer = parameters,
+					    browser = fragment,
+					    browser_version = referrer,
+					    platform = browser,
+					    fragment = NULL,
+					    parameters = NULL
+					WHERE browser_version IN ('mobile', 'desktop', 'tablet', 'other');";
+			$wpdb->query($sql);
+			delete_option( $option_name );
+		}
+
+		/**
+		 * Count if there are columns that have been shifted
+		 *
+		 * @return bool
+		 */
+		private function has_shifted_columns(): bool {
+			global $wpdb;
+			$sql = "SELECT count(*) FROM {$wpdb->prefix}_burst_statistics where browser_version='mobile' OR browser_version='desktop' OR browser_version='other' or browser_version='tablet'";
+			$affected = $wpdb->get_var($sql);
+
+			return $affected > 0;
+		}
+
 		/**
 		 * Init the upgrades
 		 * - upgrade only if admin is logged in
@@ -75,6 +132,10 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 				BURST()->summary->upgrade_summary_table_alltime();
 			}
 
+			if ( $do_upgrade === 'shifted_columns' ) {
+				$this->fix_shifted_columns();
+			}
+
 			delete_transient( 'burst_upgrade_running' );
 		}
 
@@ -94,6 +155,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 					'empty_referrer_when_current_domain',
 					'strip_domain_names_from_entire_page_url',
 					'summary_table',
+					'shifted_columns',
 				)
 			);
 		}

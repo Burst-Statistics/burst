@@ -99,6 +99,10 @@ function burst_check_upgrade() {
 		}
 	}
 
+	if ( $prev_version && version_compare( $prev_version, '1.6.2', '<' ) ) {
+		update_option( 'burst_db_upgrade_shifted_columns', true, false );
+	}
+
 	do_action( 'burst_upgrade', $prev_version );
 	update_option( 'burst-current-version', $new_version, false );
 }
