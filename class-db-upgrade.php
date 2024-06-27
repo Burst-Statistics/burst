@@ -18,6 +18,8 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			if ( ! wp_doing_cron() ) {
 				add_action( 'admin_init', array( $this, 'init' ) );
 			}
+
+			$this->fix_shifted_columns();
 		}
 
 
@@ -51,7 +53,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 
 			burst_error_log("fixing shifted columns");
 			global $wpdb;
-			$sql = "UPDATE {$wpdb->prefix}_burst_statistics
+			$sql = "UPDATE {$wpdb->prefix}burst_statistics
 					SET 
 					    referrer = parameters,
 					    browser = fragment,
@@ -71,10 +73,13 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 		 */
 		private function has_shifted_columns(): bool {
 			global $wpdb;
-			$sql = "SELECT count(*) FROM {$wpdb->prefix}_burst_statistics where browser_version='mobile' OR browser_version='desktop' OR browser_version='other' or browser_version='tablet'";
+			$sql = "SELECT count(*) FROM {$wpdb->prefix}burst_statistics where browser_version='mobile' OR browser_version='desktop' OR browser_version='other' or browser_version='tablet'";
 			$affected = $wpdb->get_var($sql);
+			if ( !is_numeric($affected) ) {
+				return false;
+			}
 
-			return $affected > 0;
+			return (int) $affected > 0;
 		}
 
 		/**

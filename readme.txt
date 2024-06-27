@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.5
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 
 Self-hosted, privacy-friendly WordPress stats. Simple interface, no setup. Get detailed analytics with Burst Statistics.
 
