@@ -1,11 +1,10 @@
-
-import {getData} from '../utils/api';
+import { getData } from '../utils/api';
 import {
   formatNumber, formatTime,
   getBouncePercentage,
   getChangePercentage, getPercentage
 } from '../utils/formatting';
-import {__} from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 const metrics = {
   'pageviews': __( 'Pageviews', 'burst-statistics' ),
@@ -19,55 +18,58 @@ const goalMetrics = {
   'pageviews': __( 'Pageviews', 'burst-statistics' ),
   'sessions': __( 'Sessions', 'burst-statistics' ),
   'visitors': __( 'Visitors', 'burst-statistics' )
-
 };
 
 const templates = {
   default: {
     pageviews: ( curr, prev ) => ({
       title: __( 'Pageviews', 'burst-statistics' ),
-      subtitle: `${formatNumber( curr.pageviews / curr.sessions )} ${__( 'pageviews per session', 'burst-statistics' )}`,
-      value: formatNumber( curr.pageviews )
-
+      subtitle: __( '%s pageviews per session', 'burst-statistics' ).replace( '%s', formatNumber( curr.pageviews / curr.sessions ) ),
+      value: formatNumber( curr.pageviews ),
+      exactValue: curr.pageviews
     }),
     sessions: ( curr, prev ) => ({
       title: __( 'Sessions', 'burst-statistics' ),
-      subtitle: `${formatTime( curr.pageviews / curr.sessions * curr.avg_time_on_page )} ${__( 'per session', 'burst-statistics' )}`,
-      value: formatNumber( curr.sessions )
-
+      subtitle: __( '%s per session', 'burst-statistics' ).replace( '%s', formatTime( curr.pageviews / curr.sessions * curr.avg_time_on_page ) ),
+      value: formatNumber( curr.sessions ),
+      exactValue: curr.sessions
     }),
     visitors: ( curr, prev ) => ({
       title: __( 'Visitors', 'burst-statistics' ),
-      subtitle: `${getPercentage( curr.first_time_visitors, curr.visitors )} ${__( 'are new visitors', 'burst-statistics' )}`,
-      value: formatNumber( curr.visitors )
-
+      subtitle: __( '%s are new visitors', 'burst-statistics' ).replace( '%s', getPercentage( curr.first_time_visitors, curr.visitors ) ),
+      value: formatNumber( curr.visitors ),
+      exactValue: curr.visitors
     }),
     bounced_sessions: ( curr, prev ) => ({
       title: __( 'Bounce Rate', 'burst-statistics' ),
-      subtitle: `${curr.bounced_sessions} ${__( 'visitors bounced', 'burst-statistics' )}`,
+      subtitle: __( '%s visitors bounced', 'burst-statistics' ).replace( '%s', curr.bounced_sessions ),
       value: getBouncePercentage( curr.bounced_sessions, curr.sessions )
     })
   },
   goalSelected: {
     conversions: ( curr, prev ) => ({
       title: __( 'Conversions', 'burst-statistics' ),
-      subtitle: `${getPercentage( curr.conversion_rate, 100 )} ${__( 'of pageviews converted', 'burst-statistics' )}`,
-      value: formatNumber( curr.conversions )
+      subtitle: __( '%s of pageviews converted', 'burst-statistics' ).replace( '%s', getPercentage( curr.conversion_rate, 100 ) ),
+      value: formatNumber( curr.conversions ),
+      exactValue: curr.conversions
     }),
     pageviews: ( curr, prev ) => ({
       title: __( 'Pageviews', 'burst-statistics' ),
-      subtitle: `${formatNumber( curr.pageviews / curr.conversions )} ${__( 'pageviews per conversion', 'burst-statistics' )}`,
-      value: formatNumber( curr.pageviews )
+      subtitle: __( '%s pageviews per conversion', 'burst-statistics' ).replace( '%s', formatNumber( curr.pageviews / curr.conversions ) ),
+      value: formatNumber( curr.pageviews ),
+      exactValue: curr.pageviews
     }),
     sessions: ( curr, prev ) => ({
       title: __( 'Sessions', 'burst-statistics' ),
-      subtitle: `${formatNumber( curr.sessions / curr.conversions )} ${__( 'sessions per conversion', 'burst-statistics' )}`,
-      value: formatNumber( curr.sessions )
+      subtitle: __( '%s sessions per conversion', 'burst-statistics' ).replace( '%s', formatNumber( curr.sessions / curr.conversions ) ),
+      value: formatNumber( curr.sessions ),
+      exactValue: curr.sessions
     }),
     visitors: ( curr, prev ) => ({
       title: __( 'Visitors', 'burst-statistics' ),
-      subtitle: `${formatNumber( curr.visitors / curr.conversions )} ${__( 'visitors per conversion', 'burst-statistics' )}`,
-      value: formatNumber( curr.visitors )
+      subtitle: __( '%s visitors per conversion', 'burst-statistics' ).replace( '%s', formatNumber( curr.visitors / curr.conversions ) ),
+      value: formatNumber( curr.visitors ),
+      exactValue: curr.visitors
     })
   }
 };
@@ -85,10 +87,6 @@ const transformCompareData = ( response ) => {
     selectedMetrics = goalMetrics;
   }
   const selectedTemplate = templates[templateType];
-
-  // const templateType = filters.goal_id > 0 ? 'goalSelected' : 'default';
-  // const selectedMetrics = filters.goal_id > 0 ? goalMetrics : metrics;
-  // const selectedTemplate = templates[templateType];
 
   Object.entries( selectedMetrics ).forEach( ([ key, value ]) => {
     const templateFunction = selectedTemplate[key] || templates.default[key];
@@ -128,7 +126,6 @@ const getCompareData = async({ startDate, endDate, range, args }) => {
       args
   );
   return transformCompareData( data );
-
 };
-export default getCompareData;
 
+export default getCompareData;

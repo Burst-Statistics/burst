@@ -5,19 +5,8 @@ import { getPosts } from '../../../utils/api';
 import Icon from '../../../utils/Icon';
 import { formatNumber } from '../../../utils/formatting';
 import debounce from 'lodash/debounce';
-
-const fetchPosts = async( inputValue = '' ) => {
-  const response = await getPosts( inputValue );
-
-  // Map the response to the expected format
-  return ( response || []).map( post => ({
-    value: post.page_url,
-    label: post.page_url,
-    page_id: post.page_id,
-    post_title: post.post_title,
-    pageviews: post.pageviews
-  }) );
-};
+import usePostsStore from "../../../store/usePostsStore";
+import {useEffect} from "react";
 
 // Option layout component
 const OptionLayout = ({ innerProps, innerRef, data }) => {
@@ -38,17 +27,20 @@ const OptionLayout = ({ innerProps, innerRef, data }) => {
 
 // Main SelectPage component
 const SelectPage = ({ value, onChangeHandler, field }) => {
+    const {
+        fetchPosts,
+    } = usePostsStore();
   const [ search, setSearch ] = useState( '' );
   const posts = useQuery(
       [ 'defaultPosts', search ],
       () => fetchPosts( search )
   );
 
-  // cache the first '' empty fetchPosts call so we can use it as the default value
-  const firstPosts = useRef( posts.data );
-  if ( firstPosts.current === undefined && posts.data !== undefined ) {
-    firstPosts.current = posts.data;
-  }
+    // cache the first '' empty fetchPosts call so we can use it as the default value
+  // const firstPosts = useRef( posts.data );
+  // if ( firstPosts.current === undefined && posts.data !== undefined ) {
+  //   firstPosts.current = posts.data;
+  // }
 
   // Load options function with debounce
   const loadOptions = debounce( async( input, callback ) => {
@@ -63,15 +55,15 @@ const SelectPage = ({ value, onChangeHandler, field }) => {
         <AsyncCreatableSelect
             classNamePrefix="burst-select"
             onChange={( e ) => {
- onChangeHandler( e.value );
-}}
+             onChangeHandler( e.value );
+            }}
             isLoading={posts.isLoading}
             isSearchable={true}
             name="selectPage"
             cacheOptions
             defaultValue={value}
             defaultInputValue={value}
-            defaultOptions={firstPosts.current}
+            //defaultOptions={firstPosts.current}
             loadOptions={loadOptions}
             components={{ Option: OptionLayout }}
             theme={( theme ) => ({

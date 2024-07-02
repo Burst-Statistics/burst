@@ -15,6 +15,9 @@
 
 /* Button Base Styles */
 a.burst-button, button.burst-button, input.burst-button {
+  display: flex;
+  align-items: center;
+  gap: var(--rsp-spacing-xxs);
   font-size: var(--button-font-size);
   font-weight: var(--button-font-weight);
   line-height: var(--button-line-height);

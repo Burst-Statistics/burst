@@ -3,14 +3,15 @@ import * as TooltipUI from '@radix-ui/react-tooltip';
 
 const Tooltip = ({
   children,
-  content
+  content,
+  delayDuration = 400
 }) => {
   if ( ! content ) {
     return <>{children}</>;
   }
   return (
       <TooltipUI.Provider>
-        <TooltipUI.Root delayDuration={400} >
+        <TooltipUI.Root delayDuration={delayDuration} >
           <TooltipUI.Trigger asChild>
             {children}
           </TooltipUI.Trigger>

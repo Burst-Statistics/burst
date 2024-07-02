@@ -45,7 +45,7 @@ const GoalSetup = ({ goal, goalFields, setGoalValue, deleteGoal, onUpdate }) => 
     setGoalValue( goal.id, 'title', value );
   }
   let type = goal.type;
-  let iconName = type && fields.type && fields.type.options && fields.type.options[type] ? fields.type.options[type].icon : 'eye';
+  let iconName = type && fields[1] && fields[1].options && fields[1].options[type] ? fields[1].options[type].icon : 'eye';
   let title =  goal.title && 0 < goal.title.length ? goal.title : ' ';
   let dateCreated = goal && goal.date_created !== undefined && 1 < goal.date_created ? goal.date_created : 1;
   return (

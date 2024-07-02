@@ -10,6 +10,7 @@ import {useDate} from '../../store/useDateStore';
 import {useFiltersStore} from '../../store/useFiltersStore';
 import {useQuery} from '@tanstack/react-query';
 import getDataTableData from '../../api/getDataTableData';
+import {burst_get_website_url} from '../../utils/lib';
 
 const defaultColumnsOptions = {
   'pageviews': {
@@ -88,8 +89,14 @@ const config = {
           icon: 'filter'
         }
       ],
-      primaryButtonUrl: 'https://burst-statistics.com/pricing/?src=plugin-burst-params-campaigns-upsell',
-      secondaryButtonUrl: 'https://burst-statistics.com/?src=plugin-burst-params-campaigns-upsell'
+      primaryButtonUrl: burst_get_website_url( '/pricing/', {
+        burst_source: 'params-campaigns-upsell',
+        burst_content: 'upgrade'
+      }),
+      secondaryButtonUrl: burst_get_website_url( '/', {
+        burst_source: 'params-campaigns-upsell',
+        burst_content: 'more-info'
+      })
     }
   },
   'referrers': {
@@ -139,8 +146,14 @@ const config = {
           icon: 'filter'
         }
       ],
-      primaryButtonUrl: 'https://burst-statistics.com/pricing/?src=plugin-burst-countries-upsell',
-      secondaryButtonUrl: 'https://burst-statistics.com/?src=plugin-burst-countries-upsell'
+      primaryButtonUrl: burst_get_website_url( '/pricing/', {
+        burst_source: 'countries-upsell',
+        burst_content: 'upgrade'
+      }),
+      secondaryButtonUrl: burst_get_website_url( '/', {
+        burst_source: 'countries-upsell',
+        burst_content: 'more-info'
+      })
     }
   },
   'countries': {

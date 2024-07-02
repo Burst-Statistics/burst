@@ -1070,6 +1070,17 @@ let burst_page_url = window.location.href;
 let burst_completed_goals = [];
 let burst_goals_script_url = burst.goals_script_url ? burst.goals_script_url : './burst-goals.js';
 
+// Set up a promise for when the page is activated,
+// which is needed for prerendered pages.
+const pageIsRendered = new Promise((resolve) => {
+	if ( document.prerendering ) {
+		document.addEventListener('prerenderingchange', resolve, {once: true});
+	} else {
+		resolve();
+	}
+});
+
+
 /**
  * Setup Goals if they exist for current page
  * @returns {Promise<void>}
@@ -1286,9 +1297,11 @@ let burst_api_request = obj => {
 
 		// if browser supports sendBeacon use it
 		if ( burst.options.beacon_enabled ) {
-
-			// send the request using sendBeacon
-			window.navigator.sendBeacon( burst.beacon_url, JSON.stringify( obj.data ) );
+			const headers = {
+				type: 'application/json',
+			};
+			const blob = new Blob([JSON.stringify(obj.data)], headers);
+			window.navigator.sendBeacon(burst.beacon_url, blob);
 			resolve( 'ok' );
 		} else {
 			let burst_token = 'token=' + Math.random().toString( 36 ).replace( /[^a-z]+/g, '' ).substring( 0, 7 );
@@ -1320,15 +1333,16 @@ let burst_api_request = obj => {
  */
 
 async function burst_update_hit( update_uid = false ) {
+	await pageIsRendered;
 	if ( burst_is_user_agent() ) {
-return;
-}
+		return;
+	}
 	if ( burst_is_do_not_track() ) {
-return;
-}
+		return;
+	}
 	if ( ! burst_initial_track_hit ) {
-return;
-}
+		return;
+	}
 
 	let event = new CustomEvent( 'burst_before_update_hit', {detail: burst});
 	document.dispatchEvent( event );
@@ -1367,6 +1381,8 @@ return;
  *
  */
 async function burst_track_hit() {
+	await pageIsRendered;
+
 	if ( burst_initial_track_hit ) { // if the initial track hit has already been fired, we just update the hit
 		burst_update_hit();
 		return;
@@ -1393,7 +1409,6 @@ return;
 		'uid': false,
 		'fingerprint': false,
 		'url': location.href,
-		'page_id': burst.page_id,
 		'referrer_url': document.referrer,
 		'user_agent': navigator.userAgent || 'unknown',
 		'device_resolution': window.screen.width * window.devicePixelRatio + 'x' + window.screen.height * window.devicePixelRatio,
@@ -1466,6 +1481,27 @@ document.addEventListener( 'load', burst_track_hit );
 	document.addEventListener( 'burst_fire_hit', function() {
 		burst_track_hit();
 	});
+
+	//for Single Page Applications, we listen to the url changes as well.
+	const originalPushState = history.pushState;
+	const originalReplaceState = history.replaceState;
+
+	const handleUrlChange = () => {
+		burst_initial_track_hit = false;
+		burst_track_hit();
+	}
+
+	history.pushState = function(state, title, url) {
+		originalPushState.apply(history, arguments);
+		handleUrlChange();
+	};
+
+	history.replaceState = function(state, title, url) {
+		originalReplaceState.apply(history, arguments);
+		handleUrlChange();
+	};
+
+	window.addEventListener('popstate', handleUrlChange);
 
 	// add event so other plugins can add their own events
 	document.addEventListener( 'burst_enable_cookies', function() {

@@ -1,6 +1,7 @@
 import { Component  } from '@wordpress/element';
 import PropTypes from 'prop-types';
 import { __, sprintf } from '@wordpress/i18n';
+import { burst_get_website_url } from '../utils/lib';
 
 class ErrorBoundary extends Component {
   constructor( props ) {
@@ -47,7 +48,13 @@ class ErrorBoundary extends Component {
                   <p>{__( 'We apologize for the inconvenience. As a valued Burst Pro user, we are here to assist you. Please follow the steps below to report this issue:', 'burst-statistics' )}</p>
                   <ol>
                     <li>{sprintf( __( 'Copy the error details by clicking the %s button above.', 'burst-statistics' ), '"Copy Error"' )}</li>
-                    <li><a href="https://burst-statistics.com/support/">{__( 'Visit our support page.', 'burst-statistics' )}</a></li>
+                    <li>
+                      <a href={burst_get_website_url( 'support', {
+                      burst_source: 'error-boundary',
+                      burst_content: 'support'
+                    })} target="_blank" rel="noreferrer">
+                    {__( 'Visit our support page.', 'burst-statistics' )}
+                    </a></li>
                     <li>{sprintf( __( 'Under %s, provide your Name, Email, Website, and License details.', 'burst-statistics' ), '"Log a Support Ticket"' )}</li>
                     <li>{sprintf( __( 'In the %s field, paste the copied error details and describe what you were doing when the error occurred.', 'burst-statistics' ), '"What\'s the problem?"' )}</li>
                     <li>{sprintf( __( 'If possible, attach any relevant files.', 'burst-statistics' ) )}</li>

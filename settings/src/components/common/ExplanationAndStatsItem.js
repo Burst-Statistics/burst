@@ -1,6 +1,9 @@
 import Icon from '../../utils/Icon';
+import Tooltip from '../common/Tooltip';
 
-const ExplanationAndStatsItem = ({ iconKey, title, subtitle, value, change, changeStatus }) => {
+const ExplanationAndStatsItem = ({ iconKey, title, subtitle, value, exactValue, change, changeStatus }) => {
+
+  const tooltipValue = 1000 <  exactValue  ? exactValue : false;
   return (
       <div className="block__explanation-and-stats">
         <Icon name={iconKey} />
@@ -9,7 +12,9 @@ const ExplanationAndStatsItem = ({ iconKey, title, subtitle, value, change, chan
           <p>{subtitle}</p>
         </div>
         <div className="block__explanation-and-stats__right">
-          <span className="burst-h4">{value}</span>
+          <Tooltip content={tooltipValue} delayDuration={1000}>
+            <span className="burst-h4">{value}</span>
+          </Tooltip>
           <p className={'uplift ' + changeStatus}>{change}</p>
         </div>
       </div>

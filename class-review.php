@@ -13,13 +13,12 @@ if ( ! class_exists( "burst_review" ) ) {
 			}
 			self::$_this = $this;
 
-			//uncomment for testing
+			// uncomment for testing
 //						update_option( 'burst_review_notice_shown', false );
 //						update_option( 'burst_activation_time', strtotime( "-5 weeks" ) );
 
-			//show review notice, only to free users
-			if ( ! defined( "burst_pro" ) && ! is_multisite() ) {
-
+			//show review notice, but only on single site installs
+			if ( ! is_multisite() ) {
 				//set a time for users who didn't have it set yet.
 				if ( ! get_option( 'burst_activation_time' ) ) {
 					update_option( 'burst_activation_time', time(), false );
@@ -69,16 +68,6 @@ if ( ! class_exists( "burst_review" ) ) {
 			if ( isset( $_GET['burst_dismiss_review'] ) ) {
 				return;
 			}
-
-			/**
-			 * Prevent notice from being shown on Gutenberg page, as it strips off the class we need for the ajax callback.
-			 *
-			 * */
-			$screen = get_current_screen();
-			if ( $screen->parent_base === 'edit' ) {
-				return;
-			}
-			$hits = 100;
 			?>
             <style>
                 .burst.wrap .notice.burst-review {
@@ -123,7 +112,9 @@ if ( ! class_exists( "burst_review" ) ) {
 									_e( 'Hi, you have been using Burst for more than a month now, awesome!', 'burst-statistics' );
 								} ?>
                             </b>
-							<?php burst_printf( __( 'If you have any questions or feedback, leave us a %smessage%s.', 'burst-statistics' ), '<a href="https://burst-statistics.com/contact" target="_blank">', '</a>' ); ?>
+							<?php burst_printf( __( 'If you have any questions or feedback, leave us a %smessage%s.', 'burst-statistics' ), '<a href="' . burst_get_website_url('support', [
+                                                        'burst_source' => 'review_notice',
+                                ]) . '" target="_blank">', '</a>' ); ?>
                         </p>
                         <p>
 							<?php _e( 'If you have a moment, please consider leaving a review on WordPress.org to spread the word. We greatly appreciate it!', 'burst-statistics' ); ?>

@@ -3,32 +3,13 @@ defined( 'ABSPATH' ) or die( 'you do not have access to this page!' );
 if ( ! class_exists( 'burst_admin' ) ) {
 	class burst_admin {
 		private static $_this;
-		public $error_message = '';
-		public $success_message = '';
-		public $grid_items;
-		public $default_grid_item;
-		public $rows_batch = 200;
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
-				wp_die(
-					burst_sprintf(
-						'%s is a singleton class and you cannot create a second instance.',
-						get_class( $this )
-					)
-				);
+				wp_die();
 			}
 
-			self::$_this             = $this;
-			$this->default_grid_item = array(
-				'title'    => '',
-				'class'    => '',
-				'type'     => '',
-				'can_hide' => false,
-				'controls' => '',
-				'page'     => '',
-				'body'     => '',
-			);
+			self::$_this = $this;
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 			$plugin = burst_plugin;
@@ -113,8 +94,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			global $post;
 			if ( $post && is_object( $post ) ) {
-				$post_id = $post->ID;
-				$count   = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
+				$count = (int) get_post_meta( $post->ID, 'burst_total_pageviews_count', true );
 			} else {
 				$count = 0;
 			}
@@ -148,6 +128,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( ! burst_user_can_manage() ) {
 				return;
 			}
+
 			$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
 			$beacon_enabled  = (int) burst_tracking_status_beacon();
@@ -155,7 +136,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			$localize_args = apply_filters(
 				'burst_tracking_options',
 				[
-					'page_id'               => get_queried_object_id(),
 					'cookie_retention_days' => 30,
 					'beacon_url'            => burst_get_beacon_url(),
 					'options'               => [
@@ -239,12 +219,12 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		 * @param $hook
 		 */
 		public function enqueue_assets( $hook ) {
-			if ( $hook === 'index.php' || $hook === 'dashboard_page_burst' ) {
+			if ( $hook === 'toplevel_page_burst' ) {
 				$min  = ! is_rtl() && ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 				$rtl  = is_rtl() ? 'rtl/' : '';
 				$url  = trailingslashit( burst_url ) . "assets/css/{$rtl}admin{$min}.css";
 				$path = trailingslashit( burst_path ) . "assets/css/{$rtl}admin{$min}.css";
-				wp_enqueue_style( 'burst-admin', $url, array( 'wp-components' ), filemtime( $path ) );
+				wp_enqueue_style( 'burst-admin', $url, [ 'wp-components' ], filemtime( $path ) );
 			}
 		}
 
@@ -256,8 +236,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		public function setup_defaults(): void {
 			if ( get_option( 'burst_set_defaults' ) ) {
 				update_option( 'burst_activation_time', time(), false );
+				update_option( 'burst_last_cron_hit', time(), false );
 				$this->run_table_init_hook();
-                // tables installed, now set defaults
+				// tables installed, now set defaults
 				$exclude_roles = burst_get_option( 'user_role_blocklist' );
 				if ( ! $exclude_roles ) {
 					$defaults = array( 'administrator' );
@@ -265,10 +246,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				}
 
 				$mailinglist = burst_get_option( 'email_reports_mailinglist' );
-                if ( ! $mailinglist ) {
-                    $defaults = array( array('email' => get_option( 'admin_email' ), 'frequency' => 'monthly') );
-                    burst_update_option( 'email_reports_mailinglist', $defaults );
-                }
+				if ( ! $mailinglist ) {
+					$defaults = array( array( 'email' => get_option( 'admin_email' ), 'frequency' => 'monthly' ) );
+					burst_update_option( 'email_reports_mailinglist', $defaults );
+				}
 
 				if ( get_option( 'burst_goals_db_version' ) === false ) {
 					// if there is no goals db version, then we can assume there are no goals database.
@@ -307,23 +288,26 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			$support_link = defined( 'burst_free' )
 				? 'https://wordpress.org/support/plugin/burst-statistics'
-				: 'https://burst-statistics.com/support';
+				: burst_get_website_url( 'support', [
+					'burst_source'  => 'plugin-overview',
+					'burst_content' => 'support-link',
+				] );
 			$faq_link     = '<a target="_blank" href="' . $support_link . '">'
 			                . __( 'Support', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $faq_link );
 
-			// if ( ! defined( 'burst_pro' ) ) {
-			// $upgrade_link
-			// = '<a style="color:#2DAAE1;font-weight:bold" target="_blank" href="https://burst-statistics.com/l/pricing">'
-			// . __( 'Upgrade to pro', 'burst-statistics' ) . '</a>';
-			// array_unshift( $links, $upgrade_link );
-			// }
+			if ( defined( 'burst_pro' ) ) {
+				$upgrade_link
+					= '<a style="color:#2e8a37;font-weight:bold" target="_blank" href="' . burst_get_website_url( 'pricing', [ 'burst_source' => 'plugin-overview' ] ) . '">'
+					  . __( 'Upgrade to Pro', 'burst-statistics' ) . '</a>';
+				array_unshift( $links, $upgrade_link );
+			}
 
 			return $links;
 		}
 
 		/**
-		 * Function to easily add a column in a WordPress post table
+		 * Add counts column
 		 *
 		 * @param $column_title
 		 * @param $post_type
@@ -389,9 +373,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 					$post_type,
 					true,
 					function( $post_id ) {
-						$burst_total_pageviews_count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
-						$count                       = (int) $burst_total_pageviews_count ?: 0;
-						echo $count;
+						echo (int) get_post_meta( $post_id, 'burst_total_pageviews_count', true );
 					}
 				);
 			}
@@ -622,7 +604,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// check for action
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
 				$this->delete_all_burst_data();
-                $this->delete_all_burst_configuration();
+				$this->delete_all_burst_configuration();
 				$plugin  = burst_plugin;
 				$plugin  = plugin_basename( trim( $plugin ) );
 				$current = get_option( 'active_plugins', [] );
@@ -651,10 +633,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				$this->delete_all_burst_data();
 
 				// reset to defaults
-				burst_set_defaults(false);
+				burst_set_defaults( false );
 
-                // immediately run setup defaults, so db tables get made
-                $this->setup_defaults();
+				// immediately run setup defaults, so db tables get made
+				$this->setup_defaults();
 
 				$output = [
 					'success' => true,
@@ -701,15 +683,15 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// tables to delete
 			$table_names = apply_filters(
 				'burst_all_tables',
-                [
-                    'burst_statistics',
-                    'burst_sessions',
-                    'burst_goals',
-                    'burst_goal_statistics',
-                    'burst_summary',
-	                'burst_archived_months',
-                ],
-            );
+				[
+					'burst_statistics',
+					'burst_sessions',
+					'burst_goals',
+					'burst_goal_statistics',
+					'burst_summary',
+					'burst_archived_months',
+				],
+			);
 
 			// delete tables
 			foreach ( $table_names as $table_name ) {
@@ -719,15 +701,15 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			// options to delete
 			$options = apply_filters(
-                   'burst_table_db_options',
-                   [
-                       'burst_stats_db_version',
-	                   'burst_sessions_db_version',
-                       'burst_goals_db_version',
-                       'burst_goal_stats_db_version',
-                       'burst_archive_db_version'
-                   ],
-                );
+				'burst_table_db_options',
+				[
+					'burst_stats_db_version',
+					'burst_sessions_db_version',
+					'burst_goals_db_version',
+					'burst_goal_stats_db_version',
+					'burst_archive_db_version',
+				],
+			);
 
 			// delete options
 			foreach ( $options as $option_name ) {
@@ -743,7 +725,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			}
 
 			global $wp_roles;
-            global $wpdb;
+			global $wpdb;
 
 			// capabilities to delete
 			$roles        = $wp_roles->roles;

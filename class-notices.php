@@ -110,7 +110,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 							'msg' => __( "Please check if your REST API is loading correctly. Your site currently is using the slower Ajax fallback method to load the settings.", 'burst-statistics' ),
 							'icon' => 'warning',
 							'admin_notice' => false,
-							'url' => 'https://burst-statistics.com/instructions/rest-api-error/',
+							'url' => burst_get_website_url('instructions/rest-api-error/', [
+								'burst_source' => 'notices',
+								'burst_content' => 'ajax-fallback'
+							]),
 							'dismissible' => true,
 							'plusone' => true,
 						),
@@ -121,7 +124,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 					'output' => array(
 						'true' => array(
 							'msg' => __( "Due to your server or website configuration it is not possible to track statistics.", 'burst-statistics' ),
-							'url' => 'https://burst-statistics.com/troubleshoot-tracking/',
+							'url' => burst_get_website_url('instructions/tracking-error/', [
+								'burst_source' => 'notices',
+								'burst_content' => 'tracking-error'
+							]),
 							'icon' => 'error',
 							'dismissible' => false,
 						),
@@ -136,7 +142,10 @@ if ( ! class_exists( "burst_notices" ) ) {
 						'true' => [
 							'msg' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ),
 							'icon' => 'pro',
-							'url' => burst_pro_url,
+							'url' => burst_get_website_url('pricing/', [
+								'burst_content' => 'black-friday',
+								'burst_source' => 'notices',
+							]),
 							'dismissible' => true,
 							'plusone' => true,
 						],

@@ -5,10 +5,47 @@ if ( ! class_exists( 'burst_summary' ) ) {
 	class burst_summary {
 		function __construct() {
 			add_action( 'burst_every_hour', array( $this, 'update_summary_table_today' ) );
+			add_action( 'burst_weekly', array( $this, 'update_is_high_traffic' ) );
+			add_action( 'burst_daily', array( $this, 'update_post_meta' ) );
+			add_action( 'burst_upgrade_post_meta', array( $this, 'update_post_meta' ) );
 			add_filter( 'burst_do_action', array( $this, 'refresh_data' ), 10, 3 );
+			add_filter( 'burst_notices', array( $this, 'add_cron_warning'));
+
 			if ( defined( 'BURST_RESTART_SUMMARY_UPGRADE' ) && BURST_RESTART_SUMMARY_UPGRADE ) {
 				$this->restart_update_summary_table_alltime();
 			}
+		}
+
+		/**
+		 *
+		 * @param $warnings
+		 *
+		 * @return array
+		 */
+		public function add_cron_warning( $warnings ){
+			//if this option is still here, don't add the warning just yet.
+			if ( $this->cron_active() ) {
+				return $warnings;
+			}
+
+			$warnings['cron']  = array(
+				'callback' => '_true_',
+				'status' => 'all',
+				'output' => array(
+					'true' => array(
+						'msg' => __( 'Because your cron has not been triggered more than 24 hours, Burst has stopped using the summary tables, which allow the dashboard to load faster.', 'burst-statistics' ),
+						'icon' => 'warning',
+						'url'          => burst_get_website_url('/instructions/cron-error/', [
+							'burst_source' => 'notices',
+							'burst_content ' => 'cron-error'
+						]),
+						'dismissible' => true,
+					),
+				),
+			);
+
+
+			return $warnings;
 		}
 
 		/**
@@ -33,13 +70,22 @@ if ( ! class_exists( 'burst_summary' ) ) {
 
 		/**
 		 * Check if all items are summary data
-		 *
 		 * @param array $items
+		 * @param array $filters
+		 * @param int   $start
+		 * @param int   $end
 		 *
 		 * @return bool
 		 */
-		public function is_summary_data( array $items, array $filters, int $end ): bool {
+		public function is_summary_data( array $items, array $filters, int $start, int $end ): bool {
 			if ( ! empty( $filters ) ) {
+				return false;
+			}
+
+			//if the difference between start and end is below x months, we don't use summary data.
+			$three_months = 3 * MONTH_IN_SECONDS;
+			$range = $end - $start;
+			if ( $range < $three_months ) {
 				return false;
 			}
 
@@ -92,12 +138,60 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 *
 		 * @return bool
 		 */
-		public function upgrade_completed() {
+		public function upgrade_completed(): bool {
+			if ( !$this->is_high_traffic() ) {
+				return false;
+			}
+
 			// if option set to never use summary tables, return false for upgrade completed.
 			if ( defined( 'BURST_DONT_USE_SUMMARY_TABLE' ) ) {
 				return false;
 			}
+
+			if ( burst_get_option('disable_summary') ) {
+				return false;
+			}
+
 			return ! get_option( 'burst_db_upgrade_summary_table' );
+		}
+
+		/**
+		 * Once a week, update the status of the site, if it is high traffic or not. If over 100K hits in the last month, it is considered high traffic.
+		 * In that case, summary tables will be used to speed up the dashboard.
+		 *
+		 * @return void
+		 */
+		public function update_is_high_traffic(){
+			global $wpdb;
+
+			$start_of_last_month = strtotime('first day of last month midnight');
+			$end_of_last_month = strtotime('last day of last month 23:59:59');
+			$sql = $wpdb->prepare("select count(*) from {$wpdb->prefix}burst_statistics where time>=%s and time<=%s", $start_of_last_month, $end_of_last_month);
+			$count = (int) $wpdb->get_var($sql);
+			$is_high_traffic = $count > apply_filters( 'burst_high_traffic_treshold', 100000 );
+			update_option( 'burst_is_high_traffic_site', $is_high_traffic, false);
+		}
+
+		/**
+		 * Check if the site is considered high traffic
+		 *
+		 * @return bool
+		 */
+		public function is_high_traffic(){
+			return get_option( 'burst_is_high_traffic_site');
+		}
+
+		/**
+		 * Check if the cron has run the last 24 hours
+		 *
+		 * @return bool
+		 */
+		public function cron_active(): bool {
+			$now = time();
+			$last_cron_hit = get_option( 'burst_last_cron_hit', 0 );
+			$diff = $now - $last_cron_hit;
+
+			return $diff <= DAY_IN_SECONDS;
 		}
 
 		/**
@@ -133,6 +227,9 @@ if ( ! class_exists( 'burst_summary' ) ) {
 				}
 
 				update_option( 'burst_summary_table_upgrade_days_offset', $current_days_offset, false );
+				//schedule next run
+				wp_schedule_single_event(time() + MINUTE_IN_SECONDS , "burst_upgrade_iteration");
+
 			} else {
 				// completed
 				delete_option( 'burst_db_upgrade_summary_table' );
@@ -145,6 +242,10 @@ if ( ! class_exists( 'burst_summary' ) ) {
 		 * @return void
 		 */
 		public function update_summary_table_today() {
+			if ( ! $this->cron_active() ) {
+				burst_update_option('disable_summary', true);
+			}
+			update_option( 'burst_last_cron_hit', time(), false );
 			// we want to update for yesterday at least once on the next day, to ensure completeness. If completed, continue with normal update process
 			if ( ! $this->summary_table_updated_yesterday() ) {
 				$this->update_summary_table( 1 );
@@ -173,6 +274,8 @@ if ( ! class_exists( 'burst_summary' ) ) {
 
 			global $wpdb;
 
+			$select    = [];
+			$select[]   = $date_modifiers ? "DATE_FORMAT(date, '{$date_modifiers['sql_date_format']}') as period" : 'page_url';
 			$sql_array = [
 				'bounce_rate'         => 'sum(bounces) / count(sessions) * 100 as bounce_rate',
 				'pageviews'           => 'sum(pageviews) as pageviews',
@@ -182,14 +285,14 @@ if ( ! class_exists( 'burst_summary' ) ) {
 				'bounces'             => 'sum(bounces) as bounces',
 				'avg_time_on_page'    => 'AVG(avg_time_on_page) as avg_time_on_page',
 			];
-			$select    = [];
+
 			foreach ( $select_array as $select_item ) {
 				if ( isset( $sql_array[ $select_item ] ) ) {
 					$select[] = $sql_array[ $select_item ];
 				}
 			}
 
-			$select[]   = $date_modifiers ? "DATE_FORMAT(date, '{$date_modifiers['sql_date_format']}') as period" : 'page_url';
+
 			$sql        = implode( ', ', $select );
 			$date_start = esc_sql( $date_start );
 			$date_end   = esc_sql( $date_end );
@@ -332,6 +435,50 @@ if ( ! class_exists( 'burst_summary' ) ) {
 
 			delete_transient( 'burst_updating_summary_table' );
 			return true;
+		}
+
+		/**
+		 * Update the summary table for one day.
+		 *
+		 * */
+		public function update_post_meta( ) {
+			if ( defined( 'BURST_HEADLESS' ) || burst_get_option( 'headless' ) ) {
+				return;
+			}
+
+			$days_offset = 1;
+			$chunk = 50;
+			global $wpdb;
+			$today = BURST()->statistics->convert_unix_to_date( strtotime( 'today' ) );
+			// deduct days offset in days
+			if ( $days_offset > 0 ) {
+				$today = BURST()->statistics->convert_unix_to_date( strtotime( $today . ' -' . $days_offset . ' days' ) );
+			}
+			$offset = (int) get_option('burst_post_meta_offset', 0);
+			//if this is the update for yesterday, we also update the postmeta values for each post that has changed.
+
+			//get all posts that have received visits yesterday from the summary table
+			$sql  = "select * from {$wpdb->prefix}burst_summary where date = %s and page_url != 'burst_day_total' LIMIT $chunk OFFSET %d";
+			$pages = $wpdb->get_results( $wpdb->prepare( $sql, $today, $offset ) );
+			$pages = is_array($pages) ? $pages : [];
+			$offset += $chunk;
+			if ( count ( $pages ) === 0 ) {
+				delete_option('burst_post_meta_offset');
+				wp_clear_scheduled_hook("burst_upgrade_post_meta");
+			} else {
+				update_option('burst_post_meta_offset', $offset, false);
+				wp_schedule_single_event(time() + MINUTE_IN_SECONDS , 'burst_upgrade_post_meta' );
+				foreach ( $pages  as $page ) {
+					$url = home_url() . $page->page_url;
+					$post_id = url_to_postid($url);
+					if ( $post_id === 0 ) {
+						continue;
+					}
+					$count = (int) get_post_meta($post_id, 'burst_total_pageviews_count', true);
+					$count += (int) $page->pageviews;
+					update_post_meta($post_id, 'burst_total_pageviews_count', $count);
+				}
+			}
 		}
 	}
 }

@@ -16,10 +16,15 @@ if ( ! function_exists( 'burst_error_log' ) ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			$logging_enabled = apply_filters( 'burst_enable_logging', true );
 			if ( $logging_enabled ) {
+				// strip everything after # in version number and check if defined
+				$version_nr = defined('burst_version') ? explode('#', burst_version)[0] : 'Unknown version';
+				$burst_pro = defined('burst_pro') ? burst_pro : false;
+				$before_text = $burst_pro ? 'Burst Pro' : 'Burst Statistics';
+				$before_text .= ' ' . $version_nr . ': ';
 				if ( is_array( $message ) || is_object( $message ) ) {
-					error_log( 'Burst Statistics: ' . print_r( $message, true ) );
+					error_log( $before_text . print_r( $message, true ) );
 				} else {
-					error_log( 'Burst Statistics: ' . $message );
+					error_log( $before_text . $message );
 				}
 			}
 		}
@@ -143,27 +148,8 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			// if it is not an update hit, create a new record
 			$sanitized_data['time']             = time();
 			$sanitized_data['first_time_visit'] = burst_get_first_time_visit( $sanitized_data['uid'] );
-
 			$insert_id = burst_create_statistic( $sanitized_data );
-
 			do_action('burst_after_create_statistic', $insert_id, $sanitized_data);
-
-			// if postmeta burst_total_pageviews_count does not exist, create it with sql and set it to 1
-			// if it exists, add 1 to it via sql
-			$meta_key = 'burst_total_pageviews_count';
-			// get post meta via sql
-			$sql        = $wpdb->prepare( "SELECT meta_value FROM $wpdb->postmeta WHERE post_id = %d AND meta_key = %s", $sanitized_data['page_id'], $meta_key );
-			$meta_value = $wpdb->get_var( $sql );
-
-			if ( (int) $meta_value > 0 ) {
-				$meta_value = (int) $meta_value + 1;
-				$sql        = $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %d WHERE post_id = %d AND meta_key = %s", $meta_value, $sanitized_data['page_id'], $meta_key );
-				$wpdb->query( $sql );
-			} else {
-				$meta_value = 1;
-				$sql        = $wpdb->prepare( "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES (%d, %s, %d)", $sanitized_data['page_id'], $meta_key, $meta_value );
-				$wpdb->query( $sql );
-			}
 		}
 
 		if ( array_key_exists( 'ID', $sanitized_data ) && $sanitized_data['ID'] > 0 ) {
@@ -252,7 +238,6 @@ if ( ! function_exists( 'burst_prepare_tracking_data' ) ) {
 		);
 		$defaults                = array(
 			'url'               => null,
-			'page_id'           => null,
 			'time'              => null,
 			'uid'               => null,
 			'fingerprint'       => null,
@@ -272,15 +257,29 @@ if ( ! function_exists( 'burst_prepare_tracking_data' ) ) {
 		$sanitized_data['page_url']          = $destructured_url['path']; // required
 		$sanitized_data['parameters']        = $destructured_url['parameters'];
 		$sanitized_data['fragment']          = $destructured_url['fragment'];
-		$sanitized_data['page_id']           = burst_sanitize_page_id( $data['page_id'] ); // required
 		$sanitized_data['uid']               = burst_sanitize_uid( $data['uid'] ); // required
 		$sanitized_data['fingerprint']       = burst_sanitize_fingerprint( $data['fingerprint'] );
 		$sanitized_data['referrer']          = burst_sanitize_referrer( $data['referrer_url'] );
-		$sanitized_data['browser']           = $user_agent_data['browser']; // already sanitized
-		$sanitized_data['browser_version']   = $user_agent_data['browser_version']; // already sanitized
-		$sanitized_data['platform']          = $user_agent_data['platform']; // already sanitized
-		$sanitized_data['device']            = $user_agent_data['device']; // already sanitized
-		$sanitized_data['device_resolution'] = burst_sanitize_device_resolution( $data['device_resolution'] );
+
+		//if new lookup tables upgrade is not completed, use legacy columns
+		$_use_lookup_tables  = !get_option( "burst_db_upgrade_create_lookup_tables" );
+
+		if ( $_use_lookup_tables ) {
+			//new lookup table structure
+			$sanitized_data['browser_id']           = BURST()->frontend->get_lookup_table_id( 'browser', $user_agent_data['browser'] ); // already sanitized
+			$sanitized_data['browser_version_id']   = BURST()->frontend->get_lookup_table_id( 'browser_version', $user_agent_data['browser_version'] ); // already sanitized
+			$sanitized_data['platform_id']          = BURST()->frontend->get_lookup_table_id( 'platform', $user_agent_data['platform'] ); // already sanitized
+			$sanitized_data['device_id']            = BURST()->frontend->get_lookup_table_id( 'device', $user_agent_data['device'] ); // already sanitized
+			$sanitized_data['device_resolution_id'] = BURST()->frontend->get_lookup_table_id( 'device_resolution', burst_sanitize_device_resolution( $data['device_resolution'] ) );
+		} else {
+			//legacy, until lookup tables are created. Drop this part on next update
+			$sanitized_data['browser']         = $user_agent_data['browser'];
+			$sanitized_data['browser_version'] = $user_agent_data['browser_version'];
+			$sanitized_data['platform']        = $user_agent_data['platform'];
+			$sanitized_data['device']          = $user_agent_data['device'];
+			$sanitized_data['device_resolution'] = burst_sanitize_device_resolution( $data['device_resolution'] );
+		}
+
 		$sanitized_data['time_on_page']      = burst_sanitize_time_on_page( $data['time_on_page'] );
 		$sanitized_data['bounce']            = 1;
 
@@ -343,20 +342,20 @@ if ( ! function_exists( 'burst_sanitize_url' ) ) {
 		if ( ! filter_var( $sanitized_url, FILTER_VALIDATE_URL ) ) {
 			return '';
 		}
-		if ( !function_exists('wp_parse_url')) {
+		if ( ! function_exists( 'wp_parse_url' ) ) {
 			require_once( ABSPATH . '/wp-includes/http.php' );
 		}
 		$url = parse_url( esc_url_raw( $sanitized_url ) );
 
 		// log if path, parameters or fragment are too long
 		if ( strlen( $url['path'] ) > 255 ) {
-			burst_error_log( 'URL path is too long: ' . $url['path']  . ' - Please report this to the plugin author.' );
+			burst_error_log( 'URL path is too long: ' . $url['path'] . ' - Please report this to the plugin author.' );
 		}
 		if ( isset ( $url['query'] ) && strlen( $url['query'] ) > 255 ) {
-			burst_error_log( 'URL parameters are too long: ' . $url['query'] .  ' - Please report this to the plugin author.' ) ;
+			burst_error_log( 'URL parameters are too long: ' . $url['query'] . ' - Please report this to the plugin author.' );
 		}
 		if ( isset( $url['fragment'] ) && strlen( $url['fragment'] ) > 255 ) {
-			burst_error_log( 'URL fragment is too long: ' . $url['fragment']  . ' - Please report this to the plugin author.' );
+			burst_error_log( 'URL fragment is too long: ' . $url['fragment'] . ' - Please report this to the plugin author.' );
 		}
 		if ( isset( $url['host'] ) ) {
 			$url_destructured['path']       = substr( trailingslashit( $url['path'] ), 0, 255 );
@@ -365,20 +364,6 @@ if ( ! function_exists( 'burst_sanitize_url' ) ) {
 		}
 
 		return $url_destructured;
-	}
-}
-
-if ( ! function_exists( 'burst_sanitize_page_id' ) ) {
-	/**
-	 * Sanitize page_id
-	 *
-	 * @param string $page_id
-	 *
-	 * @return int
-	 */
-	function burst_sanitize_page_id( $page_id ) {
-
-		return (int) $page_id > 0 ? (int) $page_id : 0;
 	}
 }
 
@@ -803,14 +788,14 @@ if (!function_exists('burst_create_statistic')) {
 		global $wpdb;
 		$data = burst_remove_empty_values($data);
 
-		if (!burst_required_values_set($data)) {
+		if ( !burst_required_values_set($data )) {
 			burst_error_log('Missing required values for statistic creation. Data: ' . print_r($data, true));
 			return false;
 		}
 
 		$inserted = $wpdb->insert($wpdb->prefix . 'burst_statistics', $data);
 
-		if ($inserted) {
+		if ( $inserted ) {
 			return $wpdb->insert_id;
 		} else {
 			burst_error_log('Failed to create statistic. Error: ' . $wpdb->last_error);
@@ -834,9 +819,6 @@ if (!function_exists('burst_update_statistic')) {
 			burst_error_log('Missing ID for statistic update. Data: ' . print_r($data, true));
 			return false;
 		}
-
-		// 'page_id' should not be updated; ensure it's not included in $data
-		unset($data['page_id']);
 
 		$updated = $wpdb->update($wpdb->prefix . 'burst_statistics', $data, ['ID' => (int) $data['ID']]);
 

@@ -23,6 +23,7 @@ import {setOption} from '../../utils/api';
 import {useQueries} from '@tanstack/react-query';
 import getLiveGoals from '../../api/getLiveGoals';
 import getGoalsData from '../../api/getGoalsData';
+import {burst_get_website_url} from '../../utils/lib';
 
 function selectGoalIcon( value ) {
   value = parseInt( value );
@@ -172,7 +173,9 @@ const GoalsBlock = () => {
                       'Keep track of customizable goals and get valuable insights. Add your first goal!',
                       'burst-statistics' )}</p>
                   <p><a
-                      href={'https://burst-statistics.com/how-to-set-goals/'}>{__(
+                      href={burst_get_website_url( 'how-to-set-goals', {
+                        burst_source: 'goals-block-overlay'
+                      })}>{__(
                       'Learn how to set your first goal',
                       'burst-statistics' )}</a></p>
                   <a onClick={onGoalsInfoClick()}

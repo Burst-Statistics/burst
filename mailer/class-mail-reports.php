@@ -83,8 +83,8 @@ if ( ! class_exists( 'burst_mail_reports' ) ) {
 			$mailer->to = $mailinglist;
 
 			if ( $frequency === 'monthly' ) {
-				$mailer->subject = sprintf( _x( "You're monthly insights for %s are here!", "domain name", "burst-statistics" ), $mailer->pretty_domain );
-				$mailer->title   = sprintf( _x( "You're monthly insights for %s are here!", "domain name", "burst-statistics" ), '<br /><span style="font-size: 30px; font-weight: 700">' . $mailer->pretty_domain . '</span><br />' );
+				$mailer->subject = sprintf( _x( "Your monthly insights for %s are here!", "domain name", "burst-statistics" ), $mailer->pretty_domain );
+				$mailer->title   = sprintf( _x( "Your monthly insights for %s are here!", "domain name", "burst-statistics" ), '<br /><span style="font-size: 30px; font-weight: 700">' . $mailer->pretty_domain . '</span><br />' );
 				$mailer->message = ""; // start date - end date
 
 				// last month first and last day

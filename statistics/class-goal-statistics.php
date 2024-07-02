@@ -173,7 +173,7 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 							$percentage = round( ( $device->value / $pageviews_per_device->value ) * 100, 2 );
 							if ( $percentage > $highest_percentage ) {
 								$highest_percentage = $percentage;
-								$data['bestDevice']['title'] = BURST()->statistics->get_device_name($device->title);
+								$data['bestDevice']['title'] = $this->get_device_name($device->title);
 								$data['bestDevice']['icon'] = $device->title;
 								$data['bestDevice']['value'] = $percentage;
 							}
@@ -183,6 +183,34 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 			}
 
 			return $data;
+		}
+
+		/**
+		 * Get translatable device name based on device type
+		 * @param $device
+		 *
+		 * @return string|null
+		 */
+		public function get_device_name(
+			$device
+		): ?string {
+			switch ( $device ) {
+				case 'desktop':
+					$device_name = __( 'Desktop', 'burst-statistics' );
+					break;
+				case 'mobile':
+					$device_name = __( 'Mobile', 'burst-statistics' );
+					break;
+				case 'tablet':
+					$device_name = __( 'Tablet', 'burst-statistics' );
+					break;
+				case 'other':
+				default:
+					$device_name = __( 'Other', 'burst-statistics' );
+					break;
+			}
+
+			return $device_name;
 		}
 	}
 }

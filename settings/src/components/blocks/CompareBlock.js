@@ -29,6 +29,7 @@ const CompareBlock = () => {
       'title': metrics[key],
       'subtitle': '-',
       'value': '-',
+      'exactValue': '-',
       'change': '-',
       'changeStatus': ''
     };
@@ -62,6 +63,7 @@ const CompareBlock = () => {
                   title={m.title}
                   subtitle={m.subtitle}
                   value={m.value}
+                  exactValue={m.exactValue}
                   change={m.change}
                   changeStatus={m.changeStatus}
               />
