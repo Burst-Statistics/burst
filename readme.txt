@@ -8,7 +8,7 @@ Requires PHP: 7.2
 Tested up to: 6.5
 Stable tag: 1.6.1
 
-Self-hosted, privacy-friendly WordPress stats. Simple interface, no setup. Get detailed analytics with Burst Statistics.
+Self-hosted, privacy-friendly stats for WordPress. Simple interface, no setup. Get detailed analytics with Burst Statistics.
 
 == Description ==
 = Unlock the Power of Privacy-Friendly Analytics with Burst Statistics! =
