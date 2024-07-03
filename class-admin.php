@@ -281,7 +281,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		 */
 		public function plugin_settings_link( $links ) {
 			$settings_link = '<a href="'
-			                 . admin_url( 'index.php?page=burst' )
+			                 . admin_url( 'admin.php?page=burst#settings' )
 			                 . '" class="burst-settings-link">'
 			                 . __( 'Settings', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $settings_link );
@@ -296,7 +296,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			                . __( 'Support', 'burst-statistics' ) . '</a>';
 			array_unshift( $links, $faq_link );
 
-			if ( defined( 'burst_pro' ) ) {
+			if ( ! defined( 'burst_pro' ) ) {
 				$upgrade_link
 					= '<a style="color:#2e8a37;font-weight:bold" target="_blank" href="' . burst_get_website_url( 'pricing', [ 'burst_source' => 'plugin-overview' ] ) . '">'
 					  . __( 'Upgrade to Pro', 'burst-statistics' ) . '</a>';

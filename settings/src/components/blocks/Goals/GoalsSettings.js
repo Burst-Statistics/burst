@@ -5,6 +5,7 @@ import Icon from '../../../utils/Icon';
 import GoalSetup from '../Goals/GoalSetup';
 import {useEffect, useState} from '@wordpress/element';
 import {burst_get_website_url} from '../../../utils/lib';
+import * as Popover from '@radix-ui/react-popover';
 import Pro from '../Fields/Pro';
 import {useFields} from '../../../store/useFieldsStore';
 
