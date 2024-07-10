@@ -263,14 +263,13 @@ if ( ! function_exists( 'burst_prepare_tracking_data' ) ) {
 
 		//if new lookup tables upgrade is not completed, use legacy columns
 		$_use_lookup_tables  = !get_option( "burst_db_upgrade_create_lookup_tables" );
-
 		if ( $_use_lookup_tables ) {
 			//new lookup table structure
-			$sanitized_data['browser_id']           = BURST()->frontend->get_lookup_table_id( 'browser', $user_agent_data['browser'] ); // already sanitized
-			$sanitized_data['browser_version_id']   = BURST()->frontend->get_lookup_table_id( 'browser_version', $user_agent_data['browser_version'] ); // already sanitized
-			$sanitized_data['platform_id']          = BURST()->frontend->get_lookup_table_id( 'platform', $user_agent_data['platform'] ); // already sanitized
-			$sanitized_data['device_id']            = BURST()->frontend->get_lookup_table_id( 'device', $user_agent_data['device'] ); // already sanitized
-			$sanitized_data['device_resolution_id'] = BURST()->frontend->get_lookup_table_id( 'device_resolution', burst_sanitize_device_resolution( $data['device_resolution'] ) );
+			$sanitized_data['browser_id']           = burst_get_lookup_table_id( 'browser', $user_agent_data['browser'] ); // already sanitized
+			$sanitized_data['browser_version_id']   = burst_get_lookup_table_id( 'browser_version', $user_agent_data['browser_version'] ); // already sanitized
+			$sanitized_data['platform_id']          = burst_get_lookup_table_id( 'platform', $user_agent_data['platform'] ); // already sanitized
+			$sanitized_data['device_id']            = burst_get_lookup_table_id( 'device', $user_agent_data['device'] ); // already sanitized
+			$sanitized_data['device_resolution_id'] = burst_get_lookup_table_id( 'device_resolution', burst_sanitize_device_resolution( $data['device_resolution'] ) );
 		} else {
 			//legacy, until lookup tables are created. Drop this part on next update
 			$sanitized_data['browser']         = $user_agent_data['browser'];
@@ -295,7 +294,12 @@ if (!function_exists('burst_get_hit_type')) {
 	 */
 	function burst_get_hit_type($data) {
 		// Determine if it is an update hit based on the absence of certain data points
-		$is_update_hit = empty($data['browser']) && empty($data['browser_version']) && empty($data['platform']) && empty($data['device']);
+		$_use_lookup_tables  = !get_option( "burst_db_upgrade_create_lookup_tables" );
+		if ( $_use_lookup_tables ) {
+			$is_update_hit = empty($data['browser_id']) && empty($data['browser_version_id']) && empty($data['platform_id']) && empty($data['device_id']);
+		} else {
+			$is_update_hit = empty($data['browser']) && empty($data['browser_version']) && empty($data['platform']) && empty($data['device']);
+		}
 
 		// Attempt to get the last user statistic based on the presence or absence of certain conditions
 		if ($is_update_hit) {
@@ -507,6 +511,38 @@ if ( ! function_exists( 'burst_sanitize_completed_goal_ids' ) ) {
 	}
 }
 
+if ( !function_exists( 'burst_get_lookup_table_id' ) ) {
+	function burst_get_lookup_table_id( string $item, $value):int {
+		if ( empty($value) ) {
+			return 0;
+		}
+
+		$possible_items = ['browser', 'browser_version', 'platform', 'device', 'device_resolution'];
+		if ( !in_array($item, $possible_items) ) {
+			return 0;
+		}
+
+		//check if $value exists in tabel burst_$item
+		$ID = wp_cache_get('burst_' . $item . '_' . $value, 'burst');
+		if ( !$ID ) {
+			global $wpdb;
+			$ID = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}burst_{$item}s WHERE name = %s LIMIT 1", $value ) );
+			if ( !$ID ) {
+				//doesn't exist, so insert it.
+				$wpdb->insert(
+					$wpdb->prefix . "burst_{$item}s",
+					array(
+						'name' => $value,
+					)
+				);
+				$ID = $wpdb->insert_id;
+			}
+			wp_cache_set('burst_' . $item . '_' . $value, $ID, 'burst');
+		}
+		return (int) $ID;
+	}
+}
+
 if ( ! function_exists( 'burst_get_active_goals' ) ) {
 	/**
 	 * @param $server_side
@@ -515,8 +551,13 @@ if ( ! function_exists( 'burst_get_active_goals' ) ) {
 	 */
 	function burst_get_active_goals( $server_side = false ) {
 		global $wpdb;
-		$server_side  = $server_side ? "AND server_side = 1" : "AND server_side = 0";
-		$goals        = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE status = 'active' {$server_side}", ARRAY_A );
+		$goals = wp_cache_get( "burst_active_goals_$server_side", 'burst' );
+		if ( !$goals ) {
+			$server_side  = $server_side ? "AND server_side = 1" : "AND server_side = 0";
+			$goals        = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE status = 'active' {$server_side}", ARRAY_A );
+			wp_cache_set( "burst_active_goals_$server_side", $goals, 'burst', 10 );
+		}
+
 		return $goals;
 	}
 }

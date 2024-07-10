@@ -244,9 +244,7 @@ function burst_add_option_menu() {
         'burst_dashboard'
     );
 
-
-
-	if ( defined( 'burst_pro' ) && burst_pro ) {
+	if ( !defined( 'burst_pro' ) ) {
 		global $submenu;
 		if (isset($submenu['burst'])) {
 			$class                  = 'burst-link-upgrade';
@@ -1447,7 +1445,7 @@ function burst_get_posts( $request, $ajax_data = false ) {
 		foreach ( $posts as $post ) {
 			$page_url      = get_permalink( $post );
 			$resultArray[] = array(
-				'page_url'   => $page_url,
+				'page_url'   => str_replace( site_url(), '', $page_url),
 				'page_id'    => $post->ID,
 				'post_title' => $post->post_title,
 				'pageviews'  => (int) get_post_meta( $post->ID, 'burst_total_pageviews_count', true ),

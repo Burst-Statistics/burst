@@ -160,6 +160,12 @@ echo "Changed to directory: $(pwd), starting script..."
 
 # Extract the stable tag from readme.txt
 stable_tag=$(grep "Stable tag:" readme.txt | awk '{print $NF}')
+#cleanup build directory and recreate
+echo "Remove existing build directory"
+cd "settings"; rm -r "build";
+echo "Run react build"
+npm run build
+cd ..
 
 # Step 1: Remove all .json files from the /languages/
 echo "Step 1: Removing all .json, .mo, .po files from /languages/"

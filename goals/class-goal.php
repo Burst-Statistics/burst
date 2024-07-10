@@ -44,7 +44,12 @@ if ( ! class_exists( 'burst_goal' ) ) {
 			}
 
 			global $wpdb;
-			$goal = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE ID = %s", $this->id ) );
+			$goal = wp_cache_get( 'burst_goal_' . $this->id, 'burst' );
+			if ( ! $goal ) {
+				$goal = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE ID = %s", $this->id ) );
+				wp_cache_set( 'burst_goal_' . $this->id, $goal, 'burst', 10 );
+			}
+
 			if ( ! $goal ) {
 				return false;
 			}

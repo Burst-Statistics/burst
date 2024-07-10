@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) or die( 'you do not have access to this page!' );
 
 if ( ! class_exists( 'burst_statistics' ) ) {
 	class burst_statistics {
-		private $look_up_table_ids = array();
+
 		private $look_up_table_names = array();
 		private $use_lookup_tables = null;
 
@@ -941,7 +941,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 *
 		 * @return bool
 		 */
-		private function use_lookup_tables(){
+		public function use_lookup_tables(){
 
 			if ( $this->use_lookup_tables === null ) {
 				$this->use_lookup_tables = !get_option('burst_db_upgrade_upgrade_lookup_tables');

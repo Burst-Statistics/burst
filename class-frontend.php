@@ -3,6 +3,7 @@ defined( 'ABSPATH' ) or die( 'you do not have access to this page!' );
 if ( ! class_exists( 'burst_frontend' ) ) {
 	class burst_frontend {
 		private static $_this;
+		private $look_up_table_ids = array();
 
 		function __construct() {
 			if ( isset( self::$_this ) ) {
@@ -134,7 +135,7 @@ if ( ! class_exists( 'burst_frontend' ) ) {
 		}
 
 		/**
-		 * Get ID from lookup table
+		 * Get ID from lookup table, cached in class
 		 *
 		 * @param string $item
 		 * @param null | string $value
@@ -142,37 +143,12 @@ if ( ! class_exists( 'burst_frontend' ) ) {
 		 * @return int
 		 */
 		public function get_lookup_table_id( string $item, $value):int {
-			if ( empty($value) ) {
-				return 0;
-			}
-
-			$possible_items = ['browser', 'browser_version', 'platform', 'device', 'device_resolution'];
-			if ( !in_array($item, $possible_items) ) {
-				return 0;
-			}
-
 			if ( isset( $this->look_up_table_ids[$item][$value] ) ){
 				return $this->look_up_table_ids[$item][$value];
 			}
 
-			//check if $value exists in tabel burst_$item
-			$ID = wp_cache_get('burst_' . $item . '_' . $value, 'burst');
-			if ( !$ID ) {
-				global $wpdb;
-				$ID = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}burst_{$item}s WHERE name = %s LIMIT 1", $value ) );
-				if ( !$ID ) {
-					//doesn't exist, so insert it.
-					$wpdb->insert(
-						$wpdb->prefix . "burst_{$item}s",
-						array(
-							'name' => $value,
-						)
-					);
-					$ID = $wpdb->insert_id;
-				}
-				wp_cache_set('burst_' . $item . '_' . $value, $ID, 'burst');
-			}
-			$this->look_up_table_ids[$item][$value] = $ID;
+			$ID = burst_get_lookup_table_id($item, $value);
+ 			$this->look_up_table_ids[$item][$value] = $ID;
 			return (int) $ID;
 		}
 
