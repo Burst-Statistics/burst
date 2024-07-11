@@ -88,11 +88,9 @@ if ( ! class_exists( 'burst_goal' ) ) {
 		 */
 		public function save(): void {
 			do_action( 'burst_before_save_goals' );
-
 			global $wpdb;
 			$table_name           = $wpdb->prefix . 'burst_goals';
 			$available_goal_types = $this->get_available_goal_types();
-
 			// merge url property from two separate properties, depending on 'website' value
 			$url               = $this->page_or_website === 'website' ? '*' : $this->specific_page;
 			$this->url         = $url !== '*' ? burst_sanitize_relative_url( $url ) : '*';
