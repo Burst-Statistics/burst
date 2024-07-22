@@ -244,9 +244,7 @@ function burst_add_option_menu() {
         'burst_dashboard'
     );
 
-
-
-	if ( defined( 'burst_pro' ) && burst_pro ) {
+	if ( !defined( 'burst_pro' ) ) {
 		global $submenu;
 		if (isset($submenu['burst'])) {
 			$class                  = 'burst-link-upgrade';
@@ -705,6 +703,7 @@ function burst_get_data( WP_REST_Request $request ) {
 	}
 
 	$type = sanitize_title( $request->get_param( 'type' ) );
+    //in the database, the UTC time is stored, so we query by the corrected unix time.
 	$args = [
 		'date_start' => BURST()->statistics->convert_date_to_unix( $request->get_param( 'date_start' ) . ' 00:00:00' ),
 		// add 00:00:00 to date,
@@ -1430,105 +1429,108 @@ function burst_get_posts( $request, $ajax_data = false ) {
 		return new WP_Error( 'rest_invalid_nonce', 'The provided nonce is not valid.', array( 'status' => 400 ) );
 	}
 
-	// option to bypass the more complex query, in case this causes issues
-	if ( strlen($search)<=3 ) {
-		$resultArray = [];
-		$args        = [
-			'post_type' => ['post', 'page'],
-			'numberposts' => $max_post_count,
-			'order'       => 'DESC',
-			'orderby'     => 'meta_value_num',
-			'meta_query'  => array(
-				'key'  => 'burst_total_pageviews_count',
-				'type' => 'NUMERIC',
-			),
-		];
-		$posts       = get_posts( $args );
-		foreach ( $posts as $post ) {
-			$page_url      = get_permalink( $post );
-			$resultArray[] = array(
-				'page_url'   => $page_url,
-				'page_id'    => $post->ID,
-				'post_title' => $post->post_title,
-				'pageviews'  => (int) get_post_meta( $post->ID, 'burst_total_pageviews_count', true ),
-			);
-		}
-
-		return new WP_REST_Response(
-			array(
-				'request_success' => true,
-				'posts'           => $resultArray,
-                'max_post_count' => $max_post_count,
-			),
-			200
-		);
-
+	//do full search for string length above 3, but set a cap at 1000
+	if ( strlen($search)>3 ) {
+		$max_post_count = 1000;
 	}
 
-	// Initialize an empty array for results
-	$resultArray = [];
+    $resultArray = [];
+    $args        = [
+        'post_type' => ['post', 'page'],
+        'numberposts' => $max_post_count,
+        'order'       => 'DESC',
+        'orderby'     => 'meta_value_num',
+        'meta_query'  => array(
+            'key'  => 'burst_total_pageviews_count',
+            'type' => 'NUMERIC',
+        ),
+    ];
+    $posts       = get_posts( $args );
+    foreach ( $posts as $post ) {
+        $page_url      = get_permalink( $post );
+        $resultArray[] = array(
+            'page_url'   => str_replace( site_url(), '', $page_url),
+            'page_id'    => $post->ID,
+            'post_title' => $post->post_title,
+            'pageviews'  => (int) get_post_meta( $post->ID, 'burst_total_pageviews_count', true ),
+        );
+    }
 
-    // Base query for wp_posts
-    $posts_query = "
-        SELECT REPLACE(p.guid, %s, '') AS stripped_url, p.post_title, p.ID as page_id, 0 AS pageviews
-        FROM {$wpdb->prefix}posts p
-        LEFT JOIN {$wpdb->prefix}burst_summary s ON p.guid = CONCAT(%s, s.page_url)
-        WHERE p.post_title LIKE %s AND  p.post_status = 'publish'
-        GROUP BY stripped_url, p.post_title, p.ID
-    ";
+    if ( ob_get_length() ) {
+        ob_clean();
+    }
 
-    // Base query for wp_burst_summary
-    $stats_query = "
-        SELECT s.page_url AS stripped_url, '' AS post_title, 0 as page_id, COUNT(*) AS pageviews
-        FROM {$wpdb->prefix}burst_summary s
-        WHERE s.page_url LIKE %s 
-        GROUP BY stripped_url
-    ";
-
-	    // Combine the two queries using UNION and sort by pageviews
-	    $site_url    = get_site_url();
-	    $final_query = $wpdb->prepare(
-		    'SELECT stripped_url, SUM(pageviews) as total_pageviews, MAX(page_id) as page_id, post_title FROM (
-        (' . $posts_query . ') UNION ALL (' . $stats_query . ')
-    ) AS combined
-    GROUP BY stripped_url, post_title
-    ORDER BY total_pageviews DESC
-    LIMIT %d',
-        $site_url,
-        $site_url,
-        '%' . $wpdb->esc_like( $search ) . '%',
-        '%' . $wpdb->esc_like( $search ) . '%',
-        $max_post_count
+    return new WP_REST_Response(
+        array(
+            'request_success' => true,
+            'posts'           => $resultArray,
+            'max_post_count' => $max_post_count,
+        ),
+        200
     );
 
-	$results = $wpdb->get_results( $final_query, ARRAY_A );
-
-    $results = is_array($results) ? $results : [];
-
-
-	foreach ( $results as $row ) {
-		$page_url      = $row['stripped_url'];
-		$resultArray[] = array(
-			'page_url'   => $page_url,
-			'page_id'    => $row['page_id'] ?? 0,
-			'post_title' => $row['post_title'],
-			'pageviews'  => (int) $row['total_pageviews'],
-		);
-	}
-
-	if ( ob_get_length() ) {
-		ob_clean();
-	}
-	$resultArray = ! empty( $resultArray ) ? $resultArray : [];
-
-	return new WP_REST_Response(
-		array(
-			'request_success' => true,
-			'posts'           => $resultArray,
-			'max_post_count' => $max_post_count,
-		),
-		200
-	);
+	//}
+//
+//	// Initialize an empty array for results
+//	$resultArray = [];
+//    // Base query for wp_posts
+//    $posts_query = "
+//        SELECT REPLACE(p.guid, %s, '') AS stripped_url, p.post_title, p.ID as page_id, 0 AS pageviews
+//        FROM {$wpdb->prefix}posts p
+//        LEFT JOIN {$wpdb->prefix}burst_summary s ON p.guid = CONCAT(%s, s.page_url)
+//        WHERE p.post_title LIKE %s AND  p.post_status = 'publish'
+//        GROUP BY stripped_url, p.post_title, p.ID
+//    ";
+//
+//    // Base query for wp_burst_summary
+//    $stats_query = "
+//        SELECT s.page_url AS stripped_url, '' AS post_title, 0 as page_id, COUNT(*) AS pageviews
+//        FROM {$wpdb->prefix}burst_summary s
+//        WHERE s.page_url LIKE %s
+//        GROUP BY stripped_url
+//    ";
+//
+//	    // Combine the two queries using UNION and sort by pageviews
+//	    $site_url    = get_site_url();
+//	    $final_query = $wpdb->prepare(
+//		    'SELECT stripped_url, SUM(pageviews) as total_pageviews, MAX(page_id) as page_id, post_title FROM (
+//        (' . $posts_query . ') UNION ALL (' . $stats_query . ')
+//    ) AS combined
+//    GROUP BY stripped_url, post_title
+//    ORDER BY total_pageviews DESC
+//    LIMIT %d',
+//        $site_url,
+//        $site_url,
+//        '%' . $wpdb->esc_like( $search ) . '%',
+//        '%' . $wpdb->esc_like( $search ) . '%',
+//        $max_post_count
+//    );
+//	$results = $wpdb->get_results( $final_query, ARRAY_A );
+//    $results = is_array($results) ? $results : [];
+//
+//	foreach ( $results as $row ) {
+//		$page_url      = $row['stripped_url'];
+//		$resultArray[] = array(
+//			'page_url'   => $page_url,
+//			'page_id'    => $row['page_id'] ?? 0,
+//			'post_title' => $row['post_title'],
+//			'pageviews'  => (int) $row['total_pageviews'],
+//		);
+//	}
+//
+//	if ( ob_get_length() ) {
+//		ob_clean();
+//	}
+//	$resultArray = ! empty( $resultArray ) ? $resultArray : [];
+//
+//	return new WP_REST_Response(
+//		array(
+//			'request_success' => true,
+//			'posts'           => $resultArray,
+//			'max_post_count' => $max_post_count,
+//		),
+//		200
+//	);
 }
 
 /**

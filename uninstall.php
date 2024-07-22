@@ -19,3 +19,8 @@ foreach ( $results as $key => $value ) {
 	$transient_name = substr( $value['name'], 11 );
 	delete_transient( $transient_name );
 }
+
+$mu_plugin = trailingslashit( WPMU_PLUGIN_DIR ) . 'burst_rest_api_optimizer.php';
+if ( file_exists($mu_plugin ) ) {
+	unlink( $mu_plugin );
+}

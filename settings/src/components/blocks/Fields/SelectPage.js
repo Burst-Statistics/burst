@@ -1,7 +1,6 @@
 import React, {useRef, useState} from '@wordpress/element';
-import AsyncCreatableSelect from 'react-select/async-creatable';
+import AsyncSelect from 'react-select/async';
 import { useQuery } from '@tanstack/react-query';
-import { getPosts } from '../../../utils/api';
 import Icon from '../../../utils/Icon';
 import { formatNumber } from '../../../utils/formatting';
 import debounce from 'lodash/debounce';
@@ -29,30 +28,29 @@ const OptionLayout = ({ innerProps, innerRef, data }) => {
 const SelectPage = ({ value, onChangeHandler, field }) => {
     const {
         fetchPosts,
+        fetching,
     } = usePostsStore();
   const [ search, setSearch ] = useState( '' );
+
   const posts = useQuery(
       [ 'defaultPosts', search ],
       () => fetchPosts( search )
   );
 
-    // cache the first '' empty fetchPosts call so we can use it as the default value
-  // const firstPosts = useRef( posts.data );
-  // if ( firstPosts.current === undefined && posts.data !== undefined ) {
-  //   firstPosts.current = posts.data;
-  // }
-
   // Load options function with debounce
   const loadOptions = debounce( async( input, callback ) => {
-    setSearch( input );
-    const response = await fetchPosts( input );
-    callback( response );
+        console.log("loadoptions", input);
+        setSearch( input );
+        console.log("start fetch posts with value ", input);
+        let data = await fetchPosts( input );
+        callback( data );
   }, 500 );
+
 
   return (
       <>
         <p className={'burst-label'}>{field.label}</p>
-        <AsyncCreatableSelect
+        <AsyncSelect
             classNamePrefix="burst-select"
             onChange={( e ) => {
              onChangeHandler( e.value );
@@ -63,7 +61,7 @@ const SelectPage = ({ value, onChangeHandler, field }) => {
             cacheOptions
             defaultValue={value}
             defaultInputValue={value}
-            //defaultOptions={firstPosts.current}
+            defaultOptions={posts.data || []}
             loadOptions={loadOptions}
             components={{ Option: OptionLayout }}
             theme={( theme ) => ({
@@ -76,6 +74,7 @@ const SelectPage = ({ value, onChangeHandler, field }) => {
                 primary: 'var(--rsp-green)'
               }
             })}
+            createOptionPosition={'none'}
             styles={{
               control: ( baseStyles, state ) => ({
                 ...baseStyles,

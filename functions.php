@@ -12,7 +12,10 @@ if ( ! function_exists( 'burst_is_logged_in_rest' ) ) {
 
 if ( ! function_exists( 'burst_admin_logged_in' ) ) {
 	function burst_admin_logged_in() {
-		return ( is_user_logged_in() && burst_user_can_view() ) || burst_is_logged_in_rest() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI );
+		return ( is_admin() && is_user_logged_in() && burst_user_can_view() )
+		       || burst_is_logged_in_rest()
+		       || wp_doing_cron()
+		       || ( defined( 'WP_CLI' ) && WP_CLI );
 	}
 }
 

@@ -152,16 +152,19 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 				$data['conversionMetric']['value'] = $wpdb->get_var( $conversionMetric );
 
 				// Query to get best performing device
-				$device_sql    = $wpdb->prepare("SELECT COUNT(*) AS value, statistics.device AS title FROM {$wpdb->prefix}burst_statistics AS statistics
-											INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
-											ON statistics.ID = goals.statistic_id
-											WHERE statistics.bounce = 0 AND goals.goal_id = %s AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
-											GROUP BY statistics.device ORDER BY value DESC LIMIT 4", $goal_id, $goal_start);
+				$use_lookup_tables = BURST()->statistics->use_lookup_tables(); //during upgrade to new lookupt tables.
+				$device_column = $use_lookup_tables ? 'device_id' : 'device';
+				$device_sql    = $wpdb->prepare("SELECT COUNT(*) AS value, statistics.$device_column AS device_id FROM {$wpdb->prefix}burst_statistics AS statistics
+										INNER JOIN {$wpdb->prefix}burst_goal_statistics AS goals
+										ON statistics.ID = goals.statistic_id
+										WHERE statistics.bounce = 0 AND goals.goal_id = %s AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
+										GROUP BY statistics.device_id ORDER BY value DESC LIMIT 4", $goal_id, $goal_start);
 				$device_result = $wpdb->get_results( $device_sql );
 
-				$pageviews_per_device = $wpdb->prepare("SELECT COUNT(*) AS value, device FROM {$wpdb->prefix}burst_statistics as statistics
-											WHERE statistics.bounce = 0 AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
-											GROUP BY statistics.device ORDER BY value DESC LIMIT 4", $goal_start);
+				$pageviews_per_device = $wpdb->prepare("SELECT COUNT(*) AS value, $device_column as device_id FROM {$wpdb->prefix}burst_statistics as statistics
+										WHERE statistics.bounce = 0 AND statistics.time > %s {$goal_end_sql} {$goal_url_sql}
+										GROUP BY statistics.device_id ORDER BY value DESC LIMIT 4", $goal_start);
+
 
 				$pageviews_per_device_result = $wpdb->get_results($pageviews_per_device);
 
@@ -169,12 +172,13 @@ if ( ! class_exists( "burst_goal_statistics" ) ) {
 				$highest_percentage = 0;
 				foreach ( $device_result as $device ) {
 					foreach ( $pageviews_per_device_result as $pageviews_per_device ) {
-						if ( $device->title === $pageviews_per_device->device ) {
+						if ( $device->device_id === $pageviews_per_device->device_id ) {
+							$device = $use_lookup_tables ? BURST()->frontend->get_lookup_table_id( $device->device_id, 'device' ) : $device->device_id;
 							$percentage = round( ( $device->value / $pageviews_per_device->value ) * 100, 2 );
 							if ( $percentage > $highest_percentage ) {
 								$highest_percentage = $percentage;
-								$data['bestDevice']['title'] = $this->get_device_name($device->title);
-								$data['bestDevice']['icon'] = $device->title;
+								$data['bestDevice']['title'] = $this->get_device_name($device);
+								$data['bestDevice']['icon'] = $device;
 								$data['bestDevice']['value'] = $percentage;
 							}
 						}

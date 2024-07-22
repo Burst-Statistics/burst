@@ -44,7 +44,12 @@ if ( ! class_exists( 'burst_goal' ) ) {
 			}
 
 			global $wpdb;
-			$goal = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE ID = %s", $this->id ) );
+			$goal = wp_cache_get( 'burst_goal_' . $this->id, 'burst' );
+			if ( ! $goal ) {
+				$goal = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}burst_goals WHERE ID = %s", $this->id ) );
+				wp_cache_set( 'burst_goal_' . $this->id, $goal, 'burst', 10 );
+			}
+
 			if ( ! $goal ) {
 				return false;
 			}
@@ -83,11 +88,9 @@ if ( ! class_exists( 'burst_goal' ) ) {
 		 */
 		public function save(): void {
 			do_action( 'burst_before_save_goals' );
-
 			global $wpdb;
 			$table_name           = $wpdb->prefix . 'burst_goals';
 			$available_goal_types = $this->get_available_goal_types();
-
 			// merge url property from two separate properties, depending on 'website' value
 			$url               = $this->page_or_website === 'website' ? '*' : $this->specific_page;
 			$this->url         = $url !== '*' ? burst_sanitize_relative_url( $url ) : '*';

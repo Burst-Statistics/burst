@@ -18,8 +18,15 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			self::$_this = $this;
 
 			add_action( 'burst_daily', array( $this, 'upgrade' ) );
+			add_action( 'admin_init', array( $this, 'maybe_fire_upgrade' ) );
 			add_action( "burst_upgrade_iteration", array( $this, "upgrade" ) );
 			add_filter( 'burst_notices', array( $this, 'add_progress_notice' ) );
+		}
+
+		public function maybe_fire_upgrade(){
+			if ( isset($_GET['page']) && $_GET['page'] === 'burst') {
+				$this->upgrade();
+			}
 		}
 
 		/**
@@ -71,6 +78,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 					++$count_remaining_upgrades;
 					// check if there's an intermediate progress count. If so, we add it as a percentage to the progress.
 					$has_intermediate = get_transient( "burst_progress_$upgrade" );
+
 					if ( $has_intermediate ) {
 						$intermediates[ $upgrade ] = $has_intermediate;
 					}
@@ -128,7 +136,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 					break;
 				}
 			}
-			burst_error_log("start upgrade $upgrade");
+			burst_error_log("start upgrade $do_upgrade");
 
 			// only one upgrade at a time
 			if ( 'bounces' === $do_upgrade ) {
@@ -474,11 +482,11 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 
 			global $wpdb;
 			$wpdb->query("UPDATE {$wpdb->prefix}burst_statistics SET 
-                               browser_id = 999, 
-                               browser_version_id = 999, 
-                               platform_id = 999, 
-                               device_id = 999, 
-                               device_resolution = 999"
+                               browser_id = 999999, 
+                               browser_version_id = 999999, 
+                               platform_id = 999999, 
+                               device_id = 999999, 
+                               device_resolution_id = 999999"
 			);
 
 			delete_option( 'burst_db_upgrade_init_lookup_ids' );
@@ -556,7 +564,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 				$selected_item = $this->sanitize_type( $selected_item );
 				$start = microtime( true );
 				// check what's still to do.
-				$remaining_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics where {$selected_item}_id = 999" );
+				$remaining_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics where {$selected_item}_id = 999999" );
 				$total_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics" );
 				$done_count = $total_count - $remaining_count;
 
@@ -573,7 +581,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 						    SELECT p.{$selected_item}, p.ID, COALESCE(m.ID, 0) as {$selected_item}_id
 						    FROM {$wpdb->prefix}burst_statistics p 
 						    LEFT JOIN {$wpdb->prefix}burst_{$selected_item}s m ON p.{$selected_item} = m.name
-						    WHERE p.{$selected_item}_id = 999
+						    WHERE p.{$selected_item}_id = 999999
 						    LIMIT $batch
 						) AS s ON t.ID = s.ID
 						SET t.{$selected_item}_id = s.{$selected_item}_id;";
@@ -589,21 +597,24 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 					delete_option( "burst_db_upgrade_upgrade_lookup_tables_$selected_item" );
 					delete_transient( "burst_progress_upgrade_lookup_tables_$selected_item");
 				}
+			} else {
+				burst_error_log("no upgradable tables found");
 			}
 
 			// check if all items have been upgraded.
 			$total_not_completed = 0;
 			foreach ( $items as $item ) {
-				$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics WHERE {$item}_id = 999 " );
+				$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics WHERE {$item}_id = 999999 " );
 				if ( 0 === $count ) {
 					delete_option( "burst_db_upgrade_upgrade_lookup_tables_$item" );
-					delete_transient( "burst_progress_upgrade_lookup_tables_$selected_item");
+					delete_transient( "burst_progress_upgrade_lookup_tables_$item");
 				}
 				$total_not_completed += $count;
 			}
 
 			// stop upgrading if all have been completed.
 			if ( 0 === $total_not_completed ) {
+				burst_error_log("all lookup columns have been upgraded");
 				delete_option( 'burst_db_upgrade_upgrade_lookup_tables' );
 			}
 		}

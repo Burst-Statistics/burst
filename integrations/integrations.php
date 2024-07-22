@@ -243,29 +243,8 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 	),
 ));
 
-//foreach ( $burst_integrations_list as $plugin => $details ) {
-//
-//	if ( ! isset( $details['early_load'] ) ) {
-//		continue;
-//	}
-//	if ( ! file_exists( WP_PLUGIN_DIR . "/" . $plugin . "/" . $plugin
-//	                    . ".php" )
-//	) {
-//		continue;
-//	}
-//
-//	$early_load = $details['early_load'];
-//	$file       = apply_filters( 'burst_early_load_path',
-//		burst_path . "integrations/plugins/$early_load", $details );
-//
-//	if ( file_exists( $file ) ) {
-//		require_once( $file );
-//	} else {
-//		burst_error_log( "Burst Statistics: searched for $plugin integration at $file, but did not find it" );
-//	}
-//}
-
- /* Check if a plugin from the integrations list is active
+/**
+ * Check if a plugin from the integrations list is active
  * @param string $plugin
  * @param bool $skip_enabled_check //if true, only checks if the plugin is installed and active, not if the integration in Burst itself is enabled
  *
@@ -307,12 +286,12 @@ function burst_integrations() {
 
 	global $burst_integrations_list;
 	foreach ( $burst_integrations_list as $plugin => $details ) {
-		if ( burst_integration_plugin_is_active( $plugin ) ) {
+		//if ( burst_integration_plugin_is_active( $plugin ) ) {
 			$file = apply_filters( 'burst_integration_path', burst_path . "integrations/plugins/$plugin.php", $plugin );
 			if ( file_exists( $file ) ) {
 				require_once( $file );
 			}
-		}
+		//}
 	}
 
 }

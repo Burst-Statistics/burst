@@ -28,6 +28,10 @@ if ( ! class_exists( 'burst_summary' ) ) {
 				return $warnings;
 			}
 
+			if ( !$this->is_high_traffic() ) {
+				return $warnings;
+			}
+
 			$warnings['cron']  = array(
 				'callback' => '_true_',
 				'status' => 'all',
