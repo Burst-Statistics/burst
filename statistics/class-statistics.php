@@ -704,6 +704,14 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			$sql  = $this->get_sql_table( $start, $end, $metrics, $filters, $group_by, $order_by, $limit );
 			$data = $wpdb->get_results( $sql, ARRAY_A );
 
+			foreach ($data as $index => $row) { // Use $index to reference the original array
+				foreach ($metrics as $metric) {
+					// Apply filter dynamically based on the metric
+					$row[$metric] = apply_filters("burst_datatable_format_{$metric}", $row[$metric]);
+				}
+				// Update the original $data array with the modified $row
+				$data[$index] = $row;
+			}
 
 			return [
 				'columns' => $columns,
@@ -1124,12 +1132,12 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					'sessions' => [
 						'table' => 'burst_sessions',
 						'on'    => 'statistics.session_id = sessions.ID',
-						'type'  => 'INNER', // Optional, default is INNER JOIN
+						'type'  => 'INNER',
 					],
 					'goals'    => array(
 						'table' => 'burst_goal_statistics',
 						'on'    => 'statistics.ID = goals.statistic_id',
-						'type'  => 'LEFT', // Optional, default is INNER JOIN
+						'type'  => 'LEFT', // LEFT join because we want to include statistics without goals
 					),
 				)
 			);
@@ -1137,6 +1145,13 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			// find possible joins in $select and $where
 			foreach ( $available_joins as $join => $table ) {
 				if ( strpos( $select, $join . '.' ) !== false || strpos( $where, $join . '.' ) !== false ) {
+					// check if has pre_joins and add join first from available joins
+					if ( isset( $table['pre_joins'] ) ) {
+						foreach ( $table['pre_joins'] as $pre_join ) {
+							$joins[ $pre_join ] = $available_joins[ $pre_join ];
+						}
+					}
+
 					$joins[ $join ] = $table;
 				}
 			}

@@ -8,15 +8,17 @@ import ClickToFilter from '../components/blocks/ClickToFilter';
 import Flag from '../components/blocks/Flag';
 
 export const transformDataTableData = ( response, columnOptions ) => {
+
   // Update columns
   response.columns = response.columns.map( ( column ) => {
+
     //@todo fix "right" as boolean value warning
     let rightValue = 'left' !== columnOptions[column.id]?.align;
     const format = columnOptions[column.id]?.format || 'integer';
     const updatedColumn = {
       ...column,
       selector: ( row ) => row[column.id],
-      right: rightValue,
+      right: rightValue
     };
 
     // add sort function if percentage or time or integer
@@ -39,6 +41,12 @@ export const transformDataTableData = ( response, columnOptions ) => {
           return (
               <ClickToFilter filter={column.id} filterValue={value}>
                 <Flag country={value} countryNiceName={getCountryName( value )} />
+              </ClickToFilter>
+          );
+        case 'city':
+          return (
+              <ClickToFilter filter={column.id} filterValue={value}>
+                {value}
               </ClickToFilter>
           );
         case 'url':

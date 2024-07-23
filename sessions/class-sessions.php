@@ -26,7 +26,7 @@ function burst_install_sessions_table() {
 			`first_visited_url` varchar(255) NOT NULL,
 			`last_visited_url` varchar(255) NOT NULL,
             `goal_id` int,
-            `country_code` char(2),
+            `city_code` int(11) DEFAULT 0,
               PRIMARY KEY  (ID),
               KEY `goal_id_index` (goal_id)
             ) $charset_collate;";

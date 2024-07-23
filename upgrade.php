@@ -59,19 +59,19 @@ function burst_check_upgrade() {
 
 	if ( $prev_version
 		&& version_compare( $prev_version, '1.4.2.1', '<' ) ) {
-		update_option( 'burst_db_upgrade_bounces', true );
-		update_option( 'burst_db_upgrade_goals_remove_columns', true );
+		update_option( 'burst_db_upgrade_bounces', true, false );
+		update_option( 'burst_db_upgrade_goals_remove_columns', true, false );
 	}
 	if ( $prev_version
 		&& version_compare( $prev_version, '1.5.2', '<' ) ) {
-		update_option( 'burst_db_upgrade_goals_set_conversion_metric', true );
+		update_option( 'burst_db_upgrade_goals_set_conversion_metric', true, false );
 	}
 
 	if ( $prev_version
 		&& version_compare( $prev_version, '1.5.3', '<' ) ) {
-		update_option( 'burst_db_upgrade_strip_domain_names_from_entire_page_url', true );
-		update_option( 'burst_db_upgrade_empty_referrer_when_current_domain', true );
-		update_option( 'burst_db_upgrade_drop_user_agent', true );
+		update_option( 'burst_db_upgrade_strip_domain_names_from_entire_page_url', true, false );
+		update_option( 'burst_db_upgrade_empty_referrer_when_current_domain', true, false );
+		update_option( 'burst_db_upgrade_drop_user_agent', true, false );
 
 		// remove the endpoint file from the old location
 		if ( file_exists( ABSPATH . '/burst-statistics-endpoint.php' ) ) {
@@ -142,7 +142,17 @@ function burst_check_upgrade() {
 	}
 
 
+	if ( $prev_version
+	     && version_compare( $prev_version, '1.7.1', '<' ) ) {
 
+		// unlink the country geo ip database
+		$geo_ip_file = get_option( 'burst_geo_ip_file' );
+		if ( file_exists( $geo_ip_file ) ) {
+			unlink( $geo_ip_file );
+		}
+		update_option( 'burst_db_upgrade_country_code_to_lookup_table', true, false);
+
+	}
 
 	do_action( 'burst_upgrade', $prev_version );
 	update_option( 'burst-current-version', $new_version, false );

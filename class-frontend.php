@@ -59,6 +59,7 @@ if ( ! class_exists( 'burst_frontend' ) ) {
 		public function enqueue_burst_tracking_script( $hook ) {
 			// don't enqueue if headless.
 			if ( defined( 'BURST_HEADLESS' ) || burst_get_option( 'headless' ) ) {
+                burst_error_log("Headless mode is enabled, tracking script will not be enqueued.");
 				return;
 			}
 

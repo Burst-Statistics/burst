@@ -16,14 +16,18 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			}
 
 			self::$_this = $this;
-
 			add_action( 'burst_daily', array( $this, 'upgrade' ) );
 			add_action( 'admin_init', array( $this, 'maybe_fire_upgrade' ) );
 			add_action( "burst_upgrade_iteration", array( $this, "upgrade" ) );
 			add_filter( 'burst_notices', array( $this, 'add_progress_notice' ) );
 		}
 
-		public function maybe_fire_upgrade(){
+		/**
+		 * Ensure upgrade progress even when Cron is not working, when the user visits the dashboard.
+		 *
+		 * @return void
+		 */
+		public function maybe_fire_upgrade(): void {
 			if ( isset($_GET['page']) && $_GET['page'] === 'burst') {
 				$this->upgrade();
 			}
@@ -75,7 +79,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			$intermediates            = array();
 			foreach ( $remaining_upgrades as $upgrade ) {
 				if ( get_option( "burst_db_upgrade_$upgrade" ) ) { // if any upgrade is not done.
-					++$count_remaining_upgrades;
+					++ $count_remaining_upgrades;
 					// check if there's an intermediate progress count. If so, we add it as a percentage to the progress.
 					$has_intermediate = get_transient( "burst_progress_$upgrade" );
 
@@ -121,10 +125,12 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 
 			$upgrade_running = get_transient( 'burst_upgrade_running' );
 			if ( $upgrade_running ) {
-				burst_error_log("error already running");
+				burst_error_log( "error already running" );
+
 				return;
 			}
 			set_transient( 'burst_upgrade_running', true, 60 );
+
 			// check if we need to upgrade
 			$db_upgrades = $this->get_db_upgrades();
 			// check if all upgrades are done
@@ -136,7 +142,10 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 					break;
 				}
 			}
-			burst_error_log("start upgrade $do_upgrade");
+
+			if ( $do_upgrade ) {
+				burst_error_log("start upgrade $do_upgrade");
+			}
 
 			// only one upgrade at a time
 			if ( 'bounces' === $do_upgrade ) {
@@ -148,7 +157,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			if ( 'goals_set_conversion_metric' === $do_upgrade ) {
 				$this->upgrade_goals_set_conversion_metric();
 			}
-			if ( 'drop_user_agent' === $do_upgrade  ) {
+			if ( 'drop_user_agent' === $do_upgrade ) {
 				$this->upgrade_drop_user_agent();
 			}
 			if ( 'empty_referrer_when_current_domain' === $do_upgrade ) {
@@ -176,10 +185,13 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 				$this->upgrade_drop_page_id_column();
 			}
 
-			if ( $this->get_progress()<100 ) {
-				wp_schedule_single_event(time() + $this->cron_interval , "burst_upgrade_iteration");
+			do_action( 'burst_do_db_upgrades', $do_upgrade);
+
+
+			if ( $this->get_progress() < 100 ) {
+				wp_schedule_single_event( time() + $this->cron_interval, "burst_upgrade_iteration" );
 			} else {
-				wp_clear_scheduled_hook("burst_upgrade_iteration");
+				wp_clear_scheduled_hook( "burst_upgrade_iteration" );
 			}
 
 			delete_transient( 'burst_upgrade_running' );
@@ -219,7 +231,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 					// end progress only upgrade items.
 
 					'upgrade_lookup_tables_drop_columns',
-					'drop_page_id_column',
+					'upgrade_drop_page_id_column',
 				)
 			);
 		}
@@ -251,6 +263,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			$result = $wpdb->query( $sql );
 			if ( $result === false ) {
 				burst_error_log( 'db upgrade bounces multiple sessions failed' );
+
 				return;
 			}
 
@@ -281,6 +294,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			$columns = $wpdb->get_col( "DESC $table_name", 0 );
 			if ( ! in_array( 'event', $columns ) || ! in_array( 'action', $columns ) ) {
 				delete_option( 'burst_db_upgrade_goals_remove_columns' );
+
 				return;
 			}
 
@@ -337,6 +351,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			$columns = $wpdb->get_col( "DESC $table_name", 0 );
 			if ( ! in_array( 'user_agent', $columns, true ) ) {
 				delete_option( 'burst_db_upgrade_drop_user_agent' );
+
 				return;
 			}
 
@@ -466,7 +481,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 		 * To reliably be able to check if the upgrade is completed, we set an initial bogus value for the lookup id's.
 		 * @return void
 		 */
-		private function initialize_lookup_ids(){
+		private function initialize_lookup_ids() {
 			if ( ! burst_admin_logged_in() ) {
 				return;
 			}
@@ -481,7 +496,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			}
 
 			global $wpdb;
-			$wpdb->query("UPDATE {$wpdb->prefix}burst_statistics SET 
+			$wpdb->query( "UPDATE {$wpdb->prefix}burst_statistics SET 
                                browser_id = 999999, 
                                browser_version_id = 999999, 
                                platform_id = 999999, 
@@ -504,17 +519,20 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 
 			// only start if the lookup tables have been created.
 			if ( get_option( 'burst_db_upgrade_create_lookup_tables' ) ) {
-				burst_error_log("lookup tables not created yet, exit");
+				burst_error_log( "lookup tables not created yet, exit" );
+
 				return;
 			}
 
 			if ( get_option( 'burst_db_upgrade_init_lookup_ids' ) ) {
-				burst_error_log("lookup ids not initialized yet, exit");
+				burst_error_log( "lookup ids not initialized yet, exit" );
+
 				return;
 			}
 
 			if ( ! get_option( 'burst_db_upgrade_upgrade_lookup_tables' ) ) {
-				burst_error_log("lookup tables upgrade already completed, exit");
+				burst_error_log( "lookup tables upgrade already completed, exit" );
+
 				return;
 			}
 
@@ -526,9 +544,10 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 				$table = $item . 's';
 				// check if table exists. If not, start the create upgrade again.
 				if ( ! $this->table_exists( 'burst_' . $table ) ) {
-					burst_error_log("$table not created yet, exit");
+					burst_error_log( "$table not created yet, exit" );
 					update_option( "burst_db_upgrade_create_lookup_tables_$item", true, false );
 					update_option( 'burst_db_upgrade_create_lookup_tables', true, false );
+
 					return;
 				}
 
@@ -536,9 +555,10 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 				// if not, ensure that the update for this table is started again.
 				$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_{$item}s" );
 				if ( 0 === $count ) {
-					burst_error_log("$table not filled with data yet, exit");
+					burst_error_log( "$table not filled with data yet, exit" );
 					update_option( "burst_db_upgrade_create_lookup_tables_$item", true, false );
 					update_option( 'burst_db_upgrade_create_lookup_tables', true, false );
+
 					return;
 				}
 
@@ -560,20 +580,20 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 
 			// we have lookup tables with values. Now we can upgrade the statistics table.
 			if ( $selected_item ) {
-				$batch = $this->batch;
+				$batch         = $this->batch;
 				$selected_item = $this->sanitize_type( $selected_item );
-				$start = microtime( true );
+				$start         = microtime( true );
 				// check what's still to do.
 				$remaining_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics where {$selected_item}_id = 999999" );
-				$total_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics" );
-				$done_count = $total_count - $remaining_count;
+				$total_count     = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics" );
+				$done_count      = $total_count - $remaining_count;
 
 				// store progress for $selected_item, to show it in the progress notice
-				$progress  = 0 === $total_count ? 1 : $done_count / $total_count;
-				$progress = round($progress, 2);
+				$progress = 0 === $total_count ? 1 : $done_count / $total_count;
+				$progress = round( $progress, 2 );
 
-				burst_error_log("progress for $selected_item: $progress. Total count $total_count, done count $done_count, remaining count $remaining_count");
-				set_transient( "burst_progress_upgrade_lookup_tables_$selected_item", $progress, HOUR_IN_SECONDS);
+				burst_error_log( "progress for $selected_item: $progress. Total count $total_count, done count $done_count, remaining count $remaining_count" );
+				set_transient( "burst_progress_upgrade_lookup_tables_$selected_item", $progress, HOUR_IN_SECONDS );
 				// measure time elapsed during query.
 				if ( $done_count < $total_count ) {
 					$sql = "UPDATE {$wpdb->prefix}burst_statistics AS t
@@ -595,10 +615,10 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 					//completed upgrade
 					burst_error_log( "upgrade lookup tables for $selected_item completed" );
 					delete_option( "burst_db_upgrade_upgrade_lookup_tables_$selected_item" );
-					delete_transient( "burst_progress_upgrade_lookup_tables_$selected_item");
+					delete_transient( "burst_progress_upgrade_lookup_tables_$selected_item" );
 				}
 			} else {
-				burst_error_log("no upgradable tables found");
+				burst_error_log( "no upgradable tables found" );
 			}
 
 			// check if all items have been upgraded.
@@ -607,14 +627,14 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 				$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}burst_statistics WHERE {$item}_id = 999999 " );
 				if ( 0 === $count ) {
 					delete_option( "burst_db_upgrade_upgrade_lookup_tables_$item" );
-					delete_transient( "burst_progress_upgrade_lookup_tables_$item");
+					delete_transient( "burst_progress_upgrade_lookup_tables_$item" );
 				}
 				$total_not_completed += $count;
 			}
 
 			// stop upgrading if all have been completed.
 			if ( 0 === $total_not_completed ) {
-				burst_error_log("all lookup columns have been upgraded");
+				burst_error_log( "all lookup columns have been upgraded" );
 				delete_option( 'burst_db_upgrade_upgrade_lookup_tables' );
 			}
 		}
@@ -629,6 +649,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			if ( ! in_array( $type, $types, true ) ) {
 				return 'browser';
 			}
+
 			return $type;
 		}
 
@@ -698,7 +719,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			// check if columns exist first
 			$columns = $wpdb->get_col( "DESC $table_name", 0 );
 			if ( ! in_array( 'page_id', $columns ) ) {
-				delete_option( 'burst_db_upgrade_goals_remove_columns' );
+				delete_option( 'burst_db_upgrade_drop_page_id_column' );
 				return;
 			}
 
@@ -712,7 +733,6 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			}
 		}
 
-
 		/**
 		 * Check if a table exists
 		 *
@@ -723,6 +743,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 		private function table_exists( string $table ): bool {
 			global $wpdb;
 			$table = $wpdb->prefix . sanitize_title( $table );
+
 			return $wpdb->query( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
 		}
 

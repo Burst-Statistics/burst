@@ -157,15 +157,27 @@ const config = {
     }
   },
   'countries': {
-    label: __( 'Countries', 'burst-statistics' ),
+    label: __( 'Locations', 'burst-statistics' ),
     pro: true,
     searchable: false,
-    defaultColumns: [ 'country_code', 'pageviews' ],
+    defaultColumns: [ 'country_code', 'city', 'pageviews' ],
     columnsOptions: {
       'country_code': {
         'label': __( 'Country', 'burst-statistics' ),
         'default': true,
         'format': 'country',
+        'align': 'left',
+        'group_by': true
+      },
+      'state': {
+        'label': __( 'State', 'burst-statistics' ),
+        'format': 'state',
+        'align': 'left',
+        'group_by': true
+      },
+      'city': {
+        'label': __( 'City', 'burst-statistics' ),
+        'format': 'city',
         'align': 'left',
         'group_by': true
       },
