@@ -91,20 +91,21 @@ We value your feedback. You can [submit a support request on the WordPress forum
 
 == Change log ==
 = 1.7.0 =
+* Fix: not every cron job was cleared on deactivation, props @nerokin.
+* Fix: Fixed issue where the timezone would not be set correctly in the insights chart.
+* Fix: Optimizer mu plugin would not be deleted on uninstall. This has been resolved.
+* Fix: Searching pages would sometimes not work. This has been resolved.
+* Fix: Single Page Applications can now be tracked properly. This was not working correctly before.
 * Feature: Track WordPress hooks as a goal! This will allow you to track WooCommerce orders, form submissions, and more. Predefined goals for large plugins are available and will grow over time.
 * Improvement: Moved Burst to have it's own main menu item, so people can navigate to the dashboard more easily.
 * Improvement: Send the beacon information as JSON instead of text/plain. This will prevent false positives in security software.
 * Improvement: Tracking now works with Speculation Rules API. This will cause the tracking to be more accurate, when using speculation rules.
-* Fix: Searching pages would sometimes not work. This has been resolved.
-* Fix: Single Page Applications can now be tracked properly. This was not working correctly before.
 * Improvement: Added a notice for when the cron does not work properly. This will help users to know when the cron is not working.
 * Improvement: For high traffic websites, we have made the displaying of data more efficient. This will improve the performance of the dashboard for both high and low traffic websites.
 * Improvement: Translatability has been improved by adding %s to the translation strings. This will allow for better translations in languages that have different word orders.
 * Improvement: When the numbers in the compare tab are formatted a tooltip will show the full number. This will help users to see the full number when the number is too large to display.
 * Improvement: Post meta will be tracked more accurately. This will help users to see the correct amount of pageviews for each post.
 * Improvement: Added lookup tables for devices, browsers, and operating systems. This will keep the database size smaller and improve the performance of the dashboard.
-* Fix: Fixed issue where the timezone would not be set correctly in the insights chart.
-* Fix: Optimizer mu plugin would not be deleted on uninstall. This has been resolved.
 
 = 1.6.1 =
 * Feature: Email reporting. You can now receive a weekly or monthly email with your website statistics. Add up to 10 email addresses to receive the report.
