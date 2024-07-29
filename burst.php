@@ -195,9 +195,11 @@ if ( ! function_exists( 'burst_set_defaults' ) ) {
 	register_activation_hook( __FILE__, 'burst_set_defaults' );
 }
 
-if ( !function_exists( 'burst_clear_scheduled_hooks' )) {
+if ( ! function_exists( 'burst_clear_scheduled_hooks' ) ) {
 	register_deactivation_hook( __FILE__, 'burst_clear_scheduled_hooks' );
 	function burst_clear_scheduled_hooks() {
+		wp_clear_scheduled_hook( 'burst_every_hour' );
+		wp_clear_scheduled_hook( 'burst_daily' );
 		wp_clear_scheduled_hook( 'burst_every_5_minutes' );
 	}
 }
