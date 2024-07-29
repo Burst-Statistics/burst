@@ -200,6 +200,7 @@ if ( ! function_exists( 'burst_clear_scheduled_hooks' ) ) {
 	function burst_clear_scheduled_hooks() {
 		wp_clear_scheduled_hook( 'burst_every_hour' );
 		wp_clear_scheduled_hook( 'burst_daily' );
+		wp_clear_scheduled_hook( 'burst_weekly' );
 		wp_clear_scheduled_hook( 'burst_every_5_minutes' );
 	}
 }

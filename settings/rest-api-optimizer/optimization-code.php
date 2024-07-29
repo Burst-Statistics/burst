@@ -15,7 +15,8 @@ if ( ! function_exists( 'burst_exclude_plugins_for_rest_api' ) ) {
 				strpos( $_SERVER['REQUEST_URI'], 'burst/v1' ) === false ||
 				strpos( $_SERVER['REQUEST_URI'], 'otherpluginsdata' ) !== false ||
 				strpos( $_SERVER['REQUEST_URI'], 'plugin_actions' ) !== false ||
-				strpos( $_SERVER['REQUEST_URI'], 'fields/set' ) !== false
+				strpos( $_SERVER['REQUEST_URI'], 'fields/set' ) !== false ||
+				strpos( $_SERVER['REQUEST_URI'], 'goals/get' ) !== false
 			)
 		) {
 			return $plugins;

@@ -41,7 +41,7 @@ if ( ! class_exists( 'burst_mail_reports' ) ) {
 			}
 
 			$mailinglist = burst_get_option( 'email_reports_mailinglist' );
-
+			$mailinglist = is_array($mailinglist) ? $mailinglist : [];
 			$monthly_list = [];
 			$weekly_list  = [];
 			foreach ( $mailinglist as $mailing ) {

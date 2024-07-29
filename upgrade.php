@@ -128,17 +128,20 @@ function burst_check_upgrade() {
 		update_option( "burst_db_upgrade_create_lookup_tables_browser_version", true, false );
 		update_option( "burst_db_upgrade_create_lookup_tables_platform", true, false );
 		update_option( "burst_db_upgrade_create_lookup_tables_device", true, false );
-		update_option( "burst_db_upgrade_create_lookup_tables_device_resolution", true, false );
 		update_option( "burst_db_upgrade_upgrade_lookup_tables_browser", true, false );
 		update_option( "burst_db_upgrade_upgrade_lookup_tables_browser_version", true, false );
 		update_option( "burst_db_upgrade_upgrade_lookup_tables_platform", true, false );
 		update_option( "burst_db_upgrade_upgrade_lookup_tables_device", true, false );
-		update_option( "burst_db_upgrade_upgrade_lookup_tables_device_resolution", true, false );
 
 		// drop post_meta feature
 		update_option( "burst_db_upgrade_drop_page_id_column", true, false );
 
 		wp_schedule_single_event(time() + 300 , "burst_upgrade_iteration");
+
+		$mu_plugin = trailingslashit( WPMU_PLUGIN_DIR ) . 'burst_rest_api_optimizer.php';
+		if ( file_exists($mu_plugin ) ) {
+			unlink( $mu_plugin );
+		}
 	}
 
 

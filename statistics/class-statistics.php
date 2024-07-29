@@ -257,7 +257,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 			//we have a UTC corrected for timezone offset, to query in the statistics table.
 			//to show the correct labels, we convert this back with the timezone offset.
-			$timezone_offset = $this->get_timezone_offset();
+			$timezone_offset = $this->get_wp_timezone_offset();
 			$date = $date_start + $timezone_offset;
 			for ( $i = 0; $i < $date_modifiers['nr_of_intervals']; $i ++ ) {
 				$formatted_date            = date_i18n( $date_modifiers['php_date_format'], $date );
@@ -734,9 +734,28 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		): int {
 			$time               = DateTime::createFromFormat( 'Y-m-d H:i:s', $time_string );
 			$utc_time = $time ? $time->format( 'U' ) : strtotime( $time_string );
-			$gmt_offset_seconds = $this->get_timezone_offset();
+			$gmt_offset_seconds = $this->get_wp_timezone_offset();
 
 			return $utc_time - $gmt_offset_seconds;
+		}
+
+		/**
+		 * The FROM_UNIXTIME takes into account the timezone offset from the mysql timezone settings. These can differ from the server settings.
+		 *
+		 * @return int
+		 * @throws Exception
+		 */
+		private function get_mysql_timezone_offset():int {
+			global $wpdb;
+			$mysql_timestamp = $wpdb->get_var( 'SELECT FROM_UNIXTIME(UNIX_TIMESTAMP());' );
+			$wp_timezone_offset = $this->get_wp_timezone_offset();
+
+			//round to half hours
+			$mysql_timezone_offset_hours = ROUND( ( strtotime( $mysql_timestamp ) - time() ) / (HOUR_IN_SECONDS / 2), 0) * 0.5;
+			$wp_timezone_offset_hours = ROUND($wp_timezone_offset / (HOUR_IN_SECONDS / 2), 0) * 0.5;
+			$offset = $wp_timezone_offset_hours - $mysql_timezone_offset_hours;
+			return $offset * HOUR_IN_SECONDS;
+
 		}
 
 		/**
@@ -745,11 +764,13 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @return int
 		 * @throws Exception
 		 */
-		private function get_timezone_offset(): int {
+		private function get_wp_timezone_offset(): int {
 			$timezone = wp_timezone();
 			$datetime = new DateTime('now', $timezone);
 			return $timezone->getOffset($datetime);
 		}
+
+
 
 		/**
 		 * convert unix timestamp to date string by gmt offset
@@ -759,9 +780,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @return string
 		 */
 		public function convert_unix_to_date( $unix_timestamp ): string {
-			// Adjust the Unix timestamp for the GMT offset
-			$gmt_offset_seconds = (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
-			$adjusted_timestamp = $unix_timestamp + $gmt_offset_seconds;
+			$adjusted_timestamp = $unix_timestamp + $this->get_wp_timezone_offset();
 
 			// Convert the adjusted timestamp to a DateTime object
 			$time = new DateTime();
@@ -1023,7 +1042,6 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 					'browser_version',
 					'platform',
 					'device',
-					'device_resolution'
 				];//only device, browser and platform in use at the moment, but leave it here for extension purposes
 				foreach ( $filters as $filter_name => $filter_value ) {
 					if ( in_array( $filter_name, $mappable, true ) ) {
@@ -1078,7 +1096,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			}
 			$sql = $this->get_sql_table_raw( $start, $end, $select, $filters, $group_by, $order_by, $limit, $joins );
 			if ( $date_modifiers ) {
-				$timezone_offset = $this->get_timezone_offset();
+				$timezone_offset = $this->get_mysql_timezone_offset();
 				$sql = str_replace( 'SELECT', "SELECT DATE_FORMAT(FROM_UNIXTIME( time + $timezone_offset ), '{$date_modifiers['sql_date_format']}') as period,", $sql );
 			}
 
@@ -1362,16 +1380,16 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * Get Name from lookup table
 		 *
 		 * @param string $item
-		 * @param int $id
+		 * @param int    $id
 		 *
 		 * @return string
 		 */
-		public function get_lookup_table_name_by_id( string $item, $id):string {
+		public function get_lookup_table_name_by_id( string $item, int $id):string {
 			if ( $id === 0 ) {
 				return '';
 			}
 
-			$possible_items = ['browser', 'browser_version', 'platform', 'device', 'device_resolution'];
+			$possible_items = ['browser', 'browser_version', 'platform', 'device'];
 			if ( !in_array($item, $possible_items) ) {
 				return 0;
 			}
@@ -1381,8 +1399,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			}
 
 			//check if $value exists in tabel burst_$item
-			$ID = wp_cache_get('burst_' . $item . '_' . $id, 'burst');
-			if ( !$ID ) {
+			$name = wp_cache_get('burst_' . $item . '_' . $id, 'burst');
+			if ( !$name ) {
 				global $wpdb;
 				$name = $wpdb->get_var( $wpdb->prepare( "SELECT name FROM {$wpdb->prefix}burst_{$item}s WHERE ID = %s LIMIT 1", $id ) );
 				wp_cache_set('burst_' . $item . '_' . $id, $name, 'burst');
@@ -1420,7 +1438,6 @@ function burst_install_statistics_table() {
             `browser_version_id` int(11) NOT NULL,
             `platform_id` int(11) NOT NULL,
             `device_id` int(11) NOT NULL,
-            `device_resolution_id` int(11) NOT NULL,
             `session_id` int,
             `first_time_visit` tinyint,
             `bounce` tinyint DEFAULT 1,
@@ -1465,15 +1482,6 @@ function burst_install_statistics_table() {
               PRIMARY KEY  (ID)
             ) $charset_collate;";
 		dbDelta( $sql );
-
-		$table_name = $wpdb->prefix . 'burst_device_resolutions';
-		$sql        = "CREATE TABLE $table_name (
-			`ID` int(11) NOT NULL AUTO_INCREMENT ,
-            `name` varchar(255) NOT NULL,
-              PRIMARY KEY  (ID)
-            ) $charset_collate;";
-		dbDelta( $sql );
-
 
 		$table_name = $wpdb->prefix . 'burst_summary';
 		$sql        = "CREATE TABLE $table_name (

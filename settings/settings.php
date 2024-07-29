@@ -6,7 +6,6 @@ defined( 'ABSPATH' ) or die();
  *
  * @since 1.0.0
  */
-
 require_once burst_path . 'settings/config/config.php';
 require_once burst_path . 'settings/rest-api-optimizer/rest-api-optimizer.php';
 require_once burst_path . 'settings/media/media-override.php';
@@ -955,11 +954,11 @@ function burst_update_option( $name, $value ) {
 	$config_fields      = burst_fields( false );
 	$config_ids         = array_column( $config_fields, 'id' );
 	$config_field_index = array_search( $name, $config_ids );
-	$config_field       = $config_fields[ $config_field_index ];
 	if ( $config_field_index === false ) {
 		return;
 	}
 
+	$config_field       = $config_fields[ $config_field_index ];
 	$type = isset( $config_field['type'] ) ? $config_field['type'] : false;
 	if ( ! $type ) {
 		return;
@@ -1049,6 +1048,7 @@ function burst_rest_api_goals_get( $request ) {
 	}
 
 	$goals = BURST()->goals->get_goals();
+
 	$goals = apply_filters( 'burst_rest_api_goals_get', $goals );
 
 	$predefined_goals = BURST()->goals->get_predefined_goals();

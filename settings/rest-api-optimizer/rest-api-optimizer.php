@@ -1,5 +1,6 @@
 <?php
 defined( 'ABSPATH' ) or die();
+
 // check if our optimizer is installed, or if the mu plugins folder is not writable
 if ( ! defined( 'burst_rest_api_optimizer' ) && ! get_option( 'burst_rest_api_optimizer_not_writable' ) ) {
 	$php = file_get_contents( trailingslashit( plugin_dir_path( __FILE__ ) ) . 'optimization-code.php' );

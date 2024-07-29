@@ -243,7 +243,6 @@ if ( ! function_exists( 'burst_prepare_tracking_data' ) ) {
 			'fingerprint'       => null,
 			'referrer_url'      => null,
 			'user_agent'        => null,
-			'device_resolution' => null,
 			'time_on_page'      => null,
 			'completed_goals'   => null,
 		);
@@ -269,14 +268,12 @@ if ( ! function_exists( 'burst_prepare_tracking_data' ) ) {
 			$sanitized_data['browser_version_id']   = burst_get_lookup_table_id( 'browser_version', $user_agent_data['browser_version'] ); // already sanitized
 			$sanitized_data['platform_id']          = burst_get_lookup_table_id( 'platform', $user_agent_data['platform'] ); // already sanitized
 			$sanitized_data['device_id']            = burst_get_lookup_table_id( 'device', $user_agent_data['device'] ); // already sanitized
-			$sanitized_data['device_resolution_id'] = burst_get_lookup_table_id( 'device_resolution', burst_sanitize_device_resolution( $data['device_resolution'] ) );
 		} else {
 			//legacy, until lookup tables are created. Drop this part on next update
 			$sanitized_data['browser']         = $user_agent_data['browser'];
 			$sanitized_data['browser_version'] = $user_agent_data['browser_version'];
 			$sanitized_data['platform']        = $user_agent_data['platform'];
 			$sanitized_data['device']          = $user_agent_data['device'];
-			$sanitized_data['device_resolution'] = burst_sanitize_device_resolution( $data['device_resolution'] );
 		}
 
 		$sanitized_data['time_on_page']      = burst_sanitize_time_on_page( $data['time_on_page'] );
@@ -452,19 +449,6 @@ if ( ! function_exists( 'burst_sanitize_referrer' ) ) {
 	}
 }
 
-if ( ! function_exists( 'burst_sanitize_device_resolution' ) ) {
-	/**
-	 * Sanitize device resolution
-	 *
-	 * @param $device_resolution
-	 *
-	 * @return string
-	 */
-	function burst_sanitize_device_resolution( $device_resolution ): string {
-		return sanitize_text_field( filter_var( $device_resolution, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW ) );
-	}
-}
-
 if ( ! function_exists( 'burst_sanitize_time_on_page' ) ) {
 	/**
 	 * Sanitize time on page
@@ -517,7 +501,7 @@ if ( !function_exists( 'burst_get_lookup_table_id' ) ) {
 			return 0;
 		}
 
-		$possible_items = ['browser', 'browser_version', 'platform', 'device', 'device_resolution'];
+		$possible_items = ['browser', 'browser_version', 'platform', 'device'];
 		if ( !in_array($item, $possible_items) ) {
 			return 0;
 		}

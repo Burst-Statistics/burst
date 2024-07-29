@@ -39,9 +39,7 @@ const SelectPage = ({ value, onChangeHandler, field }) => {
 
   // Load options function with debounce
   const loadOptions = debounce( async( input, callback ) => {
-        console.log("loadoptions", input);
         setSearch( input );
-        console.log("start fetch posts with value ", input);
         let data = await fetchPosts( input );
         callback( data );
   }, 500 );
