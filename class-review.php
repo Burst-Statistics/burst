@@ -134,7 +134,7 @@ if ( ! class_exists( "burst_review" ) ) {
                             <a href="<?php echo add_query_arg( array(
 								'page'                 => 'burst',
 								'burst_dismiss_review' => 1,
-							), admin_url( 'index.php' ) ) ?>"><?php _e( 'Don\'t show again',
+							), admin_url( 'admin.php' ) ) ?>"><?php _e( 'Don\'t show again',
 									'burst-statistics' ); ?></a>
                         </div>
                     </div>

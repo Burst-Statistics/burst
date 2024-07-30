@@ -7,26 +7,6 @@ defined( 'ABSPATH' ) or die();
  */
 add_action( 'plugins_loaded', 'burst_schedule_cron' );
 function burst_schedule_cron() {
-
-//	$useCron = true;
-//	if ( $useCron ) {
-//		if ( ! wp_next_scheduled( 'burst_every_5_minutes' ) ) {
-//			wp_schedule_event( time(), 'burst_every_5_minutes', 'burst_every_5_minutes' );
-//		}
-//
-//		if ( ! wp_next_scheduled( 'burst_every_hour' ) ) {
-//			wp_schedule_event( time(), 'burst_every_hour', 'burst_every_hour' );
-//		}
-//		if ( ! wp_next_scheduled( 'burst_daily' ) ) {
-//			wp_schedule_event( time(), 'burst_daily', 'burst_daily' );
-//		}
-//
-
-//
-//		add_action( 'burst_every_5_minutes', array( BURST()->db_upgrade, 'init' ) );
-//	} else {
-//		//add_action( 'init', array( BURST()->statistics, 'init' ) );
-
 	if ( ! wp_next_scheduled( 'burst_every_5_minutes' ) ) {
 		wp_schedule_event( time(), 'burst_every_5_minutes', 'burst_every_5_minutes' );
 	}
