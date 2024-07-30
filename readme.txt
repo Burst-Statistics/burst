@@ -91,7 +91,7 @@ We value your feedback. You can [submit a support request on the WordPress forum
 
 == Change log ==
 = 1.7.0 =
-* Fix: not every cron job was cleared on deactivation, props @nerokin.
+* Fix: Not every cron job was cleared on deactivation, props @nerokin.
 * Fix: Fixed issue where the timezone would not be set correctly in the insights chart.
 * Fix: Optimizer mu plugin would not be deleted on uninstall. This has been resolved.
 * Fix: Searching pages would sometimes not work. This has been resolved.
