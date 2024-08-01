@@ -605,6 +605,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
 				$this->delete_all_burst_data();
 				$this->delete_all_burst_configuration();
+				burst_clear_scheduled_hooks();
 				$plugin  = burst_plugin;
 				$plugin  = plugin_basename( trim( $plugin ) );
 				$current = get_option( 'active_plugins', [] );
