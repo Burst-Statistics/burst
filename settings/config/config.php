@@ -263,6 +263,20 @@ function burst_fields( $load_values = true ) {
 			'default'  => false,
 		],
 		[
+			'id'       => 'track_url_change',
+			'menu_id'  => 'advanced',
+			'group_id' => 'tracking',
+			'type'     => 'checkbox',
+			'label'    => __( "Track changes in the URL as a visit", 'burst-statistics' ),
+			'help'     => [
+				'label' => 'default',
+				'title' => __( 'Track URL changes as a new visit', 'burst-statistics' ),
+				'text'  => __('This will track changes in the URL as a new visit. This can be useful for single page applications.', 'burst-statistics'),
+			],
+			'disabled' => false,
+			'default'  => false,
+		],
+		[
 			'id'       => 'combine_vars_and_script',
 			'menu_id'  => 'advanced',
 			'group_id' => 'scripts',

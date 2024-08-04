@@ -124,6 +124,11 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			}
 		}
 
+		/**
+         * Compile js file from settings and javascript so we can prevent inline variables
+         *
+		 * @return void
+		 */
 		public function create_js_file() {
 			if ( ! burst_user_can_manage() ) {
 				return;
@@ -131,22 +136,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			$cookieless      = burst_get_option( 'enable_cookieless_tracking' );
 			$cookieless_text = $cookieless == '1' ? '-cookieless' : '';
-			$beacon_enabled  = (int) burst_tracking_status_beacon();
-
 			$localize_args = apply_filters(
 				'burst_tracking_options',
-				[
-					'cookie_retention_days' => 30,
-					'beacon_url'            => burst_get_beacon_url(),
-					'options'               => [
-						'beacon_enabled'             => $beacon_enabled,
-						'enable_cookieless_tracking' => (int) $cookieless,
-						'enable_turbo_mode'          => (int) burst_get_option( 'enable_turbo_mode' ),
-						'do_not_track'               => (int) burst_get_option( 'enable_do_not_track' ),
-					],
-					'goals'                 => burst_get_active_goals(),
-					'goals_script_url'      => burst_get_goals_script_url(),
-				]
+				burst_get_tracking_options()
 			);
 
 			$js = '';
@@ -605,7 +597,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
 				$this->delete_all_burst_data();
 				$this->delete_all_burst_configuration();
-				burst_clear_scheduled_hooks();
 				$plugin  = burst_plugin;
 				$plugin  = plugin_basename( trim( $plugin ) );
 				$current = get_option( 'active_plugins', [] );

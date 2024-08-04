@@ -392,10 +392,10 @@ function burst_init_events() {
 	let turbo_mode = burst.options.enable_turbo_mode;
 	if ( turbo_mode ) { // if turbo mode is enabled, we track the hit after the whole page has loaded
 		if ( 'loading' !== document.readyState ) {
-burst_track_hit();
-} else {
-document.addEventListener( 'load', burst_track_hit );
-}
+			burst_track_hit();
+		} else {
+			document.addEventListener( 'load', burst_track_hit );
+		}
 	} else { // if default, we track the hit immediately
 		burst_track_hit();
 	}
@@ -423,8 +423,10 @@ document.addEventListener( 'load', burst_track_hit );
 	//for Single Page Applications, we listen to the url changes as well.
 	const originalPushState = history.pushState;
 	const originalReplaceState = history.replaceState;
-
 	const handleUrlChange = () => {
+		if ( !burst.options.track_url_change ) {
+			return;
+		}
 		burst_initial_track_hit = false;
 		burst_track_hit();
 	}
