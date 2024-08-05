@@ -29,8 +29,11 @@ if ( ! class_exists( 'burst_endpoint' ) ) {
 		 * @return array
 		 */
 		public function get_tracking_status_and_time(): array {
-			$status    = get_option( 'burst_tracking_status' );
-			$last_test = get_option( 'burst_ran_test' ); // casts strings 'true' & 'false' to bool true
+			$status_option = get_option( 'burst_tracking_status' );
+
+			$status = ( false === $status_option ) ? 'error' : ( empty( $status_option ) ? 'error' : $status_option ); // default to error if not false or empty
+
+			$last_test = get_option( 'burst_ran_test' );
 			$now = time();
 			//check if last test was more than 24 hours ago, 10 minutes if there's an error, to re-check faster.
 			$diff = $status === 'error' ? 10 * MINUTE_IN_SECONDS : DAY_IN_SECONDS;
