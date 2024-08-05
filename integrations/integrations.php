@@ -92,7 +92,7 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 					'status' => 'active',
 					'server_side' => true,
 					'url' => '*',
-					'hook' => 'edd_complete_purchase', //made up hook
+					'hook' => 'edd_complete_purchase',
 					'conversion_metric' => 'visitors',
 				],
 			]
