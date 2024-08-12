@@ -1072,9 +1072,9 @@ let burst_goals_script_url = burst.goals_script_url ? burst.goals_script_url : '
 
 // Set up a promise for when the page is activated,
 // which is needed for prerendered pages.
-const pageIsRendered = new Promise((resolve) => {
+const pageIsRendered = new Promise( ( resolve ) => {
 	if ( document.prerendering ) {
-		document.addEventListener('prerenderingchange', resolve, {once: true});
+		document.addEventListener( 'prerenderingchange', resolve, {once: true});
 	} else {
 		resolve();
 	}
@@ -1298,10 +1298,10 @@ let burst_api_request = obj => {
 		// if browser supports sendBeacon use it
 		if ( burst.options.beacon_enabled ) {
 			const headers = {
-				type: 'application/json',
+				type: 'application/json'
 			};
-			const blob = new Blob([JSON.stringify(obj.data)], headers);
-			window.navigator.sendBeacon(burst.beacon_url, blob);
+			const blob = new Blob([ JSON.stringify( obj.data ) ], headers );
+			window.navigator.sendBeacon( burst.beacon_url, blob );
 			resolve( 'ok' );
 		} else {
 			let burst_token = 'token=' + Math.random().toString( 36 ).replace( /[^a-z]+/g, '' ).substring( 0, 7 );
@@ -1489,19 +1489,19 @@ document.addEventListener( 'load', burst_track_hit );
 	const handleUrlChange = () => {
 		burst_initial_track_hit = false;
 		burst_track_hit();
-	}
+	};
 
-	history.pushState = function(state, title, url) {
-		originalPushState.apply(history, arguments);
+	history.pushState = function( state, title, url ) {
+		originalPushState.apply( history, arguments );
 		handleUrlChange();
 	};
 
-	history.replaceState = function(state, title, url) {
-		originalReplaceState.apply(history, arguments);
+	history.replaceState = function( state, title, url ) {
+		originalReplaceState.apply( history, arguments );
 		handleUrlChange();
 	};
 
-	window.addEventListener('popstate', handleUrlChange);
+	window.addEventListener( 'popstate', handleUrlChange );
 
 	// add event so other plugins can add their own events
 	document.addEventListener( 'burst_enable_cookies', function() {
@@ -1509,4 +1509,27 @@ document.addEventListener( 'load', burst_track_hit );
 		burst_update_hit( true );
 	});
 }
-burst_init_events();
+
+// Listen for consent changes for wp consent api
+document.addEventListener( 'wp_listen_for_consent_change', function( e ) {
+	var changedConsentCategory = e.detail;
+	for ( var key in changedConsentCategory ) {
+		if ( changedConsentCategory.hasOwnProperty( key ) ) {
+			if ( 'statistics' === key && 'allow' === changedConsentCategory[key]) {
+				burst_init_events();
+			}
+		}
+	}
+});
+
+if ( 'function' !== typeof wp_has_consent ) {
+
+	// no wp consent api available, just track the hit
+	burst_init_events();
+} else {
+
+	// wp consent api is available, check if there is consent for statistics
+	if ( wp_has_consent( 'statistics' ) ) {
+		burst_init_events();
+	}
+}
