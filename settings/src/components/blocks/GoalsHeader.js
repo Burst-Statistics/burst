@@ -24,7 +24,7 @@ const GoalsHeader = ({goals}) => {
           {Object.entries( goals ).map( ([ key, goal ]) => (
               goal && 'string' === typeof goal.title ? (
                   <option key={key} value={goal.id}>{goal.title}</option>
-              ) : <option key={key} value={key}>{__( 'Unknown title', 'burst-statistics' )}</option>
+              ) : <option key={key} value={key}>{__( 'Untitled goal', 'burst-statistics' )}</option>
           ) )}
         </select>
         }
