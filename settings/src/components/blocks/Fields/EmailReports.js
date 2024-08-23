@@ -93,7 +93,7 @@ const EmailReports = ({name, value, onChange, comment}) => {
       <div className="burst-field burst-email-reports-field">
         <p className={'burst-field-description'}>
           {__(
-              'Recipients will receive weekly or monthly reports with statistics about your website. Add or remove email addresses in the list below.',
+              'Recipients will receive weekly or monthly reports with statistics about your website. Add or remove email adressess in the list below.',
               'burst-statistics' )}
         </p>
         <DataTable

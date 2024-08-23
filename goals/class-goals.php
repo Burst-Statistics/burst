@@ -65,7 +65,7 @@ if ( ! class_exists( 'burst_goals' ) ) {
 				'limit'   => 9999,
 				'offset'  => 0,
 				'orderby' => 'ID',
-				'order'   => 'ASC',
+				'order'   => 'DESC',
 			);
 			// merge args
 			$args = wp_parse_args( $args, $default_args );

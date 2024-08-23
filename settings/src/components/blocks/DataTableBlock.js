@@ -231,6 +231,12 @@ const config = {
         'align': 'left',
         'group_by': true
       },
+      'fragment': {
+        'label': __( 'Fragment', 'burst-statistics' ),
+        'format': 'text',
+        'align': 'left',
+        'group_by': true
+      },
       ...defaultColumnsOptions
     }
   }

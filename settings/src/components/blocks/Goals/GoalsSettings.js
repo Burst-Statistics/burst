@@ -10,7 +10,7 @@ import Pro from '../Fields/Pro';
 import {useFields} from '../../../store/useFieldsStore';
 
 const GoalsSettings = ( props ) => {
-  const { goals, goalFields, predefinedGoals, addGoal, deleteGoal, updateGoal, addPredefinedGoal, setGoalValue, saveGoalTitle } = useGoalsStore();
+  const { goals, goalFields, predefinedGoals, addGoal, deleteGoal, updateGoal, addPredefinedGoal, setGoalValue } = useGoalsStore();
   const {licenseStatus} = useLicenseStore();
   const [ predefinedGoalsVisible, setPredefinedGoalsVisible ] = useState( false );
     const getFieldValue = useFields( ( state ) => state.getFieldValue );
@@ -45,7 +45,6 @@ const GoalsSettings = ( props ) => {
                     setGoalValue={setGoalValue}
                     deleteGoal={deleteGoal}
                     onUpdate={updateGoal}
-                    saveGoalTitle={saveGoalTitle}
                 />
             );
           })}

@@ -732,7 +732,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 		 *
 		 * @return bool
 		 */
-		public function column_exists( string $table_name, string $column_name): bool {
+		private function column_exists( string $table_name, string $column_name): bool {
 			global $wpdb;
 			$table_name = $wpdb->prefix . $table_name;
 			$columns = $wpdb->get_col( "DESC $table_name" );
