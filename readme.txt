@@ -1,7 +1,7 @@
 === Burst Statistics - Privacy-Friendly Analytics for WordPress ===
 Contributors: hesseldejong, RogierLankhorst, aahulsebos, leonwimmenhoeve
 Donate link: paypal.me/Burststatistics
-Tags: statistics, analytics, privacy, analytics alternative
+Tags: statistics, analytics, stats, analytics alternative
 Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
