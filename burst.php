@@ -48,6 +48,7 @@ if ( ! class_exists( 'BURST' ) ) {
 		public $notices;
 		public $archive;
 		public $summary;
+		public $mail_reports;
 		public $dashboard_widget;
 		public $db_upgrade;
 
@@ -71,6 +72,7 @@ if ( ! class_exists( 'BURST' ) ) {
 					self::$instance->statistics      = new burst_statistics();
 					self::$instance->goal_statistics = new burst_goal_statistics();
 					self::$instance->admin      = new burst_admin();
+					self::$instance->mail_reports     = new burst_mail_reports();
 					self::$instance->summary    = new burst_summary();
 					self::$instance->review     = new burst_review();
 					self::$instance->notices    = new burst_notices();
@@ -144,6 +146,7 @@ if ( ! class_exists( 'BURST' ) ) {
 				require_once( burst_path . 'statistics/class-statistics.php' );
 				require_once( burst_path . 'statistics/class-goal-statistics.php' );
 				require_once( burst_path . 'class-admin.php' );
+				require_once burst_path . 'mailer/class-mail-reports.php';
 				require_once( burst_path . 'statistics/class-summary.php' );
 				require_once( burst_path . 'settings/settings.php' );
 				require_once( burst_path . 'class-review.php' );
