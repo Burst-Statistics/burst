@@ -283,6 +283,10 @@ function burst_integrations() {
 		}
 	}
 
+	// add integration with consent api for this plugin
+	$plugin = plugin_basename( __FILE__ );
+	add_filter( "wp_consent_api_registered_{$plugin}", '__return_true' );
+
 }
 
 add_action( 'plugins_loaded', 'burst_integrations', 10 );

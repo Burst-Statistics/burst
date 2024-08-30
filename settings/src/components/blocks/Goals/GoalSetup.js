@@ -10,7 +10,7 @@ import {setOption} from '../../../utils/api';
 import {useEffect} from 'react';
 import {updateFieldsListWithConditions} from '../../../store/useFieldsStore';
 
-const GoalSetup = ({ goal, goalFields, setGoalValue, deleteGoal, onUpdate }) => {
+const GoalSetup = ({ goal, goalFields, setGoalValue, deleteGoal, onUpdate, saveGoalTitle }) => {
   if ( ! goalFields ) {
     return null;
   }
@@ -43,6 +43,7 @@ const GoalSetup = ({ goal, goalFields, setGoalValue, deleteGoal, onUpdate }) => 
 
   function handleTitleChange( value ) {
     setGoalValue( goal.id, 'title', value );
+    saveGoalTitle( goal.id, value );
   }
   let type = goal.type;
   let iconName = type && fields[1] && fields[1].options && fields[1].options[type] ? fields[1].options[type].icon : 'eye';

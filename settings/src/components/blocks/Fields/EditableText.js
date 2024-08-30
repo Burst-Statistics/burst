@@ -5,9 +5,9 @@ import {useGoalsStore} from '../../../store/useGoalsStore';
 import Tooltip from '../../common/Tooltip';
 
 export default function EditableText({ value, id, onChange }) {
+  const [ tempValue, setTempValue ] = useState( value );
   const [ isEditing, setIsEditing ] = useState( false );
   const inputRef = useRef( null );
-  const saveGoalTitle = useGoalsStore( ( state ) => state.saveGoalTitle );
 
 
   useEffect( () => {
@@ -23,7 +23,9 @@ export default function EditableText({ value, id, onChange }) {
 
   async function handleBlur() {
     setIsEditing( false );
-    await saveGoalTitle( id, value );
+
+    // never set an empty value
+    await onChange( tempValue );
 
   }
 
@@ -32,7 +34,7 @@ export default function EditableText({ value, id, onChange }) {
       event.preventDefault();
 
       // add space to input
-      onChange( value + ' ' );
+      setTempValue( event.target.value + ' ' );
     }
     if ( 'Enter' === event.key ) {
       event.preventDefault();
@@ -42,19 +44,18 @@ export default function EditableText({ value, id, onChange }) {
 
   function handleTextChange( event ) {
     event.preventDefault();
-    onChange( event.target.value );
+    setTempValue( event.target.value );
   }
 
   function handleFocus() {
     setIsEditing( true );
   }
-
   return (
       <div className={'burst-click-to-edit'}>
         {isEditing ? (
             <input
                 type="text"
-                value={value} // Use temporary value
+                value={tempValue}
                 onChange={handleTextChange}
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
@@ -65,7 +66,7 @@ export default function EditableText({ value, id, onChange }) {
               <h5 className="burst-tooltip-clicktoedit" tabIndex="0"
                   onClick={handleClick} onFocus={handleFocus}
                  >
-                {value}
+                { '' !== tempValue ? tempValue : <i>{ __( 'Untitled goal', 'burst-statistics' ) }</i>}
               </h5>
             </Tooltip>
         )}

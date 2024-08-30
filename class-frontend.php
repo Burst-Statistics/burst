@@ -84,19 +84,7 @@ if ( ! class_exists( 'burst_frontend' ) ) {
 
 					$localize_args = apply_filters(
 						'burst_tracking_options',
-						[
-							'page_id'               => get_queried_object_id(),
-							'cookie_retention_days' => 30,
-							'beacon_url'            => burst_get_beacon_url(),
-							'options'               => [
-								'beacon_enabled'    => $beacon_enabled,
-								'enable_cookieless_tracking' => (int) $cookieless,
-								'enable_turbo_mode' => (int) burst_get_option( 'enable_turbo_mode' ),
-								'do_not_track'      => (int) burst_get_option( 'enable_do_not_track' ),
-							],
-							'goals'                 => burst_get_active_goals(),
-							'goals_script_url'      => burst_get_goals_script_url(),
-						]
+						burst_get_tracking_options()
 					);
 					wp_enqueue_script(
 						'burst',

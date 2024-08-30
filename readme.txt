@@ -90,6 +90,12 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.7.2 =
+* Fix: Goal title would sometimes become empty and uneditable. This has been resolved.
+* Feature: Added support for the WP Consent API, which will allow you to track users based on their consent for multiple plugins.
+* Improvement: Added Complianz integration. This will allow you to track users based on their consent for Complianz.
+* Improvement: Added option to track changes in the URL when not reloading the page. This will allow you to track single page applications.
+
 = 1.7.0 =
 * Fix: Not every cron job was cleared on deactivation, props @nerokin.
 * Fix: Fixed issue where the timezone would not be set correctly in the insights chart.
