@@ -23,7 +23,7 @@ if ( ! class_exists( 'burst_mail_reports' ) ) {
 			$mailinglist = burst_get_option( 'email_reports_mailinglist' );
 			$emails      = [];
 			foreach ( $mailinglist as $mailing ) {
-				if ( isset($mailing['emails']) ) {
+				if ( isset($mailing['email']) ) {
 					$emails[] = $mailing['email'];
 				}
 			}
