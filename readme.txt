@@ -95,6 +95,12 @@ We value your feedback. You can [submit a support request on the WordPress forum
 * Feature: Added support for the WP Consent API, which will allow you to track users based on their consent for multiple plugins.
 * Improvement: Added Complianz integration. This will allow you to track users based on their consent for Complianz.
 * Improvement: Added option to track changes in the URL when not reloading the page. This will allow you to track single page applications.
+* Fix: Email reporting did not work properly for some users. This has been resolved.
+
+= 1.7.1 =
+* Fix: Issue with upgrade staying stuck on 35% for some users. This has been resolved.
+* Fix: Issue where the tracking test would sometimes not restart. This has been resolved.
+* Fix: Dashboard widget would not be shown due to a change in the Dashboard page. This has been resolved.
 
 = 1.7.0 =
 * Fix: Not every cron job was cleared on deactivation, props @nerokin.
