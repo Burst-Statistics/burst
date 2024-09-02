@@ -179,6 +179,11 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				return;
 			}
 
+			//don't run on uninstall
+            if (defined('BURST_UNINSTALLING')) {
+                return;
+            }
+
 			set_transient( 'burst_running_upgrade', true, 30 );
 			do_action( 'burst_install_tables' );
 			// we need to run table creation across subsites as well.
@@ -609,6 +614,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// check for action
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
 				define( 'BURST_NO_UPGRADE', true );
+                define( 'BURST_UNINSTALLING', true );
 				burst_clear_scheduled_hooks();
 
 				$networkwide = isset( $_GET['networkwide'] ) && $_GET['networkwide'] === '1';
@@ -657,7 +663,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				// immediately run setup defaults, so db tables get made
 				$this->setup_defaults();
 
-				$output = [
+                $this->run_table_init_hook();
+
+                $output = [
 					'success' => true,
 					'message' => __( 'Successfully cleared data.', 'burst-statistics' ),
 				];
@@ -693,11 +701,18 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				'burst_all_tables',
 				[
 					'burst_statistics',
+					'burst_campaigns',
 					'burst_sessions',
 					'burst_goals',
 					'burst_goal_statistics',
 					'burst_summary',
 					'burst_archived_months',
+					'burst_parameters',
+					'burst_browsers',
+					'burst_browser_versions',
+					'burst_platforms',
+					'burst_devices',
+					'burst_summary',
 				],
 			);
 
