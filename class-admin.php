@@ -608,6 +608,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			// check for action
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
+				define( 'BURST_NO_UPGRADE', true );
+				burst_clear_scheduled_hooks();
+
 				$networkwide = isset( $_GET['networkwide'] ) && $_GET['networkwide'] === '1';
 				if ( $networkwide && is_multisite() ) {
 					$sites = get_sites();
@@ -623,12 +626,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				$this->delete_all_burst_data();
 				$this->delete_all_burst_configuration();
 				burst_clear_scheduled_hooks();
-				$plugin  = burst_plugin;
-				$plugin  = plugin_basename( trim( $plugin ) );
-				$current = get_option( 'active_plugins', [] );
-				$current = $this->remove_plugin_from_array( $plugin, $current );
-				update_option( 'active_plugins', $current );
-				wp_redirect( admin_url( 'plugins.php' ) );
+				deactivate_plugins( burst_plugin, false, $networkwide );
+				$redirect_slug = $networkwide ? 'network/plugins.php' : 'plugins.php';
+
+				wp_redirect( admin_url($redirect_slug ) );
 				exit;
 			}
 		}
@@ -663,18 +664,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			}
 
 			return $output;
-		}
-
-		/**
-		 * Remove the plugin from the active plugins array when called from listen_for_deactivation
-		 * */
-		public function remove_plugin_from_array( $plugin, $current ) {
-			$key = array_search( $plugin, $current );
-			if ( false !== $key ) {
-				unset( $current[ $key ] );
-			}
-
-			return $current;
 		}
 
 		/**
