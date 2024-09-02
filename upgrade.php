@@ -113,9 +113,11 @@ function burst_check_upgrade() {
 		}
 	}
 
-	if ( $prev_version
-	     && version_compare( $prev_version, '1.7.0', '<' ) ) {
-			update_option( 'burst_last_cron_hit', time(), false );
+	//check if column 'device_id' exists in the table 'burst_statistics'
+	$is_version_upgrade = $prev_version && version_compare( $prev_version, '1.7.0', '<' );
+	$lookup_table_incomplete = version_compare( $prev_version, '1.7.1', '=' ) && !BURST()->db_upgrade->column_exists( 'burst_statistics', 'device_id' );
+	if ( $lookup_table_incomplete || $is_version_upgrade ) {
+		update_option( 'burst_last_cron_hit', time(), false );
 		wp_clear_scheduled_hook( 'burst_every_5_minutes' );
 
 		update_option( "burst_db_upgrade_create_lookup_tables", true, true ); //this option is used in the tracking, so should autoload until completed

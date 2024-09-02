@@ -1370,7 +1370,9 @@ function burst_sanitize_email_reports($email_reports) {
 	}
 
 	$sanitized_email_reports = [];
-
+    if ( !is_array($email_reports )) {
+	    $email_reports = [];
+    }
 	foreach ($email_reports as $report) {
 		// Initialize an array to hold sanitized report.
 		$sanitized_report = [];

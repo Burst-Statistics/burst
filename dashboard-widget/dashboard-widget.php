@@ -46,7 +46,7 @@ if ( ! class_exists( 'burst_dashboard_widget' ) ) {
 
 		public function enqueue( $hook ) {
 
-			if ( $hook !== 'admin.php' ) {
+			if ( $hook !== 'index.php' ) {
 				return;
 			}
 

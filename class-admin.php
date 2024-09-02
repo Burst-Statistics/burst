@@ -427,9 +427,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		public function deactivate_popup() {
 			// only on plugins page
 			$screen = get_current_screen();
-			if ( ! $screen || $screen->base !== 'plugins' ) {
+			if ( ! $screen || ($screen->base !== 'plugins' && $screen->base !== 'plugins-network') ) {
 				return;
 			}
+			$networkwide = $screen->base === 'plugins-network';
 			$slug = sanitize_title( burst_plugin_name );
 
 			?>
@@ -561,6 +562,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
                         <li>
 							<?php _e( 'Deactivate, and remove all statistics, experiments and settings.', 'burst-statistics' ); ?>
 							<?php _e( 'The data will be gone forever.', 'burst-statistics' ); ?>
+                            <?php if ($networkwide) {
+                                _e( 'As you are deactivating networkwide, this will also remove all data from all subsites.', 'burst-statistics' );
+                            }?>
                         </li>
                     </ul>
                 </div>
@@ -570,6 +574,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				$deactivate_and_remove_all_data_url = add_query_arg(
 					array(
 						'action' => 'uninstall_delete_all_data',
+						'networkwide' => $networkwide ? '1' : '0',
 						'token'  => $token,
 					),
 					admin_url( 'plugins.php' )
@@ -603,6 +608,18 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			// check for action
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
+				$networkwide = isset( $_GET['networkwide'] ) && $_GET['networkwide'] === '1';
+				if ( $networkwide && is_multisite() ) {
+					$sites = get_sites();
+					if ( count( $sites ) > 0 ) {
+						foreach ( $sites as $site ) {
+							switch_to_blog( $site->blog_id );
+							$this->delete_all_burst_data();
+							$this->delete_all_burst_configuration();
+							restore_current_blog();
+						}
+					}
+				}
 				$this->delete_all_burst_data();
 				$this->delete_all_burst_configuration();
 				burst_clear_scheduled_hooks();
@@ -667,6 +684,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( ! current_user_can( 'activate_plugins' ) ) {
 				return;
 			}
+
 			global $wpdb;
 
 			// post meta to delete
