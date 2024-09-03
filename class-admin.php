@@ -392,7 +392,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			$current_date = strtotime(gmdate('Y-m-d H:i:s'));
 
 			// Define the start and end dates for the range in GMT (including specific times)
-			$start_date = strtotime('September 3 00:00:00 GMT');
+			$start_date = strtotime('November 25 00:00:00 GMT');
 			$end_date   = strtotime('November 29 23:59:59 GMT');
 
 			// Check if the current date and time falls within the date range
@@ -409,7 +409,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 	        $current_date = strtotime(gmdate('Y-m-d H:i:s'));
 
 	        // Define the start and end dates for the range in GMT (including specific times)
-	        $start_date = strtotime('September 3 00:00:00 GMT');
+	        $start_date = strtotime('November 30 00:00:00 GMT');
 	        $end_date   = strtotime('December 2 23:59:59 GMT');
 
 	        // Check if the current date and time falls within the date range

@@ -141,7 +141,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 					'callback' => '_true_',
 					'output' => [
 						'true' => [
-							'msg' => __("Black Friday", 'burst-statistics') . ": " . __("40% Off Burst Pro! Unlock premium features now", 'burst-statistics') . " — " . __("Limited time offer!", 'burst-statistics'),
+							'msg' => __("Black Friday", 'burst-statistics') . ": " . __("Get 40% Off Burst Pro!", 'burst-statistics') . " — " . __("Limited time offer!", 'burst-statistics'),
 							'icon' => 'sale',
 							'url' => burst_get_website_url('pricing/', [
 								'burst_content' => 'black-friday',
@@ -159,7 +159,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 					'callback' => '_true_',
 					'output' => [
 						'true' => [
-							'msg' => __("Cyber Monday", 'burst-statistics') . ": " . __("40% Off Burst Pro! Enhance your data insights", 'burst-statistics') . " — " . __("Last chance!", 'burst-statistics'),
+							'msg' => __("Cyber Monday", 'burst-statistics') . ": " . __("Get 40% Off Burst Pro!", 'burst-statistics') . " — " . __("Last chance!", 'burst-statistics'),
 							'icon' => 'sale',
 							'url' => burst_get_website_url('pricing/', [
 								'burst_content' => 'cyber-monday',
