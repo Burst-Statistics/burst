@@ -71,6 +71,7 @@ if ( ! class_exists( "burst_notices" ) ) {
 				'error' => __( "Error", "burst-statistics" ),
 				'open'    => __( "Open", "burst-statistics" ),
 				'pro' => __( "Pro", "burst-statistics" ),
+				'sale' => __( "Sale", "burst-statistics" ),
 			];
 
 			$defaults = array(
@@ -133,15 +134,15 @@ if ( ! class_exists( "burst_notices" ) ) {
 						),
 					),
 				],
-				'bf_notice2023' => [
+				'bf_notice2024' => [
 					'condition'  => [
-						'BURST()->admin->is_bf'
+						'BURST()->admin->is_bf',
 					],
 					'callback' => '_true_',
 					'output' => [
 						'true' => [
-							'msg' => __( "Black Friday sale! Get 40% Off Burst Pro.", 'burst-statistics' ),
-							'icon' => 'pro',
+							'msg' => __("Black Friday", 'burst-statistics') . ": " . __("40% Off Burst Pro! Unlock premium features now", 'burst-statistics') . " — " . __("Limited time offer!", 'burst-statistics'),
+							'icon' => 'sale',
 							'url' => burst_get_website_url('pricing/', [
 								'burst_content' => 'black-friday',
 								'burst_source' => 'notices',
@@ -151,6 +152,25 @@ if ( ! class_exists( "burst_notices" ) ) {
 						],
 					],
 				],
+				'cm_notice2024' => [
+					'condition'  => [
+						'BURST()->admin->is_cm'
+					],
+					'callback' => '_true_',
+					'output' => [
+						'true' => [
+							'msg' => __("Cyber Monday", 'burst-statistics') . ": " . __("40% Off Burst Pro! Enhance your data insights", 'burst-statistics') . " — " . __("Last chance!", 'burst-statistics'),
+							'icon' => 'sale',
+							'url' => burst_get_website_url('pricing/', [
+								'burst_content' => 'cyber-monday',
+								'burst_source' => 'notices',
+							]),
+							'dismissible' => true,
+							'plusone' => true,
+						],
+					],
+				],
+
 				'new_parameters' => [
 					'condition' => [
 						'burst_is_pro'

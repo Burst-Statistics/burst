@@ -383,30 +383,43 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		}
 
 		/**
-		 * Check if current day falls within required date range.
+		 * Check if the current day falls within the required date range (November 25, 00:00 to December 2, 23:59) based on GMT.
 		 *
 		 * @return bool
 		 */
 		public function is_bf() {
-			if ( defined( 'burst_pro_version' ) ) {
-				return false;
-			}
-			$start_day     = 20;
-			$end_day       = 27;
-			$current_year  = date( 'Y' );// e.g. 2021
-			$current_month = date( 'n' );// e.g. 3
-			$current_day   = date( 'j' );// e.g. 4
+            // Get current date and time in GMT as timestamp
+			$current_date = strtotime(gmdate('Y-m-d H:i:s'));
 
-			if ( $current_year == 2023 &&
-			     $current_month == 11 &&
-			     $current_day >= $start_day &&
-			     $current_day <= $end_day
-			) {
+			// Define the start and end dates for the range in GMT (including specific times)
+			$start_date = strtotime('September 3 00:00:00 GMT');
+			$end_date   = strtotime('November 29 23:59:59 GMT');
+
+			// Check if the current date and time falls within the date range
+			if ( $current_date >= $start_date && $current_date <= $end_date ) {
 				return true;
 			}
 
 			return false;
 		}
+
+
+        public function is_cm() {
+	        // Get current date and time in GMT as timestamp
+	        $current_date = strtotime(gmdate('Y-m-d H:i:s'));
+
+	        // Define the start and end dates for the range in GMT (including specific times)
+	        $start_date = strtotime('September 3 00:00:00 GMT');
+	        $end_date   = strtotime('December 2 23:59:59 GMT');
+
+	        // Check if the current date and time falls within the date range
+	        if ( $current_date >= $start_date && $current_date <= $end_date ) {
+		        return true;
+	        }
+
+	        return false;
+        }
+
 
 		/**
 		 *
