@@ -107,9 +107,6 @@ function burst_cmplz_script( $tags ): array {
 		'urls' => array(
 			'assets/js/build/burst.js',
 			'assets/js/build/burst.min.js',
-			'helpers/timeme/timeme.js',
-			'helpers/timeme/timeme.min.js',
-
 		),
 		'enable_placeholder' => '0',
 		'enable_dependency' => '0',
@@ -119,3 +116,10 @@ function burst_cmplz_script( $tags ): array {
 }
 add_filter( 'cmplz_known_script_tags', 'burst_cmplz_script', 20 );
 
+add_action('init', 'burst_remove_complianz_integration');
+
+function burst_remove_complianz_integration(){
+
+	remove_action( 'wp_enqueue_scripts', 'cmplz_burst_statistics_activate_burst',PHP_INT_MAX );
+
+}

@@ -1391,6 +1391,11 @@ a.burst-button--pro:hover, button.burst-button--pro:hover, input.burst-button--p
     color: var(--rsp-text-color-white);
 }
 
+.burst-task-status.burst-sale {
+    background-color: var(--rsp-orange);
+    color: var(--rsp-text-color-white);
+}
+
 .burst-task-status.burst-warning {
     background-color: var(--rsp-color-warning);
     color: var(--rsp-text-color-white);
