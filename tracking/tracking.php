@@ -17,7 +17,13 @@ if ( ! function_exists( 'burst_error_log' ) ) {
 			$logging_enabled = apply_filters( 'burst_enable_logging', true );
 			if ( $logging_enabled ) {
 				// strip everything after # in version number and check if defined
-				$version_nr = defined('burst_version') ? explode('#', burst_version)[0] : 'Unknown version';
+				if (defined('burst_version') && !empty(burst_version)) {
+					$version_parts = explode('#', burst_version);
+					$version_nr = $version_parts[0] ? $version_parts[0] : 'Unknown version';
+				} else {
+					$version_nr = 'Unknown version';
+				}
+
 				$burst_pro = defined('burst_pro') ? burst_pro : false;
 				$before_text = $burst_pro ? 'Burst Pro' : 'Burst Statistics';
 				$before_text .= ' ' . $version_nr . ': ';
@@ -70,7 +76,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 		$result = burst_get_hit_type($sanitized_data);
 
 		if ($result === false) {
-			burst_error_log('Failed to determine hit type.');
 			return 'failed to determine hit type';
 		}
 

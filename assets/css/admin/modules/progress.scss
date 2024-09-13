@@ -199,7 +199,10 @@
     background-color: var(--rsp-color-error);
     color: var(--rsp-text-color-white);
   }
-
+  &.burst-sale{
+    background-color: var(--rsp-orange);
+    color: var(--rsp-text-color-white);
+  }
   &.burst-warning {
     background-color: var(--rsp-color-warning);
     color: var(--rsp-text-color-white);

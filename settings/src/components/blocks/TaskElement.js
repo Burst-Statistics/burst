@@ -12,7 +12,16 @@ const TaskElement = ( props ) => {
                 <span className={'burst-task-status burst-' + notice.output.icon}>{ notice.output.label }</span>
                 {'skeleton' !== notice.output.icon && <p className="burst-task-message" dangerouslySetInnerHTML={{__html: notice.output.msg}}></p>}
                 {'skeleton' === notice.output.icon && <div className="burst-task-message" ><Icon name="loading" /></div>}
-                {notice.output.url && <a target="_blank" href={notice.output.url} rel="noreferrer">{__( 'More info', 'burst-statistics' )}</a> }
+                {notice.output.url && (
+                    <a
+                        target="_blank"
+                        href={notice.output.url}
+                        rel="noreferrer"
+                    >
+                        {'sale' === notice.output.icon ? __( 'Get 40% Off', 'burst-statistics' ) : __( 'More info', 'burst-statistics' )}
+                    </a>
+                )}
+
                 {notice.output.highlight_field_id && <span className="burst-task-enable" onClick={handleClick}>{__( 'Fix', 'burst-statistics' )}</span> }
                 {notice.output.plusone && <span className='burst-plusone'>1</span>}
                 {notice.output.dismissible && 'completed' !== notice.output.status &&

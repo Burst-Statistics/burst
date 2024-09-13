@@ -3,7 +3,7 @@ describe( 'React App', () => {
 
     // Using the custom command before each test
     cy.login();
-    cy.visit( 'wp-admin/index.php?page=burst' );
+    cy.visit( 'wp-admin/admin.php?page=burst' );
     cy.wait( 1000 );
   });
 
