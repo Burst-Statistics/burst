@@ -1328,6 +1328,7 @@ function burst_sanitize_field( $value, $type, $id ) {
 
 			return array_map( 'sanitize_text_field', $value );
 		case 'email':
+
 			return sanitize_email( $value );
 		case 'url':
 			return esc_url_raw( $value );
@@ -1384,7 +1385,7 @@ function burst_sanitize_email_reports($email_reports) {
 
 		// Validate and sanitize the frequency field.
 		if (isset($report['frequency']) && in_array($report['frequency'], ['monthly', 'weekly'], true)) {
-			$sanitized_report['frequency'] = sanitize_text_field($report['frequency']);
+			$sanitized_report['frequency'] = $report['frequency'];
 		} else {
 			$sanitized_report['frequency'] = 'monthly';
 		}
@@ -1394,7 +1395,6 @@ function burst_sanitize_email_reports($email_reports) {
 	}
     // maximum of 10 email reports
     $sanitized_email_reports = array_slice($sanitized_email_reports, 0, 10);
-
 	return $sanitized_email_reports;
 }
 

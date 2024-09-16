@@ -5,8 +5,11 @@ import SwitchText from './SwitchText';
 import SelectInput from './SelectInput';
 import useDebouncedCallback from '../../../hooks/useDebouncedCallback';
 import Icon from '../../../utils/Icon';
+import {useFields} from "../../../store/useFieldsStore";
 
 const EmailReports = ({name, value, onChange, comment}) => {
+  const saveFields = useFields( ( state ) => state.saveFields );
+
   const [ emailError, setEmailError ] = useState( '' );
   const [ entryEmail, setEntryEmail ] = useState( '' );
 
@@ -34,11 +37,25 @@ const EmailReports = ({name, value, onChange, comment}) => {
     }
   };
 
+  const handleRemoveEmail = async (email) => {
+    onChange(value.filter( item => item.email !== email ) );
+    await saveFields();
+  }
+
+  const handleFrequencyChange = async ( email, newFrequency ) => {
+    onChange( value.map( item => {
+      if ( item.email === email ) {
+        return { ...item, frequency: newFrequency };
+      }
+      return item;
+    }) );
+    await saveFields();
+  }
   /**
    * Add email address to the list
    * @param e
    */
-  const handleAddEmail = ( e ) => {
+  const handleAddEmail = async ( e ) => {
     const email = entryEmail;
     if ( ! isValidEmail( email ) ) {
       return;
@@ -66,6 +83,7 @@ const EmailReports = ({name, value, onChange, comment}) => {
     // default frequency is monthly
     onChange([ ...value, {email, frequency: 'monthly'} ]);
     setEntryEmail( '' );
+    await saveFields();
   };
 
   /**
@@ -110,12 +128,8 @@ const EmailReports = ({name, value, onChange, comment}) => {
                 <SelectInput
                     value={row.frequency}
                     onChange={( newFrequency ) => {
-                      onChange( value.map( item => {
-                        if ( item.email === row.email ) {
-                          return { ...item, frequency: newFrequency };
-                        }
-                        return item;
-                      }) );
+                      handleFrequencyChange( row.email, newFrequency );
+
                     }}
                     options={frequencyOptions}
                 />
@@ -125,8 +139,7 @@ const EmailReports = ({name, value, onChange, comment}) => {
           {
             name: 'Remove',
             cell: row => <button className={'burst-button-icon burst-button-icon--delete'}
-                                 onClick={() => onChange(
-                                     value.filter( item => item.email !== row.email ) )}>
+                                 onClick={() => handleRemoveEmail(row.email) }>
                   <Icon name={'trash'} size={18}/>
                 </button>,
             right: 1
