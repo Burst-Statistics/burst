@@ -36,10 +36,13 @@ export default function EditableText({ value, id, onChange }) {
       // add space to input
       setTempValue( event.target.value + ' ' );
     }
+
     if ( 'Enter' === event.key ) {
       event.preventDefault();
       setIsEditing( false );
+      onChange(tempValue);
     }
+
   }
 
   function handleTextChange( event ) {

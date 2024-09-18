@@ -58,7 +58,7 @@ const GoalSetup = ({ goal, goalFields, setGoalValue, deleteGoal, onUpdate, saveG
               <EditableText value={title}
                             id={goal.id}
                             defaultValue={__( 'New goal', 'burst-statistics' )}
-                            onChange={handleTitleChange}/>
+                            onChange={handleTitleChange} />
             </span>
             <DeleteGoalModal
                 goal={{ name: title, status: status ? __( 'Active', 'burst-statistics' ) : __( 'Inactive', 'burst-statistics' ), dateCreated: dateCreated }} // Replace with actual goal data
