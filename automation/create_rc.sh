@@ -67,6 +67,7 @@ create_rc_zip() {
   # This step copies only the necessary files to create a clean '${plugin_name}' directory.
   echo "Create RC #2: Copying files to 'updates/${plugin_name}' directory"
   EXCLUDES=(
+    "--exclude=*.l10n.php"
     "--exclude=.git"
     "--exclude=.min.min."
     "--exclude=.DS_Store"
