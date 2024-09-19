@@ -681,10 +681,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 
 			// if metrics are not set return error
 			if ( empty( $metrics ) ) {
-                $metrics = [
-                    'pageviews',
-                ];
-            }
+				return new WP_Error( 'no_metrics', __( 'No metrics were set', 'burst-statistics' ) );
+			}
 
 			foreach ( $metrics as $metric ) {
 				$metric = $this->sanitize_metric( $metric );

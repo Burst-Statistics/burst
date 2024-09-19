@@ -276,6 +276,15 @@ function burst_fields( $load_values = true ) {
 			'disabled' => false,
 			'default'  => false,
 		],
+        [
+            'id'       => 'dismiss_non_error_notices',
+            'menu_id'  => 'advanced',
+            'group_id' => 'tracking',
+            'type'     => 'checkbox',
+            'label'    => __( 'Dismiss all notices in your dashboard except critical ones', 'burst-statistics' ),
+            'disabled' => false,
+            'default'  => false,
+        ],
 
 		[
 			'id'       => 'combine_vars_and_script',
