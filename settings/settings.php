@@ -642,7 +642,7 @@ function burst_other_plugins_data( $slug = false ) {
 			'constant_pro'  => 'rsssl_pro',
 			'wordpress_url' => 'https://wordpress.org/plugins/really-simple-ssl/',
 			'upgrade_url'   => 'https://really-simple-ssl.com/pro?src=plugin-burst-other-plugins',
-			'title'         => 'Really Simple SSL - ' . __( 'Lightweight plugin. Heavyweight security features.', 'burst-statistics' ),
+			'title'         => 'Really Simple Security - ' . __( 'Simple and performant security', 'burst-statistics' ),
 		],
 		[
 			'slug'          => 'complianz-gdpr',
