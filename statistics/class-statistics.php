@@ -701,7 +701,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			}
 
 			$last_metric_count = (int) count( $metrics ) - 1;
-			$order_by          = $metrics[ $last_metric_count ] . ' DESC';
+            $order_by          = isset($metrics[ $last_metric_count ]) ? $metrics[ $last_metric_count ] . ' DESC' : 'pageviews DESC';
 
 			$sql  = $this->get_sql_table( $start, $end, $metrics, $filters, $group_by, $order_by, $limit );
 			$data = $wpdb->get_results( $sql, ARRAY_A );
