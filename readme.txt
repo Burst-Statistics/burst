@@ -91,7 +91,7 @@ We value your feedback. You can [submit a support request on the WordPress forum
 
 == Change log ==
 = 1.7.3 =
-* October 22nd, 2024
+* October 29th, 2024
 * New: Blueprint.js demo data
 * Improvement: option to override the default time between endpoint tests, props @tobaco
 * Improvement: allow parameter length over 250 characters, props @ficusmedia
