@@ -6,7 +6,7 @@ Requires at least: 5.8
 License: GPL2
 Requires PHP: 7.2
 Tested up to: 6.6
-Stable tag: 1.7.1
+Stable tag: 1.7.3
 
 Self-hosted, privacy-friendly stats for WordPress. Simple interface, no setup. Get detailed analytics with Burst Statistics.
 
@@ -90,6 +90,15 @@ Performance is almost not affected. We have built Burst to be very performant fo
 We value your feedback. You can [submit a support request on the WordPress forums](https://wordpress.org/support/plugin/burst-statistics/), and we will respond promptly.
 
 == Change log ==
+= 1.7.3 =
+* October 22nd, 2024
+* New: Blueprint.js demo data
+* Improvement: option to override the default time between endpoint tests, props @tobaco
+* Improvement: allow parameter length over 250 characters, props @ficusmedia
+* Improvement: option to dismiss all notices, except critical issues, props @3cstudio
+* Fix: clear unused 5 minutes cron job
+* Fix: on deactivation on multisite, not all tables were deleted yet, props @ecce-homo
+
 = 1.7.2 =
 * Fix: Goal title would sometimes become empty and uneditable. This has been resolved.
 * Feature: Added support for the WP Consent API, which will allow you to track users based on their consent for multiple plugins.
