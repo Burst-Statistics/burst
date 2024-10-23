@@ -7,9 +7,6 @@ defined( 'ABSPATH' ) or die();
  */
 add_action( 'plugins_loaded', 'burst_schedule_cron' );
 function burst_schedule_cron() {
-	if ( ! wp_next_scheduled( 'burst_every_5_minutes' ) ) {
-		wp_schedule_event( time(), 'burst_every_5_minutes', 'burst_every_5_minutes' );
-	}
 	if ( ! wp_next_scheduled( 'burst_every_hour' ) ) {
 		wp_schedule_event( time(), 'burst_every_hour', 'burst_every_hour' );
 	}
@@ -23,10 +20,6 @@ function burst_schedule_cron() {
 
 add_filter( 'cron_schedules', 'burst_filter_cron_schedules' );
 function burst_filter_cron_schedules( $schedules ) {
-	$schedules['burst_every_5_minutes'] = array(
-		'interval' => 300,
-		'display'  => __( 'Once every 5 minutes' ),
-	);
 	$schedules['burst_daily']      = array(
 		'interval' => DAY_IN_SECONDS,
 		'display'  => __( 'Once every day' ),

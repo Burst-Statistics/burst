@@ -642,7 +642,7 @@ function burst_other_plugins_data( $slug = false ) {
 			'constant_pro'  => 'rsssl_pro',
 			'wordpress_url' => 'https://wordpress.org/plugins/really-simple-ssl/',
 			'upgrade_url'   => 'https://really-simple-ssl.com/pro?src=plugin-burst-other-plugins',
-			'title'         => 'Really Simple SSL - ' . __( 'Lightweight plugin. Heavyweight security features.', 'burst-statistics' ),
+			'title'         => 'Really Simple Security - ' . __( 'Simple and performant security', 'burst-statistics' ),
 		],
 		[
 			'slug'          => 'complianz-gdpr',
@@ -874,7 +874,6 @@ function burst_rest_api_fields_set( $request, $ajax_data = false ) {
 	$config_ids    = array_column( $config_fields, 'id' );
 	foreach ( $fields as $index => $field ) {
 		$config_field_index = array_search( $field['id'], $config_ids );
-		$config_field       = $config_fields[ $config_field_index ];
 		if ( ! $config_field_index ) {
 			unset( $fields[ $index ] );
 			continue;
@@ -882,26 +881,6 @@ function burst_rest_api_fields_set( $request, $ajax_data = false ) {
 		$type     = burst_sanitize_field_type( $field['type'] );
 		$field_id = sanitize_text_field( $field['id'] );
 		$value    = burst_sanitize_field( $field['value'], $type, $field_id );
-		// if an endpoint is defined, we use that endpoint instead
-		if ( isset( $config_field['data_endpoint'] ) ) {
-			// the updateItemId allows us to update one specific item in a field set.
-			$update_item_id = isset( $field['updateItemId'] ) ? $field['updateItemId'] : false;
-			$action         = isset( $field['action'] ) && $field['action'] === 'delete' ? 'delete' : 'update';
-			$endpoint       = $config_field['data_endpoint'];
-			if ( is_array( $endpoint ) ) {
-				$main     = $endpoint[0];
-				$class    = $endpoint[1];
-				$function = $endpoint[2];
-				if ( function_exists( $main ) ) {
-					$main()->$class->$function( $value, $update_item_id, $action );
-				}
-			} elseif ( function_exists( $endpoint ) ) {
-				$endpoint( $value, $update_item_id, $action );
-			}
-
-			unset( $fields[ $index ] );
-			continue;
-		}
 
 		$field['value']   = $value;
 		$fields[ $index ] = $field;

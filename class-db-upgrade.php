@@ -72,7 +72,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 		 * @return float|int
 		 */
 		public function get_progress() {
-			$total_upgrades     = $this->get_db_upgrades();
+			$total_upgrades     = $this->get_db_upgrades('1.7.1');
 			$remaining_upgrades = $total_upgrades;
 			// check if all upgrades are done.
 			$count_remaining_upgrades = 0;
@@ -83,7 +83,6 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 					++$count_remaining_upgrades;
 					// check if there's an intermediate progress count. If so, we add it as a percentage to the progress.
 					$has_intermediate = get_transient( "burst_progress_$upgrade" );
-
 					if ( $has_intermediate ) {
 						$intermediates[ $upgrade ] = $has_intermediate;
 					}
@@ -175,8 +174,17 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			if ( 'upgrade_lookup_tables_drop_columns' === $do_upgrade ) {
 				$this->upgrade_lookup_tables_drop_columns();
 			}
+
 			if ( 'drop_page_id_column' === $do_upgrade ) {
 				$this->upgrade_drop_page_id_column();
+			}
+
+			if ( 'rename_entire_page_url_column' === $do_upgrade ) {
+				$this->change_column_name_entire_page_url();
+			}
+
+			if ( 'drop_path_from_parameters_column' === $do_upgrade ) {
+				$this->drop_path_from_parameters_column();
 			}
 
 			if ( $this->get_progress()<100 ) {
@@ -193,36 +201,64 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 		 *
 		 * @return array
 		 */
-		private function get_db_upgrades() {
-			return apply_filters(
+		private function get_db_upgrades( $select_version = 'all' ) {
+			$upgrades = apply_filters(
 				'burst_db_upgrades',
-				array(
-					'bounces',
-					'goals_remove_columns',
-					'goals_set_conversion_metric',
-					'drop_user_agent',
-					'empty_referrer_when_current_domain',
-					'strip_domain_names_from_entire_page_url',
-					'summary_table',
-					'create_lookup_tables',
-					'init_lookup_ids',
-					'upgrade_lookup_tables',
+				[
+					'1.4.2.1' => [
+						'bounces',
+						'goals_remove_columns',
+					],
+					'1.5.2' => [
+						'goals_set_conversion_metric',
+					],
+					'1.5.3' => [
+						'empty_referrer_when_current_domain',
+						'strip_domain_names_from_entire_page_url',
+						'drop_user_agent',
+					],
+					'1.7.0' => [
+						'summary_table',
+						'create_lookup_tables',
+						'init_lookup_ids',
+						'upgrade_lookup_tables',
 
-					// the below upgrades are handled within the create and upgrade look up tables functions, but are added here for the progress calculation.
-					'create_lookup_tables_browser',
-					'create_lookup_tables_browser_version',
-					'create_lookup_tables_platform',
-					'create_lookup_tables_device',
-					'upgrade_lookup_tables_browser',
-					'upgrade_lookup_tables_browser_version',
-					'upgrade_lookup_tables_platform',
-					'upgrade_lookup_tables_device',
-					// end progress only upgrade items.
+						// the below upgrades are handled within the create and upgrade look up tables functions, but are added here for the progress calculation.
+						'create_lookup_tables_browser',
+						'create_lookup_tables_browser_version',
+						'create_lookup_tables_platform',
+						'create_lookup_tables_device',
+						'upgrade_lookup_tables_browser',
+						'upgrade_lookup_tables_browser_version',
+						'upgrade_lookup_tables_platform',
+						'upgrade_lookup_tables_device',
+						// end progress only upgrade items.
 
-					'upgrade_lookup_tables_drop_columns',
-					'drop_page_id_column',
-				)
+						'upgrade_lookup_tables_drop_columns',
+						'drop_page_id_column',
+					],
+					'1.7.1' => [
+						'rename_entire_page_url_column',
+						'drop_path_from_parameters_column',
+						],
+				]
 			);
+
+			if ( $select_version === 'all' ) {
+				$all_upgrades = array();
+				foreach ( $upgrades as $upgrade_version => $upgrade ) {
+					$all_upgrades = array_merge( $all_upgrades, $upgrade );
+				}
+				return $all_upgrades;
+			}
+
+			$all_upgrades = array();
+			foreach ( $upgrades as $upgrade_version => $upgrade ) {
+				if ( version_compare( $upgrade_version, $select_version, '>=' ) ) {
+					$all_upgrades = array_merge( $all_upgrades, $upgrade );
+				}
+			}
+			return $all_upgrades;
 		}
 
 		private function upgrade_bounces() {
@@ -707,6 +743,59 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 
 			if ( $remove !== false ) {
 				delete_option( 'burst_db_upgrade_drop_page_id_column' );
+			}
+		}
+
+		/**
+		 * Update the entire_page_url column to the new name, paramaters, and change to TEXT
+		 *
+		 * @return void
+		 */
+		public function change_column_name_entire_page_url(): void {
+
+			global $wpdb;
+			$table = $wpdb->prefix . 'burst_statistics';
+			$sql = "ALTER TABLE $table MODIFY parameters TEXT;";
+			$wpdb->query( $sql );
+			delete_option( 'burst_db_upgrade_rename_entire_page_url_column' );
+		}
+
+		public function drop_path_from_parameters_column(): void {
+			//check if column already upgraded.
+			if ( get_option( 'burst_db_upgrade_rename_entire_page_url_column' ) ) {
+				return;
+			}
+
+            if ( !$this->column_exists('burst_statistics', 'entire_page_url') ) {
+                delete_option('burst_db_upgrade_drop_path_from_parameters_column');
+                delete_option('burst_db_upgrade_column_offset');
+                delete_transient( "burst_progress_drop_path_from_parameters_column");
+                return;
+            }
+
+			global $wpdb;
+			$batch_size = 50000;
+			$table = $wpdb->prefix . 'burst_statistics';
+			$offset = get_option('burst_db_upgrade_column_offset', 0);
+			$sql = "UPDATE $table
+					SET `parameters` = IF(LOCATE('?', `entire_page_url`) > 0, SUBSTRING(`entire_page_url`, LOCATE('?', `entire_page_url`)), '')
+					WHERE ID IN (
+					    SELECT ID FROM (
+					        SELECT id FROM $table LIMIT $offset, $batch_size
+					    ) AS temp
+					);";
+			$wpdb->query( $sql );
+			$offset += $batch_size;
+			update_option( 'burst_db_upgrade_column_offset', $offset );
+			$total = $wpdb->get_var("SELECT COUNT(*) FROM $table");
+			$progress = round( $offset / $total, 2 );
+			set_transient( "burst_progress_drop_path_from_parameters_column", $progress, HOUR_IN_SECONDS);
+
+			if ( $offset >= $total ) {
+				$wpdb->query("ALTER TABLE {$wpdb->prefix}burst_statistics DROP COLUMN entire_page_url");
+				delete_option('burst_db_upgrade_column_offset');
+                delete_option('burst_db_upgrade_drop_path_from_parameters_column');
+				delete_transient( "burst_progress_drop_path_from_parameters_column");
 			}
 		}
 

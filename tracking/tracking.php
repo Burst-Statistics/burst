@@ -62,7 +62,6 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 	 */
 	function burst_track_hit( $data ): string {
 		global $wpdb;
-
 		// validate & sanitize all data
 		$sanitized_data = burst_prepare_tracking_data( $data );
 		$sanitized_data = apply_filters( 'before_burst_track_hit', $sanitized_data );
@@ -71,10 +70,8 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			burst_error_log( 'Referrer spam prevented.' );
 			return 'referrer is spam';
 		}
-
 		// If new hit, get the last row
 		$result = burst_get_hit_type($sanitized_data);
-
 		if ($result === false) {
 			return 'failed to determine hit type';
 		}
@@ -84,7 +81,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		if ($previous_hit !== null) {
 			// Determine non-bounce conditions
-			$isDifferentPage = $previous_hit['entire_page_url'] !== $sanitized_data['entire_page_url'];
+			$isDifferentPage = $previous_hit['page_url'] . $previous_hit['parameters'] !== $sanitized_data['page_url'] . $sanitized_data['parameters'];
 			$isTimeOverThreshold = ($previous_hit['time_on_page'] + $sanitized_data['time_on_page']) > 5000;
 			$isPreviousHitNotBounce = (int) $previous_hit['bounce'] === 0;
 
@@ -100,7 +97,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		$sanitized_data           = apply_filters( 'burst_before_track_hit', $sanitized_data );
 		$session_arr   = array(
-			'last_visited_url' => $sanitized_data['entire_page_url'],
+			'last_visited_url' => burst_create_path($sanitized_data),
 			'goal_id'          => false,
 			'country_code'     => $sanitized_data['country_code'] ?? '',
 		);
@@ -120,18 +117,17 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 			}
 		} elseif ($previous_hit === null) {
 			// No previous hit, indicating a new session
-			$session_arr['first_visited_url'] = $sanitized_data['entire_page_url'];
+			$session_arr['first_visited_url'] = burst_create_path($sanitized_data);
 
 			// Attempt to create a new session and assign its ID
 			$sanitized_data['session_id'] = burst_create_session($session_arr);
 
 			// Verify session creation was successful
-			if (!$sanitized_data['session_id']) {
+			if ( !$sanitized_data['session_id'] ) {
 				// Handle error if session creation fails
 				burst_error_log("Failed to create a new session.");
 			}
 		}
-
 
 		// if there is a fingerprint use that instead of uid
 		if ( $sanitized_data['fingerprint'] && ! $sanitized_data['uid'] ) {
@@ -141,7 +137,7 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		// update burst_statistics table
 		// Get the last record with the same uid and page_url. If it exists update it. If not, create a new record and add time() to $sanitized_data['time']
-		if ( $hit_type === 'update' && ( $previous_hit['entire_page_url'] === $sanitized_data['entire_page_url'] || $previous_hit['session_id'] === '' ) ) { // if update hit, make sure that the URL matches.
+		if ( $hit_type === 'update' && ( $previous_hit['page_url'] . $previous_hit['parameters'] === $sanitized_data['page_url'] . $sanitized_data['parameters'] || $previous_hit['session_id'] === '' ) ) { // if update hit, make sure that the URL matches.
 			// add up time_on_page to the existing record
 			if ( $previous_hit ) {
 				$sanitized_data['time_on_page'] += $previous_hit['time_on_page'];
@@ -178,6 +174,12 @@ if ( ! function_exists( 'burst_track_hit' ) ) {
 
 		return 'success';
 	}
+}
+
+if ( !function_exists( "burst_create_path")) {
+    function burst_create_path($sanitized_data) {
+        return empty($sanitized_data['parameters']) ? $sanitized_data['page_url'] : $sanitized_data['page_url'] . '?'. $sanitized_data['parameters'];
+    }
 }
 
 if ( ! function_exists( 'burst_beacon_track_hit' ) ) {
@@ -241,6 +243,7 @@ if ( ! function_exists( 'burst_prepare_tracking_data' ) ) {
 			'platform'        => '',
 			'device'          => '',
 		);
+
 		$defaults                = array(
 			'url'               => null,
 			'time'              => null,
@@ -252,16 +255,16 @@ if ( ! function_exists( 'burst_prepare_tracking_data' ) ) {
 			'completed_goals'   => null,
 		);
 		$data                    = wp_parse_args( $data, $defaults );
+
 		$data['completed_goals'] = burst_sanitize_completed_goal_ids( $data['completed_goals'] );
 
 		// update array
 		$sanitized_data                      = array();
-		$destructured_url         = burst_sanitize_url( $data['url'] );
-		$sanitized_data['entire_page_url']   = $destructured_url['path'] . $destructured_url['parameters'] . $destructured_url['fragment']; // required
+		$destructured_url                    = burst_sanitize_url( $data['url'] );
+		$sanitized_data['parameters']        = $destructured_url['parameters']; // required
 		$sanitized_data['page_url']          = $destructured_url['path']; // required
-		$sanitized_data['parameters']        = $destructured_url['parameters'];
-		$sanitized_data['fragment']          = $destructured_url['fragment'];
-		$sanitized_data['uid']               = burst_sanitize_uid( $data['uid'] ); // required
+        $sanitized_data['host']              = $destructured_url['scheme'] .'://'. $destructured_url['host'];
+        $sanitized_data['uid']               = burst_sanitize_uid( $data['uid'] ); // required
 		$sanitized_data['fingerprint']       = burst_sanitize_fingerprint( $data['fingerprint'] );
 		$sanitized_data['referrer']          = burst_sanitize_referrer( $data['referrer_url'] );
 
@@ -298,15 +301,16 @@ if (!function_exists('burst_get_hit_type')) {
 		// Determine if it is an update hit based on the absence of certain data points
 		$_use_lookup_tables  = !get_option( "burst_db_upgrade_create_lookup_tables" );
 		if ( $_use_lookup_tables ) {
-			$is_update_hit = empty($data['browser_id']) && empty($data['browser_version_id']) && empty($data['platform_id']) && empty($data['device_id']);
+			$is_update_hit = $data['browser_id'] === 0 && $data['browser_version_id'] ===0 && $data['platform_id'] === 0 && $data['device_id'] === 0;
 		} else {
 			$is_update_hit = empty($data['browser']) && empty($data['browser_version']) && empty($data['platform']) && empty($data['device']);
 		}
 
 		// Attempt to get the last user statistic based on the presence or absence of certain conditions
 		if ($is_update_hit) {
-			// For an update hit, require matching uid, fingerprint, and entire_page_url
-			$last_row = burst_get_last_user_statistic($data['uid'], $data['fingerprint'], $data['entire_page_url']);
+			// For an update hit, require matching uid, fingerprint, and parameters
+			$page_url = $data['host'].burst_create_path($data);
+			$last_row = burst_get_last_user_statistic($data['uid'], $data['fingerprint'], $page_url);
 		} else {
 			// For a potential create hit, uid and fingerprint are sufficient
 			$last_row = burst_get_last_user_statistic($data['uid'], $data['fingerprint']);
@@ -336,9 +340,10 @@ if ( ! function_exists( 'burst_sanitize_url' ) ) {
 	 */
 	function burst_sanitize_url( $url ): array {
 		$url_destructured = [
+			'scheme'     => 'https',
+			'host'       => '',
 			'path'       => '',
 			'parameters' => '',
-			'fragment'   => '',
 		];
 		if ( ! function_exists( 'wp_kses_bad_protocol' ) ) {
 			require_once( ABSPATH . '/wp-includes/kses.php' );
@@ -346,29 +351,19 @@ if ( ! function_exists( 'burst_sanitize_url' ) ) {
 		$sanitized_url = filter_var( $url, FILTER_SANITIZE_URL );
 		// Validate the URL
 		if ( ! filter_var( $sanitized_url, FILTER_VALIDATE_URL ) ) {
-			return '';
+			return $url_destructured;
 		}
 		if ( ! function_exists( 'wp_parse_url' ) ) {
 			require_once( ABSPATH . '/wp-includes/http.php' );
 		}
 		$url = parse_url( esc_url_raw( $sanitized_url ) );
-
-		// log if path, parameters or fragment are too long
-		if ( strlen( $url['path'] ) > 255 ) {
-			burst_error_log( 'URL path is too long: ' . $url['path'] . ' - Please report this to the plugin author.' );
-		}
-		if ( isset ( $url['query'] ) && strlen( $url['query'] ) > 255 ) {
-			burst_error_log( 'URL parameters are too long: ' . $url['query'] . ' - Please report this to the plugin author.' );
-		}
-		if ( isset( $url['fragment'] ) && strlen( $url['fragment'] ) > 255 ) {
-			burst_error_log( 'URL fragment is too long: ' . $url['fragment'] . ' - Please report this to the plugin author.' );
-		}
 		if ( isset( $url['host'] ) ) {
-			$url_destructured['path']       = substr( trailingslashit( $url['path'] ), 0, 255 );
-			$url_destructured['parameters'] = isset( $url['query'] ) ? substr( '?' . $url['query'], 0, 255 ) : '';
-			$url_destructured['fragment']   = isset( $url['fragment'] ) ? substr( '#' . $url['fragment'], 0, 255 ) : '';
+			$url_destructured['host']       = $url['host'];
+			$url_destructured['scheme']       = $url['scheme'];
+			$url_destructured['path']       = trailingslashit( $url['path'] );
+			$url_destructured['parameters'] = isset( $url['query'] ) ? $url['query'] : '';
+            $url_destructured['parameters'] .= isset( $url['fragment'] ) ? $url['fragment'] : '';
 		}
-
 		return $url_destructured;
 	}
 }
@@ -746,10 +741,16 @@ if ( ! function_exists( 'burst_get_last_user_statistic' ) ) {
 		if ( ! $search_uid ) {
 			return null;
 		}
-		$where = $page_url ? $wpdb->prepare( " AND entire_page_url = %s", $page_url ) : '';
+        $where = '';
+        if ( $page_url ) {
+            $destructured_url         = burst_sanitize_url( $page_url );
+            $parameters = $destructured_url['parameters'];
+            $where = !empty($parameters) ? $wpdb->prepare( " AND parameters = %s", $parameters ) : '';
+        }
+
 		$data  = $wpdb->get_row(
 			$wpdb->prepare(
-				"select ID, session_id, entire_page_url, time_on_page, bounce
+				"select ID, session_id, parameters, time_on_page, bounce, page_url
       from {$wpdb->prefix}burst_statistics
                      where uid = %s AND time > %s {$where} ORDER BY ID DESC limit 1",
 				$search_uid,
@@ -937,11 +938,14 @@ if ( ! function_exists( 'burst_remove_empty_values' ) ) {
 	 */
 	function burst_remove_empty_values( array $data ): array {
 		foreach ( $data as $key => $value ) {
+            if ( $key === 'parameters' ) {
+                continue;
+            }
 			if ( $value === null || $value === '' ) {
 				unset( $data[ $key ] );
 			}
 		}
-
+        unset($data['host']);
 		return $data;
 	}
 }
@@ -957,7 +961,7 @@ if ( ! function_exists( 'burst_required_values_set' ) ) {
 		return (
 			isset( $data['uid'] ) &&
 			isset( $data['page_url'] ) &&
-			isset( $data['entire_page_url'] )
+			isset( $data['parameters'] )
 		);
 	}
 }

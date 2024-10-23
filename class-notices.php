@@ -62,8 +62,8 @@ if ( ! class_exists( "burst_notices" ) ) {
 		 * @return array
 		 */
 
-		public function get_notices_list( $args = array() )
-		{
+		public function get_notices_list(array $args = array() ): array
+        {
 			$icon_labels = [
 				'completed' => __( "Completed", "burst-statistics" ),
 				'new'     => __( "New!", "burst-statistics" ),
@@ -296,9 +296,15 @@ if ( ! class_exists( "burst_notices" ) ) {
 			$warnings = array();
 			$open = array();
 			$other = array();
+            $dismiss_non_error_notices = burst_get_option( 'dismiss_non_error_notices' );
 			foreach ($notices as $key => $notice){
 				if (!isset($notice['output']['icon'])) continue;
 
+                if ( $dismiss_non_error_notices && $notice['output']['icon']!=='error' ) {
+                    unset($notices[$key]);
+                    continue;
+                }
+                
 				if ($notice['output']['icon']==='warning') {
 					$warnings[$key] = $notice;
 				} else if ($notice['output']['icon']==='open') {

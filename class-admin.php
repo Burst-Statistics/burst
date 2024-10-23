@@ -21,9 +21,6 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			// column
 			add_action( 'admin_init', array( $this, 'add_burst_admin_columns' ), 1 );
 			add_action( 'pre_get_posts', array( $this, 'posts_orderby_total_pageviews' ), 1 );
-
-			add_action( 'admin_init', array( $this, 'setup_defaults' ) );
-
 			// deactivating
 			add_action( 'admin_footer', array( $this, 'deactivate_popup' ), 40 );
 			add_action( 'admin_init', array( $this, 'listen_for_deactivation' ), 40 );
@@ -42,17 +39,181 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			add_action( 'admin_bar_menu', array( $this, 'add_to_admin_bar_menu' ), 35 );
 			add_action( 'admin_bar_menu', array( $this, 'add_top_bar_menu' ), 400 );
 
-			add_action( 'burst_activation', [ $this, 'run_table_init_hook' ], 10, 1 );
+            add_action( 'burst_activation', array( $this, 'setup_defaults' ) );
+            add_action( 'burst_activation', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'after_reset_stats', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'upgrader_process_complete', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'wp_initialize_site', [ $this, 'run_table_init_hook' ], 10, 1 );
 			add_action( 'burst_upgrade', [ $this, 'run_table_init_hook' ], 10, 1 );
-		}
 
+            if ( defined('BURST_BLUEPRINT') ) {
+                add_action( 'init', [ $this, 'install_demo_data' ] );
+            }
+		}
 
 		public static function this() {
 			return self::$_this;
 		}
+
+        private function insert_row($table, $rows){
+            global $wpdb;
+            $table = "{$wpdb->prefix}burst_$table";
+            foreach ( $rows as $row ) {
+	            $wpdb->insert(
+		            $table,
+		            $row
+	            );
+            }
+        }
+
+        private function get_random_referrer(){
+            $referrers = [
+                    'https://www.google.com',
+                    'https://duckduckgo.com',
+                    'https://bing.com',
+                    'https://burst-statistics.com',
+            ];
+	        return $referrers[array_rand($referrers)];
+        }
+
+		/**
+         * Install demo data in Burst if blueprint.json is active
+         *
+		 * @return void
+		 */
+        public function install_demo_data(){
+            //check if database installed
+            if ( !get_option( 'burst_stats_db_version' ) ) {
+                return;
+            }
+            
+            if ( !get_option( 'burst_demo_data_installed' ) ){
+                global $wpdb;
+
+	            $data = [
+		            [
+			            'name' => 'Chrome',
+		            ],
+		            [
+			            'name' => 'Safari',
+		            ],
+		            [
+			            'name' => 'Firefox',
+		            ],
+	            ];
+	            $this->insert_row('browsers', $data);
+
+	            $data = [
+		            [
+			            'name' => 'desktop',
+		            ],
+		            [
+			            'name' => 'mobile',
+		            ],
+		            [
+			            'name' => 'tablet',
+		            ],
+	            ];
+	            $this->insert_row('platforms', $data);
+
+	            $data = [
+		            [
+			            'name' => 'Windows',
+		            ],
+		            [
+			            'name' => 'MacOS',
+		            ],
+		            [
+			            'name' => 'Linux',
+		            ],
+	            ];
+                $this->insert_row('platforms', $data);
+                //get all demo pages
+                $posts = get_posts( array(
+                    'post_type' => ['page', 'post'],
+                    'post_status' => 'publish',
+                    'posts_per_page' => -1,
+                ) );
+	            $start_date_unix = time();
+	            $total_days = 30;
+                //we're walking back in time, so to get an increasing nr of pageviews, we decrease the max views each day.
+                $max_views = 200;
+	            for ( $i = 0; $i < $total_days; $i++ ) {
+		            $stats_date_unix = $start_date_unix - ( $i * DAY_IN_SECONDS );
+		            $stats_date = BURST()->statistics->convert_unix_to_date( $stats_date_unix ); // 2022-02-07
+                    $total_entry_added = false;
+		            $max_views -= $i * 5;
+                    $min_views = 5;
+                    if ( $max_views <= $min_views ) {
+                        $max_views = $min_views+5;
+                    }
+                    foreach ( $posts as $post ) {
+                        $post_id = $post->ID;
+
+                        $page_url = str_replace(home_url(), '', get_permalink( $post_id ) );
+                        $visitors = random_int( $min_views, $max_views );
+                        $page_views = 2 * $visitors;
+                        $sessions = Round(0.5 * $visitors, 0 );
+                        $first_time_visitors = Round(0.1 * $visitors, 0 );
+                        $bounces = Round(0.03 * $visitors, 0 );
+                        $wpdb->insert(
+                            "{$wpdb->prefix}burst_summary",
+                            [
+                                'date' => $stats_date,
+                                'page_url' => $page_url,
+                                'sessions' => $sessions,
+                                'pageviews' => $page_views,
+                                'visitors' => $first_time_visitors,
+                                'first_time_visitors' => $first_time_visitors,
+                                'bounces' => $bounces,
+                                'avg_time_on_page' => rand(20, 3 * MINUTE_IN_SECONDS ),
+                                'completed' => 1,
+                            ]
+                        );
+
+	                    $wpdb->insert(
+		                    "{$wpdb->prefix}burst_statistics",
+		                    [
+			                    'time' => $stats_date_unix,
+			                    'page_url' => $page_url,
+			                    'uid' => random_int( 1, 1000 ),
+			                    'first_time_visit' => 1,
+			                    'bounce' => random_int(0,1),
+			                    'browser_id' => random_int( 1, 3 ),
+			                    'device_id' => random_int( 1, 3 ),
+			                    'platform_id' => random_int( 1, 3 ),
+			                    'time_on_page' => rand(20, 3 * MINUTE_IN_SECONDS ),
+                                'referrer'  => $this->get_random_referrer(),
+		                    ]
+	                    );
+
+                        $post_hit_count = get_post_meta( $post_id, 'burst_total_pageviews_count', true );
+	                    $post_hit_count = $post_hit_count ?: 0;
+	                    $post_hit_count += $page_views;
+                        update_post_meta( $post_id, 'burst_total_pageviews_count', $post_hit_count );
+                        if ( !$total_entry_added ) {
+                            $wpdb->insert(
+                                "{$wpdb->prefix}burst_summary",
+                                [
+                                    'date' => $stats_date,
+                                    'page_url' => 'burst_day_total',
+                                    'sessions' => $sessions,
+                                    'pageviews' => $page_views,
+                                    'visitors' => $first_time_visitors,
+                                    'first_time_visitors' => $first_time_visitors,
+                                    'bounces' => $bounces,
+                                    'avg_time_on_page' => rand(20, 3 * MINUTE_IN_SECONDS ),
+                                    'completed' => 1,
+                                ]
+                            );
+                            $total_entry_added = true;
+                        }
+                    }
+                }
+
+                update_option( 'burst_demo_data_installed', true );
+            }
+        }
 
 		public function add_to_admin_bar_menu( $wp_admin_bar ) {
 			if ( ! burst_user_can_view() || is_admin() ) {
@@ -120,8 +281,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			}
 
 			if ( get_option( 'burst_run_activation' ) ) {
-				delete_option( 'burst_run_activation' );
-			}
+                do_action('burst_activation');
+                delete_option( 'burst_run_activation' );
+
+            }
 		}
 
 		/**
@@ -170,6 +333,11 @@ if ( ! class_exists( 'burst_admin' ) ) {
 			if ( get_transient( 'burst_running_upgrade' ) ) {
 				return;
 			}
+
+			//don't run on uninstall
+            if (defined('BURST_UNINSTALLING')) {
+                return;
+            }
 
 			set_transient( 'burst_running_upgrade', true, 30 );
 			do_action( 'burst_install_tables' );
@@ -432,9 +600,10 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		public function deactivate_popup() {
 			// only on plugins page
 			$screen = get_current_screen();
-			if ( ! $screen || $screen->base !== 'plugins' ) {
+			if ( ! $screen || ($screen->base !== 'plugins' && $screen->base !== 'plugins-network') ) {
 				return;
 			}
+			$networkwide = $screen->base === 'plugins-network';
 			$slug = sanitize_title( burst_plugin_name );
 
 			?>
@@ -566,6 +735,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
                         <li>
 							<?php _e( 'Deactivate, and remove all statistics, experiments and settings.', 'burst-statistics' ); ?>
 							<?php _e( 'The data will be gone forever.', 'burst-statistics' ); ?>
+                            <?php if ($networkwide) {
+                                _e( 'As you are deactivating networkwide, this will also remove all data from all subsites.', 'burst-statistics' );
+                            }?>
                         </li>
                     </ul>
                 </div>
@@ -575,6 +747,7 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				$deactivate_and_remove_all_data_url = add_query_arg(
 					array(
 						'action' => 'uninstall_delete_all_data',
+						'networkwide' => $networkwide ? '1' : '0',
 						'token'  => $token,
 					),
 					admin_url( 'plugins.php' )
@@ -608,15 +781,29 @@ if ( ! class_exists( 'burst_admin' ) ) {
 
 			// check for action
 			if ( isset( $_GET['action'] ) && $_GET['action'] === 'uninstall_delete_all_data' ) {
+				define( 'BURST_NO_UPGRADE', true );
+                define( 'BURST_UNINSTALLING', true );
+				burst_clear_scheduled_hooks();
+
+				$networkwide = isset( $_GET['networkwide'] ) && $_GET['networkwide'] === '1';
+				if ( $networkwide && is_multisite() ) {
+					$sites = get_sites();
+					if ( count( $sites ) > 0 ) {
+						foreach ( $sites as $site ) {
+							switch_to_blog( $site->blog_id );
+							$this->delete_all_burst_data();
+							$this->delete_all_burst_configuration();
+							restore_current_blog();
+						}
+					}
+				}
 				$this->delete_all_burst_data();
 				$this->delete_all_burst_configuration();
 				burst_clear_scheduled_hooks();
-				$plugin  = burst_plugin;
-				$plugin  = plugin_basename( trim( $plugin ) );
-				$current = get_option( 'active_plugins', [] );
-				$current = $this->remove_plugin_from_array( $plugin, $current );
-				update_option( 'active_plugins', $current );
-				wp_redirect( admin_url( 'plugins.php' ) );
+				deactivate_plugins( burst_plugin, false, $networkwide );
+				$redirect_slug = $networkwide ? 'network/plugins.php' : 'plugins.php';
+
+				wp_redirect( admin_url($redirect_slug ) );
 				exit;
 			}
 		}
@@ -644,7 +831,9 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				// immediately run setup defaults, so db tables get made
 				$this->setup_defaults();
 
-				$output = [
+                $this->run_table_init_hook();
+
+                $output = [
 					'success' => true,
 					'message' => __( 'Successfully cleared data.', 'burst-statistics' ),
 				];
@@ -654,24 +843,13 @@ if ( ! class_exists( 'burst_admin' ) ) {
 		}
 
 		/**
-		 * Remove the plugin from the active plugins array when called from listen_for_deactivation
-		 * */
-		public function remove_plugin_from_array( $plugin, $current ) {
-			$key = array_search( $plugin, $current );
-			if ( false !== $key ) {
-				unset( $current[ $key ] );
-			}
-
-			return $current;
-		}
-
-		/**
 		 * Clear plugin data
 		 */
 		public function delete_all_burst_data() {
 			if ( ! current_user_can( 'activate_plugins' ) ) {
 				return;
 			}
+
 			global $wpdb;
 
 			// post meta to delete
@@ -691,11 +869,18 @@ if ( ! class_exists( 'burst_admin' ) ) {
 				'burst_all_tables',
 				[
 					'burst_statistics',
+					'burst_campaigns',
 					'burst_sessions',
 					'burst_goals',
 					'burst_goal_statistics',
 					'burst_summary',
 					'burst_archived_months',
+					'burst_parameters',
+					'burst_browsers',
+					'burst_browser_versions',
+					'burst_platforms',
+					'burst_devices',
+					'burst_summary',
 				],
 			);
 

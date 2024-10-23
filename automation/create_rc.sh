@@ -35,7 +35,7 @@ else
 fi
 
 # Define variables
-remote_path="./public_html/wp-content/plugins"
+remote_path="/var/www/translate.really-simple-plugins.com/public_html/wp-content"
 # Get the directory of the current script
 
 # Generate a timestamp
@@ -112,7 +112,7 @@ download_po_files() {
 	# @todo make sure we are in the right folder
 	# The right folder is the root of the plugin
 	echo "Downloading .po files"
-	scp ${username}@translate.really-simple-plugins.com:/public_html/wp-content/plugins/${plugin_name}/languages/*.po languages/
+	scp rsp@rsp-web004.really-simple-plugins.com:"${remote_path}/plugins/${plugin_name}/languages/*.po" languages
 }
 
 upload_plugin() {
@@ -136,18 +136,18 @@ upload_plugin() {
 
 	# Upload the ZIP file
   # This step uploads the ZIP file to the remote server.
-  scp ${zip_file_dir} ${username}@translate.really-simple-plugins.com:${remote_path}/ || { echo "scp failed"; exit 1; }
+  scp ${zip_file_dir} rsp@rsp-web004.really-simple-plugins.com:"${remote_path}/plugins/" || { echo "scp failed"; exit 1; }
 
   # Rename the existing '${plugin_name}' folder, if it exists, and append the timestamp
   # This step renames any existing '${plugin_name}' folder to avoid conflicts.
-  ssh ${username}@translate.really-simple-plugins.com "if [ -d ${remote_path}/${plugin_name} ]; then mv ${remote_path}/${plugin_name} ./public_html/wp-content/plugins-backup/${plugin_name}/${plugin_name}-${timestamp}; fi" || { echo "ssh or mv failed"; exit 1; }
+  ssh rsp@rsp-web004.really-simple-plugins.com "if [ -d '${remote_path}/plugins/${plugin_name}' ]; then mv '${remote_path}/plugins/${plugin_name}' '${remote_path}/plugins-backup/${plugin_name}/${plugin_name}-${timestamp}'; fi" || { echo "ssh or mv failed"; exit 1; }
 
   # Unzip the new ZIP file
   # This step unzips the uploaded ZIP file.
-  ssh ${username}@translate.really-simple-plugins.com "unzip -q -o ${remote_path}/${zip_file} -d ${remote_path}/" || { echo "ssh or unzip failed"; exit 1; }
+  ssh rsp@rsp-web004.really-simple-plugins.com "unzip -q -o ${remote_path}/plugins/${zip_file} -d ${remote_path}/plugins/" || { echo "ssh or unzip failed"; exit 1; }
 
   # Optionally, remove the ZIP file from the server
-  ssh ${username}@translate.really-simple-plugins.com "rm ${remote_path}/${zip_file}"
+  ssh rsp@rsp-web004.really-simple-plugins.com "rm ${remote_path}/plugins/${zip_file}"
 
   # Change back to burst-pro dir
   cd ../burst-pro || { echo "Failed to change directory"; exit 1; }
@@ -165,6 +165,7 @@ stable_tag=$(grep "Stable tag:" readme.txt | awk '{print $NF}')
 echo "Remove existing build directory"
 cd "settings"; rm -r "build";
 echo "Run react build"
+npm install --force
 npm run build
 cd ..
 
@@ -198,17 +199,23 @@ if [ "$upload_mode" == "true" ]; then
 			source_lang="${langs[0]}"
 			target_langs="${langs[1]}"
 
-			for target_lang in $target_langs; do
-				ssh ${username}@translate.really-simple-plugins.com "cd ${remote_path}/${plugin_name}/languages/ && rm -f ${language_file_prefix}-$target_lang.po && echo \"Deleted: ${language_file_prefix}-$target_lang.po\"" || { echo "ssh or rm failed for $target_lang"; exit 1; }
-				ssh ${username}@translate.really-simple-plugins.com "cd ${remote_path}/${plugin_name}/languages/ && rm -f ${language_file_prefix}-$target_lang.mo && echo \"Deleted: ${language_file_prefix}-$target_lang.mo\"" || { echo "ssh or rm failed for $target_lang"; exit 1; }
-			done
+      for target_lang in $target_langs; do
+        ssh rsp@rsp-web004.really-simple-plugins.com "cd ${remote_path}/plugins/${plugin_name}/languages/ && rm -f ${language_file_prefix}-$target_lang.po && echo \"Deleted: ${language_file_prefix}-$target_lang.po\"" || { echo "ssh or rm failed for $target_lang"; exit 1; }
+        ssh rsp@rsp-web004.really-simple-plugins.com "cd ${remote_path}/plugins/${plugin_name}/languages/ && rm -f ${language_file_prefix}-$target_lang.mo && echo \"Deleted: ${language_file_prefix}-$target_lang.mo\"" || { echo "ssh or rm failed for $target_lang"; exit 1; }
+      done
 		done
 
 	echo "Step 5.4: Delete all .json files from the /languages folder on translate.really-simple-plugins.com"
-	ssh ${username}@translate.really-simple-plugins.com "cd ${remote_path}/${plugin_name}/languages/ && rm -f ${language_file_prefix}-*.json && echo \"Deleted: ${language_file_prefix}-*.json\"" || { echo "ssh or rm failed for $target_lang"; exit 1; }
+	#ssh ${username}@translate.really-simple-plugins.com "cd ${remote_path}/${plugin_name}/languages/ && rm -f ${language_file_prefix}-*.json && echo \"Deleted: ${language_file_prefix}-*.json\"" || { echo "ssh or rm failed for $target_lang"; exit 1; }
+	ssh rsp@rsp-web004.really-simple-plugins.com "cd ${remote_path}/plugins/${plugin_name}/languages/ && rm -f ${language_file_prefix}-*.json && echo \"Deleted: ${language_file_prefix}-*.json\"" || { echo "ssh or rm failed for $target_lang"; exit 1; }
 
 	echo "Step 5.5: SSH Loco sync"
-  ssh ${username}@translate.really-simple-plugins.com "cd public_html && wp loco sync ${language_file_prefix} && echo \"Synced Loco: ${language_file_prefix}\"" || { echo "ssh or wp loco sync failed"; exit 1; }
+	 relative_path="${remote_path}"
+    #strip 'wp-content' from relative_path to get the relative path
+    relative_path="${relative_path/wp-content/}"
+    ssh rsp@rsp-web004.really-simple-plugins.com "cd ${relative_path} && wp loco sync ${language_file_prefix} && echo \"Synced Loco: ${language_file_prefix}\"" || { echo "ssh or wp loco sync failed"; exit 1; }
+
+  #ssh ${username}@translate.really-simple-plugins.com "cd public_html && wp loco sync ${language_file_prefix} && echo \"Synced Loco: ${language_file_prefix}\"" || { echo "ssh or wp loco sync failed"; exit 1; }
 
 	echo "Step 5.6: Download .po files"
 	download_po_files
