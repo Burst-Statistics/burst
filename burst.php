@@ -180,22 +180,23 @@ if ( ! function_exists( 'BURST' ) ) {
 	add_action( 'plugins_loaded', 'BURST', 8 );
 }
 
-if ( ! function_exists( 'burst_set_defaults' ) ) {
-	/**
-	 * Set an activation time stamp
-	 *
-	 * @param $networkwide
-	 */
-	function burst_set_defaults( $networkwide ) {
-		do_action( 'burst_activation' );
-		if (!function_exists('burst_add_view_capability')) {
-			require_once( plugin_dir_path( __FILE__ ) . 'functions.php' );
-		}
-		burst_add_view_capability();
-		burst_add_manage_capability();
-		update_option('burst_set_defaults', true, false);
-	}
-	register_activation_hook( __FILE__, 'burst_set_defaults' );
+if ( ! function_exists( 'burst_on_activation' ) ) {
+    /**
+     * Set an activation time stamp
+     *
+     * @param $networkwide
+     */
+    function burst_on_activation() {
+        if (!function_exists('burst_add_view_capability')) {
+            require_once( plugin_dir_path( __FILE__ ) . 'functions.php' );
+        }
+        burst_add_view_capability();
+        burst_add_manage_capability();
+        update_option( 'burst_run_activation', true, false );
+        update_option('burst_set_defaults', true, false);
+    }
+
+    register_activation_hook( __FILE__, 'burst_on_activation' );
 }
 
 if ( ! function_exists( 'burst_clear_scheduled_hooks' ) ) {
