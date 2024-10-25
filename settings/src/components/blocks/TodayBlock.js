@@ -9,6 +9,7 @@ import {endOfDay, format, startOfDay} from 'date-fns';
 import {useState} from '@wordpress/element';
 import GridItem from '../common/GridItem';
 import {getDateWithOffset} from '../../utils/formatting';
+import {safeDecodeURI} from "../../utils/lib";
 
 function selectVisitorIcon( value ) {
   value = parseInt( value );
@@ -120,14 +121,14 @@ const TodayBlock = () => {
             <Tooltip  content={data.mostViewed.tooltip}>
               <div className="burst-today-list-item burst-tooltip-mostviewed">
                 <Icon name="winner"/>
-                <p className="burst-today-list-item-text">{decodeURI( data.mostViewed.title )}</p>
+                <p className="burst-today-list-item-text">{safeDecodeURI( data.mostViewed.title )}</p>
                 <p className="burst-today-list-item-number">{data.mostViewed.value}</p>
               </div>
             </Tooltip>
             <Tooltip content={data.referrer.tooltip}>
               <div className="burst-today-list-item burst-tooltip-referrer">
                 <Icon name="referrer"/>
-                <p className="burst-today-list-item-text">{decodeURI( data.referrer.title )}</p>
+                <p className="burst-today-list-item-text">{safeDecodeURI( data.referrer.title )}</p>
                 <p className="burst-today-list-item-number">{data.referrer.value}</p>
               </div>
             </Tooltip>

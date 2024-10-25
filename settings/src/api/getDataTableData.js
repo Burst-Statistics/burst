@@ -6,6 +6,7 @@ import {
 } from '../utils/formatting';
 import ClickToFilter from '../components/blocks/ClickToFilter';
 import Flag from '../components/blocks/Flag';
+import {safeDecodeURI} from "../utils/lib";
 
 export const transformDataTableData = ( response, columnOptions ) => {
   // Update columns
@@ -44,7 +45,7 @@ export const transformDataTableData = ( response, columnOptions ) => {
         case 'url':
           return (
               <ClickToFilter filter={column.id} filterValue={value}>
-                {decodeURI( value )}
+                {safeDecodeURI( value )}
               </ClickToFilter>
           );
         case 'text':
