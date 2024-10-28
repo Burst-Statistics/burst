@@ -28,6 +28,7 @@ export const burst_get_website_url = ( url = '/', params = {}) => {
 };
 
 export const safeDecodeURI =(uri) => {
+
     try {
         return decodeURI(uri);
     } catch (e) {
@@ -37,7 +38,7 @@ export const safeDecodeURI =(uri) => {
             return url; // or return uri to keep the original if preferred
         } else {
             // Re-throw if it's an unexpected error
-            console.log("Burst: Unexpected error on decodeURI:", url, e);
+            console.log("Burst: Unexpected error on decodeURI:", uri, e);
             return uri;
         }
     }
