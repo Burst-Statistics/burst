@@ -35,7 +35,7 @@ export const safeDecodeURI =(uri) => {
         if (e instanceof URIError) {
             console.error("Burst: Malformed URI detected:", uri, e );
             // Handle the error: return the original URI, a fallback value, or null
-            return url; // or return uri to keep the original if preferred
+            return uri; // or return uri to keep the original if preferred
         } else {
             // Re-throw if it's an unexpected error
             console.log("Burst: Unexpected error on decodeURI:", uri, e);
