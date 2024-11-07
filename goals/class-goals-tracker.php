@@ -69,8 +69,9 @@ if ( ! class_exists( "burst_goals_tracker" ) ) {
 				if ( ! $statistic_id ) {
 					return;
 				}
-				$page_url = $statistic['entire_page_url'] ?? false;
-
+				$page_url = $statistic['page_url'] ?? '';
+				$parameters = $statistic['parameters'] ?? '';
+				$page_url .= $parameters;
 				//get the goal by $hook_name.
 				$goal = $this->get_goal_by_hook_name( $hook_name );
 				if ( ! $goal ) {
@@ -80,7 +81,7 @@ if ( ! class_exists( "burst_goals_tracker" ) ) {
 				if ( $goal->page_or_website === 'page' ) {
 					//this is a relative url
 					$tracking_page = $goal->specific_page;
-					if ( $page_url && strpos( $page_url, $tracking_page ) === false ) {
+					if ( !empty( $page_url ) && strpos( $page_url, $tracking_page ) === false ) {
 						return;
 					}
 				}

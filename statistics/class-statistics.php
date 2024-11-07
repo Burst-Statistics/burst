@@ -701,7 +701,7 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 			}
 
 			$last_metric_count = (int) count( $metrics ) - 1;
-			$order_by          = $metrics[ $last_metric_count ] . ' DESC';
+            $order_by          = isset($metrics[ $last_metric_count ]) ? $metrics[ $last_metric_count ] . ' DESC' : 'pageviews DESC';
 
 			$sql  = $this->get_sql_table( $start, $end, $metrics, $filters, $group_by, $order_by, $limit );
 			$data = $wpdb->get_results( $sql, ARRAY_A );
@@ -1198,7 +1198,8 @@ if ( ! class_exists( 'burst_statistics' ) ) {
 		 * @return string
 		 */
 		public function get_sql_select_for_metric( string $metric ) {
-			$exclude_bounces = apply_filters( 'burst_exclude_bounces', 1 );
+			// default set to true will be changed/or removed in the future, for a more dynamic approach
+			$exclude_bounces = apply_filters( 'burst_exclude_bounces', burst_get_option( 'exclude_bounces', 1 ) );
 
 			global $wpdb;
 			// if metric starts with  'count(' and ends with ')', then it's a custom metric
@@ -1432,8 +1433,7 @@ function burst_install_statistics_table() {
             `time` int NOT NULL,
             `uid` varchar(255) NOT NULL,
             `time_on_page` int,
-            `entire_page_url` varchar(255) NOT NULL,
-            `parameters` varchar(255) NOT NULL,
+            `parameters` TEXT NOT NULL,
             `fragment` varchar(255) NOT NULL,
             `referrer` varchar(255),
             `browser_id` int(11) NOT NULL,

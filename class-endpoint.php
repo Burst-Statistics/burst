@@ -36,13 +36,15 @@ if ( ! class_exists( 'burst_endpoint' ) ) {
 			$last_test = get_option( 'burst_ran_test' );
 			$now = time();
 			//check if last test was more than 24 hours ago, 10 minutes if there's an error, to re-check faster.
-			$diff = $status === 'error' ? 10 * MINUTE_IN_SECONDS : DAY_IN_SECONDS;
-			$should_test_again = $last_test < $now - $diff;
+			$time_between_tests = $status === 'error' ? 10 * MINUTE_IN_SECONDS : DAY_IN_SECONDS;
+            $time_between_tests = apply_filters( 'burst_time_between_tests', $time_between_tests );
+			$should_test_again = $last_test < $now - $time_between_tests;
 			if ( $should_test_again || $last_test === false ) {
+                $last_test = time();
+                update_option( 'burst_ran_test', $last_test );
 				$status    = $this->test_tracking_status();
-				$last_test = time();
-				update_option( 'burst_ran_test', $last_test );
 			}
+
 			return [
 				'status'    => $status,
 				'last_test' => $last_test,
@@ -67,7 +69,11 @@ if ( ! class_exists( 'burst_endpoint' ) ) {
 		 */
 		public function test_tracking_status(): string {
 			$endpoint = $this->endpoint_test_request(); // true or false
-			if ( $endpoint ) {
+
+            //no tracking is possible on the Blueprint environment. Always return success there.
+            if ( defined('BURST_BLUEPRINT') ) {
+                $status = 'beacon';
+            } else if ( $endpoint ) {
 				$status = 'beacon';
 			} else {
 				$rest_api = $this->rest_api_test_request(); // true or false
