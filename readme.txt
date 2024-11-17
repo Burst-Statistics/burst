@@ -91,13 +91,18 @@ We value your feedback. You can [submit a support request on the WordPress forum
 
 == Change log ==
 = 1.7.3 =
-* October 29th, 2024
+* November 18, 2024
 * New: Blueprint.js demo data
 * Improvement: option to override the default time between endpoint tests, props @tobaco
 * Improvement: allow parameter length over 250 characters, props @ficusmedia
 * Improvement: option to dismiss all notices, except critical issues, props @3cstudio
 * Fix: clear unused 5 minutes cron job
 * Fix: on deactivation on multisite, not all tables were deleted yet, props @ecce-homo
+* Improvement: Change column parameters to text to allow longer params.
+* Improvement: Added a composite index on uid and time to speed up inserting tracking data. props @johannesdb
+* Fix: Language issue with malformed URL's. props @apollosk
+* Fix: Issue with translatable files with WP 6.7.
+
 
 = 1.7.2 =
 * Fix: Goal title would sometimes become empty and uneditable. This has been resolved.
