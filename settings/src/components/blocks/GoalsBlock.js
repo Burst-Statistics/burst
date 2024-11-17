@@ -23,7 +23,7 @@ import {setOption} from '../../utils/api';
 import {useQueries} from '@tanstack/react-query';
 import getLiveGoals from '../../api/getLiveGoals';
 import getGoalsData from '../../api/getGoalsData';
-import {burst_get_website_url} from '../../utils/lib';
+import {burst_get_website_url, safeDecodeURI} from '../../utils/lib';
 
 function selectGoalIcon( value ) {
   value = parseInt( value );
@@ -215,7 +215,7 @@ const GoalsBlock = () => {
               <div className="burst-goals-list-item burst-tooltip-topPerformer"
                   >
                 <Icon name="winner"/>
-                <p className="burst-goals-list-item-text">{decodeURI(
+                <p className="burst-goals-list-item-text">{safeDecodeURI(
                     data.topPerformer.title )}</p>
                 <p className="burst-goals-list-item-number">{data.topPerformer.value}</p>
               </div>

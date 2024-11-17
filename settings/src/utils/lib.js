@@ -27,4 +27,23 @@ export const burst_get_website_url = ( url = '/', params = {}) => {
   return baseUrl + url + ( queryString ? '?' + queryString : '' );
 };
 
+export const safeDecodeURI = ( uri ) => {
+
+    try {
+        return decodeURI( uri );
+    } catch ( e ) {
+        if ( e instanceof URIError ) {
+            console.error( 'Burst: Malformed URI detected:', uri, e );
+
+            // Handle the error: return the original URI, a fallback value, or null
+            return uri; // or return uri to keep the original if preferred
+        } else {
+
+            // Re-throw if it's an unexpected error
+            console.log( 'Burst: Unexpected error on decodeURI:', uri, e );
+            return uri;
+        }
+    }
+};
+
 

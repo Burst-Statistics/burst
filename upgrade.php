@@ -84,16 +84,16 @@ function burst_check_upgrade() {
 		BURST()->summary->restart_update_summary_table_alltime();
 	}
 	if ( $prev_version
-	     && version_compare( $prev_version, '1.6.1', '<' ) ) {
+		&& version_compare( $prev_version, '1.6.1', '<' ) ) {
 		// add the admin to the email reports mailing list
 		$mailinglist = burst_get_option( 'email_reports_mailinglist' );
 		if ( ! $mailinglist ) {
-			$defaults = array(
-				[
+			$defaults = [
+				array(
 					'email'     => get_option( 'admin_email' ),
 					'frequency' => 'monthly',
-				],
-			);
+				),
+			];
 			burst_update_option( 'email_reports_mailinglist', $defaults );
 		}
 	}
@@ -103,54 +103,54 @@ function burst_check_upgrade() {
 		// add the admin to the email reports mailing list
 		$mailinglist = burst_get_option( 'email_reports_mailinglist' );
 		if ( ! $mailinglist ) {
-			$defaults = array(
-				[
+			$defaults = [
+				array(
 					'email'     => get_option( 'admin_email' ),
 					'frequency' => 'monthly',
-				],
-			);
+				),
+			];
 			burst_update_option( 'email_reports_mailinglist', $defaults );
 		}
 	}
 
-	//check if column 'device_id' exists in the table 'burst_statistics'
-	$is_version_upgrade = $prev_version && version_compare( $prev_version, '1.7.0', '<' );
-	$lookup_table_incomplete = version_compare( $prev_version, '1.7.1', '=' ) && !BURST()->db_upgrade->column_exists( 'burst_statistics', 'device_id' );
+	// check if column 'device_id' exists in the table 'burst_statistics'
+	$is_version_upgrade      = $prev_version && version_compare( $prev_version, '1.7.0', '<' );
+	$lookup_table_incomplete = version_compare( $prev_version, '1.7.1', '=' ) && ! BURST()->db_upgrade->column_exists( 'burst_statistics', 'device_id' );
 	if ( $lookup_table_incomplete || $is_version_upgrade ) {
 		update_option( 'burst_last_cron_hit', time(), false );
-		update_option( "burst_db_upgrade_create_lookup_tables", true, true ); //this option is used in the tracking, so should autoload until completed
-		update_option( "burst_db_upgrade_init_lookup_ids", true, false );
-		update_option( "burst_db_upgrade_upgrade_lookup_tables", true, false );
-		update_option( "burst_db_upgrade_upgrade_lookup_tables_drop_columns", true, false );
+		update_option( 'burst_db_upgrade_create_lookup_tables', true, true ); // this option is used in the tracking, so should autoload until completed
+		update_option( 'burst_db_upgrade_init_lookup_ids', true, false );
+		update_option( 'burst_db_upgrade_upgrade_lookup_tables', true, false );
+		update_option( 'burst_db_upgrade_upgrade_lookup_tables_drop_columns', true, false );
 
 		// for each table separately, for fine grained control
-		update_option( "burst_db_upgrade_create_lookup_tables_browser", true, false );
-		update_option( "burst_db_upgrade_create_lookup_tables_browser_version", true, false );
-		update_option( "burst_db_upgrade_create_lookup_tables_platform", true, false );
-		update_option( "burst_db_upgrade_create_lookup_tables_device", true, false );
-		update_option( "burst_db_upgrade_upgrade_lookup_tables_browser", true, false );
-		update_option( "burst_db_upgrade_upgrade_lookup_tables_browser_version", true, false );
-		update_option( "burst_db_upgrade_upgrade_lookup_tables_platform", true, false );
-		update_option( "burst_db_upgrade_upgrade_lookup_tables_device", true, false );
+		update_option( 'burst_db_upgrade_create_lookup_tables_browser', true, false );
+		update_option( 'burst_db_upgrade_create_lookup_tables_browser_version', true, false );
+		update_option( 'burst_db_upgrade_create_lookup_tables_platform', true, false );
+		update_option( 'burst_db_upgrade_create_lookup_tables_device', true, false );
+		update_option( 'burst_db_upgrade_upgrade_lookup_tables_browser', true, false );
+		update_option( 'burst_db_upgrade_upgrade_lookup_tables_browser_version', true, false );
+		update_option( 'burst_db_upgrade_upgrade_lookup_tables_platform', true, false );
+		update_option( 'burst_db_upgrade_upgrade_lookup_tables_device', true, false );
 
 		// drop post_meta feature
-		update_option( "burst_db_upgrade_drop_page_id_column", true, false );
+		update_option( 'burst_db_upgrade_drop_page_id_column', true, false );
 
-		wp_schedule_single_event(time() + 300 , "burst_upgrade_iteration");
+		wp_schedule_single_event( time() + 300, 'burst_upgrade_iteration' );
 
 		$mu_plugin = trailingslashit( WPMU_PLUGIN_DIR ) . 'burst_rest_api_optimizer.php';
-		if ( file_exists($mu_plugin ) ) {
+		if ( file_exists( $mu_plugin ) ) {
 			unlink( $mu_plugin );
 		}
 	}
 
-    if ( $prev_version
-        && version_compare( $prev_version, '1.7.3', '<' ) ) {
-        wp_clear_scheduled_hook( 'burst_every_5_minutes' );
-		update_option( "burst_db_upgrade_rename_entire_page_url_column", true, false );
-		update_option( "burst_db_upgrade_drop_path_from_parameters_column", true, false );
+	if ( $prev_version
+		&& version_compare( $prev_version, '1.7.3', '<' ) ) {
+		wp_clear_scheduled_hook( 'burst_every_5_minutes' );
+		update_option( 'burst_db_upgrade_rename_entire_page_url_column', true, false );
+		update_option( 'burst_db_upgrade_drop_path_from_parameters_column', true, false );
 
-		wp_schedule_single_event(time() + 300 , "burst_upgrade_iteration");
+		wp_schedule_single_event( time() + 300, 'burst_upgrade_iteration' );
 	}
 
 	do_action( 'burst_upgrade', $prev_version );

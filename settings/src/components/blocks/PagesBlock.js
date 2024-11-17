@@ -10,6 +10,7 @@ import getPagesData from '../../api/getPagesData';
 import {useState} from '@wordpress/element';
 import PopoverFilter from './PopoverFilter';
 import {getLocalStorage, setLocalStorage} from '../../utils/api';
+import {safeDecodeURI} from '../../utils/lib';
 
 const PagesBlock = () => {
   const {startDate, endDate, range} = useDate( ( state ) => state );
@@ -63,7 +64,7 @@ const PagesBlock = () => {
   if ( query.isFetched && 0 !== data.length && data.columns ) {
     const renderPageUrlCell = ( row ) => (
         <ClickToFilter filter="page_url" filterValue={row.page_url}>
-          {decodeURI( row.page_url )}
+          {safeDecodeURI( row.page_url )}
         </ClickToFilter>
     );
 

@@ -18,4 +18,4 @@ function burst_delete_post_pageviews_on_duplicate_product( $duplicate = null ) {
 	delete_post_meta( $id, 'burst_total_pageviews_count' );
 }
 
-add_action('woocommerce_product_duplicate', 'burst_delete_post_pageviews_on_duplicate_product' );
+add_action( 'woocommerce_product_duplicate', 'burst_delete_post_pageviews_on_duplicate_product' );

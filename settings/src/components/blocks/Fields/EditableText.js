@@ -40,7 +40,7 @@ export default function EditableText({ value, id, onChange }) {
     if ( 'Enter' === event.key ) {
       event.preventDefault();
       setIsEditing( false );
-      onChange(tempValue);
+      onChange( tempValue );
     }
 
   }

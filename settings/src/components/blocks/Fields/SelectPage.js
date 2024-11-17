@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import Icon from '../../../utils/Icon';
 import { formatNumber } from '../../../utils/formatting';
 import debounce from 'lodash/debounce';
-import usePostsStore from "../../../store/usePostsStore";
-import {useEffect} from "react";
+import usePostsStore from '../../../store/usePostsStore';
+import {useEffect} from 'react';
 
 // Option layout component
 const OptionLayout = ({ innerProps, innerRef, data }) => {
@@ -28,7 +28,7 @@ const OptionLayout = ({ innerProps, innerRef, data }) => {
 const SelectPage = ({ value, onChangeHandler, field }) => {
     const {
         fetchPosts,
-        fetching,
+        fetching
     } = usePostsStore();
   const [ search, setSearch ] = useState( '' );
 

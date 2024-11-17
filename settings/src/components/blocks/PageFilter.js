@@ -3,6 +3,7 @@ import Icon from '../../utils/Icon';
 import {__} from '@wordpress/i18n';
 import {useGoalsStore} from '../../store/useGoalsStore';
 import { useInsightsStore } from '../../store/useInsightsStore';
+import {safeDecodeURI} from '../../utils/lib';
 
 export const PageFilter = () => {
   const filters = useFiltersStore( ( state ) => state.filters );
@@ -84,7 +85,7 @@ export const PageFilter = () => {
                   <Icon name={filtersConf[filter].icon} size="16"/>
                   <p className={'burst-data-filter__label'}>{filtersConf[filter].label}</p>
                   <span className={'burst-data-filter-divider'}></span>
-                  <p className={'burst-data-filter__value'}>{decodeURI( title )}</p>
+                  <p className={'burst-data-filter__value'}>{safeDecodeURI( title )}</p>
                   <button onClick={() => removeFilter( filter )}><Icon name="times" color={'var(--rsp-grey-500)'} size="16"/></button>
                 </div>
             );

@@ -1447,7 +1447,8 @@ function burst_install_statistics_table() {
               INDEX bounce_index (bounce),
               INDEX page_url_index (page_url),
               INDEX session_id_index (session_id),
-              INDEX time_page_url_index (`time`, `page_url`)
+              INDEX time_page_url_index (`time`, `page_url`),
+              INDEX uid_time_index (`uid`, `time`)
             ) $charset_collate;";
 
 		dbDelta( $sql );

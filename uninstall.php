@@ -21,6 +21,6 @@ foreach ( $results as $key => $value ) {
 }
 
 $mu_plugin = trailingslashit( WPMU_PLUGIN_DIR ) . 'burst_rest_api_optimizer.php';
-if ( file_exists($mu_plugin ) ) {
+if ( file_exists( $mu_plugin ) ) {
 	unlink( $mu_plugin );
 }

@@ -24,8 +24,9 @@ const GoalField = ({
 
     // if value is validated, set it
     if ( validated ) {
+
         //when we update to type=views, the page_or_website property is not visible, so should be reset to the corresponding value.
-        if ( field.id==='type' && value==='visits' ){
+        if ( 'type' === field.id && 'visits' === value ) {
             setGoalValue( goal.id, 'page_or_website', 'page' );
         }
       setGoalValue( goal.id, field.id, value );

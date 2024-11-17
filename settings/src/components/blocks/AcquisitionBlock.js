@@ -10,6 +10,7 @@ import getAcquisitionData from '../../api/getAcquisitionData';
 import {useAcquisitionStore} from '../../store/useAcquisitionStore';
 import Flag from './Flag';
 import AcquisitionSwitch from './Fields/AcquisitionSwitch';
+import {safeDecodeURI} from '../../utils/lib';
 
 /**
  * Acquisition block, shows referrers, country or language  based on the filters
@@ -54,7 +55,7 @@ const AcquisitionBlock = ( props ) => {
       data.columns[0].cell = ( row ) => {
         return (
             <ClickToFilter filter="referrer" filterValue={row.value}>
-              {decodeURI( row.value )}
+              {safeDecodeURI( row.value )}
             </ClickToFilter>
         );
       };

@@ -16,7 +16,7 @@ const RestoreArchivesControl = () => {
     columns = [
       {
         name: <input type="checkbox" disabled={true}/>,
-        grow: 1,
+        grow: 1
       },
       {
         name: __( 'Archive', 'burst-statistics' ),
@@ -298,7 +298,7 @@ const RestoreArchivesControl = () => {
                    checked={entirePageSelected}
                    onChange={( e ) => handleSelectEntirePage( e.target.checked )}/>,
       selector: row => row.selectControl,
-      grow: 1,
+      grow: 1
     },
     {
       name: __( 'Archive', 'burst-statistics' ),

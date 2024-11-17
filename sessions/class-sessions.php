@@ -23,8 +23,8 @@ function burst_install_sessions_table() {
 		$table_name      = $wpdb->prefix . 'burst_sessions';
 		$sql             = "CREATE TABLE $table_name (
 			`ID` int NOT NULL AUTO_INCREMENT,
-			`first_visited_url` varchar(255) NOT NULL,
-			`last_visited_url` varchar(255) NOT NULL,
+			`first_visited_url` TEXT NOT NULL,
+			`last_visited_url` TEXT NOT NULL,
             `goal_id` int,
             `country_code` char(2),
               PRIMARY KEY  (ID),

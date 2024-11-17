@@ -25,8 +25,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 				[
 					[
 						'id' => 'elementor_pro_forms_form_submitted',
-						'title'=> "Elementor - " . __('Form Submission', 'burst-statistics'),
-						'description' => __('Runs after submitting a form', 'burst-statistics'),
 						'type' => 'hook',
 						'status' => 'active',
 						'server_side' => true,
@@ -47,8 +45,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 			[
 				[
 					'id' => 'woocommerce_add_to_cart',
-					'title'=> "WooCommerce - " . __('Add to Cart', 'burst-statistics'),
-					'description' => __("Runs after clicking 'Add to Cart' button ", 'burst-statistics'),
 					'type' => 'hook',
 					'status' => 'active',
 					'server_side' => true,
@@ -57,8 +53,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 				],
 				[
 					'id' => 'woocommerce_checkout_order_created',
-					'title'=> "WooCommerce - " . __('Order Created', 'burst-statistics'),
-					'description' => __('Runs before the payment', 'burst-statistics'),
 					'type' => 'hook',
 					'status' => 'active',
 					'server_side' => true,
@@ -67,8 +61,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 				],
 				[
 					'id' => 'woocommerce_payment_complete',
-					'title'=> "WooCommerce - " . __('Payment Completed', 'burst-statistics'),
-					'description' => __('Runs after completing a payment', 'burst-statistics'),
 					'type' => 'hook',
 					'status' => 'active',
 					'server_side' => true,
@@ -86,8 +78,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 			[
 				[
 					'id' => 'edd_complete_purchase',
-					'title'=> "Easy Digital Downloads -" .  __('Purchase', 'burst-statistics'),
-					'description' => __('Runs after purchasing an item', 'burst-statistics'),
 					'type' => 'hook',
 					'status' => 'active',
 					'server_side' => true,
@@ -103,8 +93,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 		'goals' =>
 		[
 			'id' => 'edd_subscription_post_create',
-			'title'=> "Easy Digital Downloads - " . __('Subscription Created', 'burst-statistics'),
-			'description' => __('Runs after creating a subscription', 'burst-statistics'),
 			'type' => 'hook',
 			'status' => 'active',
 			'server_side' => true,
@@ -113,8 +101,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 		],
 		[
 			'id' => 'edd_subscription_cancelled',
-			'title'=> "Easy Digital Downloads - " . __('Subscription Cancelled', 'burst-statistics'),
-			'description' => __('Runs after cancelling a subscription', 'burst-statistics'),
 			'type' => 'hook',
 			'status' => 'active',
 			'server_side' => true,
@@ -135,8 +121,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 			[
 				[
 					'id' => 'wpcf7_submit',
-					'title'=> "Contact Form 7 - " . __('Submit form', 'burst-statistics'),
-					'description' => __('Runs after submitting a form', 'burst-statistics'),
 					'type' => 'hook',
 					'status' => 'active',
 					'server_side' => true,
@@ -152,8 +136,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 			[
 				[
 					'id' => 'wpforms_process_complete',
-					'title'=> "WPForms - " . __('Submit form', 'burst-statistics'),
-					'description' => __('Runs after submitting a form', 'burst-statistics'),
 					'type' => 'hook',
 					'status' => 'active',
 					'server_side' => true,
@@ -169,8 +151,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 			[
 				[
 					'id' => 'gform_post_submission',
-					'title'=> "Gravity Forms - " . __('Submit form', 'burst-statistics'),
-					'description' => __('Runs after submitting a form', 'burst-statistics'),
 					'type' => 'hook',
 					'status' => 'active',
 					'server_side' => true,
@@ -186,8 +166,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 			[
 				[
 					'id' => 'frm_submit_clicked',
-					'title'=> "Formidable Forms - " . __('Submit form', 'burst-statistics'),
-					'description' => __('Runs after submitting a form', 'burst-statistics'),
 					'type' => 'clicks',
 					'status' => 'active',
 					'server_side' => false,
@@ -204,8 +182,6 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 			[
 				[
 					'id' => 'ninja_forms_after_submission',
-					'title'=> "Ninja Forms - " . __('Submit form', 'burst-statistics'),
-					'description' => __('Runs after submitting a form', 'burst-statistics'),
 					'type' => 'hook',
 					'status' => 'active',
 					'server_side' => true,
@@ -241,7 +217,139 @@ $burst_integrations_list = apply_filters( 'burst_integrations', array(
 		'constant_or_function' => 'WP_ROCKET_VERSION',
 		'label'                => 'WP Rocket',
 	),
-));
+)
+);
+
+add_action('admin_init', 'burst_load_integrations_translations');
+/**
+ * To prevent warnings, the translations only can be loaded after the plugins_loaded hook.
+ * @return void
+ */
+function burst_load_integrations_translations(){
+    global $burst_integrations_list;
+    $translations = [
+        'elementor' => array(
+            'goals'                =>
+                [
+                    [
+                        'id' => 'elementor_pro_forms_form_submitted',
+                        'title'=> "Elementor - " . __('Form Submission', 'burst-statistics'),
+                        'description' => __('Runs after submitting a form', 'burst-statistics'),
+                    ],
+                ]
+        ),
+        'woocommerce' => array(
+            'goals'                =>
+                [
+                    [
+                        'id' => 'woocommerce_add_to_cart',
+                        'title'=> "WooCommerce - " . __('Add to Cart', 'burst-statistics'),
+                        'description' => __("Runs after clicking 'Add to Cart' button ", 'burst-statistics'),
+                    ],
+                    [
+                        'id' => 'woocommerce_checkout_order_created',
+                        'title'=> "WooCommerce - " . __('Order Created', 'burst-statistics'),
+                        'description' => __('Runs before the payment', 'burst-statistics'),
+                    ],
+                    [
+                        'id' => 'woocommerce_payment_complete',
+                        'title'=> "WooCommerce - " . __('Payment Completed', 'burst-statistics'),
+                        'description' => __('Runs after completing a payment', 'burst-statistics'),
+                    ],
+                ]
+        ),
+        'easy-digital-downloads' => array(
+            'goals'                =>
+                [
+                    [
+                        'id' => 'edd_complete_purchase',
+                        'title'=> "Easy Digital Downloads -" .  __('Purchase', 'burst-statistics'),
+                        'description' => __('Runs after purchasing an item', 'burst-statistics'),
+                    ],
+                ]
+        ),
+        'easy-digital-downloads-recurring' => array(
+            'goals' =>
+                [
+                    'id' => 'edd_subscription_post_create',
+                    'title'=> "Easy Digital Downloads - " . __('Subscription Created', 'burst-statistics'),
+                    'description' => __('Runs after creating a subscription', 'burst-statistics'),
+                ],
+            [
+                'id' => 'edd_subscription_cancelled',
+                'title'=> "Easy Digital Downloads - " . __('Subscription Cancelled', 'burst-statistics'),
+                'description' => __('Runs after cancelling a subscription', 'burst-statistics'),
+            ],
+
+        ),
+        // Contact from plugins
+        'contact-form-7' => [
+            'goals'                =>
+                [
+                    [
+                        'id' => 'wpcf7_submit',
+                        'title'=> "Contact Form 7 - " . __('Submit form', 'burst-statistics'),
+                        'description' => __('Runs after submitting a form', 'burst-statistics'),
+                    ],
+                ]
+        ],
+        'wpforms' => [
+            'goals'                =>
+                [
+                    [
+                        'id' => 'wpforms_process_complete',
+                        'title'=> "WPForms - " . __('Submit form', 'burst-statistics'),
+                        'description' => __('Runs after submitting a form', 'burst-statistics'),
+                    ],
+                ]
+        ],
+        'gravity_forms' => [
+            'goals'                =>
+                [
+                    [
+                        'id' => 'gform_post_submission',
+                        'title'=> "Gravity Forms - " . __('Submit form', 'burst-statistics'),
+                        'description' => __('Runs after submitting a form', 'burst-statistics'),
+                    ],
+                ]
+        ],
+        'formidable-forms' => [
+            'goals'                =>
+                [
+                    [
+                        'id' => 'frm_submit_clicked',
+                        'title'=> "Formidable Forms - " . __('Submit form', 'burst-statistics'),
+                        'description' => __('Runs after submitting a form', 'burst-statistics'),
+                    ],
+                ]
+        ],
+        'ninja-forms' => [
+            'goals'                =>
+                [
+                    [
+                        'id' => 'ninja_forms_after_submission',
+                        'title'=> "Ninja Forms - " . __('Submit form', 'burst-statistics'),
+                        'description' => __('Runs after submitting a form', 'burst-statistics'),
+                    ],
+                ]
+        ],
+    ];
+    //for each item in $burst_integrations_list, loop through each goal, and add the title and description based on the matching id in $translations
+    foreach ($burst_integrations_list as $plugin => $details){
+        if (isset($translations[$plugin])){
+            foreach ($details['goals'] as $key => $goal){
+                if (isset($translations[$plugin]['goals'][$key])){
+                    if (isset($translations[$plugin]['goals'][$key]['title'])) {
+                        $burst_integrations_list[$plugin]['goals'][$key]['title'] = $translations[$plugin]['goals'][$key]['title'];
+                    }
+                    if (isset($translations[$plugin]['goals'][$key]['description'])) {
+                        $burst_integrations_list[$plugin]['goals'][$key]['description'] = $translations[$plugin]['goals'][$key]['description'];
+                    }
+                }
+            }
+        }
+    }
+}
 
 /**
  * Check if a plugin from the integrations list is active
