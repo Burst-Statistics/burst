@@ -140,6 +140,15 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 				}
 			}
 
+			if ( WP_DEBUG ) {
+				// log all upgrades that still need to be done
+				foreach ( $db_upgrades as $upgrade ) {
+					if ( get_option( "burst_db_upgrade_$upgrade" ) == true ) {
+						burst_error_log( "Upgrade $upgrade still needs to be done." );
+					}
+				}
+			}
+
 			// only one upgrade at a time
 			if ( 'bounces' === $do_upgrade ) {
 				$this->upgrade_bounces();
@@ -762,7 +771,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 
 		public function drop_path_from_parameters_column(): void {
 			//check if column already upgraded.
-			if ( get_option( 'burst_db_upgrade_rename_entire_page_url_column' ) ) {
+			if ( ! get_option( 'burst_db_upgrade_drop_path_from_parameters_column' ) ) {
 				return;
 			}
 
@@ -788,7 +797,7 @@ if ( ! class_exists( 'burst_db_upgrade' ) ) {
 			$offset += $batch_size;
 			update_option( 'burst_db_upgrade_column_offset', $offset );
 			$total = $wpdb->get_var("SELECT COUNT(*) FROM $table");
-			$progress = round( $offset / $total, 2 );
+			$progress = $total > 0 ? round( $offset / $total, 2 ) : 1;
 			set_transient( "burst_progress_drop_path_from_parameters_column", $progress, HOUR_IN_SECONDS);
 
 			if ( $offset >= $total ) {
